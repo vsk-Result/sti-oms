@@ -20,7 +20,7 @@ class PasswordResetController extends Controller
 
     public function edit(User $user): View
     {
-        if (! auth()->user()->can('edit admin-users') || auth()->id() !== $user->id) {
+        if (! (auth()->user()->can('edit admin-users') || auth()->id() === $user->id)) {
             abort(403);
         }
         return view('users.passwords-reset.edit', compact('user'));
@@ -28,7 +28,7 @@ class PasswordResetController extends Controller
 
     public function update(User $user, UpdatePasswordRequest $request): RedirectResponse
     {
-        if (! auth()->user()->can('edit admin-users') || auth()->id() !== $user->id) {
+        if (! (auth()->user()->can('edit admin-users') || auth()->id() === $user->id)) {
             abort(403);
         }
         $this->userService->updatePassword($user, $request->toArray());

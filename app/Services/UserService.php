@@ -23,7 +23,7 @@ class UserService
     public function updateUser(User $user, array $requestData): User
     {
         if (array_key_exists('photo', $requestData)) {
-            $photo = $this->uploadService->uploadFile('users/photo', $requestData['photo'])->getFilePath();
+            $photo = $this->uploadService->uploadFile('users/photo', $requestData['photo']);
         } elseif ($requestData['avatar_remove'] === '1') {
             $photo = null;
         } else {

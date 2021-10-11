@@ -33,7 +33,7 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
-        if (! auth()->user()->can('edit admin-users') || auth()->id() !== $user->id) {
+        if (! (auth()->user()->can('edit admin-users') || auth()->id() === $user->id)) {
             abort(403);
         }
         $roles = Role::all();
@@ -44,7 +44,7 @@ class UserController extends Controller
 
     public function update(User $user, UpdateUserRequest $request): RedirectResponse
     {
-        if (! auth()->user()->can('edit admin-users') || auth()->id() !== $user->id) {
+        if (! (auth()->user()->can('edit admin-users') || auth()->id() === $user->id)) {
             abort(403);
         }
         $this->userService->updateUser($user, $request->toArray());

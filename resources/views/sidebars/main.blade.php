@@ -62,11 +62,11 @@
                 </div>
             @endcan
 
-            <div class="menu-item">
-                <a href="#" class="menu-link">
-                    <span class="menu-title">Банки</span>
-                </a>
-            </div>
+{{--            <div class="menu-item">--}}
+{{--                <a href="#" class="menu-link">--}}
+{{--                    <span class="menu-title">Банки</span>--}}
+{{--                </a>--}}
+{{--            </div>--}}
 
             @can('show admin-sidebar-menu')
                 <div class="menu-item pt-5">
