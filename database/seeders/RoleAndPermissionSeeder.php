@@ -47,7 +47,7 @@ class RoleAndPermissionSeeder extends Seeder
             'description' => 'GOD',
         ]);
 
-        User::first()->assignRole($superAdminRole);
+        User::find(1)->assignRole($superAdminRole);
 
 //        $adminRole = Role::create([
 //            'name' => 'admin',

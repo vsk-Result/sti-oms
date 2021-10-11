@@ -17,4 +17,4 @@ _ide_helper.php
 .phpstorm.meta.php
 .editorconfig
 .htaccess
-storage/debugbar
+/storage/debugbar

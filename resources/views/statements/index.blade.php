@@ -56,7 +56,15 @@
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($statements as $statement)
                                 <tr>
-                                    <td class="text-dark fw-bolder">{{ $statement->getDateFormatted() }}</td>
+                                    <td class="text-dark fw-bolder">
+                                        @if (auth()->user()->can('show statements'))
+                                            <div class="menu-item px-3">
+                                                <a href="{{ route('statements.show', $statement) }}">{{ $statement->getDateFormatted() }}</a>
+                                            </div>
+                                        @else
+                                            {{ $statement->getDateFormatted() }}
+                                        @endif
+                                    </td>
                                     <td class="text-dark fw-bolder"><a href="#">{{ $statement->company->short_name }}</a></td>
                                     <td class="text-dark fw-bolder"><a href="#">{{ $statement->getBankName() }}</a></td>
                                     <td class="text-dark fw-bolder">{{ $statement->payments_count }}</td>
