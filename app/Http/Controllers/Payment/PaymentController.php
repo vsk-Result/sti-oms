@@ -24,14 +24,14 @@ class PaymentController extends Controller
         return view('payments.index', compact('payments'));
     }
 
-    public function store(StorePaymentRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $payment = $this->paymentService->createPayment($request->toArray());
         $payment->statement?->reCalculateAmountsAndCounts();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Платеж успешно создан',
+            'message' => 'Оплата успешно создана',
             'payment' => [
                 'id' => $payment->id,
                 'update_url' => route('payments.update', $payment),
@@ -47,7 +47,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Платеж успешно изменен'
+            'message' => 'Оплата успешно изменена'
         ]);
     }
 
@@ -58,7 +58,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Платеж успешно удален'
+            'message' => 'Оплата успешно удалена'
         ]);
     }
 }

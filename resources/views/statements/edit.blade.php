@@ -203,8 +203,8 @@
                                             @include('partials.status', ['status' => $payment->getStatus()])
                                         </td>
                                         <td>
-                                            <a href="javascript:void(0);" data-payment-id="{{ $payment->id }}" class="clone-payment btn btn-sm btn-icon btn-white btn-active-color-dark fs-8"><i class="fas fa-clone"></i></a>
-                                            <a href="javascript:void(0);" data-payment-destroy-url="{{ route('payments.destroy', $payment) }}" class="destroy-payment btn btn-sm btn-icon btn-white btn-active-color-danger fs-8"><i class="fas fa-trash-alt"></i></a>
+                                            <a title="Дублировать" href="javascript:void(0);" data-payment-id="{{ $payment->id }}" class="clone-payment btn btn-sm btn-icon btn-white btn-active-color-dark fs-8"><i class="fas fa-clone"></i></a>
+                                            <a title="Удалить" href="javascript:void(0);" data-payment-destroy-url="{{ route('payments.destroy', $payment) }}" class="destroy-payment btn btn-sm btn-icon btn-white btn-active-color-danger fs-8"><i class="fas fa-trash-alt"></i></a>
                                         </td>
                                     </tr>
                                 @empty
@@ -269,13 +269,15 @@
                     $cloneTr.find('.clone-payment').data('payment-id', data.payment.id);
                     $cloneTr.insertAfter($tr);
 
+                    $cloneTr.addClass('row-blink');
+
                     KTApp.initSelect2();
 
                     $cloneTr.find('select').trigger('change');
 
                     toastr.success(data.message);
                 } else if (data.status === 'error') {
-                    toastr.error('Ошибка. ' . data.message);
+                    toastr.error('Ошибка. ' + data.message);
                 }
             })
             .fail(function(xhr) {
@@ -303,7 +305,7 @@
                         $tr.remove();
                         toastr.success(data.message);
                     } else if (data.status === 'error') {
-                        toastr.error('Ошибка. ' . data.message);
+                        toastr.error('Ошибка. ' + data.message);
                     }
                 })
                 .fail(function(xhr) {
@@ -386,7 +388,7 @@
                 if (data.status === 'success') {
                     toastr.success(data.message);
                 } else if (data.status === 'error') {
-                    toastr.error('Ошибка. ' . data.message);
+                    toastr.error('Ошибка. ' + data.message);
                 }
             })
             .fail(function(xhr) {
@@ -409,6 +411,19 @@
         }
         table tbody td {
             vertical-align: top;
+        }
+
+        .row-blink {
+            animation-name: blink;
+            animation-timing-function: ease;
+            animation-duration: .4s;
+            animation-iteration-count: 1;
+        }
+
+        @keyframes blink {
+            50% {
+                transform: scale(1.05);
+            }
         }
     </style>
 @endpush
