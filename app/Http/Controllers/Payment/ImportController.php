@@ -34,7 +34,7 @@ class ImportController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Платеж успешно создан',
+            'message' => 'Оплата успешно создана',
             'payment' => [
                 'id' => $payment->id,
                 'update_url' => route('payments.update', $payment),
@@ -50,7 +50,7 @@ class ImportController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Платеж успешно изменен'
+            'message' => 'Оплата успешно изменена'
         ]);
     }
 
@@ -61,7 +61,7 @@ class ImportController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Платеж успешно удален'
+            'message' => 'Оплата успешно удалена'
         ]);
     }
 }

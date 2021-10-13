@@ -2,10 +2,18 @@
 
 namespace App\Services;
 
+use App\Helpers\Sanitizer;
 use App\Imports\StatementImport;
+use App\Models\Company;
+use App\Models\CRM\AvansImport;
+use App\Models\Object\BObject;
+use App\Models\Object\WorkType;
+use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Statement;
 use App\Models\Status;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -14,15 +22,18 @@ class StatementService
     private PaymentService $paymentService;
     private OrganizationService $organizationService;
     private UploadService $uploadService;
+    private Sanitizer $sanitizer;
 
     public function __construct(
         PaymentService $paymentService,
         UploadService $uploadService,
         OrganizationService $organizationService,
+        Sanitizer $sanitizer,
     ) {
         $this->paymentService = $paymentService;
         $this->uploadService = $uploadService;
         $this->organizationService = $organizationService;
+        $this->sanitizer = $sanitizer;
     }
 
     public function createStatement(array $requestData): null|Statement
@@ -77,6 +88,8 @@ class StatementService
                 ? round($amount / 6, 2)
                 : 0;
 
+            $isNeedSplit = $this->paymentService->checkIsNeedSplitFromDescription($payment['description']);
+
             $this->paymentService->createPayment([
                 'company_id' => $statement->company_id,
                 'bank_id' => $statement->bank_id,
@@ -93,6 +106,7 @@ class StatementService
                 'date' => $statement->date,
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
+                'is_need_split' => $isNeedSplit,
                 'status_id' => Status::STATUS_BLOCKED
             ]);
         }
@@ -116,6 +130,57 @@ class StatementService
         }
 
         return $statement;
+    }
+
+    public function splitPayment(Statement $statement, Payment $payment, array $request): Collection
+    {
+        $import = AvansImport::find($request['crm_avans_import_id']);
+        $import->load('items', 'items.avans');
+
+        $amountGroupedByObjectCode = [];
+        foreach ($import->items as $item) {
+            if (! isset($amountGroupedByObjectCode[$item->avans->code])) {
+                $amountGroupedByObjectCode[$item->avans->code] = 0;
+            }
+            $amountGroupedByObjectCode[$item->avans->code] += $item->avans->value;
+        }
+
+        $description = $this->sanitizer->set($import->description)->lowerCase()->get();
+        $costCode = str_contains($description, 'зарплат') ? '7.17' : '7.26';
+
+        $company = Company::find(1);
+        $organizationSenderId = $company->organizations()->first()->id;
+        $organizationReceiverId = Organization::where('name', 'ФИЛИАЛ № 7701 БАНКА ВТБ (ПАО) Г. МОСКВА')->first()->id;
+
+        $payments = [];
+        foreach ($amountGroupedByObjectCode as $code => $amount) {
+            $objectCode = substr($code, 0, strpos($code, '.'));
+            $worktypeCode = (int) substr($code, strpos($code, '.') + 1);
+            $payments[] = $this->paymentService->createPayment([
+                'company_id' => $company->id,
+                'bank_id' => 1,
+                'statement_id' => $statement->id,
+                'object_id' => BObject::where('code', $objectCode)->first()->id ?? null,
+                'object_worktype_id' => WorkType::getIdByCode($worktypeCode),
+                'organization_sender_id' => $organizationSenderId,
+                'organization_receiver_id' => $organizationReceiverId,
+                'type_id' => Payment::TYPE_OBJECT,
+                'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
+                'code' => $costCode,
+                'category' => Payment::CATEGORY_RAD,
+                'description' => $payment->description,
+                'date' => $import->date,
+                'amount' => (float) -$amount,
+                'amount_without_nds' => (float) -$amount,
+                'is_need_split' => false,
+                'status_id' => Status::STATUS_ACTIVE
+            ]);
+        }
+
+        $this->paymentService->destroyPayment($payment);
+        $statement->reCalculateAmountsAndCounts();
+
+        return collect($payments)->collect();
     }
 
     private function processInfoFromStatementData(Statement $statement, array $statementData): array

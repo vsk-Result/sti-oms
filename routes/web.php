@@ -4,11 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Log\LogController;
 use App\Http\Controllers\Statement\StatementController;
+use App\Http\Controllers\Statement\PaymentSplitController;
 use App\Http\Controllers\Statement\ExportController as StatementExportController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Object\ObjectController;
 use App\Http\Controllers\Organization\OrganizationController;
 use App\Http\Controllers\Company\CompanyController;
+use App\Http\Controllers\CRM\AvansImportController;
 
 use App\Http\Controllers\User\{
     UserController,
@@ -33,6 +35,10 @@ use App\Http\Controllers\User\{
 require __DIR__.'/auth.php';
 
 Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
+
+    // CRM
+    Route::get('/crm/avanses/imports', [AvansImportController::class, 'index'])->name('crm.avanses.imports.index');
+
     // Общее
     Route::get('/', fn () => redirect()->route('objects.index'))->name('home');
 
@@ -45,6 +51,7 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
     Route::delete('statements/{statement}', [StatementController::class, 'destroy'])->name('statements.destroy')->middleware('can:edit statements');
 
     Route::post('statements/{statement}/exports', [StatementExportController::class, 'store'])->name('statements.exports.store')->middleware('can:show statements');
+    Route::post('statements/{statement}/payments/{payment}/split', [PaymentSplitController::class, 'store'])->name('statements.payments.split.store')->middleware('can:edit statements');
 
     // Оплаты
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');

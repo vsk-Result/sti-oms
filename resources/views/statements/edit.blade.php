@@ -5,6 +5,7 @@
 
 @section('content')
     @include('sidebars.cost_codes')
+    @include('statements.modals.split_payment_modal')
 
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <div id="kt_content_container" class="container-fluid">
@@ -132,8 +133,18 @@
 
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
-                    <h3 class="card-title align-items-start flex-column">
+                    <h3 class="card-title align-items-center justify-content-between flex-row w-100">
                         <span class="card-label fw-bolder fs-3 mb-1">Оплаты</span>
+
+                        <label class="form-check form-switch form-check-custom form-check-solid">
+                            <span class="form-check-label fs-6 me-2">
+                                Все
+                            </span>
+                            <input id="filter-payment" class="form-check-input h-20px w-40px" type="checkbox" value=""/>
+                            <span class="form-check-label fs-6">
+                                Без объекта
+                            </span>
+                        </label>
                     </h3>
                 </div>
                 <div class="card-body py-3">
@@ -152,68 +163,9 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($statement->payments as $payment)
-                                    <tr data-payment-update-url="{{ route('payments.update', $payment) }}">
-                                        <td class="ps-4">
-                                            <select
-                                                name="object_id"
-                                                class="form-select form-select-solid form-select-sm"
-                                                data-control="select2"
-                                            >
-                                                @foreach($objects as $id => $object)
-                                                    <option value="{{ $id }}" {{ $id == $payment->getObjectId() ? 'selected' : '' }}>{{ $object }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input name="code" type="text" class="form-control form-control-sm form-control-solid db-field" value="{{ $payment->code }}" />
-                                        </td>
-                                        <td>
-                                            @if ($payment->amount < 0)
-                                                {{ $payment->organizationReceiver->name }}
-                                            @else
-                                                {{ $payment->organizationSender->name }}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <textarea name="description" rows="5" class="form-control form-control-sm form-control-solid db-field">{{ $payment->description }}</textarea>
-                                        </td>
-                                        <td>
-                                            @php
-                                                $textClass = $payment->amount >= 0 ? 'text-success' : 'text-danger';
-                                            @endphp
-                                            <input name="amount" type="text" class="form-control form-control-sm form-control-solid {{ $textClass }} db-field" value="{{ $payment->getAmount() }}" />
-                                        </td>
-                                        <td>
-                                            <select
-                                                name="category"
-                                                class="form-select form-select-solid form-select-sm"
-                                                data-control="select2"
-                                                data-placeholder="-"
-                                                data-allow-clear="true"
-                                                data-hide-search="true"
-                                            >
-                                                <option></option>
-                                                @foreach($categories as $category)
-                                                    <option value="{{ $category }}" {{ $category === $payment->category ? 'selected' : '' }}>{{ $category }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td class="text-end">
-                                            @include('partials.status', ['status' => $payment->getStatus()])
-                                        </td>
-                                        <td>
-                                            <a title="Дублировать" href="javascript:void(0);" data-payment-id="{{ $payment->id }}" class="clone-payment btn btn-sm btn-icon btn-white btn-active-color-dark fs-8"><i class="fas fa-clone"></i></a>
-                                            <a title="Удалить" href="javascript:void(0);" data-payment-destroy-url="{{ route('payments.destroy', $payment) }}" class="destroy-payment btn btn-sm btn-icon btn-white btn-active-color-danger fs-8"><i class="fas fa-trash-alt"></i></a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8">
-                                            <p class="text-center text-dark fw-bolder d-block mb-1 fs-6">Оплаты отсутствуют</p>
-                                        </td>
-                                    </tr>
-                                @endforelse
+                                @foreach($statement->payments()->orderByDesc('amount')->get() as $payment)
+                                    @include('statements.partials._edit_payment_table_row')
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -226,16 +178,18 @@
 @push('scripts')
     <script>
 
-        $(document).on('select2:open', function() {
+        let $selectedRow = null;
+
+        $(document).on('td select2:open', function() {
             document.querySelector('.select2-search__field').focus();
         });
 
-        $('select').on('select2:clear', function() {
+        $(document).on('select2:clear', 'td select', function() {
             const $that = $(this);
             updatePayment($that.closest('tr'), $that.attr('name'), $that.val());
         });
 
-        $('select').on('select2:select', function() {
+        $(document).on('select2:select', 'td select', function() {
             const $that = $(this);
             const name = $that.attr('name');
             const $tr = $that.closest('tr');
@@ -246,9 +200,30 @@
             if ($next && ($next.val() === '' || $next.val() == null)) {
                 $next.select2('open');
             }
+
+            if (name === 'object_id') {
+                if ($('#filter-payment').prop('checked')) {
+                    $tr.hide();
+                }
+            }
         });
 
-        $('body').on('click', '.clone-payment', function() {
+        $(document).on('click', '#filter-payment', function() {
+            if ($(this).prop('checked')) {
+                $('.table-payments tbody tr').each(function () {
+                    if ($(this).find('td:first-child select').first().val() != 0) {
+                        $(this).hide();
+                    }
+                });
+            } else {
+                $('.table-payments tbody tr').each(function () {
+                    $(this).show();
+                });
+            }
+        });
+
+        $(document).on('click', '.clone-payment', function() {
+
             const $that = $(this);
             $.post(
                 $('.table-payments').data('payment-store-url'),
@@ -267,9 +242,9 @@
                     $cloneTr.data('update-payment-url', data.payment.update_url);
                     $cloneTr.find('.destroy-payment').data('payment-destroy-url', data.payment.destroy_url);
                     $cloneTr.find('.clone-payment').data('payment-id', data.payment.id);
-                    $cloneTr.insertAfter($tr);
+                    $cloneTr.insertBefore($tr);
 
-                    $cloneTr.addClass('row-blink');
+                    $cloneTr.addClass('new-row');
 
                     KTApp.initSelect2();
 
@@ -291,7 +266,48 @@
             });
         });
 
-        $('body').on('click', '.destroy-payment', function() {
+        $(document).on('click', '.split-payment', function() {
+            updateCRMAvansesImportsList();
+            $selectedRow = $(this);
+        });
+
+        $(document).on('click', '#split-payment-submit', function() {
+            const url = $selectedRow.data('split-payment-url');
+            $selectedRow = $selectedRow.closest('tr');
+            $.post(
+                url,
+                {
+                    'crm_avans_import_id': $('#crm-avans-import-id').val()
+                }
+            )
+            .done(function(data) {
+                if (data.status === 'success') {
+                    toastr.success(data.message);
+                    $('select.form-select').select2('destroy');
+                    $.each(data.view_render, (key, value) => {
+                        $(value).insertAfter($selectedRow)
+                    });
+                    $selectedRow.remove();
+                    KTApp.initSelect2();
+                } else if (data.status === 'error') {
+                    toastr.error('Ошибка. ' + data.message);
+                }
+            })
+            .fail(function(xhr) {
+                console.log('Ошибка. [' + xhr.status + '] ' + xhr.responseJSON.message);
+                if (xhr.status === 419) {
+                    toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
+                    setTimeout(() => {
+                        window.location.reload(false);
+                    }, 1000);
+                }
+            })
+            .always(function() {
+                $('#splitPaymentModal').modal('hide');
+            });
+        });
+
+        $(document).on('click', '.destroy-payment', function() {
             if (confirm('Вы действительно хотите удалить запись об оплате?')) {
                 const $that = $(this);
                 $.ajax({
@@ -320,23 +336,23 @@
             }
         });
 
-        $('body').on('focus', '.db-field', function() {
+        $(document).on('focus', '.db-field', function() {
             $(this).data('initial-text', $(this).val());
         });
 
-        $('body').on('focus', '.db-field[name=code]', function() {
+        $(document).on('focus', '.db-field[name=code]', function() {
             if (! $('#kt_explore').hasClass('drawer-on')) {
                 $('#kt_explore_toggle').trigger('click');
             }
         });
 
-        $('body').on('blur', '.db-field[name=code]', function() {
+        $(document).on('blur', '.db-field[name=code]', function() {
             if ($('#kt_explore').hasClass('drawer-on')) {
                 $('#kt_explore_toggle').trigger('click');
             }
         });
 
-        $('body').on('keyup', '.db-field', function(e) {
+        $(document).on('keyup', '.db-field', function(e) {
             const field = $(this).attr('name');
             if (e.keyCode === 13) {
                 const $next = $(this).closest('tr').next().find('.db-field[name=' + field + ']');
@@ -351,7 +367,7 @@
             }
         });
 
-        $('body').on('blur', '.db-field', function() {
+        $(document).on('blur', '.db-field', function() {
             const $that = $(this);
             const field = $that.attr('name');
             const text = $that.val();
@@ -378,6 +394,43 @@
                 updatePayment($that.closest('tr'), field, text);
             }
         });
+
+        function updateCRMAvansesImportsList() {
+            const $select = $('#crm-avans-import-id');
+
+            $.ajax({
+                url: $('#splitPaymentModal').data('crm-avanses-imports-list-url'),
+                type: 'GET'
+            })
+                .done(function(data) {
+                    if (data.status === 'success') {
+                        const config = $select.data('select2').options.options;
+                        $select
+                            .select2('destroy')
+                            .html('')
+                            .append(
+                                $.map(data.imports, (value, key) => "<option value=\"" + key + "\">" + value + "</option>")
+                            )
+                            .select2(config);
+
+                        toastr.success(data.message);
+                    } else if (data.status === 'error') {
+                        toastr.error('Ошибка. ' + data.message);
+                    }
+                })
+                .fail(function(xhr) {
+                    console.log('Ошибка. [' + xhr.status + '] ' + xhr.responseJSON.message);
+                    if (xhr.status === 419) {
+                        toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
+                        setTimeout(() => {
+                            window.location.reload(false);
+                        }, 1000);
+                    }
+                })
+                .always(function() {
+                    $('#splitPaymentModal').modal('show');
+                });
+        }
 
         function updatePayment($row, $field, $value) {
             $.post(
@@ -408,22 +461,6 @@
     <style>
         table.table-hover tr:hover .form-select.form-select-solid {
             background-color: #e3e4e4 !important;
-        }
-        table tbody td {
-            vertical-align: top;
-        }
-
-        .row-blink {
-            animation-name: blink;
-            animation-timing-function: ease;
-            animation-duration: .4s;
-            animation-iteration-count: 1;
-        }
-
-        @keyframes blink {
-            50% {
-                transform: scale(1.05);
-            }
         }
     </style>
 @endpush

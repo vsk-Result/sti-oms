@@ -32,6 +32,7 @@ class CreatePaymentsTable extends Migration
             $table->date('date');
             $table->decimal('amount', 19, 4)->default(0);
             $table->decimal('amount_without_nds', 19, 4)->default(0);
+            $table->unsignedTinyInteger('is_need_split')->default(0);
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();
             $table->softDeletes();

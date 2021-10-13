@@ -20,7 +20,7 @@ class Payment extends Model
     protected $fillable = [
         'statement_id', 'company_id', 'bank_id', 'object_id', 'object_worktype_id', 'organization_sender_id',
         'organization_receiver_id', 'created_by_user_id', 'updated_by_user_id', 'type_id', 'payment_type_id', 'category',
-        'code', 'description', 'date', 'amount', 'amount_without_nds', 'status_id'
+        'code', 'description', 'date', 'amount', 'amount_without_nds', 'is_need_split', 'status_id'
     ];
 
     const TYPE_NONE = 0;
@@ -118,5 +118,10 @@ class Payment extends Model
                 break;
         }
         return '';
+    }
+
+    public function isNeedSplit()
+    {
+        return $this->is_need_split;
     }
 }

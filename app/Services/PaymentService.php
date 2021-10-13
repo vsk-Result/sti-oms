@@ -38,6 +38,7 @@ class PaymentService
             'date' => $requestData['date'],
             'amount' => $requestData['amount'],
             'amount_without_nds' => $requestData['amount_without_nds'],
+            'is_need_split' => $requestData['is_need_split'],
             'status_id' => $requestData['status_id']
         ]);
 
@@ -108,6 +109,21 @@ class PaymentService
         return true;
     }
 
+    public function checkIsNeedSplitFromDescription(string $description): bool
+    {
+        $description = $this->sanitizer->set($description)->lowerCase()->get();
+
+        if (
+            str_contains($description, 'перечисление заработной платы')
+            || str_contains($description, 'перечисление отпускных согласно реестру')
+            || str_contains($description, 'оплата больничного')
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function findCategoryFromDescription(string $description): ?string
     {
         $description = $this->sanitizer->set($description)->lowerCase()->get();
@@ -147,6 +163,7 @@ class PaymentService
             $category = Payment::CATEGORY_OPSTE;
         } elseif (
             str_contains($description, 'выполнение работ')
+            || str_contains($description, 'выполненных работ')
             || str_contains($description, 'работы')
             || str_contains($description, 'выполнение комплекса работ')
             || str_contains($description, 'аренда')
@@ -160,7 +177,7 @@ class PaymentService
             || str_contains($description, 'право на использование электронной базы данных')
             || str_contains($description, 'интернет')
             || str_contains($description, 'вывоз мусора')
-            || str_contains($description, 'проживание')
+            || str_contains($description, 'проживани')
             || str_contains($description, 'услуг по питанию')
             || str_contains($description, 'выполненные смр')
             || str_contains($description, 'разработку')
@@ -193,6 +210,8 @@ class PaymentService
             || str_contains($description, 'предоставление')
             || str_contains($description, 'оказание')
             || str_contains($description, 'авансовые платежи для таможни')
+            || str_contains($description, 'электроэнергию')
+            || str_contains($description, 'страховочную систему')
         ) {
             $category = Payment::CATEGORY_RAD;
         } elseif (
@@ -392,6 +411,13 @@ class PaymentService
             || str_contains($description, 'воздуховод')
             || str_contains($description, 'теплопакет')
             || str_contains($description, 'конвектор')
+            || str_contains($description, 'удлинител')
+            || str_contains($description, 'кофе')
+            || str_contains($description, 'трансивер')
+            || str_contains($description, 'горелк')
+            || str_contains($description, 'пруток')
+            || str_contains($description, 'фасад')
+            || str_contains($description, 'технофас')
         ) {
             $category = Payment::CATEGORY_MATERIAL;
         }

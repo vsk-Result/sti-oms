@@ -16,4 +16,9 @@ class WorkType
             ['id' => 7, 'code' => 7, 'name' => 'Офис/Склад']
         ];
     }
+
+    public static function getIdByCode(int $code): int
+    {
+        return collect(self::getWorkTypes())->where('code', $code)->first()['id'];
+    }
 }
