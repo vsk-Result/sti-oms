@@ -161,7 +161,7 @@ class StatementService
                 'bank_id' => 1,
                 'statement_id' => $statement->id,
                 'object_id' => BObject::where('code', $objectCode)->first()->id ?? null,
-                'object_worktype_id' => WorkType::getIdByCode($worktypeCode),
+                'object_worktype_id' => $worktypeCode,
                 'organization_sender_id' => $organizationSenderId,
                 'organization_receiver_id' => $organizationReceiverId,
                 'type_id' => Payment::TYPE_OBJECT,

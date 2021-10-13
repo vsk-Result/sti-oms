@@ -163,7 +163,7 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @foreach($statement->payments()->orderByDesc('amount')->get() as $payment)
+                                @foreach($statement->payments as $payment)
                                     @include('statements.partials._edit_payment_table_row')
                                 @endforeach
                             </tbody>

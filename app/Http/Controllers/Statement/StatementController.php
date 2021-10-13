@@ -51,7 +51,13 @@ class StatementController extends Controller
     {
         $categories = Payment::getCategories();
         $objects = Payment::getTypes() + BObject::getObjectsList();
-        $statement->load(['payments', 'payments.organizationSender', 'payments.organizationReceiver']);
+        $statement->load([
+            'payments' => function($query) {
+                $query->orderByDesc('amount');
+            },
+            'payments.organizationSender',
+            'payments.organizationReceiver'
+        ]);
         return view('statements.edit', compact('statement', 'objects', 'categories'));
     }
 
