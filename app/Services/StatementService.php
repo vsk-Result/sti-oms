@@ -7,12 +7,10 @@ use App\Imports\StatementImport;
 use App\Models\Company;
 use App\Models\CRM\AvansImport;
 use App\Models\Object\BObject;
-use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Statement;
 use App\Models\Status;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -60,6 +58,7 @@ class StatementService
             'kpp' => null
         ]);
 
+        $this->paymentService->loadCategoriesList();
         $processInfo = $this->processInfoFromStatementData($statement, $statementData);
 
         foreach ($processInfo['payments'] as $payment) {
