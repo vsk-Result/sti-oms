@@ -3,6 +3,7 @@
 namespace App\Models\CRM;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AvansImportItem extends Model
 {
@@ -10,7 +11,7 @@ class AvansImportItem extends Model
 
     protected $connection = 'mysql_crm';
 
-    public function avans()
+    public function avans(): BelongsTo
     {
         return $this->belongsTo(Avans::class, 'avans_id');
     }

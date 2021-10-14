@@ -7,9 +7,8 @@
     @include('sidebars.cost_codes')
     @include('statements.modals.split_payment_modal')
 
-    <div class="post d-flex flex-column-fluid" id="kt_post">
-        <div id="kt_content_container" class="container-fluid">
-
+    <div class="post d-flex flex-column-fluid">
+        <div class="container-fluid">
             <div class="card mb-5 mb-xl-10">
                 <div class="card-body pt-9 pb-0">
                     <div class="d-flex flex-wrap flex-sm-nowrap mb-3">
@@ -21,11 +20,10 @@
                                     </div>
                                 </div>
                                 <div class="d-flex">
-                                    <a href="/storage/{{ $statement->file }}" class="btn btn-sm btn-primary me-3" download="Выписка за {{ $statement->getDateFormatted() }}">Скачать оригинал</a>
                                     <form action="{{ route('statements.exports.store', $statement) }}" method="POST" class="hidden">
                                         @csrf
                                         <a
-                                            href="{{ route('statements.exports.store', $statement) }}"
+                                            href="#"
                                             class="btn btn-sm btn-primary me-3"
                                             onclick="event.preventDefault(); this.closest('form').submit();"
                                         >
@@ -36,7 +34,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <a
-                                            href="{{ route('statements.destroy', $statement) }}"
+                                            href="#"
                                             class="btn btn-sm btn-danger me-3"
                                             onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить выписку?')) {this.closest('form').submit();}"
                                         >
@@ -176,291 +174,5 @@
 @endsection
 
 @push('scripts')
-    <script>
-
-        let $selectedRow = null;
-
-        $(document).on('td select2:open', function() {
-            document.querySelector('.select2-search__field').focus();
-        });
-
-        $(document).on('select2:clear', 'td select', function() {
-            const $that = $(this);
-            updatePayment($that.closest('tr'), $that.attr('name'), $that.val());
-        });
-
-        $(document).on('select2:select', 'td select', function() {
-            const $that = $(this);
-            const name = $that.attr('name');
-            const $tr = $that.closest('tr');
-            const $next = $tr.next().find('select[name=' + name + ']');
-
-            updatePayment($tr, name, $that.val());
-
-            if ($next && ($next.val() === '' || $next.val() == null)) {
-                $next.select2('open');
-            }
-
-            if (name === 'object_id') {
-                if ($('#filter-payment').prop('checked')) {
-                    $tr.hide();
-                }
-            }
-        });
-
-        $(document).on('click', '#filter-payment', function() {
-            if ($(this).prop('checked')) {
-                $('.table-payments tbody tr').each(function () {
-                    if ($(this).find('td:first-child select').first().val() != 0) {
-                        $(this).hide();
-                    }
-                });
-            } else {
-                $('.table-payments tbody tr').each(function () {
-                    $(this).show();
-                });
-            }
-        });
-
-        $(document).on('click', '.clone-payment', function() {
-
-            const $that = $(this);
-            $.post(
-                $('.table-payments').data('payment-store-url'),
-                {
-                    'base_payment_id': $that.data('payment-id')
-                }
-            )
-            .done(function(data) {
-                if (data.status === 'success') {
-
-                    $('select.form-select').select2('destroy');
-
-                    const $tr = $that.closest('tr');
-                    const $cloneTr = $tr.clone();
-
-                    $cloneTr.data('update-payment-url', data.payment.update_url);
-                    $cloneTr.find('.destroy-payment').data('payment-destroy-url', data.payment.destroy_url);
-                    $cloneTr.find('.clone-payment').data('payment-id', data.payment.id);
-                    $cloneTr.insertBefore($tr);
-
-                    $cloneTr.addClass('new-row');
-
-                    KTApp.initSelect2();
-
-                    $cloneTr.find('select').trigger('change');
-
-                    toastr.success(data.message);
-                } else if (data.status === 'error') {
-                    toastr.error('Ошибка. ' + data.message);
-                }
-            })
-            .fail(function(xhr) {
-                console.log('Ошибка. [' + xhr.status + '] ' + xhr.responseJSON.message);
-                if (xhr.status === 419) {
-                    toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
-                    setTimeout(() => {
-                        window.location.reload(false);
-                    }, 1000);
-                }
-            });
-        });
-
-        $(document).on('click', '.split-payment', function() {
-            updateCRMAvansesImportsList();
-            $selectedRow = $(this);
-        });
-
-        $(document).on('click', '#split-payment-submit', function() {
-            const url = $selectedRow.data('split-payment-url');
-            $selectedRow = $selectedRow.closest('tr');
-            $.post(
-                url,
-                {
-                    'crm_avans_import_id': $('#crm-avans-import-id').val()
-                }
-            )
-            .done(function(data) {
-                if (data.status === 'success') {
-                    toastr.success(data.message);
-                    $('select.form-select').select2('destroy');
-                    $.each(data.view_render, (key, value) => {
-                        $(value).insertAfter($selectedRow)
-                    });
-                    $selectedRow.remove();
-                    KTApp.initSelect2();
-                } else if (data.status === 'error') {
-                    toastr.error('Ошибка. ' + data.message);
-                }
-            })
-            .fail(function(xhr) {
-                console.log('Ошибка. [' + xhr.status + '] ' + xhr.responseJSON.message);
-                if (xhr.status === 419) {
-                    toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
-                    setTimeout(() => {
-                        window.location.reload(false);
-                    }, 1000);
-                }
-            })
-            .always(function() {
-                $('#splitPaymentModal').modal('hide');
-            });
-        });
-
-        $(document).on('click', '.destroy-payment', function() {
-            if (confirm('Вы действительно хотите удалить запись об оплате?')) {
-                const $that = $(this);
-                $.ajax({
-                    url: $that.data('payment-destroy-url'),
-                    type: 'DELETE'
-                })
-                .done(function(data) {
-                    if (data.status === 'success') {
-                        const $tr = $that.closest('tr');
-                        $tr.find('select').select2('destroy');
-                        $tr.remove();
-                        toastr.success(data.message);
-                    } else if (data.status === 'error') {
-                        toastr.error('Ошибка. ' + data.message);
-                    }
-                })
-                .fail(function(xhr) {
-                    console.log('Ошибка. [' + xhr.status + '] ' + xhr.responseJSON.message);
-                    if (xhr.status === 419) {
-                        toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
-                        setTimeout(() => {
-                            window.location.reload(false);
-                        }, 1000);
-                    }
-                });
-            }
-        });
-
-        $(document).on('focus', '.db-field', function() {
-            $(this).data('initial-text', $(this).val());
-        });
-
-        $(document).on('focus', '.db-field[name=code]', function() {
-            if (! $('#kt_explore').hasClass('drawer-on')) {
-                $('#kt_explore_toggle').trigger('click');
-            }
-        });
-
-        $(document).on('blur', '.db-field[name=code]', function() {
-            if ($('#kt_explore').hasClass('drawer-on')) {
-                $('#kt_explore_toggle').trigger('click');
-            }
-        });
-
-        $(document).on('keyup', '.db-field', function(e) {
-            const field = $(this).attr('name');
-            if (e.keyCode === 13) {
-                const $next = $(this).closest('tr').next().find('.db-field[name=' + field + ']');
-                if ($next && ($next.val() === '' || $next.val() == null)) {
-                    $next.focus();
-                    return false;
-                }
-            }
-            if (field === 'amount' || field === 'code') {
-                $(this).val($(this).val().replace(/[^-.,0-9]/, ''));
-                $(this).val($(this).val().replace(',', '.'));
-            }
-        });
-
-        $(document).on('blur', '.db-field', function() {
-            const $that = $(this);
-            const field = $that.attr('name');
-            const text = $that.val();
-
-            if (field === 'amount') {
-                if (text.indexOf('-') !== -1) {
-                    $that.removeClass('text-success').addClass('text-danger');
-                } else {
-                    $that.removeClass('text-danger').addClass('text-success');
-                }
-
-                if (text === '') {
-                    $that.val('0.00');
-                } else if (text.indexOf('.') === -1) {
-                    $that.val(text + '.00');
-                }
-            } else if (field === 'code') {
-                if (text.indexOf(',') !== -1) {
-                    $that.val(text.replace(',', '.'));
-                }
-            }
-
-            if ($that.data('initial-text') !== text) {
-                updatePayment($that.closest('tr'), field, text);
-            }
-        });
-
-        function updateCRMAvansesImportsList() {
-            const $select = $('#crm-avans-import-id');
-
-            $.ajax({
-                url: $('#splitPaymentModal').data('crm-avanses-imports-list-url'),
-                type: 'GET'
-            })
-                .done(function(data) {
-                    if (data.status === 'success') {
-                        const config = $select.data('select2').options.options;
-                        $select
-                            .select2('destroy')
-                            .html('')
-                            .append(
-                                $.map(data.imports, (value, key) => "<option value=\"" + key + "\">" + value + "</option>")
-                            )
-                            .select2(config);
-
-                        toastr.success(data.message);
-                    } else if (data.status === 'error') {
-                        toastr.error('Ошибка. ' + data.message);
-                    }
-                })
-                .fail(function(xhr) {
-                    console.log('Ошибка. [' + xhr.status + '] ' + xhr.responseJSON.message);
-                    if (xhr.status === 419) {
-                        toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
-                        setTimeout(() => {
-                            window.location.reload(false);
-                        }, 1000);
-                    }
-                })
-                .always(function() {
-                    $('#splitPaymentModal').modal('show');
-                });
-        }
-
-        function updatePayment($row, $field, $value) {
-            $.post(
-                $row.data('payment-update-url'),
-                {[$field]: $value}
-            )
-            .done(function(data) {
-                if (data.status === 'success') {
-                    toastr.success(data.message);
-                } else if (data.status === 'error') {
-                    toastr.error('Ошибка. ' + data.message);
-                }
-            })
-            .fail(function(xhr) {
-                console.log('Ошибка. [' + xhr.status + '] ' + xhr.responseJSON.message);
-                if (xhr.status === 419) {
-                    toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
-                    setTimeout(() => {
-                        window.location.reload(false);
-                    }, 1000);
-                }
-            });
-        }
-    </script>
-@endpush
-
-@push('styles')
-    <style>
-        table.table-hover tr:hover .form-select.form-select-solid {
-            background-color: #e3e4e4 !important;
-        }
-    </style>
+    <script src="{{ asset('js/statements/edit.js') }}"></script>
 @endpush

@@ -43,9 +43,15 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
+            Route::middleware(['web', 'auth', 'verified', 'active'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+
+            foreach (\File::allFiles(base_path('routes/app')) as $fileInfo) {
+                Route::middleware(['web', 'auth', 'verified', 'active'])
+                    ->namespace($this->namespace)
+                    ->group($fileInfo->getPathname());
+            }
         });
     }
 
