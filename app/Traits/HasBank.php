@@ -13,6 +13,6 @@ trait HasBank
 
     public function getBankName(): string
     {
-        return Bank::getBankName((int) $this->bank_id);
+        return is_null($this->bank_id) ? '' : Bank::getBankName((int) $this->bank_id);
     }
 }

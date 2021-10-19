@@ -33,6 +33,6 @@ class Company extends Model
 
     public function statements(): HasMany
     {
-        return $this->hasMany(Statement::class, 'company_id');
+        return $this->hasMany(PaymentImport::class, 'company_id');
     }
 }

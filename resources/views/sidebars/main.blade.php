@@ -16,10 +16,10 @@
                 </div>
             </div>
 
-            @can('index statements')
+            @can('index payment-imports')
                 <div class="menu-item">
-                    <a href="{{ route('statements.index') }}" class="menu-link {{ request()->is('statements*') ? 'active' : '' }}">
-                        <span class="menu-title">Выписки</span>
+                    <a href="{{ route('payment_imports.index') }}" class="menu-link {{ request()->is('payment-imports*') ? 'active' : '' }}">
+                        <span class="menu-title">Загрузки оплат</span>
                     </a>
                 </div>
             @endcan

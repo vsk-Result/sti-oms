@@ -15,13 +15,13 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('statement_id')->nullable();
+            $table->unsignedBigInteger('import_id')->nullable();
             $table->unsignedTinyInteger('company_id');
-            $table->unsignedTinyInteger('bank_id');
+            $table->unsignedTinyInteger('bank_id')->nullable();
             $table->unsignedSmallInteger('object_id')->nullable();
             $table->unsignedSmallInteger('object_worktype_id')->nullable();
-            $table->unsignedSmallInteger('organization_sender_id');
-            $table->unsignedSmallInteger('organization_receiver_id');
+            $table->unsignedSmallInteger('organization_sender_id')->nullable();
+            $table->unsignedSmallInteger('organization_receiver_id')->nullable();
             $table->unsignedTinyInteger('created_by_user_id');
             $table->unsignedTinyInteger('updated_by_user_id')->nullable();
             $table->unsignedTinyInteger('type_id')->default(0);

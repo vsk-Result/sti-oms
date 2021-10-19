@@ -18,7 +18,7 @@ class Payment extends Model
     protected $table = 'payments';
 
     protected $fillable = [
-        'statement_id', 'company_id', 'bank_id', 'object_id', 'object_worktype_id', 'organization_sender_id',
+        'import_id', 'company_id', 'bank_id', 'object_id', 'object_worktype_id', 'organization_sender_id',
         'organization_receiver_id', 'created_by_user_id', 'updated_by_user_id', 'type_id', 'payment_type_id', 'category',
         'code', 'description', 'date', 'amount', 'amount_without_nds', 'is_need_split', 'status_id'
     ];
@@ -35,9 +35,9 @@ class Payment extends Model
     const PAYMENT_TYPE_CASH = 0;
     const PAYMENT_TYPE_NON_CASH = 1;
 
-    public function statement(): BelongsTo
+    public function import(): BelongsTo
     {
-        return $this->belongsTo(Statement::class, 'statement_id');
+        return $this->belongsTo(PaymentImport::class, 'import_id');
     }
 
     public function company(): BelongsTo

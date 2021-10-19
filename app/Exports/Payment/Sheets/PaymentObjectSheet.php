@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\Statement\Sheets;
+namespace App\Exports\Payment\Sheets;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -71,7 +71,7 @@ class PaymentObjectSheet implements
     public function map($row): array
     {
         return [
-            $row->object?->code . '.' . $row->object_worktype_id,
+            $row->object ? ($row->object->code . '.' . $row->object_worktype_id) : '',
             $row->amount < 0 ? 'Payable' : 'Receivable',
             '',
             Date::dateTimeToExcel(Carbon::parse($row->date)),

@@ -16,4 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
 
-Route::get('/', fn () => redirect()->route('objects.index'))->name('home');
+Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
+    Route::get('/', fn () => redirect()->route('objects.index'))->name('home');
+});

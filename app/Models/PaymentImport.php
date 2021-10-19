@@ -11,16 +11,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Statement extends Model
+class PaymentImport extends Model
 {
     use SoftDeletes, HasUser, HasStatus, HasBank;
 
-    protected $table = 'statements';
+    protected $table = 'payment_imports';
 
     protected $fillable = [
-        'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id', 'date', 'payments_count',
-        'amount_pay', 'amount_receive', 'incoming_balance', 'outgoing_balance', 'file', 'status_id'
+        'type_id', 'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id', 'date', 'payments_count',
+        'amount_pay', 'amount_receive', 'incoming_balance', 'outgoing_balance', 'file', 'description', 'status_id'
     ];
+
+    const TYPE_STATEMENT = 0;
+    const TYPE_CRM_COST_CLOSURE = 1;
+    const TYPE_SALARY = 2;
+    const TYPE_HISTORY = 3;
 
     public function company(): BelongsTo
     {
@@ -29,7 +34,7 @@ class Statement extends Model
 
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class, 'statement_id');
+        return $this->hasMany(Payment::class, 'import_id');
     }
 
     public function getDateFormatted(string $format = 'd/m/Y'): string
@@ -68,5 +73,20 @@ class Statement extends Model
     public function getOutgoingBalance(): string
     {
         return number_format($this->outgoing_balance, 2, '.', ' ');
+    }
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_STATEMENT => 'Выписка',
+            self::TYPE_CRM_COST_CLOSURE => 'Касса CRM',
+            self::TYPE_SALARY => 'Зарплата',
+            self::TYPE_HISTORY => 'История',
+        ];
+    }
+
+    public function getType(): string
+    {
+        return self::getTypes()[$this->type_id];
     }
 }

@@ -24,7 +24,7 @@ class RoleAndPermissionSeeder extends Seeder
             'Пользователи' => ['admin-users' => ['index', 'show', 'create', 'edit']],
             'Роли доступа' => ['admin-roles' => ['index', 'create', 'edit']],
             'Менеджер логов' => ['admin-logs' => ['index', 'show']],
-            'Выписки' => ['statements' => ['index', 'show', 'create', 'edit']],
+            'Загрузка оплат' => ['payment-imports' => ['index', 'show', 'create', 'edit']],
             'Оплаты' => ['payments' => ['index', 'show', 'create', 'edit']],
             'Компании' => ['companies' => ['index', 'show', 'create', 'edit']],
             'Организации' => ['organizations' => ['index', 'show', 'create', 'edit']],
@@ -48,21 +48,5 @@ class RoleAndPermissionSeeder extends Seeder
         ]);
 
         User::find(1)->assignRole($superAdminRole);
-
-//        $adminRole = Role::create([
-//            'name' => 'admin',
-//            'description' => 'Новобранец',
-//        ]);
-
-        // this can be done as separate statements
-//        $role = Role::create(['name' => 'writer']);
-//        $role->givePermissionTo('edit articles');
-
-        // or may be done by chaining
-//        $role = Role::create(['name' => 'moderator'])
-//            ->givePermissionTo(['publish articles', 'unpublish articles']);
-
-//        $role = Role::create(['name' => 'super-admin']);
-//        $role->givePermissionTo(Permission::all());
     }
 }

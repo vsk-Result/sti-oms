@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Statement;
+namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Object\BObject;
 use App\Models\Payment;
-use App\Models\Statement;
-use App\Services\StatementService;
+use App\Models\PaymentImport;
+use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PaymentSplitController extends Controller
+class SplitController extends Controller
 {
-    private StatementService $statementService;
+    private PaymentService $paymentService;
 
-    public function __construct(StatementService $statementService)
+    public function __construct(PaymentService $paymentService)
     {
-        $this->statementService = $statementService;
+        $this->paymentService = $paymentService;
     }
 
-    public function store(Statement $statement, Payment $payment, Request $request): JsonResponse
+    public function store(Payment $payment, Request $request): JsonResponse
     {
-        $payments = $this->statementService->splitPayment($statement, $payment, $request->toArray());
+        $payments = $this->paymentService->splitPayment($payment, $request->toArray());
 
         $viewRender = [];
         $isNewPayment = true;
@@ -30,8 +30,8 @@ class PaymentSplitController extends Controller
 
         foreach ($payments as $payment) {
             $viewRender[] = view(
-                'statements.partials._edit_payment_table_row',
-                compact('statement', 'payment', 'categories', 'objects', 'isNewPayment')
+                'payment-imports.partials._edit_payment_table_row',
+                compact('payment', 'categories', 'objects', 'isNewPayment')
             )->render();
         }
 

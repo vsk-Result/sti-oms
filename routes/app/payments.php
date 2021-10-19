@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\Payment\SplitController;
 
 // Оплаты
 
@@ -11,3 +12,5 @@ Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('paym
 Route::post('payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
 Route::get('payments/{payment}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
 Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+
+Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name('payments.split.store');

@@ -3,7 +3,7 @@
 namespace App\Models\Object;
 
 use App\Models\Payment;
-use App\Models\Statement;
+use App\Models\PaymentImport;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection|Payment[] $payments
  * @property-read int|null $payments_count
- * @property-read \Illuminate\Database\Eloquent\Collection|Statement[] $statements
+ * @property-read \Illuminate\Database\Eloquent\Collection|PaymentImport[] $statements
  * @property-read int|null $statements_count
  * @method static \Illuminate\Database\Eloquent\Builder|BObject newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BObject newQuery()
@@ -50,7 +50,7 @@ class BObject extends Model
 
     public function statements(): HasMany
     {
-        return $this->hasMany(Statement::class, 'object_id');
+        return $this->hasMany(PaymentImport::class, 'object_id');
     }
 
     public function payments(): HasMany

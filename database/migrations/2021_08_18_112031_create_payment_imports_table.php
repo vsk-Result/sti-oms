@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStatementsTable extends Migration
+class CreatePaymentImportsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateStatementsTable extends Migration
      */
     public function up()
     {
-        Schema::create('statements', function (Blueprint $table) {
+        Schema::create('payment_imports', function (Blueprint $table) {
             $table->id();
-            $table->unsignedTinyInteger('bank_id');
+            $table->unsignedTinyInteger('type_id');
+            $table->unsignedTinyInteger('bank_id')->nullable();
             $table->unsignedTinyInteger('company_id');
             $table->unsignedTinyInteger('created_by_user_id');
             $table->unsignedTinyInteger('updated_by_user_id')->nullable();
@@ -25,7 +26,8 @@ class CreateStatementsTable extends Migration
             $table->decimal('amount_receive', 19, 4)->default(0);
             $table->decimal('incoming_balance', 19, 4)->nullable();
             $table->decimal('outgoing_balance', 19, 4)->nullable();
-            $table->string('file');
+            $table->string('file')->nullable();
+            $table->string('description')->nullable();
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();
             $table->softDeletes();
@@ -39,6 +41,6 @@ class CreateStatementsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('statements');
+        Schema::dropIfExists('payment_imports');
     }
 }

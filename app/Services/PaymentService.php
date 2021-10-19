@@ -3,8 +3,14 @@
 namespace App\Services;
 
 use App\Helpers\Sanitizer;
+use App\Models\Company;
+use App\Models\CRM\AvansImport;
+use App\Models\Object\BObject;
+use App\Models\Organization;
 use App\Models\Payment;
+use App\Models\PaymentImport;
 use App\Models\Status;
+use Illuminate\Support\Collection;
 
 class PaymentService
 {
@@ -33,7 +39,7 @@ class PaymentService
         }
 
         $payment = Payment::create([
-            'statement_id' => $requestData['statement_id'],
+            'import_id' => $requestData['import_id'],
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
             'object_id' => $requestData['object_id'],
@@ -103,6 +109,58 @@ class PaymentService
         $payment->delete();
 
         return $payment;
+    }
+
+    public function splitPayment(Payment $payment, array $request): Collection
+    {
+        $import = $payment->import;
+        $avansImport = AvansImport::find($request['crm_avans_import_id']);
+        $avansImport->load('items', 'items.avans');
+
+        $amountGroupedByObjectCode = [];
+        foreach ($avansImport->items as $item) {
+            if (! isset($amountGroupedByObjectCode[$item->avans->code])) {
+                $amountGroupedByObjectCode[$item->avans->code] = 0;
+            }
+            $amountGroupedByObjectCode[$item->avans->code] += $item->avans->value;
+        }
+
+        $description = $this->sanitizer->set($avansImport->description)->lowerCase()->get();
+        $costCode = str_contains($description, 'зарплат') ? '7.17' : '7.26';
+
+        $company = Company::find(1);
+        $organizationSenderId = $company->organizations()->first()->id;
+        $organizationReceiverId = Organization::where('name', 'ФИЛИАЛ № 7701 БАНКА ВТБ (ПАО) Г. МОСКВА')->first()->id;
+
+        $payments = [];
+        foreach ($amountGroupedByObjectCode as $code => $amount) {
+            $objectCode = substr($code, 0, strpos($code, '.'));
+            $worktypeCode = (int) substr($code, strpos($code, '.') + 1);
+            $payments[] = $this->createPayment([
+                'company_id' => $company->id,
+                'bank_id' => 1,
+                'import_id' => $payment->import_id,
+                'object_id' => BObject::where('code', $objectCode)->first()->id ?? null,
+                'object_worktype_id' => $worktypeCode,
+                'organization_sender_id' => $organizationSenderId,
+                'organization_receiver_id' => $organizationReceiverId,
+                'type_id' => Payment::TYPE_OBJECT,
+                'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
+                'code' => $costCode,
+                'category' => Payment::CATEGORY_RAD,
+                'description' => $payment->description,
+                'date' => $import->date,
+                'amount' => (float) -$amount,
+                'amount_without_nds' => (float) -$amount,
+                'is_need_split' => false,
+                'status_id' => Status::STATUS_ACTIVE
+            ]);
+        }
+
+        $this->destroyPayment($payment);
+        $import->reCalculateAmountsAndCounts();
+
+        return collect($payments)->collect();
     }
 
     public function checkHasNDSFromDescription(string $description): bool
