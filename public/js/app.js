@@ -71,6 +71,47 @@ const mainApp = function() {
 
 KTUtil.onDOMContentLoaded(function () {
     mainApp.init();
+
+    $(".date-range-picker").daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+            format: "DD/M/Y",
+            cancelLabel: 'Очистить',
+            separator: " - ",
+            applyLabel: "Применить",
+            daysOfWeek: [
+                "Вс",
+                "Пн",
+                "Вт",
+                "Ср",
+                "Чт",
+                "Пт",
+                "Сб"
+            ],
+            monthNames: [
+                "Январь",
+                "Февраль",
+                "Март",
+                "Апрель",
+                "Май",
+                "Июнь",
+                "Июль",
+                "Август",
+                "Сентябрь",
+                "Октябрь",
+                "Ноябрь",
+                "Декабрь"
+            ],
+        }
+    });
+
+    $('.date-range-picker').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD/M/Y') + ' - ' + picker.endDate.format('DD/M/Y'));
+    });
+
+    $('.date-range-picker').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+    });
 });
 
 

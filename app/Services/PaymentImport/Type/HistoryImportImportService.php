@@ -9,10 +9,11 @@ use App\Models\Status;
 use App\Services\OrganizationService;
 use App\Services\PaymentService;
 use App\Services\UploadService;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class StatementImportService
+class HistoryImportImportService
 {
     private PaymentService $paymentService;
     private OrganizationService $organizationService;
@@ -30,20 +31,20 @@ class StatementImportService
 
     public function createImport(array $requestData): null|PaymentImport
     {
-        $statementData = $this->getStatementDataFromExcel($requestData['file']);
+        $historyData = $this->getHistoryDataFromExcel($requestData['file']);
 
-        if (empty($statementData)) {
+        if (empty($historyData)) {
             return null;
         }
 
         $import = PaymentImport::create([
-            'type_id' => PaymentImport::TYPE_STATEMENT,
-            'bank_id' => $requestData['bank_id'],
-            'company_id' => $requestData['company_id'],
-            'date' => $requestData['date'],
-            'status_id' => Status::STATUS_BLOCKED,
+            'type_id' => PaymentImport::TYPE_HISTORY,
+            'bank_id' => null,
+            'company_id' => 1,
+            'date' => Carbon::now()->format('Y-m-d'),
+            'status_id' => Status::STATUS_ACTIVE,
             'file' => $this->uploadService->uploadFile('payment-imports/statements', $requestData['file']),
-            'description' => ''
+            'description' => 'Загружен файл ' . $requestData['file']->getClientOriginalName()
         ]);
 
         $companyOrganization = $this->organizationService->getOrCreateOrganization([
@@ -54,74 +55,63 @@ class StatementImportService
         ]);
 
         $this->paymentService->loadCategoriesList();
-        $processInfo = $this->processInfoFromStatementData($import, $statementData);
+        foreach ($historyData[0] as $index => $paymentData) {
+            if ($index === 0) {
+                continue;
+            }
 
-        foreach ($processInfo['payments'] as $payment) {
+            $date = Carbon::parse($paymentData[2])->format('Y-m-d');
+            $amount = (float) $paymentData[5];
 
-            if ($payment['pay_amount'] == 0) {
-                $amount = $payment['receive_amount'];
+            if ($amount > 0) {
                 $organizationSender = $this->organizationService->getOrCreateOrganization([
-                    'inn' => $payment['organization_sender_inn'],
-                    'name' => $payment['organization_name'],
+                    'inn' => null,
+                    'name' => $paymentData[11],
                     'company_id' => null,
                     'kpp' => null
                 ]);
                 $organizationReceiver = $companyOrganization;
             } else {
-                $amount = $payment['pay_amount'];
                 $organizationSender = $companyOrganization;
                 $organizationReceiver = $this->organizationService->getOrCreateOrganization([
-                    'inn' => $payment['organization_receiver_inn'],
-                    'name' => $payment['organization_name'],
+                    'inn' => null,
+                    'name' => $paymentData[11],
                     'company_id' => null,
                     'kpp' => null
                 ]);
             }
 
-            $nds = $this->paymentService->checkHasNDSFromDescription($payment['description'])
+            $nds = $this->paymentService->checkHasNDSFromDescription($paymentData[12])
                 ? round($amount / 6, 2)
                 : 0;
 
-            $isNeedSplit = $this->paymentService->checkIsNeedSplitFromDescription($payment['description']);
-
             $this->paymentService->createPayment([
                 'company_id' => $import->company_id,
-                'bank_id' => $import->bank_id,
+                'bank_id' => null,
                 'import_id' => $import->id,
-                'object_id' => null,
-                'object_worktype_id' => null,
+                'object_id' => (int) $requestData['object_id'],
+                'object_worktype_id' => (int) $paymentData[3],
                 'organization_sender_id' => $organizationSender->id,
                 'organization_receiver_id' => $organizationReceiver->id,
-                'type_id' => Payment::TYPE_NONE,
-                'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
-                'code' => null,
-                'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
-                'description' => $payment['description'],
-                'date' => $import->date,
+                'type_id' => Payment::TYPE_OBJECT,
+                'payment_type_id' => $paymentData[13] === 'STI' ? Payment::PAYMENT_TYPE_NON_CASH : Payment::PAYMENT_TYPE_CASH,
+                'code' => $paymentData[4],
+                'category' => $paymentData[14],
+                'description' => $paymentData[12],
+                'date' => $date,
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
-                'is_need_split' => $isNeedSplit,
-                'status_id' => Status::STATUS_BLOCKED
+                'is_need_split' => false,
+                'status_id' => Status::STATUS_ACTIVE
             ]);
         }
-
-        $import->update([
-            'incoming_balance' => $processInfo['incoming_balance'],
-            'outgoing_balance' => $processInfo['outgoing_balance']
-        ]);
 
         $import->reCalculateAmountsAndCounts();
 
         return $import;
     }
 
-    private function processInfoFromStatementData(PaymentImport $import, array $statementData): array
-    {
-        $class = $import->getBankImportClass();
-        return (new $class($this->paymentService))->processImportData($statementData);
-    }
-
-    private function getStatementDataFromExcel(UploadedFile $file): array
+    private function getHistoryDataFromExcel(UploadedFile $file): array
     {
         return Excel::toArray(new PImport(), $file);
     }

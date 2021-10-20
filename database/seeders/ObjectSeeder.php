@@ -142,6 +142,13 @@ class ObjectSeeder extends Seeder
         );
         BObject::create(
             [
+                'code' => '352',
+                'name' => 'Эвалар',
+                'address' => '',
+            ]
+        );
+        BObject::create(
+            [
                 'code' => '353',
                 'name' => 'ЖК "LION GATE"',
                 'address' => 'г. Москва, ЦАО, Малый Сухаревский пер, вл. 4',

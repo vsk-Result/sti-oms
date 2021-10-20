@@ -89,4 +89,9 @@ class PaymentImport extends Model
     {
         return self::getTypes()[$this->type_id];
     }
+
+    public function isStatement()
+    {
+        return $this->type_id === self::TYPE_STATEMENT;
+    }
 }

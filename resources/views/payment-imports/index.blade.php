@@ -48,7 +48,7 @@
                                 </div>
 
                                 <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3">
+                                    <a href="{{ route('payment_imports.types.history.create') }}" class="menu-link px-3">
                                         Из истории оплат
                                     </a>
                                 </div>
@@ -92,10 +92,22 @@
                                     <td class="text-dark fw-bolder"><a href="#">{{ $import->company->short_name }}</a></td>
                                     <td class="text-dark fw-bolder"><a href="#">{{ $import->getBankName() }}</a></td>
                                     <td class="text-dark fw-bolder">{{ $import->payments_count }}</td>
-                                    <td class="fw-bolder {{ $import->incoming_balance >= 0 ? 'text-success' : 'text-danger' }}">{{ $import->getIncomingBalance() }}</td>
+                                    <td class="fw-bolder">
+                                        @if($import->isStatement())
+                                            <span class="{{ $import->incoming_balance >= 0 ? 'text-success' : 'text-danger' }}">
+                                                {{ $import->getIncomingBalance() }}
+                                            </span>
+                                        @endif
+                                    </td>
                                     <td class="text-danger fw-bolder">{{ $import->getAmountPay() }}</td>
                                     <td class="text-success fw-bolder">{{ $import->getAmountReceive() }}</td>
-                                    <td class="text-success fw-bolder {{ $import->outgoing_balance >= 0 ? 'text-success' : 'text-danger' }}">{{ $import->getOutgoingBalance() }}</td>
+                                    <td class="fw-bolder">
+                                        @if($import->isStatement())
+                                            <span class="{{ $import->outgoing_balance >= 0 ? 'text-success' : 'text-danger' }}">
+                                                {{ $import->getOutgoingBalance() }}
+                                            </span>
+                                        @endif
+                                    </td>
                                     <td class="text-dark fw-bolder">{{ $import->createdBy->name }}</td>
                                     <td class="text-dark fw-bolder">@include('partials.status', ['status' => $import->getStatus()])</td>
                                     <td class="text-end text-dark fw-bolder">

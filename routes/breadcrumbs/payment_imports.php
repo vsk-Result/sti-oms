@@ -30,3 +30,8 @@ Breadcrumbs::for('payment_imports.types.crm_cost_closures.create', function (Bre
     $trail->parent('payment_imports.index');
     $trail->push('Загрузка оплат из кассы CRM');
 });
+
+Breadcrumbs::for('payment_imports.types.history.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('payment_imports.index');
+    $trail->push('Загрузка из истории оплат');
+});

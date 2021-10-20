@@ -31,7 +31,7 @@ class CRMCostClosureImportService
 
     public function getClosures(): Collection
     {
-        return CostClosure::where('is_confirm', true)->where('is_split', false)->get();
+        return CostClosure::where('is_confirm', true)->where('is_split', false)->with('user')->get();
     }
 
     public function createImport(array $requestData): PaymentImport

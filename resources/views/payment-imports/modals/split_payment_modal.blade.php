@@ -16,8 +16,8 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Закрыть</button>
-                <button id="split-payment-submit" type="button" class="btn btn-sm btn-primary">Разбить оплату</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Закрыть</button>
+                <button id="split-payment-submit" type="button" class="btn btn-primary">Разбить оплату</button>
             </div>
         </div>
     </div>
