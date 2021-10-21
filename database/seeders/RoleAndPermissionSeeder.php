@@ -48,5 +48,12 @@ class RoleAndPermissionSeeder extends Seeder
         ]);
 
         User::find(1)->assignRole($superAdminRole);
+
+        $testRole = Role::create([
+            'name' => 'test-role',
+            'description' => 'Роль для тестового пользователя',
+        ]);
+
+        User::find(2)->assignRole($testRole);
     }
 }

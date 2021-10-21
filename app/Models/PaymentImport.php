@@ -24,8 +24,7 @@ class PaymentImport extends Model
 
     const TYPE_STATEMENT = 0;
     const TYPE_CRM_COST_CLOSURE = 1;
-    const TYPE_SALARY = 2;
-    const TYPE_HISTORY = 3;
+    const TYPE_HISTORY = 2;
 
     public function company(): BelongsTo
     {
@@ -80,8 +79,7 @@ class PaymentImport extends Model
         return [
             self::TYPE_STATEMENT => 'Выписка',
             self::TYPE_CRM_COST_CLOSURE => 'Касса CRM',
-            self::TYPE_SALARY => 'Зарплата',
-            self::TYPE_HISTORY => 'История',
+            self::TYPE_HISTORY => 'История оплат',
         ];
     }
 

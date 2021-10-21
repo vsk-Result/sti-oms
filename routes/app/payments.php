@@ -13,4 +13,6 @@ Route::post('payments/{payment}', [PaymentController::class, 'update'])->name('p
 Route::get('payments/{payment}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
 Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
 
+// Разбивка оплат
+
 Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name('payments.split.store');

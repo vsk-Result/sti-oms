@@ -13,6 +13,7 @@ class ObjectService
             'code' => $requestData['code'],
             'name' => $requestData['name'],
             'address' => $requestData['address'],
+            'photo' => $requestData['photo'],
             'status_id' => Status::STATUS_ACTIVE
         ]);
 

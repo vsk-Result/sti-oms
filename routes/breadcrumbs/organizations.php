@@ -25,3 +25,8 @@ Breadcrumbs::for('organizations.edit', function (BreadcrumbTrail $trail, Organiz
     $trail->parent('organizations.show', $organization);
     $trail->push('Изменение организации');
 });
+
+Breadcrumbs::for('organizations.transfer_payments.create', function (BreadcrumbTrail $trail, Organization $organization) {
+    $trail->parent('organizations.show', $organization);
+    $trail->push('Перенос оплат');
+});

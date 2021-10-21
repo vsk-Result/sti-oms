@@ -9,6 +9,7 @@ use App\Models\Object\BObject;
 use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Models\Payment;
+use App\Models\PaymentImport;
 use App\Services\PaymentService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,7 @@ class PaymentController extends Controller
         $filterObjectId = 'all';
         $filterObjectWorktypeId = 'all';
         $filterCategory = 'all';
+        $filterImportTypeId = 'all';
 
         $paymentQuery = Payment::query();
 
@@ -81,18 +83,26 @@ class PaymentController extends Controller
             $filterCategory = $request->input('category');
         }
 
+        if ($request->has('import_type_id') && $request->input('import_type_id') !== 'all') {
+            $paymentImportsIds = PaymentImport::where('type_id', (int) $request->input('import_type_id'))->pluck('id');
+            $paymentQuery->whereIn('import_id', $paymentImportsIds);
+            $filterImportTypeId = (int) $request->input('import_type_id');
+        }
+
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
         $objects = BObject::orderBy('code')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
+        $importTypes = PaymentImport::getTypes();
 
         $payments = $paymentQuery->with('company', 'createdBy', 'object', 'organizationReceiver', 'organizationSender')->orderByDesc('date')->orderByDesc('id')->paginate(30);
 
         return view('payments.index', compact(
-            'payments', 'companies', 'objects', 'worktypes', 'organizations', 'categories',
+            'payments', 'companies', 'objects', 'worktypes', 'organizations', 'categories', 'importTypes',
             'filterPeriod', 'filterDescription', 'filterCompanyId', 'filterOrganizationSenderId',
-            'filterOrganizationReceiverId', 'filterObjectId', 'filterObjectWorktypeId', 'filterCategory'
+            'filterOrganizationReceiverId', 'filterObjectId', 'filterObjectWorktypeId', 'filterCategory',
+            'filterImportTypeId'
         ));
     }
 

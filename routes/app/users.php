@@ -17,11 +17,17 @@ Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.ed
 Route::post('users/{user}', [UserController::class, 'update'])->name('users.update');
 Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:edit admin-users');
 
+// Блокировка пользователя
+
 Route::post('users/{user}/block', [BlockController::class, 'store'])->name('users.block')->middleware('can:edit admin-users');
 Route::post('users/{user}/unblock', [UnblockController::class, 'store'])->name('users.unblock')->middleware('can:edit admin-users');
 
+// Сброс пароля
+
 Route::get('users/{user}/passwords/reset', [PasswordResetController::class, 'edit'])->name('users.passwords.reset.edit');
 Route::post('users/{user}/passwords/reset', [PasswordResetController::class, 'update'])->name('users.passwords.reset.update');
+
+// Обновление прав и ролей доступа
 
 Route::post('users/{user}/roles', [RoleController::class, 'update'])->name('users.roles.update')->middleware('can:edit admin-users');
 Route::post('users/{user}/permissions', [PermissionController::class, 'update'])->name('users.permissions.update')->middleware('can:edit admin-users');

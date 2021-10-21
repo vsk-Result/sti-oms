@@ -22,7 +22,7 @@ class OrganizationController extends Controller
 
     public function index(): View
     {
-        $organizations = Organization::orderBy('name')->get();
+        $organizations = Organization::orderBy('name')->paginate(30);
         return view('organizations.index', compact('organizations'));
     }
 

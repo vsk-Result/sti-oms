@@ -37,6 +37,7 @@
                     <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <th class="min-w-120px">Источник</th>
                             <th class="min-w-120px">Дата</th>
                             <th class="min-w-120px">Компания</th>
                             <th class="min-w-120px">Банк</th>
@@ -54,6 +55,7 @@
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($payments as $payment)
                                 <tr>
+                                    <td>{{ $payment->import ? $payment->import->getType() : 'Вручную' }}</td>
                                     <td>{{ $payment->getDateFormatted() }}</td>
                                     <td><a href="#">{{ $payment->company->short_name }}</a></td>
                                     <td><a href="#">{{ $payment->getBankName() }}</a></td>

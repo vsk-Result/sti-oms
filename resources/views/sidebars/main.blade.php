@@ -16,10 +16,10 @@
                 </div>
             </div>
 
-            @can('index payment-imports')
+            @can('index objects')
                 <div class="menu-item">
-                    <a href="{{ route('payment_imports.index') }}" class="menu-link {{ request()->is('payment-imports*') ? 'active' : '' }}">
-                        <span class="menu-title">Загрузки оплат</span>
+                    <a href="{{ route('objects.index') }}" class="menu-link {{ request()->is('objects*') ? 'active' : '' }}">
+                        <span class="menu-title">Объекты</span>
                     </a>
                 </div>
             @endcan
@@ -28,6 +28,14 @@
                 <div class="menu-item">
                     <a href="{{ route('payments.index') }}" class="menu-link {{ request()->is('payments*') ? 'active' : '' }}">
                         <span class="menu-title">Оплаты</span>
+                    </a>
+                </div>
+            @endcan
+
+            @can('index payment-imports')
+                <div class="menu-item">
+                    <a href="{{ route('payment_imports.index') }}" class="menu-link {{ request()->is('payment-imports*') ? 'active' : '' }}">
+                        <span class="menu-title">Загрузки оплат</span>
                     </a>
                 </div>
             @endcan
@@ -50,14 +58,6 @@
                 <div class="menu-item">
                     <a href="{{ route('organizations.index') }}" class="menu-link {{ request()->is('organizations*') ? 'active' : '' }}">
                         <span class="menu-title">Организации</span>
-                    </a>
-                </div>
-            @endcan
-
-            @can('index objects')
-                <div class="menu-item">
-                    <a href="{{ route('objects.index') }}" class="menu-link {{ request()->is('objects*') ? 'active' : '' }}">
-                        <span class="menu-title">Объекты</span>
                     </a>
                 </div>
             @endcan

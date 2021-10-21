@@ -61,10 +61,10 @@
                                                         </svg>
                                                     </span>
                                     </a>
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                                        @can('show organizations')
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-175px py-4" data-kt-menu="true">
+                                        @can('edit organizations')
                                             <div class="menu-item px-3">
-                                                <a href="{{ route('organizations.edit', $organization) }}" class="menu-link px-3">Посмотреть</a>
+                                                <a href="{{ route('organizations.transfer_payments.create', $organization) }}" class="menu-link px-3">Перенести оплаты</a>
                                             </div>
                                         @endcan
                                         @can('edit organizations')
@@ -92,6 +92,8 @@
                         @endforeach
                     </tbody>
                 </table>
+
+                {{ $organizations->links() }}
             </div>
         </div>
     </div>

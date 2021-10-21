@@ -76,12 +76,22 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label class="form-label">Вид работ</label>
                                 <select name="object_worktype_id" class="form-select form-select-solid" data-control="select2">
                                     <option value="all" {{ $filterObjectWorktypeId === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($worktypes as $worktype)
                                         <option value="{{ $worktype['id'] }}" {{ $filterObjectWorktypeId === $worktype['id'] ? 'selected' : '' }}>{{ $worktype['code'] . ' ' . $worktype['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Источник</label>
+                                <select name="import_type_id" class="form-select form-select-solid" data-control="select2">
+                                    <option value="all" {{ $filterImportTypeId === 'all' ? 'selected' : '' }}>Все</option>
+                                    @foreach($importTypes as $typeId => $type)
+                                        <option value="{{ $typeId }}" {{ $filterImportTypeId === $typeId ? 'selected' : '' }}>{{ $type }}</option>
                                     @endforeach
                                 </select>
                             </div>
