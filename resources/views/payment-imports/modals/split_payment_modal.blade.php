@@ -11,6 +11,7 @@
                     name="crm_avans_import_id"
                     class="form-select form-select-solid"
                     data-control="select2"
+                    data-dropdown-parent="#splitPaymentModal"
                 >
                 </select>
             </div>

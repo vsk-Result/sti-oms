@@ -22,6 +22,14 @@ class VTBImport extends BankImport
                 strpos($outgoingBalance, ':') + 1,
                 strpos($outgoingBalance, 'RUR') - 1
             );
+        } else if (! empty($importData[1][17])) {
+            $incomingBalance = $importData[1][17];
+            $outgoingBalance = $importData[count($importData) - 2][9];
+            $outgoingBalance = substr(
+                $outgoingBalance,
+                strpos($outgoingBalance, ':') + 1,
+                strpos($outgoingBalance, 'RUR') - 1
+            );
         } else {
             $incomingBalance = $importData[1][5];
             $outgoingBalance = $importData[count($importData) - 3][13];
@@ -58,6 +66,13 @@ class VTBImport extends BankImport
                     }
                 }
                 $description = $rowData[11];
+            } if (count($rowData) === 25) {
+                $payAmount = (-1) * $rowData[18];
+                $receiveAmount = $rowData[21];
+                $organizationSenderInn = $rowData[2];
+                $organizationReceiverInn = $rowData[3];
+                $organizationName = $rowData[7];
+                $description = $rowData[9];
             } else {
                 $payAmount = (-1) * $rowData[10];
                 $receiveAmount = $rowData[11];

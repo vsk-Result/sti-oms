@@ -109,7 +109,7 @@ class PaymentController extends Controller
     public function store(Request $request): JsonResponse
     {
         $payment = $this->paymentService->createPayment($request->toArray());
-        $payment->statement?->reCalculateAmountsAndCounts();
+        $payment->import?->reCalculateAmountsAndCounts();
 
         return response()->json([
             'status' => 'success',
@@ -125,7 +125,7 @@ class PaymentController extends Controller
     public function update(Payment $payment, Request $request): JsonResponse
     {
         $this->paymentService->updatePayment($payment, $request->toArray());
-        $payment->statement?->reCalculateAmountsAndCounts();
+        $payment->import?->reCalculateAmountsAndCounts();
 
         return response()->json([
             'status' => 'success',
@@ -136,7 +136,7 @@ class PaymentController extends Controller
     public function destroy(Payment $payment): JsonResponse
     {
         $this->paymentService->destroyPayment($payment);
-        $payment->statement?->reCalculateAmountsAndCounts();
+        $payment->import?->reCalculateAmountsAndCounts();
 
         return response()->json([
             'status' => 'success',

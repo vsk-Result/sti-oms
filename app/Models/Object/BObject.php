@@ -17,7 +17,7 @@ class BObject extends Model
 
     protected $fillable = ['code', 'name', 'address', 'photo', 'status_id'];
 
-    public function statements(): HasMany
+    public function imports(): HasMany
     {
         return $this->hasMany(PaymentImport::class, 'object_id');
     }
@@ -44,6 +44,11 @@ class BObject extends Model
 
     public function getPhoto(): string
     {
-        return empty($this->photo) ? 'https://it.dttermo.ru/storage/objects/preview/thumbs/object_default.jpg' : $this->photo;
+        return empty($this->photo) ? asset('images/blanks/object_photo_blank.jpg') : $this->photo;
+    }
+
+    public function getName(): string
+    {
+        return $this->code . ' | '  . $this->name;
     }
 }

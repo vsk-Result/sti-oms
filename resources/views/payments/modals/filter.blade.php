@@ -26,7 +26,7 @@
 
                             <div class="form-group">
                                 <label class="form-label">Категория</label>
-                                <select name="category" class="form-select form-select-solid" data-control="select2">
+                                <select name="category" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
                                     <option value="all" {{ $filterCategory === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($categories as $categoryId => $category)
                                         <option value="{{ $categoryId }}" {{ $filterCategory === $categoryId ? 'selected' : '' }}>{{ $category }}</option>
@@ -37,7 +37,7 @@
                         <div class="col-md-4">
                             <div class="form-group mb-3">
                                 <label class="form-label">Компания</label>
-                                <select name="company_id" class="form-select form-select-solid" data-control="select2">
+                                <select name="company_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
                                     <option value="all" {{ $filterCompanyId === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($companies as $company)
                                         <option value="{{ $company->id }}" {{ $filterCompanyId === $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
@@ -47,7 +47,7 @@
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Организация отправитель</label>
-                                <select name="organization_sender_id" class="form-select form-select-solid" data-control="select2">
+                                <select name="organization_sender_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
                                     <option value="all" {{ $filterOrganizationSenderId === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($organizations as $organization)
                                         <option value="{{ $organization->id }}" {{ $filterOrganizationSenderId === $organization->id ? 'selected' : '' }}>{{ $organization->name }}</option>
@@ -57,7 +57,7 @@
 
                             <div class="form-group">
                                 <label class="form-label">Организация получатель</label>
-                                <select name="organization_receiver_id" class="form-select form-select-solid" data-control="select2">
+                                <select name="organization_receiver_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
                                     <option value="all" {{ $filterOrganizationReceiverId === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($organizations as $organization)
                                         <option value="{{ $organization->id }}" {{ $filterOrganizationReceiverId === $organization->id ? 'selected' : '' }}>{{ $organization->name }}</option>
@@ -68,7 +68,7 @@
                         <div class="col-md-4">
                             <div class="form-group mb-3">
                                 <label class="form-label">Объект</label>
-                                <select name="object_id" class="form-select form-select-solid" data-control="select2">
+                                <select name="object_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
                                     <option value="all" {{ $filterObjectId === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($objects as $object)
                                         <option value="{{ $object->id }}" {{ $filterObjectId === $object->id ? 'selected' : '' }}>{{ $object->code . ' ' . $object->name }}</option>
@@ -78,7 +78,7 @@
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Вид работ</label>
-                                <select name="object_worktype_id" class="form-select form-select-solid" data-control="select2">
+                                <select name="object_worktype_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
                                     <option value="all" {{ $filterObjectWorktypeId === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($worktypes as $worktype)
                                         <option value="{{ $worktype['id'] }}" {{ $filterObjectWorktypeId === $worktype['id'] ? 'selected' : '' }}>{{ $worktype['code'] . ' ' . $worktype['name'] }}</option>
@@ -88,7 +88,7 @@
 
                             <div class="form-group">
                                 <label class="form-label">Источник</label>
-                                <select name="import_type_id" class="form-select form-select-solid" data-control="select2">
+                                <select name="import_type_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
                                     <option value="all" {{ $filterImportTypeId === 'all' ? 'selected' : '' }}>Все</option>
                                     @foreach($importTypes as $typeId => $type)
                                         <option value="{{ $typeId }}" {{ $filterImportTypeId === $typeId ? 'selected' : '' }}>{{ $type }}</option>

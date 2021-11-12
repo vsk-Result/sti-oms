@@ -11,6 +11,7 @@ use App\Services\PaymentService;
 use App\Services\UploadService;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class HistoryImportImportService
@@ -60,7 +61,7 @@ class HistoryImportImportService
                 continue;
             }
 
-            $date = Carbon::parse($paymentData[2])->format('Y-m-d');
+            $date = Carbon::parse(Date::excelToDateTimeObject($paymentData[2]))->format('Y-m-d');
             $amount = (float) $paymentData[5];
 
             if ($amount > 0) {

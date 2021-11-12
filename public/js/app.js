@@ -1,7 +1,7 @@
 "use strict";
 
 const mainApp = function() {
-    const initAjaxSetup =  function() {
+    const initAjaxSetup = function() {
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -9,10 +9,53 @@ const mainApp = function() {
         });
     }
 
-    const initSetToastrOptions =  function() {
+    const initSetToastrOptions = function() {
         toastr.options = {
             "timeOut": "2000",
         };
+    }
+
+    const initDateRangePicker = function() {
+        $(".date-range-picker").daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                format: "DD/M/Y",
+                cancelLabel: 'Очистить',
+                separator: " - ",
+                applyLabel: "Применить",
+                daysOfWeek: [
+                    "Вс",
+                    "Пн",
+                    "Вт",
+                    "Ср",
+                    "Чт",
+                    "Пт",
+                    "Сб"
+                ],
+                monthNames: [
+                    "Январь",
+                    "Февраль",
+                    "Март",
+                    "Апрель",
+                    "Май",
+                    "Июнь",
+                    "Июль",
+                    "Август",
+                    "Сентябрь",
+                    "Октябрь",
+                    "Ноябрь",
+                    "Декабрь"
+                ],
+            }
+        });
+
+        $('.date-range-picker').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/M/Y') + ' - ' + picker.endDate.format('DD/M/Y'));
+        });
+
+        $('.date-range-picker').on('cancel.daterangepicker', function() {
+            $(this).val('');
+        });
     }
 
     const initSendAJAX = function (url, type, data, successCallback, errorCallback, alwaysCallback) {
@@ -62,6 +105,7 @@ const mainApp = function() {
         init: function () {
             initAjaxSetup();
             initSetToastrOptions();
+            initDateRangePicker();
         },
         sendAJAX: function (url, type, data, successCallback, errorCallback, alwaysCallback) {
             initSendAJAX(url, type, data, successCallback, errorCallback, alwaysCallback);
@@ -71,47 +115,4 @@ const mainApp = function() {
 
 KTUtil.onDOMContentLoaded(function () {
     mainApp.init();
-
-    $(".date-range-picker").daterangepicker({
-        autoUpdateInput: false,
-        locale: {
-            format: "DD/M/Y",
-            cancelLabel: 'Очистить',
-            separator: " - ",
-            applyLabel: "Применить",
-            daysOfWeek: [
-                "Вс",
-                "Пн",
-                "Вт",
-                "Ср",
-                "Чт",
-                "Пт",
-                "Сб"
-            ],
-            monthNames: [
-                "Январь",
-                "Февраль",
-                "Март",
-                "Апрель",
-                "Май",
-                "Июнь",
-                "Июль",
-                "Август",
-                "Сентябрь",
-                "Октябрь",
-                "Ноябрь",
-                "Декабрь"
-            ],
-        }
-    });
-
-    $('.date-range-picker').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('DD/M/Y') + ' - ' + picker.endDate.format('DD/M/Y'));
-    });
-
-    $('.date-range-picker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
 });
-
-

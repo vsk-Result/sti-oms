@@ -2,21 +2,52 @@
 
 namespace App\Services;
 
+use App\Helpers\Sanitizer;
 use App\Models\Object\BObject;
 use App\Models\Status;
 
 class ObjectService
 {
+    private UploadService $uploadService;
+    private Sanitizer $sanitizer;
+
+    public function __construct(UploadService $uploadService, Sanitizer $sanitizer)
+    {
+        $this->uploadService = $uploadService;
+        $this->sanitizer = $sanitizer;
+    }
+
     public function createObject(array $requestData): BObject
     {
         $object = BObject::create([
-            'code' => $requestData['code'],
-            'name' => $requestData['name'],
-            'address' => $requestData['address'],
-            'photo' => $requestData['photo'],
+            'code' => $this->sanitizer->set($requestData['code'])->toNumber()->get(),
+            'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
+            'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
+            'photo' => empty($requestData['photo'])
+                ? null
+                : $this->uploadService->uploadFile('objects/photo', $requestData['photo']),
             'status_id' => Status::STATUS_ACTIVE
         ]);
 
         return $object;
+    }
+
+    public function updateObject(BObject $object, array $requestData): void
+    {
+        if (array_key_exists('photo', $requestData)) {
+            $photo = $this->uploadService->uploadFile('objects/photo ', $requestData['photo']);
+        } elseif ($requestData['avatar_remove'] === '1') {
+            $photo = null;
+        } else {
+            $photo = $object->photo;
+        }
+
+        $object->update([
+            'code' => $this->sanitizer->set($requestData['code'])->toNumber()->get(),
+            'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
+            'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
+            'photo' => $photo,
+            'status_id' => $requestData['status_id']
+        ]);
     }
 }

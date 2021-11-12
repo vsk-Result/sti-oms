@@ -17,7 +17,7 @@ class CreateObjectsTable extends Migration
             $table->smallIncrements('id');
             $table->string('code', 4)->unique();
             $table->string('name', 120);
-            $table->string('address', 120)->nullable();
+            $table->string('address', 200)->nullable();
             $table->string('photo')->nullable();
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();
