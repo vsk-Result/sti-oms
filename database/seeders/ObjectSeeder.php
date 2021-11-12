@@ -169,7 +169,7 @@ class ObjectSeeder extends Seeder
         BObject::create(
             [
                 'code' => '353',
-                'name' => 'ЖК "LION GATE"',
+                'name' => 'Сухаревский',
                 'address' => 'г. Москва, ЦАО, Малый Сухаревский пер, вл. 4',
                 'photo' => 'https://it.dttermo.ru/storage/objects/preview/thumbs/M343JA_LionGate.jpg',
             ]

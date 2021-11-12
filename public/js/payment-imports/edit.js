@@ -21,11 +21,11 @@ $(document).on('select2:select', 'td select', function() {
         $next.select2('open');
     }
 
-    if (name === 'object_id') {
-        if ($('#filter-payment').prop('checked')) {
-            $tr.hide();
-        }
-    }
+    // if (name === 'object_id') {
+    //     if ($('#filter-payment').prop('checked')) {
+    //         $tr.hide();
+    //     }
+    // }
 });
 
 $(document).on('click', '#filter-payment', function() {
@@ -119,18 +119,6 @@ $(document).on('click', '.destroy-payment', function() {
 
 $(document).on('focus', '.db-field', function() {
     $(this).data('initial-text', $(this).val());
-});
-
-$(document).on('focus', '.db-field[name=code]', function() {
-    if (! $('#kt_explore').hasClass('drawer-on')) {
-        $('#kt_explore_toggle').trigger('click');
-    }
-});
-
-$(document).on('blur', '.db-field[name=code]', function() {
-    if ($('#kt_explore').hasClass('drawer-on')) {
-        $('#kt_explore_toggle').trigger('click');
-    }
 });
 
 $(document).on('keyup', '.db-field', function(e) {
