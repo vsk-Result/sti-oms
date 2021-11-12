@@ -17,7 +17,7 @@ $(document).on('select2:select', 'td select', function() {
 
     updatePayment($tr, name, $that.val());
 
-    if ($next && ($next.val() === '' || $next.val() == null)) {
+    if ($next && ($next.val() === '' || $next.val() == null || $next.val() == 0)) {
         $next.select2('open');
     }
 
