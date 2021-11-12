@@ -39,7 +39,7 @@ $(document).on('select2:select', 'td select', function() {
 $(document).on('click', '#filter-payment', function() {
     if ($(this).prop('checked')) {
         $('.table-payments tbody tr').each(function () {
-            if ($(this).find('td:first-child select').first().val() != 0) {
+            if ($(this).find('td:first-child input').first().val() != '') {
                 $(this).hide();
             }
         });
