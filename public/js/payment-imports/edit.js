@@ -4,6 +4,14 @@ $(document).on('td select2:open', function() {
     document.querySelector('.select2-search__field').focus();
 });
 
+$(document).on('keyup', '.select2-search__field', function() {
+    const text = $(this).val();
+    if (text.indexOf(',') !== -1) {
+        $(this).val(text.replace(',', '.'));
+    }
+    $(this).trigger('input');
+});
+
 $(document).on('select2:clear', 'td select', function() {
     const $that = $(this);
     updatePayment($that.closest('tr'), $that.attr('name'), $that.val());
@@ -133,6 +141,19 @@ $(document).on('keyup', '.db-field', function(e) {
     if (field === 'amount' || field === 'code') {
         $(this).val($(this).val().replace(/[^-.,0-9]/, ''));
         $(this).val($(this).val().replace(',', '.'));
+    }
+    if (e.keyCode === 38) { // вверх
+        const $next = $(this).closest('tr').prev().find('.db-field[name=' + field + ']');
+        if ($next) {
+            $next.focus();
+
+        }
+    }
+    if (e.keyCode === 40) { // вниз
+        const $next = $(this).closest('tr').next().find('.db-field[name=' + field + ']');
+        if ($next) {
+            $next.focus();
+        }
     }
 });
 

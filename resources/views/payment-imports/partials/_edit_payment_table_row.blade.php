@@ -27,7 +27,7 @@
         @php
             $textClass = $payment->amount >= 0 ? 'text-success' : 'text-danger';
         @endphp
-        <input name="amount" type="text" class="form-control form-control-sm form-control-solid {{ $textClass }} db-field" value="{{ $payment->getAmount() }}" />
+        <input name="amount" type="text" class="form-control form-control-sm form-control-solid {{ $textClass }} db-field" value="{{ number_format($payment->amount, 2, '.', '') }}" />
     </td>
     <td>
         <select
