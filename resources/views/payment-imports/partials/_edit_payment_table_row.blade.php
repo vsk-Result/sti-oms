@@ -11,7 +11,7 @@
         </select>
     </td>
     <td>
-        <input name="code" type="text" class="form-control form-control-sm form-control-solid db-field" value="{{ $payment->code }}" />
+        <input name="code" type="text" class="form-control form-control-sm form-control-solid db-field" value="{{ $payment->code }}" autocomplete="off" />
     </td>
     <td>
         @if ($payment->amount < 0)
