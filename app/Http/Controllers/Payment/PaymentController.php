@@ -111,14 +111,15 @@ class PaymentController extends Controller
         $payment = $this->paymentService->createPayment($request->toArray());
         $payment->import?->reCalculateAmountsAndCounts();
 
+        $objects = Payment::getTypes() + BObject::getObjectsList();
+        $categories = Payment::getCategories();
+
+        $paymentHtml = view('payment-imports.partials._edit_payment_table_row', compact('payment', 'objects', 'categories'))->render();
+
         return response()->json([
             'status' => 'success',
             'message' => 'Оплата успешно создана',
-            'payment' => [
-                'id' => $payment->id,
-                'update_url' => route('payments.update', $payment),
-                'destroy_url' => route('payments.destroy', $payment),
-            ]
+            'payment_html' => $paymentHtml
         ]);
     }
 

@@ -60,21 +60,9 @@ $(document).on('click', '.clone-payment', function() {
         'POST',
         {'base_payment_id': $that.data('payment-id')},
         function(data) {
-            $('select.form-select').select2('destroy');
-
             const $tr = $that.closest('tr');
-            const $cloneTr = $tr.clone();
-
-            $cloneTr.data('update-payment-url', data.payment.update_url);
-            $cloneTr.find('.destroy-payment').data('payment-destroy-url', data.payment.destroy_url);
-            $cloneTr.find('.clone-payment').data('payment-id', data.payment.id);
-            $cloneTr.insertBefore($tr);
-
-            $cloneTr.addClass('new-row');
-
+            $(data.payment_html).insertBefore($tr).addClass('new-row');
             KTApp.initSelect2();
-
-            $cloneTr.find('select').trigger('change');
         }
     )
 });
@@ -130,30 +118,36 @@ $(document).on('focus', '.db-field', function() {
 });
 
 $(document).on('keyup', '.db-field', function(e) {
+    e.preventDefault();
     const field = $(this).attr('name');
-    if (e.keyCode === 13) {
-        const $next = $(this).closest('tr').next().find('.db-field[name=' + field + ']');
-        if ($next && ($next.val() === '' || $next.val() == null)) {
-            $next.focus();
-            return false;
-        }
-    }
-    if (field === 'amount' || field === 'code') {
+    if (field === 'amount' || field === 'code' || field === 'object_code') {
         $(this).val($(this).val().replace(/[^-.,0-9]/, ''));
         $(this).val($(this).val().replace(',', '.'));
     }
-    if (e.keyCode === 38) { // вверх
-        const $next = $(this).closest('tr').prev().find('.db-field[name=' + field + ']');
-        if ($next) {
-            $next.focus();
 
-        }
+    let index;
+    let $next;
+    switch (e.keyCode) {
+        case 37:
+            index = $(this).data('index');
+            $next = $(this).closest('tr').find('.db-field[data-index=' + (index - 1) + ']:first-child');
+            break;
+        case 38:
+            $next = $(this).closest('tr').prev().find('.db-field[name=' + field + ']');
+            break;
+        case 39:
+            index = $(this).data('index');
+            $next = $(this).closest('tr').find('.db-field[data-index=' + (index + 1) + ']:first-child');
+            break;
+        case 13:
+        case 40:
+            $next = $(this).closest('tr').next().find('.db-field[name=' + field + ']');
+            break;
     }
-    if (e.keyCode === 40) { // вниз
-        const $next = $(this).closest('tr').next().find('.db-field[name=' + field + ']');
-        if ($next) {
-            $next.focus();
-        }
+
+    if ($next) {
+        $next.focus();
+        $next.select();
     }
 });
 
@@ -181,6 +175,7 @@ $(document).on('blur', '.db-field', function() {
     }
 
     if ($that.data('initial-text') !== text) {
+        console.log($that.closest('tr').data('update-payment-url'));
         updatePayment($that.closest('tr'), field, text);
     }
 });

@@ -1,17 +1,9 @@
 <tr class="{{ isset($isNewPayment) ? 'new-row' : '' }}" data-payment-update-url="{{ route('payments.update', $payment) }}">
     <td class="ps-4">
-        <select
-            name="object_id"
-            class="form-select form-select-solid form-select-sm"
-            data-control="select2"
-        >
-            @foreach($objects as $id => $object)
-                <option value="{{ $id }}" {{ $id == $payment->getObjectId() ? 'selected' : '' }}>{{ $object }}</option>
-            @endforeach
-        </select>
+        <input name="object_code" type="text" class="form-control form-control-sm form-control-solid db-field" value="{{ $payment->getObject() }}" autocomplete="off" data-index="0" />
     </td>
     <td>
-        <input name="code" type="text" class="form-control form-control-sm form-control-solid db-field" value="{{ $payment->code }}" autocomplete="off" />
+        <input name="code" type="text" class="form-control form-control-sm form-control-solid db-field" value="{{ $payment->code }}" autocomplete="off" data-index="1"/>
     </td>
     <td>
         @if ($payment->amount < 0)
@@ -27,7 +19,7 @@
         @php
             $textClass = $payment->amount >= 0 ? 'text-success' : 'text-danger';
         @endphp
-        <input name="amount" type="text" class="form-control form-control-sm form-control-solid {{ $textClass }} db-field" value="{{ number_format($payment->amount, 2, '.', '') }}" />
+        <input name="amount" type="text" class="form-control form-control-sm form-control-solid {{ $textClass }} db-field" value="{{ number_format($payment->amount, 2, '.', '') }}" autocomplete="off" data-index="2" />
     </td>
     <td>
         <select

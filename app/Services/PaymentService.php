@@ -68,17 +68,27 @@ class PaymentService
             $requestData['amount'] = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
             $nds = $this->checkHasNDSFromDescription($description) ? round($requestData['amount'] / 6, 2) : 0;
             $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
-        } elseif (array_key_exists('object_id', $requestData)) {
-            if (str_contains($requestData['object_id'], '::')) {
-                $objectData = explode('::', $requestData['object_id']);
-                $requestData['type_id'] = Payment::TYPE_OBJECT;
-                $requestData['object_id'] = (int) $objectData[0];
-                $requestData['object_worktype_id'] = (int) $objectData[1];
-            } else {
-                $requestData['type_id'] = (int) $requestData['object_id'];
-                $requestData['object_id'] = null;
-                $requestData['object_worktype_id'] = null;
+        } elseif (array_key_exists('object_code', $requestData)) {
+            $requestData['object_id'] = null;
+            $requestData['object_worktype_id'] = null;
+
+            if ($requestData['object_code'] === 'Трансфер') {
+                $requestData['type_id'] = Payment::TYPE_TRANSFER;
+            } else if ($requestData['object_code'] === 'Общее') {
+                $requestData['type_id'] = Payment::TYPE_GENERAL;
+            } else if (! empty($requestData['object_code'])) {
+                $code = substr($requestData['object_code'], 0, strpos($requestData['object_code'], '.'));
+                $workType = substr($requestData['object_code'], strpos($requestData['object_code'], '.') + 1);
+                $object = BObject::where('code', $code)->first();
+
+                if ($object) {
+                    $requestData['type_id'] = Payment::TYPE_OBJECT;
+                    $requestData['object_id'] = $object->id;
+                    $requestData['object_worktype_id'] = (int) $workType;
+                }
             }
+
+            unset($requestData['object_code']);
         } elseif (array_key_exists('code', $requestData)) {
             $requestData['code'] = $this->sanitizer->set($requestData['code'])->toCode()->get();
         } elseif (array_key_exists('description', $requestData)) {
