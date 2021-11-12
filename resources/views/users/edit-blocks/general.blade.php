@@ -107,6 +107,18 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label required fw-bold fs-6">Подтверждение Email</label>
+                        <div class="col-lg-8 fv-row">
+                            <input
+                                type="text"
+                                name="email_verified_at"
+                                class="form-control form-control-lg form-control-solid"
+                                value="{{ $user->email_verified_at }}"
+                            />
+                        </div>
+                    </div>
                 @endcan
             </div>
 

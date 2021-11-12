@@ -35,7 +35,8 @@ class UserService
             'email' => $this->sanitizer->set($requestData['email'])->lowerCase()->get(),
             'phone' => $this->sanitizer->set($requestData['phone'])->toPhone()->get(),
             'photo' => $photo,
-            'status_id' => $requestData['status_id'] ?? $user->status_id
+            'status_id' => $requestData['status_id'] ?? $user->status_id,
+            'email_verified_at' => array_key_exists('email_verified_at', $requestData) ? $requestData['email_verified_at'] : $user->email_verified_at,
         ]);
 
         if (isset($requestData['status_id']) && (int) $requestData['status_id'] === Status::STATUS_DELETED) {
