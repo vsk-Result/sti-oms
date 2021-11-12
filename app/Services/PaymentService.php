@@ -81,6 +81,9 @@ class PaymentService
             }
         } elseif (array_key_exists('code', $requestData)) {
             $requestData['code'] = $this->sanitizer->set($requestData['code'])->toCode()->get();
+        } elseif (array_key_exists('description', $requestData)) {
+            $isNeedSplit = $this->checkIsNeedSplitFromDescription($requestData['description']);
+            $requestData['is_need_split'] = $isNeedSplit;
         }
 
         $payment->update($requestData);
@@ -183,7 +186,7 @@ class PaymentService
 
         if (
             str_contains($description, 'перечисление заработной платы')
-            || str_contains($description, 'перечисление отпускных согласно реестру')
+            || str_contains($description, 'перечисление отпускных')
             || str_contains($description, 'оплата больничного')
         ) {
             return true;
