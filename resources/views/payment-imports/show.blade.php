@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'Выписка за ' . $statement->getDateFormatted())
-@section('breadcrumbs', Breadcrumbs::render('statements.show', $statement))
+@section('toolbar-title', 'Оплаты за ' . $import->getDateFormatted() . ' (' . $import->getType() . ')')
+@section('breadcrumbs', Breadcrumbs::render('payment_imports.show', $import))
 
 @section('content')
     <div class="post d-flex flex-column-fluid" id="kt_post">
@@ -14,18 +14,18 @@
                             <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
                                 <div class="d-flex flex-column">
                                     <div class="d-flex align-items-center mb-4">
-                                        <span class="text-gray-900 fs-2 fw-bolder me-1">Выписка за {{ $statement->getDateFormatted() }}</span>
+                                        <span class="text-gray-900 fs-2 fw-bolder me-1">{{ 'Оплаты за ' . $import->getDateFormatted() . ' (' . $import->getType() . ')' }}</span>
                                     </div>
                                 </div>
                                 <div class="d-flex">
-                                    @can('edit statements')
-                                        <a href="{{ route('statements.edit', $statement) }}" class="btn btn-sm btn-primary me-3">Изменить</a>
+                                    @can('edit payment-imports')
+                                        <a href="{{ route('payment_imports.edit', $import) }}" class="btn btn-sm btn-primary me-3">Изменить</a>
                                     @endcan
 
-                                    <form action="{{ route('statements.exports.store', $statement) }}" method="POST" class="hidden">
+                                    <form action="{{ route('payment_imports.exports.store', $import) }}" method="POST" class="hidden">
                                         @csrf
                                         <a
-                                            href="{{ route('statements.exports.store', $statement) }}"
+                                            href="#"
                                             class="btn btn-sm btn-primary me-3"
                                             onclick="event.preventDefault(); this.closest('form').submit();"
                                         >
@@ -36,75 +36,89 @@
                             </div>
 
                             <div class="row mb-7">
+                                <label class="col-lg-2 fw-bold text-muted">Тип</label>
+                                <div class="col-lg-10 fv-row">
+                                    <span class="fw-bold text-gray-800 fs-6">{{ $import->getType() }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Дата</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $statement->getDateFormatted() }}</span>
+                                    <span class="fw-bold text-gray-800 fs-6">{{ $import->getDateFormatted() }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Компания</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $statement->company->name }}</span>
+                                    <span class="fw-bold text-gray-800 fs-6">{{ $import->company->name }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Банк</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $statement->getBankName() }}</span>
+                                    <span class="fw-bold text-gray-800 fs-6">{{ $import->getBankName() }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Оплат</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $statement->payments_count }}</span>
+                                    <span class="fw-bold text-gray-800 fs-6">{{ $import->payments_count }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Входящий остаток</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="{{ $statement->incoming_balance >= 0 ? 'text-success' : 'text-danger' }} fw-bold fs-6">{{ $statement->getIncomingBalance() }}</span>
+                                    <span class="{{ $import->incoming_balance >= 0 ? 'text-success' : 'text-danger' }} fw-bold fs-6">{{ $import->getIncomingBalance() }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Расход</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="text-danger fw-bold fs-6">{{ $statement->getAmountPay() }}</span>
+                                    <span class="text-danger fw-bold fs-6">{{ $import->getAmountPay() }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Приход</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="text-success fw-bold fs-6">{{ $statement->getAmountReceive() }}</span>
+                                    <span class="text-success fw-bold fs-6">{{ $import->getAmountReceive() }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Исходящий остаток</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="{{ $statement->outgoing_balance >= 0 ? 'text-success' : 'text-danger' }} fw-bold fs-6">{{ $statement->getOutgoingBalance() }}</span>
+                                    <span class="{{ $import->outgoing_balance >= 0 ? 'text-success' : 'text-danger' }} fw-bold fs-6">{{ $import->getOutgoingBalance() }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-7">
+                                <label class="col-lg-2 fw-bold text-muted">Описание</label>
+                                <div class="col-lg-10 fv-row">
+                                    <span class="fw-bold text-gray-800 fs-6">{{ $import->description }}</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Загрузил</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $statement->createdBy->name }}</span>
-                                    <span class="text-muted fw-bold text-muted fs-7">({{ $statement->created_at->format('d/m/Y H:i') }})</span>
+                                    <span class="fw-bold text-gray-800 fs-6">{{ $import->createdBy->name }}</span>
+                                    <span class="text-muted fw-bold text-muted fs-7">({{ $import->created_at->format('d/m/Y H:i') }})</span>
                                 </div>
                             </div>
 
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Обновил</label>
                                 <div class="col-lg-10 fv-row">
-                                    @if ($statement->updatedBy)
-                                        <span class="fw-bold text-gray-800 fs-6">{{ $statement->updatedBy->name }}</span>
-                                        <span class="text-muted fw-bold text-muted fs-7">({{ $statement->updated_at->format('d/m/Y H:i') }})</span>
+                                    @if ($import->updatedBy)
+                                        <span class="fw-bold text-gray-800 fs-6">{{ $import->updatedBy->name }}</span>
+                                        <span class="text-muted fw-bold text-muted fs-7">({{ $import->updated_at->format('d/m/Y H:i') }})</span>
                                     @endif
                                 </div>
                             </div>
@@ -112,7 +126,7 @@
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Статус</label>
                                 <div class="col-lg-10 fv-row">
-                                    @include('partials.status', ['status' => $statement->getStatus()])
+                                    @include('partials.status', ['status' => $import->getStatus()])
                                 </div>
                             </div>
                         </div>
@@ -137,11 +151,10 @@
                                 <th class="min-w-300px">Описание</th>
                                 <th class="min-w-200px">Сумма</th>
                                 <th class="min-w-150px">Категория</th>
-                                <th class="min-w-180px">Статус</th>
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($statement->payments as $payment)
+                                @forelse($import->payments as $payment)
                                     <tr>
                                         <td class="ps-4">{{ $payment->getObject() }}</td>
                                         <td>{{ $payment->code }}</td>
@@ -158,11 +171,10 @@
                                             <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
                                         </td>
                                         <td>{{ $payment->category }}</td>
-                                        <td class="text-end">@include('partials.status', ['status' => $payment->getStatus()])</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8">
+                                        <td colspan="7">
                                             <p class="text-center text-dark fw-bolder d-block mb-1 fs-6">Оплаты отсутствуют</p>
                                         </td>
                                     </tr>

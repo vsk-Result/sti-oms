@@ -88,8 +88,8 @@
                                             {{ $import->getDateFormatted() }}
                                         @endif
                                     </td>
-                                    <td class="text-dark fw-bolder"><a href="#">{{ $import->company->short_name }}</a></td>
-                                    <td class="text-dark fw-bolder"><a href="#">{{ $import->getBankName() }}</a></td>
+                                    <td class="text-dark fw-bolder">{!! $import->company->getShortNameColored() !!}</td>
+                                    <td class="text-dark fw-bolder">{{ $import->getBankName() }}</td>
                                     <td class="text-dark fw-bolder">{{ $import->payments_count }}</td>
                                     <td class="fw-bolder">
                                         @if($import->isStatement())

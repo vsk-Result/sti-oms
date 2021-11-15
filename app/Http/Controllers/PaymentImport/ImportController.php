@@ -27,7 +27,13 @@ class ImportController extends Controller
 
     public function show(PaymentImport $import): View
     {
-        $import->load(['payments', 'payments.organizationSender', 'payments.organizationReceiver']);
+        $import->load([
+            'payments' => function($query) {
+                $query->orderByDesc('amount');
+            },
+            'payments.organizationSender',
+            'payments.organizationReceiver'
+        ]);
         return view('payment-imports.show', compact('import'));
     }
 

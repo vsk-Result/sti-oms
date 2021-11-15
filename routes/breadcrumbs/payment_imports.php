@@ -13,7 +13,7 @@ Breadcrumbs::for('payment_imports.index', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('payment_imports.show', function (BreadcrumbTrail $trail, PaymentImport $import) {
     $route = auth()->user()->can('show payment-imports') ? route('payment_imports.show', $import) : null;
     $trail->parent('payment_imports.index');
-    $trail->push('Оплаты за ' . $import->getDateFormatted(), $route);
+    $trail->push('Оплаты за ' . $import->getDateFormatted() . ' (' . $import->getType() . ')', $route);
 });
 
 Breadcrumbs::for('payment_imports.edit', function (BreadcrumbTrail $trail, PaymentImport $import) {

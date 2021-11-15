@@ -35,4 +35,14 @@ class Company extends Model
     {
         return $this->hasMany(PaymentImport::class, 'company_id');
     }
+
+    public function getShortNameColored(): string
+    {
+        switch ($this->short_name) {
+            case 'СТИ': return '<span style="color: #6d6f71;">С</span><span style="color: #f15a22;">Т</span><span style="color: #6d6f71;">И</span>';
+            case 'ПТИ': return '<span style="color: #586672;">П</span><span style="color: #63be60;">Т</span><span style="color: #586672;">И</span>';
+        }
+
+        return $this->short_name;
+    }
 }
