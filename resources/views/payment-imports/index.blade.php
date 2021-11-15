@@ -59,7 +59,7 @@
             </div>
             <div class="card-body py-3">
                 <div class="table-responsive">
-                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+                    <table class="table align-middle table-row-dashed fs-6" id="kt_table_users">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="min-w-120px">Тип</th>
@@ -71,7 +71,6 @@
                             <th class="min-w-150px">Расход</th>
                             <th class="min-w-150px">Приход</th>
                             <th class="min-w-150px">Исходящий остаток</th>
-                            <th class="min-w-120px">Загрузил</th>
                             <th class="min-w-120px">Статус</th>
                             <th class="min-w-100px text-end rounded-end pe-4">Действия</th>
                         </tr>
@@ -108,7 +107,6 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td class="text-dark fw-bolder">{{ $import->createdBy->name }}</td>
                                     <td class="text-dark fw-bolder">@include('partials.status', ['status' => $import->getStatus()])</td>
                                     <td class="text-end text-dark fw-bolder">
                                         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия

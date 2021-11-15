@@ -163,7 +163,7 @@
                     <div class="table-responsive">
                         <table data-payment-store-url="{{ route('payments.store') }}" class="table-payments table align-middle table-row-dashed fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase">
                                 <th class="min-w-150px">Объект</th>
                                 <th class="min-w-70px">Кост код</th>
                                 <th class="min-w-100px">Организация</th>
