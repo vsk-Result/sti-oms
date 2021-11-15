@@ -6,9 +6,14 @@ use App\Models\Status;
 
 trait HasStatus
 {
+    public function getStatuses(): array
+    {
+        return method_exists($this, 'getStatusesList') ? $this->getStatusesList() : Status::getStatuses();
+    }
+
     public function getStatus(): string
     {
-        return Status::getStatuses()[$this->status_id];
+        return $this->getStatuses()[$this->status_id];
     }
 
     public function isActive()

@@ -93,6 +93,15 @@ class Payment extends Model
         ];
     }
 
+    private function getStatusesList(): array
+    {
+        return [
+            Status::STATUS_ACTIVE => 'Заполнен',
+            Status::STATUS_BLOCKED => 'Не заполнен',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+    }
+
     public static function getPaymentTypes(): array
     {
         return [

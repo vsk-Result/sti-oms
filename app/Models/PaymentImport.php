@@ -26,6 +26,15 @@ class PaymentImport extends Model
     const TYPE_CRM_COST_CLOSURE = 1;
     const TYPE_HISTORY = 2;
 
+    private function getStatusesList(): array
+    {
+        return [
+            Status::STATUS_ACTIVE => 'Заполнен',
+            Status::STATUS_BLOCKED => 'Не заполнен',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
