@@ -120,9 +120,14 @@ $(document).on('focus', '.db-field', function() {
 $(document).on('keyup', '.db-field', function(e) {
     e.preventDefault();
     const field = $(this).attr('name');
-    if (field === 'amount' || field === 'code' || field === 'object_code') {
+    if (field === 'amount' || field === 'code') {
         $(this).val($(this).val().replace(/[^-.,0-9]/, ''));
         $(this).val($(this).val().replace(',', '.'));
+    } else if (field === 'object_code') {
+        $(this).val($(this).val().replace(/[^-.,0-9ОобщеТтрансф]/, ''));
+        $(this).val($(this).val().replace(',', '.'));
+        $(this).val($(this).val().replace('т', 'Т'));
+        $(this).val($(this).val().replace('о', 'О'));
     }
 
     let index;
