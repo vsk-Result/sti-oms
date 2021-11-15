@@ -101,7 +101,7 @@ class PaymentService
 
         if (
             $payment->type_id !== Payment::TYPE_NONE
-            && ! empty($payment->code)
+            && (empty($payment->code) && $payment->type_id !== Payment::TYPE_OBJECT)
             && ! empty($payment->description)
             && ! is_null($payment->category)
             && ! is_null($payment->amount)
