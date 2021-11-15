@@ -43,7 +43,7 @@ class StatementImportService
             'date' => $requestData['date'],
             'status_id' => Status::STATUS_BLOCKED,
             'file' => $this->uploadService->uploadFile('payment-imports/statements', $requestData['file']),
-            'description' => ''
+            'description' => $requestData['description']
         ]);
 
         $companyOrganization = $this->organizationService->getOrCreateOrganization([

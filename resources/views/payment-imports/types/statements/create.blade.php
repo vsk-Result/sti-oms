@@ -49,7 +49,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="row mb-5">
+                            <div class="row">
                                 <div class="col-md-6 fv-row">
                                     <label class="required fs-5 fw-bold mb-2">Банк</label>
                                     <select name="bank_id" class="form-select form-select-solid" data-control="select2">
@@ -64,6 +64,18 @@
                                     <div class="form-text">Доступные форматы:
                                         <code>xls, xlsx</code>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-5">
+                                <div class="col-md-6 fv-row">
+                                    <label class="fs-5 fw-bold mb-2">Описание</label>
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-solid"
+                                        name="description"
+                                        value="Доллар: , Евро: "
+                                    />
                                 </div>
                             </div>
                         </div>
