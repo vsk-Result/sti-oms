@@ -21,6 +21,10 @@ class ImportController extends Controller
 
     public function index(): View
     {
+        $data = simplexml_load_file('http://www.cbr.ru/scripts/XML_daily.asp?date_req=15/11/2021');
+        foreach ($data as $d) {
+            dd($d);
+        }
         $imports = PaymentImport::with('company', 'createdBy')->orderByDesc('date')->orderByDesc('id')->get();
         return view('payment-imports.index', compact('imports'));
     }

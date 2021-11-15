@@ -71,6 +71,7 @@ class PaymentService
         } elseif (array_key_exists('object_code', $requestData)) {
             $requestData['object_id'] = null;
             $requestData['object_worktype_id'] = null;
+            $requestData['type_id'] = Payment::TYPE_NONE;
 
             if ($requestData['object_code'] === 'Трансфер') {
                 $requestData['type_id'] = Payment::TYPE_TRANSFER;
