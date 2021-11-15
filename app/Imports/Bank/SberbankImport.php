@@ -6,6 +6,7 @@ class SberbankImport extends BankImport
 {
     public function processImportData(array $importData): array
     {
+        dd($importData);
         $returnData = [];
         $importData = $importData[0];
 

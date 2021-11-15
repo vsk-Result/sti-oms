@@ -3,13 +3,17 @@
 namespace App\Services\PaymentImport\Type;
 
 use App\Imports\PaymentImport as PImport;
+use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
+use App\Services\ObjectService;
 use App\Services\OrganizationService;
 use App\Services\PaymentService;
 use App\Services\UploadService;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class StatementImportService
@@ -17,15 +21,18 @@ class StatementImportService
     private PaymentService $paymentService;
     private OrganizationService $organizationService;
     private UploadService $uploadService;
+    private ObjectService $objectService;
 
     public function __construct(
         PaymentService $paymentService,
         UploadService $uploadService,
         OrganizationService $organizationService,
+        ObjectService $objectService,
     ) {
         $this->paymentService = $paymentService;
         $this->uploadService = $uploadService;
         $this->organizationService = $organizationService;
+        $this->objectService = $objectService;
     }
 
     public function createImport(array $requestData): null|PaymentImport
@@ -54,14 +61,17 @@ class StatementImportService
         ]);
 
         $this->paymentService->loadCategoriesList();
-        $processInfo = $this->processInfoFromStatementData($import, $statementData);
+        $processInfo = $this->processInfoFromStatementData($statementData);
 
         foreach ($processInfo['payments'] as $payment) {
+            if (str_contains($payment['organization_name'], 'НДС полученный')) {
+                $payment['organization_name'] = 'Филиал "Центральный" Банка ВТБ (ПАО)';
+            }
 
             if ($payment['pay_amount'] == 0) {
                 $amount = $payment['receive_amount'];
                 $organizationSender = $this->organizationService->getOrCreateOrganization([
-                    'inn' => $payment['organization_sender_inn'],
+                    'inn' => null,
                     'name' => $payment['organization_name'],
                     'company_id' => null,
                     'kpp' => null
@@ -71,7 +81,7 @@ class StatementImportService
                 $amount = $payment['pay_amount'];
                 $organizationSender = $companyOrganization;
                 $organizationReceiver = $this->organizationService->getOrCreateOrganization([
-                    'inn' => $payment['organization_receiver_inn'],
+                    'inn' => null,
                     'name' => $payment['organization_name'],
                     'company_id' => null,
                     'kpp' => null
@@ -84,25 +94,72 @@ class StatementImportService
 
             $isNeedSplit = $this->paymentService->checkIsNeedSplitFromDescription($payment['description']);
 
-            $this->paymentService->createPayment([
+            $payment['object_id'] = null;
+            $payment['object_worktype_id'] = null;
+            $payment['type_id'] = Payment::TYPE_NONE;
+
+            if ($payment['object'] === 'Трансфер') {
+                $payment['type_id'] = Payment::TYPE_TRANSFER;
+            } elseif ($payment['object'] === 'Общее') {
+                $payment['type_id'] = Payment::TYPE_GENERAL;
+            } elseif (! empty($payment['object'])) {
+                if (strpos($payment['object'], ',') !== false) {
+                    $payment['object'] = str_replace(',', '.', $payment['object']);
+                }
+
+                $code = substr($payment['object'], 0, strpos($payment['object'], '.'));
+                $workType = substr($payment['object'], strpos($payment['object'], '.') + 1);
+                $object = BObject::where('code', $code)->first();
+
+                if (! $object) {
+                    $object = $this->objectService->createObject([
+                        'code' => $code,
+                        'name' => 'Без названия',
+                        'address' => null,
+                        'photo' => null,
+                    ]);
+                }
+
+                $payment['type_id'] = Payment::TYPE_OBJECT;
+                $payment['object_id'] = $object->id;
+                $payment['object_worktype_id'] = (int) $workType;
+            }
+
+            $payment = $this->paymentService->createPayment([
                 'company_id' => $import->company_id,
                 'bank_id' => $import->bank_id,
                 'import_id' => $import->id,
-                'object_id' => null,
-                'object_worktype_id' => null,
+                'object_id' => $payment['object_id'],
+                'object_worktype_id' => $payment['object_worktype_id'],
                 'organization_sender_id' => $organizationSender->id,
                 'organization_receiver_id' => $organizationReceiver->id,
-                'type_id' => Payment::TYPE_NONE,
+                'type_id' => $payment['type_id'],
                 'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
-                'code' => null,
+                'code' => $payment['code'] ?? null,
                 'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
                 'description' => $payment['description'],
-                'date' => $import->date,
+                'date' => $payment['date'] ?? $import->date,
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
                 'is_need_split' => $isNeedSplit,
                 'status_id' => Status::STATUS_BLOCKED
             ]);
+
+            if (
+                $payment->type_id !== Payment::TYPE_NONE
+                && ! empty($payment->code)
+                && ! empty($payment->description)
+                && ! is_null($payment->category)
+                && ! is_null($payment->amount)
+            ) {
+                if (! $payment->isActive()) {
+                    $payment->setActive();
+                }
+            } else {
+                if (! $payment->isBlocked()) {
+                    $payment->setBlocked();
+                }
+            }
         }
 
         $import->update([
@@ -115,10 +172,52 @@ class StatementImportService
         return $import;
     }
 
-    private function processInfoFromStatementData(PaymentImport $import, array $statementData): array
+    private function processInfoFromStatementData(array $statementData): array
     {
-        $class = $import->getBankImportClass();
-        return (new $class($this->paymentService))->processImportData($statementData);
+        $returnData = [];
+        $importData = $statementData[0];
+
+        $returnData['incoming_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][0]);
+        $returnData['outgoing_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][1]);
+
+        foreach ($importData as $rowNum => $rowData) {
+
+            if ($rowNum < 5) {
+                continue;
+            }
+
+            if (is_null($rowData[4])) {
+                break;
+            }
+
+            $description = $this->cleanValue($rowData[4]);
+            $amount = (float) $rowData[5];
+
+            if ($amount < 0) {
+                $payAmount = $amount;
+                $receiveAmount = 0;
+            } else {
+                $payAmount = 0;
+                $receiveAmount = $amount;
+            }
+
+            $returnData['payments'][] = [
+                'object' => $rowData[0],
+                'code' => $rowData[1],
+                'date' => Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d'),
+                'pay_amount' => $payAmount,
+                'receive_amount' => $receiveAmount,
+                'organization_name' => $this->cleanValue($rowData[3]),
+                'description' => $description,
+            ];
+        }
+
+        return $returnData;
+    }
+
+    private function cleanValue($value): string
+    {
+        return str_replace("\n", '', (string) $value);
     }
 
     private function getStatementDataFromExcel(UploadedFile $file): array

@@ -21,7 +21,7 @@ class OrganizationService
         $requestData['inn'] = $this->sanitizer->set($requestData['inn'])->toNumber()->get();
         $requestData['kpp'] = $this->sanitizer->set($requestData['kpp'])->toNumber()->get();
 
-        $organization = Organization::where('name', $requestData['name'])->where('inn', $requestData['inn'])->first();
+        $organization = Organization::where('name', $requestData['name'])->first();
 
         return $organization ?: $this->createOrganization($requestData);
     }
