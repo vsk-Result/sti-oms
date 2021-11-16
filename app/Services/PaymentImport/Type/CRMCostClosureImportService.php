@@ -66,6 +66,10 @@ class CRMCostClosureImportService
         foreach ($items as $item) {
 
             if ($item->object) {
+                if ($item->object->code == '27') {
+                    $item->object->code = '27.1';
+                }
+
                 $objectCode = substr($item->object->code, 0, strpos($item->object->code, '.'));
                 if (! $object = BObject::where('code', $objectCode)->first()) {
                     $object = $this->objectService->createObject([
@@ -79,7 +83,6 @@ class CRMCostClosureImportService
                 $objectId = $object->id;
                 $worktypeCode = (int) substr($item->object->code, strpos($item->object->code, '.') + 1);
                 $typeId = Payment::TYPE_OBJECT;
-
 
                 if ((float) $item->sum < 0) {
                     $organizationSender = $companyOrganization;
