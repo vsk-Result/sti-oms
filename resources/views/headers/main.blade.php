@@ -28,14 +28,16 @@
             <div class="d-flex align-items-stretch flex-shrink-0">
                 <div class="d-flex align-items-stretch flex-shrink-0">
                     <div class="d-flex align-items-stretch ms-1 ms-lg-2">
+                        @php
+                            $USDExchangeRate = $currencyExchangeService->getActualRateByCurrency('USD');
+                            $EURExchangeRate = $currencyExchangeService->getActualRateByCurrency('EUR');
+                        @endphp
+
                         <div class="d-flex align-items-center me-6">
-                            @php
-                                $USDExchangeRate = $currencyExchangeService->getActualRateByCurrency('USD');
-                                $EURExchangeRate = $currencyExchangeService->getActualRateByCurrency('EUR');
-                            @endphp
                             <div class="fs-4 fw-bold me-2">USD {{ $USDExchangeRate->rate }}</div>
                             <div class="fs-7 {{ $USDExchangeRate->diff_rate > 0 ? 'text-danger' : 'text-success' }}">+ {{ $USDExchangeRate->diff_rate }}</div>
                         </div>
+
                         <div class="d-flex align-items-center">
                             <div class="fs-4 fw-bold me-2">EUR {{ $EURExchangeRate->rate }}</div>
                             <div class="fs-7 {{ $EURExchangeRate->diff_rate > 0 ? 'text-danger' : 'text-success' }}">+ {{ $EURExchangeRate->diff_rate }}</div>

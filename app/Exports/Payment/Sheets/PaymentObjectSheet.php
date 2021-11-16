@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -23,7 +24,8 @@ class PaymentObjectSheet implements
     WithMapping,
     WithColumnFormatting,
     ShouldAutoSize,
-    WithStyles
+    WithStyles,
+    WithColumnWidths
 {
     private string $sheetName;
 
@@ -115,5 +117,12 @@ class PaymentObjectSheet implements
         $styles[1] += ['font' => ['bold' => true]];
 
         return $styles;
+    }
+
+    public function columnWidths(): array
+    {
+        return [
+            'N' => 55,
+        ];
     }
 }

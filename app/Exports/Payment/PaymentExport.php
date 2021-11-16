@@ -22,7 +22,7 @@ class PaymentExport implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-        $groupedByTypePayments = $this->payments->groupBy('type_id');
+        $groupedByTypePayments = $this->payments->sortBy('type_id')->groupBy('type_id');
 
         foreach ($groupedByTypePayments as $type => $gPayments) {
             switch ($type) {
@@ -30,7 +30,7 @@ class PaymentExport implements WithMultipleSheets
                     $sheets[] = new PaymentObjectSheet('Без кода', $gPayments);
                     break;
                 case Payment::TYPE_OBJECT:
-                    $groupedPayments = $gPayments->groupBy('object_id');
+                    $groupedPayments = $gPayments->sortBy('object_id')->groupBy('object_id');
                     foreach ($groupedPayments as $objectId => $payments) {
                         $sheets[] = new PaymentObjectSheet(BObject::find($objectId)->code, $payments);
                     }
