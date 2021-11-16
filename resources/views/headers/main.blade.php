@@ -43,12 +43,12 @@
                             <div class="fs-7 {{ $EURExchangeRate->diff_rate > 0 ? 'text-danger' : 'text-success' }}">+ {{ $EURExchangeRate->diff_rate }}</div>
                         </div>
 
-                        <div class="d-flex align-items-center">
-                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pe-3">
-                                <span class="text-gray-400 fs-5 my-1">17.11.2021</span>
-                                <span class="fs-4 fw-bold">USD 72.2724   EUR 82.7736</span>
-                            </div>
-                        </div>
+{{--                        <div class="d-flex align-items-center">--}}
+{{--                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pe-3">--}}
+{{--                                <span class="text-gray-400 fs-5 my-1">17.11.2021</span>--}}
+{{--                                <span class="fs-4 fw-bold">USD 72.2724   EUR 82.7736</span>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
                     </div>
 
                     <div class="d-flex align-items-center ms-lg-5" id="kt_header_user_menu_toggle">
