@@ -145,9 +145,16 @@ class StatementImportService
                 'status_id' => Status::STATUS_BLOCKED
             ]);
 
+            $isCode = false;
+            if (empty($payment->code) && $payment->type_id !== Payment::TYPE_OBJECT) {
+                $isCode = true;
+            } elseif (! empty($payment->code)) {
+                $isCode = true;
+            }
+
             if (
                 $payment->type_id !== Payment::TYPE_NONE
-                && (empty($payment->code) && $payment->type_id !== Payment::TYPE_OBJECT)
+                && $isCode
                 && ! empty($payment->description)
                 && ! is_null($payment->category)
                 && ! is_null($payment->amount)
