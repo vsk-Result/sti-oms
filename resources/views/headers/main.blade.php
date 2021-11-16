@@ -1,3 +1,5 @@
+@inject('currencyExchangeService', 'App\Services\CurrencyExchangeRateService')
+
 <div id="kt_header" class="header align-items-stretch">
     <div class="container-fluid d-flex align-items-stretch justify-content-between">
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 w-lg-225px me-5">
@@ -25,6 +27,21 @@
 
             <div class="d-flex align-items-stretch flex-shrink-0">
                 <div class="d-flex align-items-stretch flex-shrink-0">
+                    <div class="d-flex align-items-stretch ms-1 ms-lg-2">
+                        <div class="d-flex align-items-center me-6">
+                            @php
+                                $USDExchangeRate = $currencyExchangeService->getActualRateByCurrency('USD');
+                                $EURExchangeRate = $currencyExchangeService->getActualRateByCurrency('EUR');
+                            @endphp
+                            <div class="fs-4 fw-bold me-2">USD {{ $USDExchangeRate->rate }}</div>
+                            <div class="fs-7 {{ $USDExchangeRate->diff_rate > 0 ? 'text-danger' : 'text-success' }}">+ {{ $USDExchangeRate->diff_rate }}</div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bold me-2">EUR {{ $EURExchangeRate->rate }}</div>
+                            <div class="fs-7 {{ $EURExchangeRate->diff_rate > 0 ? 'text-danger' : 'text-success' }}">+ {{ $EURExchangeRate->diff_rate }}</div>
+                        </div>
+                    </div>
+
                     <div class="d-flex align-items-center ms-lg-5" id="kt_header_user_menu_toggle">
                         <div class="btn btn-active-light d-flex align-items-center bg-hover-light py-2 px-2 px-md-3" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                             <div class="d-none d-md-flex flex-column align-items-end justify-content-center me-2">

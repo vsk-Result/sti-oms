@@ -74,7 +74,6 @@
                                         type="text"
                                         class="form-control form-control-solid"
                                         name="description"
-                                        value="Доллар: , Евро: "
                                     />
                                 </div>
                             </div>
