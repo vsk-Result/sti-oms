@@ -27,21 +27,72 @@
 
             <div class="d-flex align-items-stretch flex-shrink-0">
                 <div class="d-flex align-items-stretch flex-shrink-0">
-                    <div class="d-flex align-items-stretch ms-1 ms-lg-2">
+                    <div class="d-flex ms-1 ms-lg-2 flex-column justify-content-center me-6">
                         @php
-                            $USDExchangeRate = $currencyExchangeService->getActualRateByCurrency('USD');
-                            $EURExchangeRate = $currencyExchangeService->getActualRateByCurrency('EUR');
+                            $todayUSDExchangeRate = $currencyExchangeService->getExchangeRate(now()->format('Y-m-d'), 'USD');
+                            $todayEURExchangeRate = $currencyExchangeService->getExchangeRate(now()->format('Y-m-d'), 'EUR');
+                            $nextUSDExchangeRate = $currencyExchangeService->getExchangeRate(now()->addDay()->format('Y-m-d'), 'USD');
+                            $nextEURExchangeRate = $currencyExchangeService->getExchangeRate(now()->addDay()->format('Y-m-d'), 'EUR');
                         @endphp
 
-                        <div class="d-flex align-items-center me-6">
-                            <div class="fs-4 fw-bold me-2">USD {{ $USDExchangeRate->rate }}</div>
-                            <div class="fs-7 {{ $USDExchangeRate->diff_rate > 0 ? 'text-danger' : 'text-success' }}">+ {{ $USDExchangeRate->diff_rate }}</div>
-                        </div>
+                        @if ($todayUSDExchangeRate && $todayEURExchangeRate)
+                            <div class="d-flex align-items-center">
+                                <div class="fs-7 text-muted" style="margin-left: 2.3rem;">{{ now()->format('d.m.Y') }}</div>
+                            </div>
 
-                        <div class="d-flex align-items-center">
-                            <div class="fs-4 fw-bold me-2">EUR {{ $EURExchangeRate->rate }}</div>
-                            <div class="fs-7 {{ $EURExchangeRate->diff_rate > 0 ? 'text-danger' : 'text-success' }}">+ {{ $EURExchangeRate->diff_rate }}</div>
-                        </div>
+                            <div class="d-flex align-items-center">
+                                <div class="me-4"><img width="18" src="{{ asset('images/flags/united-states.png') }}" alt="Доллар США" /></div>
+                                <div class="fs-6 fw-bold me-2">
+                                    {{ $todayUSDExchangeRate->rate }}
+                                </div>
+                                @if ($todayUSDExchangeRate->diff_rate > 0)
+                                    <div class="fs-8 text-danger">+ {{ $todayUSDExchangeRate->diff_rate }}</div>
+                                @else
+                                    <div class="fs-8 text-success">{{ $todayUSDExchangeRate->diff_rate }}</div>
+                                @endif
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <div class="me-4"><img width="19" src="{{ asset('images/flags/european-union.png') }}" alt="Евро" /></div>
+                                <div class="fs-6 fw-bold me-2">
+                                    {{ $todayEURExchangeRate->rate }}
+                                </div>
+                                @if ($todayEURExchangeRate->diff_rate > 0)
+                                    <div class="fs-8 text-danger">+ {{ $todayEURExchangeRate->diff_rate }}</div>
+                                @else
+                                    <div class="fs-8 text-success">{{ $todayEURExchangeRate->diff_rate }}</div>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="d-flex ms-1 ms-lg-2 flex-column justify-content-center me-6">
+
+                        @if ($nextUSDExchangeRate && $nextEURExchangeRate)
+                            <div class="d-flex align-items-center">
+                                <div class="fs-7 text-muted">{{ now()->addDay()->format('d.m.Y') }}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <div class="fs-6 fw-bold me-2">{{ $nextUSDExchangeRate->rate }}</div>
+                                @if ($nextUSDExchangeRate->diff_rate > 0)
+                                    <div class="fs-8 text-danger">+ {{ $nextUSDExchangeRate->diff_rate }}</div>
+                                @else
+                                    <div class="fs-8 text-success">{{ $nextUSDExchangeRate->diff_rate }}</div>
+                                @endif
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <div class="fs-6 fw-bold me-2">{{ $nextEURExchangeRate->rate }}</div>
+                                @if ($nextEURExchangeRate->diff_rate > 0)
+                                    <div class="fs-8 text-danger">+ {{ $nextEURExchangeRate->diff_rate }}</div>
+                                @else
+                                    <div class="fs-8 text-success">{{ $nextEURExchangeRate->diff_rate }}</div>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+
 
 {{--                        <div class="d-flex align-items-center">--}}
 {{--                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pe-3">--}}

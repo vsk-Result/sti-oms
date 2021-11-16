@@ -9,21 +9,20 @@ class CurrencyExchangeRateService
 {
     const CBRAPIUrl = 'http://www.cbr.ru/scripts/XML_daily.asp';
 
-    public function getActualRateByCurrency(string $currency): ?CurrencyExchangeRate
+    public function getExchangeRate(string $date, string $currency): ?CurrencyExchangeRate
     {
-        $currentDate = Carbon::now()->format('Y-m-d');
-        $prevDate = Carbon::now()->subDay()->format('Y-m-d');
+        $prevDate = Carbon::parse($date)->subDay()->format('Y-m-d');
 
-        $exchangeRate = CurrencyExchangeRate::where('date', $currentDate)->where('currency', $currency)->first();
+        $exchangeRate = CurrencyExchangeRate::where('date', $date)->where('currency', $currency)->first();
 
         if (! $exchangeRate) {
-            $rate = $this->parseRateFromCBR($currentDate, $currency);
+            $rate = $this->parseRateFromCBR($date, $currency);
             $prevRate = $this->parseRateFromCBR($prevDate, $currency);
 
             if ($rate && $prevRate) {
                 $exchangeRate = new CurrencyExchangeRate();
                 $exchangeRate->currency = $currency;
-                $exchangeRate->date = $currentDate;
+                $exchangeRate->date = $date;
                 $exchangeRate->rate = $rate;
                 $exchangeRate->diff_rate = $rate - $prevRate;
                 $exchangeRate->save();
