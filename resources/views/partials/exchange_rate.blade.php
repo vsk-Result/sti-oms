@@ -13,7 +13,7 @@
             @endif
             <div class="fs-6 fw-bold me-2">{{ $USDExchangeRate->rate }}</div>
             @if ($USDExchangeRate->diff_rate > 0)
-                <div class="fs-8 text-danger">+ {{ $USDExchangeRate->diff_rate }}</div>
+                <div class="fs-8 text-danger">+{{ $USDExchangeRate->diff_rate }}</div>
             @else
                 <div class="fs-8 text-success">{{ $USDExchangeRate->diff_rate }}</div>
             @endif
@@ -25,7 +25,7 @@
             @endif
             <div class="fs-6 fw-bold me-2">{{ $EURExchangeRate->rate }}</div>
             @if ($EURExchangeRate->diff_rate > 0)
-                <div class="fs-8 text-danger">+ {{ $EURExchangeRate->diff_rate }}</div>
+                <div class="fs-8 text-danger">+{{ $EURExchangeRate->diff_rate }}</div>
             @else
                 <div class="fs-8 text-success">{{ $EURExchangeRate->diff_rate }}</div>
             @endif

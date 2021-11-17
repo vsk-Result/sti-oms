@@ -8,12 +8,19 @@
         <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
             <div class="d-flex flex-column">
                 <div class="d-flex align-items-center mb-1">
-                    <a href="{{ route('objects.show', $object) }}" class="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">{{ $object->getName() }}</a>
+                    <a href="{{ route('objects.pivot.index', $object) }}" class="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">{{ $object->getName() }}</a>
                     <span class="badge badge-light-success me-auto">Активен</span>
                 </div>
                 <div class="d-flex flex-wrap fw-bold mb-4 fs-5 text-gray-400">{{ $object->address }}</div>
             </div>
         </div>
+
+        <div class="alert bg-light-danger border border-danger border-dashed d-flex flex-column flex-sm-row w-500px p-5 mb-10">
+            <div class="d-flex flex-column pe-0 pe-sm-10">
+                <span>Вся информация тестовая. Данный блок в разработке.</span>
+            </div>
+        </div>
+
         <div class="d-flex flex-wrap justify-content-start">
             <div class="d-flex flex-wrap">
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">

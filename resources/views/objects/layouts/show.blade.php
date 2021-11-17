@@ -1,0 +1,43 @@
+@extends('layouts.app')
+
+@section('toolbar-title', 'Объект ' . $object->getName())
+@section('breadcrumbs', Breadcrumbs::render('objects.show', $object))
+
+@section('content')
+    <div class="post" id="kt_post">
+        <div class="card mb-6 mb-xl-9">
+            <div class="card-body pt-9 pb-0">
+                @include('objects.parts._object_general_info')
+
+                <div class="separator"></div>
+                <div class="d-flex overflow-auto h-55px">
+                    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap">
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/pivot') ? 'active' : '' }}" href="{{ route('objects.pivot.index', $object) }}">Сводная информация</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6" href="#">Документооборот</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6" href="#">Акты</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6" href="#">Гарантийные удержания</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6" href="#">Долги</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6" href="#">Оплаты</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6" href="#">Активность</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @yield('object-tab-content')
+@endsection

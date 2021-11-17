@@ -40,15 +40,15 @@ class ObjectController extends Controller
         return redirect()->route('objects.index');
     }
 
+    public function show(BObject $object): RedirectResponse
+    {
+        return redirect()->route('objects.pivot.index', compact('object'));
+    }
+
     public function edit(BObject $object): View
     {
         $statuses = Status::getStatuses();
         return view('objects.edit', compact('object', 'statuses'));
-    }
-
-    public function show(BObject $object)
-    {
-        return view('objects.show', compact('object'));
     }
 
     public function update(BObject $object, StoreOrUpdateObjectRequest $request): RedirectResponse
