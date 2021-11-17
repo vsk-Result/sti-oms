@@ -66,17 +66,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="row mb-5">
-                                <div class="col-md-6 fv-row">
-                                    <label class="fs-5 fw-bold mb-2">Описание</label>
-                                    <input
-                                        type="text"
-                                        class="form-control form-control-solid"
-                                        name="description"
-                                    />
-                                </div>
-                            </div>
                         </div>
 
                         <div class="d-flex flex-center py-3">

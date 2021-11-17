@@ -18,6 +18,7 @@ class PaymentService
     private array $opsteList;
     private array $radList;
     private array $materialList;
+    private string $error = '';
 
     public function __construct(Sanitizer $sanitizer)
     {
@@ -86,6 +87,8 @@ class PaymentService
                     $requestData['type_id'] = Payment::TYPE_OBJECT;
                     $requestData['object_id'] = $object->id;
                     $requestData['object_worktype_id'] = (int) $workType;
+                } else {
+                    $this->error = 'Объект ' . $requestData['object_code'] . ' не найден в системе. Данные об объекте не сохранятся.';
                 }
             }
 
@@ -236,5 +239,15 @@ class PaymentService
         }
 
         return null;
+    }
+
+    public function hasError()
+    {
+        return ! empty($this->error);
+    }
+
+    public function getError()
+    {
+        return $this->error;
     }
 }

@@ -41,7 +41,7 @@
     </td>
     <td>
         @if ($payment->isNeedSplit())
-            <a title="Разбить по базе CRM" href="javascript:void(0);" data-split-payment-url="{{ route('payments.split.store', [$payment]) }}" class="split-payment btn btn-sm btn-icon btn-white btn-active-color-dark fs-8"><i class="fas fa-divide"></i></a>
+            <a title="Разбить по базе CRM" href="javascript:void(0);" data-payment-amount="{{ $payment->amount }}" data-split-payment-url="{{ route('payments.split.store', [$payment]) }}" class="split-payment btn btn-sm btn-icon btn-white btn-active-color-dark fs-8"><i class="fas fa-divide"></i></a>
         @else
             <a title="Дублировать" href="javascript:void(0);" data-payment-id="{{ $payment->id }}" class="clone-payment btn btn-sm btn-icon btn-white btn-active-color-dark fs-8"><i class="fas fa-clone"></i></a>
         @endif

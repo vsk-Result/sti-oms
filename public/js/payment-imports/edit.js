@@ -68,7 +68,8 @@ $(document).on('click', '.clone-payment', function() {
 });
 
 $(document).on('click', '.split-payment', function() {
-    updateCRMAvansesImportsList();
+    const amount = $(this).data('payment-amount');
+    updateCRMAvansesImportsList(amount);
     $selectedRow = $(this);
 });
 
@@ -185,14 +186,16 @@ $(document).on('blur', '.db-field', function() {
     }
 });
 
-function updateCRMAvansesImportsList() {
+function updateCRMAvansesImportsList(amount) {
     const $select = $('#crm-avans-import-id');
     const url = $('#splitPaymentModal').data('crm-avanses-imports-list-url');
 
     mainApp.sendAJAX(
         url,
         'GET',
-        {},
+        {
+            payment_amount: amount
+        },
         function(data) {
             const config = $select.data('select2').options.options;
             $select

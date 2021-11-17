@@ -126,6 +126,14 @@ class PaymentController extends Controller
     public function update(Payment $payment, Request $request): JsonResponse
     {
         $this->paymentService->updatePayment($payment, $request->toArray());
+
+        if ($this->paymentService->hasError()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $this->paymentService->getError()
+            ]);
+        }
+
         $payment->import?->reCalculateAmountsAndCounts();
 
         return response()->json([
