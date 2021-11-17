@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Helpers\Sanitizer;
 use App\Models\Status;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -78,5 +79,15 @@ class UserService
     public function updatePermissions(User $user, array $requestData): void
     {
         $user->syncPermissions($requestData['permissions'] ?? []);
+    }
+
+    public function confirmEmailUser(User $user): void
+    {
+        $user->update(['email_verified_at' => Carbon::now()]);
+    }
+
+    public function resetConfirmEmailUser(User $user): void
+    {
+        $user->update(['email_verified_at' => null]);
     }
 }

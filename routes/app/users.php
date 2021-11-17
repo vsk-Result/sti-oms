@@ -7,6 +7,8 @@ use App\Http\Controllers\User\{
     PasswordResetController,
     RoleController,
     PermissionController,
+    EmailConfirmController,
+    EmailConfirmResetController,
 };
 
 // Пользователи
@@ -21,6 +23,11 @@ Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.d
 
 Route::post('users/{user}/block', [BlockController::class, 'store'])->name('users.block')->middleware('can:edit admin-users');
 Route::post('users/{user}/unblock', [UnblockController::class, 'store'])->name('users.unblock')->middleware('can:edit admin-users');
+
+// Подтверждение Email пользователя
+
+Route::get('users/{user}/email-confirm', [EmailConfirmController::class, 'store'])->name('users.email_confirm')->middleware('can:edit admin-users');
+Route::get('users/{user}/email-confirm-reset', [EmailConfirmResetController::class, 'store'])->name('users.email_confirm_reset')->middleware('can:edit admin-users');
 
 // Сброс пароля
 

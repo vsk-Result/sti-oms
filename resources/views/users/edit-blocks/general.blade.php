@@ -109,14 +109,24 @@
                     </div>
 
                     <div class="row mb-6">
-                        <label class="col-lg-4 col-form-label required fw-bold fs-6">Подтверждение Email</label>
-                        <div class="col-lg-8 fv-row">
-                            <input
-                                type="text"
-                                name="email_verified_at"
-                                class="form-control form-control-lg form-control-solid"
-                                value="{{ $user->email_verified_at }}"
-                            />
+                        <label class="col-lg-4 col-form-label fw-bold fs-6">Подтверждение Email</label>
+                        <div class="col-lg-8 fv-row pt-3">
+                            @if ($user->email_verified_at)
+                                <p class="fw-bold fs-6">
+                                    <span class="badge badge-success fw-bolder me-3">Подтвержден</span>
+                                    {{ $user->email_verified_at->format('d.m.Y H:i') }}
+                                </p>
+                                <a href="{{ route('users.email_confirm_reset', $user) }}" class="btn btn-light btn-active-light-primary" >
+                                    Сбросить подтверждение
+                                </a>
+                            @else
+                                <p class="fw-bold fs-6">
+                                    <span class="badge badge-primary fw-bolder">Не подтвержден</span>
+                                </p>
+                                <a href="{{ route('users.email_confirm', $user) }}" class="btn btn-light btn-active-light-primary" >
+                                    Подтвердить
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endcan
