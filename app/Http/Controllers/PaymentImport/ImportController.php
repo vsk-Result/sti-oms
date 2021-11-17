@@ -32,7 +32,8 @@ class ImportController extends Controller
                 $query->orderByDesc('amount');
             },
             'payments.organizationSender',
-            'payments.organizationReceiver'
+            'payments.organizationReceiver',
+            'payments.object',
         ]);
         return view('payment-imports.show', compact('import'));
     }
@@ -46,7 +47,8 @@ class ImportController extends Controller
                 $query->orderByDesc('amount');
             },
             'payments.organizationSender',
-            'payments.organizationReceiver'
+            'payments.organizationReceiver',
+            'payments.object',
         ]);
         return view('payment-imports.edit', compact('import', 'objects', 'categories'));
     }

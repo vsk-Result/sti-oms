@@ -16,6 +16,20 @@ class CurrencyExchangeRateService
         $exchangeRate = CurrencyExchangeRate::where('date', $date)->where('currency', $currency)->first();
 
         if (! $exchangeRate) {
+
+            $canCreateRate = true;
+            if (Carbon::parse($date)->greaterThan(Carbon::now())) {
+                $start = Carbon::createFromTimeString('15:10');
+                $end = Carbon::createFromTimeString('23:59');
+                if (! Carbon::now()->between($start, $end)) {
+                    $canCreateRate = false;
+                }
+            }
+
+            if (! $canCreateRate) {
+                return null;
+            }
+
             $rate = $this->parseRateFromCBR($date, $currency);
             $prevRate = $this->parseRateFromCBR($prevDate, $currency);
 

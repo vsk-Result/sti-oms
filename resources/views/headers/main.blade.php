@@ -27,80 +27,21 @@
 
             <div class="d-flex align-items-stretch flex-shrink-0">
                 <div class="d-flex align-items-stretch flex-shrink-0">
-                    <div class="d-flex ms-1 ms-lg-2 flex-column justify-content-center me-6">
-                        @php
-                            $todayUSDExchangeRate = $currencyExchangeService->getExchangeRate(now()->format('Y-m-d'), 'USD');
-                            $todayEURExchangeRate = $currencyExchangeService->getExchangeRate(now()->format('Y-m-d'), 'EUR');
-                            $nextUSDExchangeRate = $currencyExchangeService->getExchangeRate(now()->addDay()->format('Y-m-d'), 'USD');
-                            $nextEURExchangeRate = $currencyExchangeService->getExchangeRate(now()->addDay()->format('Y-m-d'), 'EUR');
-                        @endphp
+                    @php
+                        $date = now();
+                        $needFlag = true;
+                        $USDExchangeRate = $currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'USD');
+                        $EURExchangeRate = $currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'EUR');
+                    @endphp
+                    @include('partials.exchange_rate', compact('date', 'needFlag', 'USDExchangeRate', 'EURExchangeRate'))
 
-                        @if ($todayUSDExchangeRate && $todayEURExchangeRate)
-                            <div class="d-flex align-items-center">
-                                <div class="fs-7 text-muted" style="margin-left: 2.3rem;">{{ now()->format('d.m.Y') }}</div>
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <div class="me-4"><img width="18" src="{{ asset('images/flags/united-states.png') }}" alt="Доллар США" /></div>
-                                <div class="fs-6 fw-bold me-2">
-                                    {{ $todayUSDExchangeRate->rate }}
-                                </div>
-                                @if ($todayUSDExchangeRate->diff_rate > 0)
-                                    <div class="fs-8 text-danger">+ {{ $todayUSDExchangeRate->diff_rate }}</div>
-                                @else
-                                    <div class="fs-8 text-success">{{ $todayUSDExchangeRate->diff_rate }}</div>
-                                @endif
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <div class="me-4"><img width="19" src="{{ asset('images/flags/european-union.png') }}" alt="Евро" /></div>
-                                <div class="fs-6 fw-bold me-2">
-                                    {{ $todayEURExchangeRate->rate }}
-                                </div>
-                                @if ($todayEURExchangeRate->diff_rate > 0)
-                                    <div class="fs-8 text-danger">+ {{ $todayEURExchangeRate->diff_rate }}</div>
-                                @else
-                                    <div class="fs-8 text-success">{{ $todayEURExchangeRate->diff_rate }}</div>
-                                @endif
-                            </div>
-                        @endif
-                    </div>
-
-                    <div class="d-flex ms-1 ms-lg-2 flex-column justify-content-center me-6">
-
-                        @if ($nextUSDExchangeRate && $nextEURExchangeRate)
-                            <div class="d-flex align-items-center">
-                                <div class="fs-7 text-muted">{{ now()->addDay()->format('d.m.Y') }}</div>
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <div class="fs-6 fw-bold me-2">{{ $nextUSDExchangeRate->rate }}</div>
-                                @if ($nextUSDExchangeRate->diff_rate > 0)
-                                    <div class="fs-8 text-danger">+ {{ $nextUSDExchangeRate->diff_rate }}</div>
-                                @else
-                                    <div class="fs-8 text-success">{{ $nextUSDExchangeRate->diff_rate }}</div>
-                                @endif
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <div class="fs-6 fw-bold me-2">{{ $nextEURExchangeRate->rate }}</div>
-                                @if ($nextEURExchangeRate->diff_rate > 0)
-                                    <div class="fs-8 text-danger">+ {{ $nextEURExchangeRate->diff_rate }}</div>
-                                @else
-                                    <div class="fs-8 text-success">{{ $nextEURExchangeRate->diff_rate }}</div>
-                                @endif
-                            </div>
-                        @endif
-                    </div>
-
-
-{{--                        <div class="d-flex align-items-center">--}}
-{{--                            <div class="d-flex flex-column flex-grow-1 my-lg-0 my-2 pe-3">--}}
-{{--                                <span class="text-gray-400 fs-5 my-1">17.11.2021</span>--}}
-{{--                                <span class="fs-4 fw-bold">USD 72.2724   EUR 82.7736</span>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-                    </div>
+                    @php
+                        $date = now()->addDay();
+                        $needFlag = false;
+                        $USDExchangeRate = $currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'USD');
+                        $EURExchangeRate = $currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'EUR');
+                    @endphp
+                    @include('partials.exchange_rate', compact('date', 'needFlag', 'USDExchangeRate', 'EURExchangeRate'))
 
                     <div class="d-flex align-items-center ms-lg-5" id="kt_header_user_menu_toggle">
                         <div class="btn btn-active-light d-flex align-items-center bg-hover-light py-2 px-2 px-md-3" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
