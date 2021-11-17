@@ -13,27 +13,6 @@
                 </div>
                 <div class="d-flex flex-wrap fw-bold mb-4 fs-5 text-gray-400">{{ $object->address }}</div>
             </div>
-            <div class="d-flex mb-4">
-                <a href="#" class="btn btn-sm btn-bg-light btn-active-color-primary me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_users_search">Добавить оплату</a>
-                <a href="#" class="btn btn-sm btn-primary me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_new_target">В Excel </a>
-                <div class="me-0">
-                    <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                        <i class="bi bi-three-dots fs-3"></i>
-                    </button>
-                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold w-200px py-3" data-kt-menu="true">
-                        <div class="menu-item px-3">
-                            <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Payments</div>
-                        </div>
-                        <div class="menu-item px-3">
-                            <a href="#" class="menu-link px-3">Create Invoice</a>
-                        </div>
-                        <div class="menu-item px-3">
-                            <a href="#" class="menu-link flex-stack px-3">Create Payment
-                                <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="" data-bs-original-title="Specify a target name for future usage and reference" aria-label="Specify a target name for future usage and reference"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="d-flex flex-wrap justify-content-start">
             <div class="d-flex flex-wrap">

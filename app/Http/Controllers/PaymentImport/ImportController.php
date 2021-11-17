@@ -21,8 +21,8 @@ class ImportController extends Controller
 
     public function index(): View
     {
-        $imports = PaymentImport::with('company', 'createdBy')->orderByDesc('date')->orderByDesc('id')->get();
-        return view('payment-imports.index', compact('imports'));
+        $importsGroupedByDate = PaymentImport::with('company', 'createdBy')->orderByDesc('date')->orderByDesc('id')->get()->groupBy('date');
+        return view('payment-imports.index', compact('importsGroupedByDate'));
     }
 
     public function show(PaymentImport $import): View
