@@ -10,7 +10,7 @@ class Sanitizer
     public function set(mixed $value): self
     {
         $this->value = $value;
-        return $this->trim()->onlyOneSpace()->removeHTMLTags();
+        return $this->trim()->noLineBrakes()->onlyOneSpace()->removeHTMLTags();
     }
 
     public function get(): mixed
@@ -39,6 +39,12 @@ class Sanitizer
     public function noSpaces(): self
     {
         $this->replace(' ', '');
+        return $this;
+    }
+
+    public function noLineBrakes(): self
+    {
+        $this->replace("\n", '');
         return $this;
     }
 

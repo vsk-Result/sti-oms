@@ -73,7 +73,7 @@ class PaymentObjectSheet implements
     public function map($row): array
     {
         return [
-            $row->object ? ($row->object->code . '.' . $row->object_worktype_id) : '',
+            $row->getObject(),
             $row->amount < 0 ? 'Payable' : 'Receivable',
             '',
             Date::dateTimeToExcel(Carbon::parse($row->date)),

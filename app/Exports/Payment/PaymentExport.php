@@ -46,6 +46,9 @@ class PaymentExport implements WithMultipleSheets
             }
         }
 
+        $payments = $this->payments->sortBy('type_id')->sortBy('object_id');
+        $sheets[] = new PaymentObjectSheet('Общая таблица', $payments);
+
         return $sheets;
     }
 }
