@@ -27,6 +27,10 @@
 
             <div class="d-flex align-items-stretch flex-shrink-0">
                 <div class="d-flex align-items-stretch flex-shrink-0">
+                    <div class="d-flex ms-1 ms-lg-2 flex-column justify-content-center me-8">
+                        <div id="show-date-and-time" class="fs-4 fw-bold me-2"></div>
+                    </div>
+
                     @php
                         $date = now();
                         $needFlag = true;

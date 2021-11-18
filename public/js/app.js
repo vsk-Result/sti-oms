@@ -15,6 +15,11 @@ const mainApp = function() {
         };
     }
 
+    const initShowDateAndTime = function() {
+        const date = new Date();
+        $('#show-date-and-time').text(date.toLocaleString());
+    }
+
     const initDateRangePicker = function() {
         $(".date-range-picker").daterangepicker({
             autoUpdateInput: false,
@@ -106,6 +111,10 @@ const mainApp = function() {
             initAjaxSetup();
             initSetToastrOptions();
             initDateRangePicker();
+
+            if ($('#show-date-and-time').length > 0) {
+                setInterval(initShowDateAndTime, 500);
+            }
         },
         sendAJAX: function (url, type, data, successCallback, errorCallback, alwaysCallback) {
             initSendAJAX(url, type, data, successCallback, errorCallback, alwaysCallback);

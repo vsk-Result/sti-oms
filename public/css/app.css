@@ -26,3 +26,8 @@ body, html {
         transform: scale(1.05);
     }
 }
+
+/* Изменить стандартную кнопку top scroll */
+.scrolltop {
+    background-color: #f26936 !important;
+}
