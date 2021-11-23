@@ -11,7 +11,13 @@ class CurrencyExchangeRateService
 
     public function getExchangeRate(string $date, string $currency): ?CurrencyExchangeRate
     {
-        $prevDate = Carbon::parse($date)->subDay()->format('Y-m-d');
+        if (Carbon::now()->isMonday()) {
+            $prevDate = Carbon::parse($date)->subDayS(3)->format('Y-m-d');
+        } else if (Carbon::now()->isSunday()) {
+            $prevDate = Carbon::parse($date)->subDayS(2)->format('Y-m-d');
+        } else {
+            $prevDate = Carbon::parse($date)->subDay()->format('Y-m-d');
+        }
 
         $exchangeRate = CurrencyExchangeRate::where('date', $date)->where('currency', $currency)->first();
 

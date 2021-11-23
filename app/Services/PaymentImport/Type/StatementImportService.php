@@ -39,6 +39,16 @@ class StatementImportService
     {
         $statementData = $this->getStatementDataFromExcel($requestData['file']);
 
+//        $result = [];
+//        foreach ($statementData[0] as $index => $row) {
+//            if ($index == 0) continue;
+//            if (empty($row[1])) break;
+//            $description = empty($row[0]) ? '' : $row[0];
+//            $result[] = $this->paymentService->checkHasNDSFromDescription($description) ? round($row[1] / 6, 2) : 0;
+//        }
+//
+//        dd($result);
+
         if (empty($statementData)) {
             return null;
         }
@@ -138,7 +148,7 @@ class StatementImportService
                 'code' => $payment['code'] ?? null,
                 'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
                 'description' => $payment['description'],
-                'date' => $payment['date'] ?? $import->date,
+                'date' => $import->company->short_name === 'БАМС' ? $payment['date'] : $import->date,
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
                 'is_need_split' => $isNeedSplit,
