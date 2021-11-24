@@ -3,7 +3,7 @@
 @section('object-tab-title', 'Сводная информация')
 
 @section('object-tab-content')
-    <div class="row g-6 g-xl-9">
+    <div class="row g-6 g-xl-9 mb-4">
         <div class="col-lg-4">
             <div class="card card-flush h-lg-100">
                 <div class="card-header mt-6">
@@ -14,7 +14,7 @@
                 </div>
 
                 <div class="card-body p-9 pt-0">
-                    <table class="table">
+                    <table class="table fs-6 fw-bold">
                         <tbody>
                             <tr>
                                 <td>Долг подрядчикам</td>
@@ -68,6 +68,76 @@
 
                 <div class="card-body p-9 pt-0">
                     <div id="chart-workers-salary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-6 g-xl-9">
+        <div class="col-lg-12">
+            <div class="card card-flush h-lg-100">
+                <div class="card-header mt-6">
+                    <div class="card-title flex-column">
+                        <h3 class="fw-bolder mb-1">Банковские гарантии и депозиты</h3>
+                        <div class="fs-6 fw-bold text-gray-400">На {{ now()->format('d.m.Y') }}</div>
+                    </div>
+
+                    <a href="#" class="btn btn-sm btn-light-primary align-self-center">Добавить банковскую гарантию</a>
+                </div>
+
+                <div class="card-body p-9 pt-0">
+                    <table class="table table-hover align-middle table-row-dashed fs-6">
+                        <thead>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th>Банк</th>
+                                <th>Дата начала БГ</th>
+                                <th>Дата окончания БГ</th>
+                                <th>Сумма БГ</th>
+                                <th>Дата начала депозита</th>
+                                <th>Дата окончания депозита</th>
+                                <th>Сумма депозита</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 fw-bold">
+                            <tr>
+                                <td>ПАО "ВТБ"</td>
+                                <td>29.08.2021</td>
+                                <td>28.09.2021</td>
+                                <td>9 456 000</td>
+                                <td>06.10.2021</td>
+                                <td>16.11.2021</td>
+                                <td>5 370 260</td>
+                                <td>
+                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Изменить</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ПАО "Сбербанк"</td>
+                                <td>15.10.2021</td>
+                                <td>16.11.2021</td>
+                                <td>5 760 000</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Изменить</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ПАО "ВТБ"</td>
+                                <td>06.10.2021</td>
+                                <td>16.11.2021</td>
+                                <td>5 370 260</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Изменить</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
