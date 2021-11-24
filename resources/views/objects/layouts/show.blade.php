@@ -16,23 +16,26 @@
                             <a class="nav-link text-active-primary me-6 {{ request()->is('*/pivot') ? 'active' : '' }}" href="{{ route('objects.pivot.index', $object) }}">Сводная информация</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-active-primary me-6" href="#">Документооборот</a>
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/documents') ? 'active' : '' }}" href="{{ route('objects.documents.index', $object) }}">Договора</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-active-primary me-6" href="#">Акты</a>
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/acts') ? 'active' : '' }}" href="{{ route('objects.acts.index', $object) }}">Акты</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-active-primary me-6" href="#">Гарантийные удержания</a>
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-active-primary me-6" href="#">Долги</a>
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/debts') ? 'active' : '' }}" href="{{ route('objects.debts.index', $object) }}">Долги</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-active-primary me-6" href="#">Оплаты</a>
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/payments') ? 'active' : '' }}" href="{{ route('objects.payments.index', $object) }}">Оплаты</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-active-primary me-6" href="#">Активность</a>
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/files') ? 'active' : '' }}" href="{{ route('objects.files.index', $object) }}">Файлы</a>
                         </li>
+{{--                        <li class="nav-item">--}}
+{{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/activity') ? 'active' : '' }}" href="{{ route('objects.activity.index', $object) }}">Активность</a>--}}
+{{--                        </li>--}}
                     </ul>
                 </div>
             </div>

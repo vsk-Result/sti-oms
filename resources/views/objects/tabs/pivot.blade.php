@@ -110,6 +110,7 @@
                                 <td>5 370 260</td>
                                 <td>
                                     <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Изменить</a>
+                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Скачать</a>
                                 </td>
                             </tr>
                             <tr>

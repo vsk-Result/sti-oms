@@ -24,7 +24,6 @@ class AvansImportController extends Controller
             }
         }
 
-
         return response()->json([
             'status' => 'success',
             'message' => 'Данные успешно получены',

@@ -2,6 +2,13 @@
 
 use App\Http\Controllers\Object\ObjectController;
 use App\Http\Controllers\Object\PivotController;
+use App\Http\Controllers\Object\DocumentController;
+use App\Http\Controllers\Object\ActController;
+use App\Http\Controllers\Object\GuaranteeController;
+use App\Http\Controllers\Object\DebtController;
+use App\Http\Controllers\Object\PaymentController;
+use App\Http\Controllers\Object\FileController;
+use App\Http\Controllers\Object\ActivityController;
 
 // Объекты
 
@@ -15,3 +22,33 @@ Route::post('objects/{object}', [ObjectController::class, 'update'])->name('obje
 // Сводная информация
 
 Route::get('objects/{object}/pivot', [PivotController::class, 'index'])->name('objects.pivot.index');
+
+// Документооборот
+
+Route::get('objects/{object}/documents', [DocumentController::class, 'index'])->name('objects.documents.index');
+
+// Акты
+
+Route::get('objects/{object}/acts', [ActController::class, 'index'])->name('objects.acts.index');
+
+// Гарантийные удержания
+
+Route::get('objects/{object}/guarantees', [GuaranteeController::class, 'index'])->name('objects.guarantees.index');
+
+// Долги
+
+Route::get('objects/{object}/debts', [DebtController::class, 'index'])->name('objects.debts.index');
+
+// Оплаты
+
+Route::get('objects/{object}/payments', [PaymentController::class, 'index'])->name('objects.payments.index');
+
+// Файлы
+
+Route::get('objects/{object}/files', [FileController::class, 'index'])->name('objects.files.index');
+
+// Активность
+
+Route::get('objects/{object}/activity', [ActivityController::class, 'index'])->name('objects.activity.index');
+
+
