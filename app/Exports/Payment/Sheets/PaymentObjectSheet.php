@@ -122,7 +122,8 @@ class PaymentObjectSheet implements
     public function columnWidths(): array
     {
         return [
-            'N' => 55,
+            'M' => 50,
+            'N' => 50,
         ];
     }
 }
