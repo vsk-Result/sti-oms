@@ -20,6 +20,15 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+
+                        <form action="{{ route('payment_imports.exports.all.store') }}" method="POST" class="hidden">
+                            @csrf
+                            <input name="payment_imports_ids" id="selected-imports-ids" type="hidden" value="">
+                            <button id="export-selected-imports" type="button" class="btn btn-light-dark me-3" style="display: none;">
+                                Экспорт выбранных оплат
+                            </button>
+                        </form>
+
                         @can('create payment-imports')
                             <button type="button" class="btn btn-light-primary"
                                     data-kt-menu-trigger="click"
@@ -62,6 +71,11 @@
                     <table class="table table-hover align-middle table-row-dashed fs-6" id="kt_table_users">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <th class="w-25px">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                    <input id="check-all-imports" class="form-check-input" type="checkbox" />
+                                </div>
+                            </th>
                             <th class="min-w-120px">Тип</th>
                             <th class="min-w-120px">Дата</th>
                             <th class="min-w-120px">Компания</th>
@@ -86,6 +100,11 @@
                                 </tr>
                                 @foreach($imports as $import)
                                     <tr>
+                                        <td>
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                                <input class="form-check-input widget-9-check" type="checkbox" value="{{ $import->id }}">
+                                            </div>
+                                        </td>
                                         <td class="text-dark fw-bolder">{{ $import->getType() }}</td>
                                         <td class="text-dark fw-bolder">
                                             @if (auth()->user()->can('show payment-imports'))
@@ -181,3 +200,7 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/payment-imports/index.js') }}"></script>
+@endpush

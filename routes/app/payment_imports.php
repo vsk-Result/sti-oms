@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PaymentImport\ImportController;
 use App\Http\Controllers\PaymentImport\ExportController;
+use App\Http\Controllers\PaymentImport\ExportAllController;
 use App\Http\Controllers\PaymentImport\Type\StatementImportController;
 use App\Http\Controllers\PaymentImport\Type\CRMCostClosureImportController;
 use App\Http\Controllers\PaymentImport\Type\HistoryImportController;
@@ -16,6 +17,7 @@ Route::delete('payment-imports/{import}', [ImportController::class, 'destroy'])-
 // Экспорт в Excel для разнесения в таблицы Dropbox
 
 Route::post('payment-imports/{import}/exports', [ExportController::class, 'store'])->name('payment_imports.exports.store')->middleware('can:show payment-imports');
+Route::post('payment-imports/exports', [ExportAllController::class, 'store'])->name('payment_imports.exports.all.store')->middleware('can:show payment-imports');
 
 // Загрузка из выписки
 
