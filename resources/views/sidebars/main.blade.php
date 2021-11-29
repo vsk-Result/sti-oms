@@ -5,7 +5,7 @@
 
         <div class="aside-logo d-lg-none d-flex justify-content-center mb-3" id="kt_aside_logo">
             <a href="#">
-                <img alt="Logo" src="https://st-ing.com/wp-content/themes/sti/img/logo.png" class="h-20px logo">
+                <img alt="Logo" src="{{ asset('images/logo.png') }}" class="h-20px logo">
             </a>
         </div>
 

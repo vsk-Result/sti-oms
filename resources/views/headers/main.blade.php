@@ -12,7 +12,7 @@
                 </span>
             </div>
             <a href="#">
-                <img alt="Logo" src="https://st-ing.com/wp-content/themes/sti/img/logo.png" class="d-none d-lg-inline h-45px" />
+                <img alt="Logo" src="{{ asset('images/logo.png') }}" class="d-none d-lg-inline h-45px" />
             </a>
         </div>
         <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1">
