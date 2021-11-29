@@ -23,6 +23,9 @@ class ObjectService
             'code' => $this->sanitizer->set($requestData['code'])->toNumber()->get(),
             'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
             'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
+            'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),
+            'responsible_email' => $this->sanitizer->set($requestData['responsible_email'])->toEmail()->get(),
+            'responsible_phone' => $this->sanitizer->set($requestData['responsible_phone'])->toPhone()->get(),
             'photo' => empty($requestData['photo'])
                 ? null
                 : $this->uploadService->uploadFile('objects/photo', $requestData['photo']),
@@ -46,6 +49,9 @@ class ObjectService
             'code' => $this->sanitizer->set($requestData['code'])->toNumber()->get(),
             'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
             'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
+            'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),
+            'responsible_email' => $this->sanitizer->set($requestData['responsible_email'])->toEmail()->get(),
+            'responsible_phone' => $this->sanitizer->set($requestData['responsible_phone'])->toPhone()->get(),
             'photo' => $photo,
             'status_id' => $requestData['status_id']
         ]);

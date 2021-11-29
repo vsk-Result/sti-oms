@@ -126,6 +126,9 @@ class StatementImportService
                         'code' => $code,
                         'name' => 'Без названия',
                         'address' => null,
+                        'responsible_name' => null,
+                        'responsible_email' => null,
+                        'responsible_phone' => null,
                         'photo' => null,
                     ]);
                 }

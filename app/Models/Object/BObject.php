@@ -15,7 +15,16 @@ class BObject extends Model
 
     protected $table = 'objects';
 
-    protected $fillable = ['code', 'name', 'address', 'photo', 'status_id'];
+    protected $fillable = [
+        'code',
+        'name',
+        'address',
+        'photo',
+        'status_id',
+        'responsible_name',
+        'responsible_email',
+        'responsible_phone'
+    ];
 
     public function imports(): HasMany
     {

@@ -98,4 +98,10 @@ class Sanitizer
         $this->value = preg_replace("/[^+0-9]/", '', $this->value);
         return $this;
     }
+
+    public function toEmail(): self
+    {
+        $this->value = preg_replace("/[^.@a-zA-Z0-9]/", '', $this->value);
+        return $this;
+    }
 }

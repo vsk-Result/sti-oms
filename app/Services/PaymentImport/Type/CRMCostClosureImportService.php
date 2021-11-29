@@ -75,7 +75,10 @@ class CRMCostClosureImportService
                     $object = $this->objectService->createObject([
                         'code' => $objectCode,
                         'name' => 'Без названия',
-                        'address' => '',
+                        'address' => null,
+                        'responsible_name' => null,
+                        'responsible_email' => null,
+                        'responsible_phone' => null,
                         'photo' => null
                     ]);
                 }

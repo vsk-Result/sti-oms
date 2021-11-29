@@ -30,6 +30,9 @@ class UpdateObjectRequest extends FormRequest
             ],
             'name' => 'required|string|max:120',
             'address' => 'nullable|string|max:200',
+            'responsible_name' => 'nullable|string|max:50',
+            'responsible_email' => 'nullable|string|max:50',
+            'responsible_phone' => 'nullable|string|max:50',
             'photo' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
             'status_id' => 'integer'
         ];

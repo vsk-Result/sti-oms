@@ -15,8 +15,7 @@
                 <div class="card-body py-3">
                     <form class="form" action="{{ route('objects.store') }}" method="POST">
                         @csrf
-                        <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
-                            <div class="row mb-5">
+                        <div class="row mb-5">
                                 <div class="col-md-12 fv-row">
                                     <div class="mb-10 fv-row" data-kt-password-meter="true">
                                         <div class="mb-1">
@@ -75,6 +74,51 @@
                                     </div>
 
                                     <div class="fv-row mb-10">
+                                        <label class="form-label fw-bolder text-dark fs-6">ФИО ответственного</label>
+                                        <input
+                                            class="form-control form-control-lg form-control-solid {{ $errors->has('responsible_name') ? 'is-invalid' : '' }}"
+                                            type="text"
+                                            value="{{ old('responsible_name') }}"
+                                            name="responsible_name"
+                                        />
+                                        @if ($errors->has('responsible_name'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div>{{ implode(' ', $errors->get('responsible_name')) }}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="fv-row mb-10">
+                                        <label class="form-label fw-bolder text-dark fs-6">Email ответственного</label>
+                                        <input
+                                            class="form-control form-control-lg form-control-solid {{ $errors->has('responsible_email') ? 'is-invalid' : '' }}"
+                                            type="email"
+                                            value="{{ old('responsible_email') }}"
+                                            name="responsible_email"
+                                        />
+                                        @if ($errors->has('responsible_email'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div>{{ implode(' ', $errors->get('responsible_email')) }}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="fv-row mb-10">
+                                        <label class="form-label fw-bolder text-dark fs-6">Телефон ответственного</label>
+                                        <input
+                                            class="form-control form-control-lg form-control-solid {{ $errors->has('responsible_phone') ? 'is-invalid' : '' }}"
+                                            type="text"
+                                            value="{{ old('responsible_phone') }}"
+                                            name="responsible_phone"
+                                        />
+                                        @if ($errors->has('responsible_phone'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div>{{ implode(' ', $errors->get('responsible_phone')) }}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="fv-row mb-10">
                                         <label class="form-label fw-bolder text-dark fs-6">Фотография</label>
                                         <input
                                             class="form-control form-control-lg form-control-solid {{ $errors->has('photo') ? 'is-invalid' : '' }}"
@@ -93,7 +137,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
                         <div class="d-flex flex-center py-3">
                             <button type="submit" id="kt_modal_new_address_submit" class="btn btn-primary me-3">
