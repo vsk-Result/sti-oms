@@ -96,7 +96,11 @@ class PaymentController extends Controller
         $categories = Payment::getCategories();
         $importTypes = PaymentImport::getTypes();
 
-        $payments = $paymentQuery->with('company', 'createdBy', 'object', 'organizationReceiver', 'organizationSender')->orderByDesc('date')->orderByDesc('id')->paginate(30);
+        $payments = $paymentQuery->with('company', 'createdBy', 'object', 'organizationReceiver', 'organizationSender')
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->paginate(30)
+            ->withQueryString();
 
         return view('payments.index', compact(
             'payments', 'companies', 'objects', 'worktypes', 'organizations', 'categories', 'importTypes',

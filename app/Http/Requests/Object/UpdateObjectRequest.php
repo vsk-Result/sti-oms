@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Object;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreOrUpdateObjectRequest extends FormRequest
+class UpdateObjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,9 @@ class StoreOrUpdateObjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|string|max:4|unique:objects',
+            'code' => [
+                'required', 'string', 'max:4', Rule::unique('objects')->ignore($this->object->id)
+            ],
             'name' => 'required|string|max:120',
             'address' => 'nullable|string|max:200',
             'photo' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',

@@ -43,6 +43,10 @@
                     </a>
                 </div>
             </div>
+
+            <div class="d-flex mb-4">
+                <a href="{{ route('objects.edit', $object) }}" class="btn btn-light btn-active-light-primary btn-sm">Изменить</a>
+            </div>
         </div>
 
         <div class="alert bg-light-danger border border-danger border-dashed d-flex flex-column flex-sm-row w-500px p-5 mb-10">

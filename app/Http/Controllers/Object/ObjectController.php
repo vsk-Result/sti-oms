@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Object;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Object\StoreOrUpdateObjectRequest;
+use App\Http\Requests\Object\StoreObjectRequest;
+use App\Http\Requests\Object\UpdateObjectRequest;
 use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Services\ObjectService;
@@ -34,7 +35,7 @@ class ObjectController extends Controller
         return view('objects.create');
     }
 
-    public function store(StoreOrUpdateObjectRequest $request): RedirectResponse
+    public function store(StoreObjectRequest $request): RedirectResponse
     {
         $this->objectService->createObject($request->toArray());
         return redirect()->route('objects.index');
@@ -51,9 +52,9 @@ class ObjectController extends Controller
         return view('objects.edit', compact('object', 'statuses'));
     }
 
-    public function update(BObject $object, StoreOrUpdateObjectRequest $request): RedirectResponse
+    public function update(BObject $object, UpdateObjectRequest $request): RedirectResponse
     {
         $this->objectService->updateObject($object, $request->toArray());
-        return redirect()->route('objects.index');
+        return redirect()->route('objects.show', $object);
     }
 }

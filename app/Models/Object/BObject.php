@@ -44,7 +44,7 @@ class BObject extends Model
 
     public function getPhoto(): string
     {
-        return empty($this->photo) ? asset('images/blanks/object_photo_blank.jpg') : $this->photo;
+        return $this->photo ? "/storage/$this->photo" : asset('images/blanks/object_photo_blank.jpg');
     }
 
     public function getName(): string

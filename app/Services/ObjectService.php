@@ -35,7 +35,7 @@ class ObjectService
     public function updateObject(BObject $object, array $requestData): void
     {
         if (array_key_exists('photo', $requestData)) {
-            $photo = $this->uploadService->uploadFile('objects/photo ', $requestData['photo']);
+            $photo = $this->uploadService->uploadFile('objects/photo', $requestData['photo']);
         } elseif ($requestData['avatar_remove'] === '1') {
             $photo = null;
         } else {
