@@ -76,6 +76,7 @@ class Sanitizer
 
     public function toAmount(): self
     {
+        $this->replace(',', '.');
         $this->value = (float) preg_replace("/[^-.0-9]/", '', $this->value);
         return $this;
     }

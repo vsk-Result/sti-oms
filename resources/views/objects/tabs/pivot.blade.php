@@ -79,16 +79,18 @@
                 <div class="card-header mt-6">
                     <div class="card-title flex-column">
                         <h3 class="fw-bolder mb-1">Банковские гарантии и депозиты</h3>
-                        <div class="fs-6 fw-bold text-gray-400">На {{ now()->format('d.m.Y') }}</div>
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary align-self-center">Добавить банковскую гарантию</a>
+                    @can('create bank-guarantee')
+                        <a target="_blank" href="{{ route('bank_guarantees.create') }}" class="btn btn-sm btn-light-primary align-self-center">Добавить банковскую гарантию</a>
+                    @endcan
                 </div>
 
                 <div class="card-body p-9 pt-0">
                     <table class="table table-hover align-middle table-row-dashed fs-6">
                         <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th>Компания</th>
                                 <th>Банк</th>
                                 <th>Дата начала БГ</th>
                                 <th>Дата окончания БГ</th>
@@ -96,47 +98,65 @@
                                 <th>Дата начала депозита</th>
                                 <th>Дата окончания депозита</th>
                                 <th>Сумма депозита</th>
-                                <th>Действие</th>
+                                <th>Действия</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
-                            <tr>
-                                <td>ПАО "ВТБ"</td>
-                                <td>29.08.2021</td>
-                                <td>28.09.2021</td>
-                                <td>9 456 000</td>
-                                <td>06.10.2021</td>
-                                <td>16.11.2021</td>
-                                <td>5 370 260</td>
-                                <td>
-                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Изменить</a>
-                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Скачать</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>ПАО "Сбербанк"</td>
-                                <td>15.10.2021</td>
-                                <td>16.11.2021</td>
-                                <td>5 760 000</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Изменить</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>ПАО "ВТБ"</td>
-                                <td>06.10.2021</td>
-                                <td>16.11.2021</td>
-                                <td>5 370 260</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <a href="#" class="btn btn-bg-light btn-color-muted btn-active-color-primary btn-sm px-4 me-2">Изменить</a>
-                                </td>
-                            </tr>
+                            @forelse($object->bankGuarantees as $guarantee)
+                                <tr>
+                                    <td>{!! $guarantee->company->getShortNameColored() !!}</td>
+                                    <td>{{ $guarantee->getBankName() }}</td>
+                                    <td>{{ $guarantee->getStartDateFormatted() }}</td>
+                                    <td>{{ $guarantee->getEndDateFormatted() }}</td>
+                                    <td>{{ $guarantee->getAmount() }}</td>
+                                    <td>{{ $guarantee->getStartDateDepositFormatted() }}</td>
+                                    <td>{{ $guarantee->getEndDateDepositFormatted() }}</td>
+                                    <td>{{ $guarantee->getAmountDeposit() }}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
+                                            <span class="svg-icon svg-icon-5 m-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                                            </svg>
+                                        </span>
+                                        </a>
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                            @can('show bank-guarantees')
+                                                <div class="menu-item px-3">
+                                                    <a target="_blank" href="{{ route('bank_guarantees.show', $guarantee) }}" class="menu-link px-3">Посмотреть</a>
+                                                </div>
+                                            @endcan
+                                            @can('edit bank-guarantees')
+                                                <div class="menu-item px-3">
+                                                    <a target="_blank" href="{{ route('bank_guarantees.edit', $guarantee) }}" class="menu-link px-3">Изменить</a>
+                                                </div>
+
+                                                <div class="menu-item px-3">
+                                                    <form action="{{ route('bank_guarantees.destroy', $guarantee) }}" method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <a
+                                                            href="#"
+                                                            class="menu-link px-3 text-danger"
+                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить банковскую гарантию?')) {this.closest('form').submit();}"
+                                                        >
+                                                            Удалить
+                                                        </a>
+                                                    </form>
+                                                </div>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9">
+                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                            Банковские гарантии отсутствуют
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

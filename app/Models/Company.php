@@ -31,6 +31,11 @@ class Company extends Model
         return $this->hasMany(Payment::class, 'company_id');
     }
 
+    public function bankGuarantees(): HasMany
+    {
+        return $this->hasMany(BankGuarantee::class, 'company_id');
+    }
+
     public function statements(): HasMany
     {
         return $this->hasMany(PaymentImport::class, 'company_id');

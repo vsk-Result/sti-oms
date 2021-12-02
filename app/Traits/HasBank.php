@@ -6,11 +6,6 @@ use App\Models\Bank;
 
 trait HasBank
 {
-    public function getBankImportClass(): string
-    {
-        return Bank::getBankImportClass((int) $this->bank_id);
-    }
-
     public function getBankName(): string
     {
         return is_null($this->bank_id) ? '' : Bank::getBankName((int) $this->bank_id);

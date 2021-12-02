@@ -129,6 +129,9 @@ class CRMCostClosureImportService
 
         $import->reCalculateAmountsAndCounts();
 
+        $closure->is_split = true;
+        $closure->update();
+
         return $import;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Object;
 
+use App\Models\BankGuarantee;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Traits\HasStatus;
@@ -34,6 +35,11 @@ class BObject extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'object_id');
+    }
+
+    public function bankGuarantees(): HasMany
+    {
+        return $this->hasMany(BankGuarantee::class, 'object_id');
     }
 
     public static function getObjectsList(): array

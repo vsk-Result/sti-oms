@@ -1,6 +1,5 @@
 <div id="kt_aside" class="aside" data-kt-drawer="true" data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '225px'}" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_toggle" data-kt-sticky="true" data-kt-sticky-name="aside-sticky" data-kt-sticky-offset="{default: false, lg: '1px'}" data-kt-sticky-width="{lg: '225px'}" data-kt-sticky-left="auto" data-kt-sticky-top="94px" data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
     <div class="hover-scroll-overlay-y my-5 my-lg-5 w-100 ps-4 ps-lg-0 pe-4 me-1" id="kt_aside_menu_wrapper" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_header" data-kt-scroll-wrappers="#kt_aside" data-kt-scroll-offset="5px">
-
         <form id="kt_sidebar_search_form" style="display: none;"><div class="form-control"></div></form>
 
         <div class="aside-logo d-lg-none d-flex justify-content-center mb-3" id="kt_aside_logo">
@@ -58,6 +57,14 @@
                 <div class="menu-item">
                     <a href="{{ route('organizations.index') }}" class="menu-link {{ request()->is('organizations*') ? 'active' : '' }}">
                         <span class="menu-title">Организации</span>
+                    </a>
+                </div>
+            @endcan
+
+            @can('index bank-guarantees')
+                <div class="menu-item">
+                    <a href="{{ route('bank_guarantees.index') }}" class="menu-link {{ request()->is('bank-guarantees*') ? 'active' : '' }}">
+                        <span class="menu-title">Банковские гарантии</span>
                     </a>
                 </div>
             @endcan

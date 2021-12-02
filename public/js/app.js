@@ -61,6 +61,49 @@ const mainApp = function() {
         $('.date-range-picker').on('cancel.daterangepicker', function() {
             $(this).val('');
         });
+
+        $('.date-range-picker-single').daterangepicker({
+            singleDatePicker: true,
+            autoUpdateInput: false,
+            showDropdowns: true,
+            locale: {
+                format: "Y-MM-DD",
+                cancelLabel: 'Очистить',
+                separator: " - ",
+                applyLabel: "Применить",
+                daysOfWeek: [
+                    "Вс",
+                    "Пн",
+                    "Вт",
+                    "Ср",
+                    "Чт",
+                    "Пт",
+                    "Сб"
+                ],
+                monthNames: [
+                    "Январь",
+                    "Февраль",
+                    "Март",
+                    "Апрель",
+                    "Май",
+                    "Июнь",
+                    "Июль",
+                    "Август",
+                    "Сентябрь",
+                    "Октябрь",
+                    "Ноябрь",
+                    "Декабрь"
+                ],
+            }
+        });
+
+        $('.date-range-picker-single').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('Y-MM-DD'));
+        });
+
+        $('.date-range-picker-single').on('cancel.daterangepicker', function() {
+            $(this).val('');
+        });
     }
 
     const initSendAJAX = function (url, type, data, successCallback, errorCallback, alwaysCallback) {
