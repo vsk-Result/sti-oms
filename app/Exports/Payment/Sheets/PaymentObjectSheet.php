@@ -62,6 +62,7 @@ class PaymentObjectSheet implements
             'Компания',
             'Вид расхода',
             'Банк',
+            'НДС',
         ];
     }
 
@@ -90,6 +91,7 @@ class PaymentObjectSheet implements
             $row->company->short_name,
             $row->category,
             $row->getBankName(),
+            $row->amount - $row->amount_without_nds,
         ];
     }
 
@@ -101,6 +103,7 @@ class PaymentObjectSheet implements
             'H' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'I' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'K' => NumberFormat::FORMAT_NUMBER_00,
+            'R' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 
