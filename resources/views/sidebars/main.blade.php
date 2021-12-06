@@ -69,6 +69,18 @@
                 </div>
             @endcan
 
+            <div class="menu-item pt-5">
+                <div class="menu-content pb-2">
+                    <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Отчеты</span>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <a href="{{ route('reports.itr_salary_object.create') }}" class="menu-link {{ request()->is('reports*') ? 'active' : '' }}">
+                    <span class="menu-title">Отчет по расходам на ЗП ИТР по проектам</span>
+                </a>
+            </div>
+
 {{--            <div class="menu-item">--}}
 {{--                <a href="#" class="menu-link">--}}
 {{--                    <span class="menu-title">Банки</span>--}}
