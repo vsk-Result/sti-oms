@@ -12,7 +12,7 @@ class AvansImportController extends Controller
     public function index(Request $request)
     {
         $imports = [];
-        $avansImports = AvansImport::orderByDesc('id')->take(5)->with('items', 'items.avans')->get();
+        $avansImports = AvansImport::orderByDesc('id')->take(30)->with('items', 'items.avans')->get();
         foreach ($avansImports as $import) {
             $sum = 0;
 
