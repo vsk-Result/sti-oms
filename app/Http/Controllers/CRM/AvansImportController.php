@@ -17,7 +17,7 @@ class AvansImportController extends Controller
             $sum = 0;
 
             foreach ($import->items as $item) {
-                $sum += $item->avans->value;
+                $sum += (float) $item->avans->value;
             }
             if ($sum === abs((float) $request->payment_amount)) {
                 $imports[$import->id] = Carbon::parse($import->date)->format('d.m.Y') . ' | ' . number_format($sum, 2, '.', ' ') . ' | ' . $import->description;
