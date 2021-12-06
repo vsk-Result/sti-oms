@@ -29,6 +29,8 @@ class AvansImportController extends Controller
             \Log::info(gettype($sum));
             \Log::info($sum == 69670.43);
             \Log::info($paymentAmount == 69670.43);
+            \Log::info((string) $sum == (string) $paymentAmount);
+            \Log::info((string) $sum === (string) $paymentAmount);
 
             if ($sum === $paymentAmount) {
                 $imports[$import->id] = Carbon::parse($import->date)->format('d.m.Y') . ' | ' . number_format($sum, 2, '.', ' ') . ' | ' . $import->description;
