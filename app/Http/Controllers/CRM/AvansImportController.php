@@ -27,6 +27,8 @@ class AvansImportController extends Controller
             \Log::info((float) $sum == abs((float) $request->payment_amount) ? 'true' : 'false');
             \Log::info((float) $sum == abs((float) $request->payment_amount) ? 'true' : 'false');
             \Log::info($sum == abs($request->payment_amount) ? 'true' : 'false');
+            \Log::info(typeOf(abs($request->payment_amount)));
+            \Log::info(typeOf($sum));
 
             if ($sum === abs((float) $request->payment_amount)) {
                 $imports[$import->id] = Carbon::parse($import->date)->format('d.m.Y') . ' | ' . number_format($sum, 2, '.', ' ') . ' | ' . $import->description;
