@@ -48,25 +48,10 @@ class ImportController extends Controller
         ]);
         return view('debt-imports.show', compact('import'));
     }
-//
-//    public function edit(PaymentImport $import): View
-//    {
-//        $categories = Payment::getCategories();
-//        $objects = Payment::getTypes() + BObject::getObjectsList();
-//        $import->load([
-//            'payments' => function($query) {
-//                $query->orderByDesc('amount');
-//            },
-//            'payments.organizationSender',
-//            'payments.organizationReceiver',
-//            'payments.object',
-//        ]);
-//        return view('payment-imports.edit', compact('import', 'objects', 'categories'));
-//    }
-//
-//    public function destroy(PaymentImport $import): RedirectResponse
-//    {
-//        $this->importService->destroyImport($import);
-//        return redirect()->route('payment_imports.index');
-//    }
+
+    public function destroy(DebtImport $import): RedirectResponse
+    {
+        $this->importService->destroyImport($import);
+        return redirect()->route('debt_imports.index');
+    }
 }
