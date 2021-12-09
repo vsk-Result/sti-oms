@@ -54,12 +54,6 @@
             </div>
         </div>
 
-        <div class="alert bg-light-danger border border-danger border-dashed d-flex flex-column flex-sm-row w-500px p-5 mb-10">
-            <div class="d-flex flex-column pe-0 pe-sm-10">
-                <span>Вся информация тестовая. Данный блок в разработке.</span>
-            </div>
-        </div>
-
         <div class="d-flex flex-wrap justify-content-start">
             <div class="d-flex flex-wrap">
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
