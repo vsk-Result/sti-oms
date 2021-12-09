@@ -18,11 +18,11 @@
                         <tbody>
                             <tr>
                                 <td>Долг подрядчикам</td>
-                                <td class="text-danger">13 245 620</td>
+                                <td class="text-danger">{{ number_format($object->getContractorDebtsAmount(), 2, '.', ' ') }}</td>
                             </tr>
                             <tr>
-                                <td>Долг за материалы</td>
-                                <td class="text-danger">10 773 800</td>
+                                <td>Долг поставщикам</td>
+                                <td class="text-danger">{{ number_format($object->getProviderDebtsAmount(), 2, '.', ' ') }}</td>
                             </tr>
                             <tr>
                                 <td>Долг подписанных актов</td>
@@ -82,7 +82,7 @@
                     </div>
 
                     @can('create bank-guarantee')
-                        <a target="_blank" href="{{ route('bank_guarantees.create') }}" class="btn btn-sm btn-light-primary align-self-center">Добавить банковскую гарантию</a>
+                        <a target="_blank" href="{{ route('bank_guarantees.create') }}?return_url={{ request()->url() }}&current_object_id={{ $object->id }}" class="btn btn-sm btn-light-primary align-self-center">Добавить банковскую гарантию</a>
                     @endcan
                 </div>
 
@@ -128,7 +128,7 @@
                                             @endcan
                                             @can('edit bank-guarantees')
                                                 <div class="menu-item px-3">
-                                                    <a target="_blank" href="{{ route('bank_guarantees.edit', $guarantee) }}" class="menu-link px-3">Изменить</a>
+                                                    <a target="_blank" href="{{ route('bank_guarantees.edit', $guarantee) }}?return_url={{ request()->url() }}" class="menu-link px-3">Изменить</a>
                                                 </div>
 
                                                 <div class="menu-item px-3">

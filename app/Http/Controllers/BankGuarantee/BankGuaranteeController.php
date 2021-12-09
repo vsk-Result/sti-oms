@@ -12,6 +12,7 @@ use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Services\BankGuaranteeService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class BankGuaranteeController extends Controller
@@ -29,19 +30,20 @@ class BankGuaranteeController extends Controller
         return view('bank-guarantees.index', compact('bankGuarantees'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         $banks = Bank::getBanks();
+        $objectId = $request->get('current_object_id') ?? null;
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $targets = BankGuarantee::getTargetsList();
-        return view('bank-guarantees.create', compact('banks', 'objects', 'companies', 'targets'));
+        return view('bank-guarantees.create', compact('banks', 'objects', 'companies', 'targets', 'objectId'));
     }
 
     public function store(StoreBankGuaranteeRequest $request): RedirectResponse
     {
         $this->guaranteeService->createBankGuarantee($request->toArray());
-        return redirect()->route('bank_guarantees.index');
+        return redirect($request->get('return_url') ?? route('bank_guarantees.index'));
     }
 
     public function show(BankGuarantee $guarantee): View
@@ -62,7 +64,7 @@ class BankGuaranteeController extends Controller
     public function update(BankGuarantee $guarantee, UpdateBankGuaranteeRequest $request): RedirectResponse
     {
         $this->guaranteeService->updateBankGuarantee($guarantee, $request->toArray());
-        return redirect()->route('bank_guarantees.index');
+        return redirect($request->get('return_url') ?? route('bank_guarantees.index'));
     }
 
     public function destroy(BankGuarantee $guarantee): RedirectResponse

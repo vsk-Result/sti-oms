@@ -20,8 +20,8 @@ class BankGuaranteeService
     {
         $guarantee = BankGuarantee::create([
             'company_id' => $requestData['company_id'],
-            'bank_id' => $requestData['company_id'],
-            'object_id' => $requestData['company_id'],
+            'bank_id' => $requestData['bank_id'],
+            'object_id' => $requestData['object_id'],
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
@@ -43,8 +43,8 @@ class BankGuaranteeService
     {
         $guarantee->update([
             'company_id' => $requestData['company_id'],
-            'bank_id' => $requestData['company_id'],
-            'object_id' => $requestData['company_id'],
+            'bank_id' => $requestData['bank_id'],
+            'object_id' => $requestData['object_id'],
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),

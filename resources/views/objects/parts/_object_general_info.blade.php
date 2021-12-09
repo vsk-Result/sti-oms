@@ -64,12 +64,6 @@
             <div class="d-flex flex-wrap">
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                     <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder">0 / 0</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Рабочих / ИТР</div>
-                </div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
                         <div class="fs-4 fw-bolder {{ $object->payments->sum('amount') < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($object->payments->sum('amount'), 2, '.', ' ') }}</div>
                     </div>
                     <div class="fw-bold fs-6 text-gray-400">Баланс</div>
@@ -94,21 +88,15 @@
                 </div>
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                     <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder">0.00</div>
+                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getContractorDebtsAmount(), 2, '.', ' ') }}</div>
                     </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма аванса к получению</div>
+                    <div class="fw-bold fs-6 text-gray-400">Долг подрядчикам</div>
                 </div>
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                     <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder">0.00</div>
+                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getProviderDebtsAmount(), 2, '.', ' ') }}</div>
                     </div>
-                    <div class="fw-bold fs-6 text-gray-400">Долг подписанных актов</div>
-                </div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder">0.00</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Долг гарантийного удержания</div>
+                    <div class="fw-bold fs-6 text-gray-400">Долг поставщикам</div>
                 </div>
             </div>
         </div>

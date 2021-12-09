@@ -13,7 +13,7 @@
                     </h3>
                 </div>
                 <div class="card-body py-3">
-                    <form class="form" action="{{ route('bank_guarantees.store') }}" method="POST" enctype="multipart/form-data">
+                    <form class="form" action="{{ route('bank_guarantees.store') }}?return_url={{ request()->get('return_url', '') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row mb-5">
                             <div class="col-md-12 fv-row">
@@ -25,7 +25,7 @@
                                             <div class="position-relative mb-3">
                                                 <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     @foreach($objects as $object)
-                                                        <option value="{{ $object->id }}">{{ $object->getName() }}</option>
+                                                        <option value="{{ $object->id }}" {{ $object->id == $objectId ? 'selected' : '' }}>{{ $object->getName() }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -227,7 +227,7 @@
                             <button type="submit" id="kt_modal_new_address_submit" class="btn btn-primary me-3">
                                 <span class="indicator-label">Создать</span>
                             </button>
-                            <a href="{{ route('bank_guarantees.index') }}" class="btn btn-light">Отменить</a>
+                            <a href="{{ request()->get('return_url') ?? route('bank_guarantees.index') }}" class="btn btn-light">Отменить</a>
                         </div>
                     </form>
                 </div>

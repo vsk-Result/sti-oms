@@ -9,7 +9,32 @@
         </div>
 
         <div class="menu menu-column menu-active-bg menu-hover-bg menu-title-gray-700 fs-6 menu-rounded w-100" id="#kt_aside_menu" data-kt-menu="true">
-            <div class="menu-item">
+
+            @if(auth()->user()->can('index payment-imports') || auth()->user()->can('index debt-imports'))
+                <div class="menu-item pt-5">
+                    <div class="menu-content pb-2">
+                        <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Загрузки</span>
+                    </div>
+                </div>
+
+                @can('index payment-imports')
+                    <div class="menu-item">
+                        <a href="{{ route('payment_imports.index') }}" class="menu-link {{ request()->is('payment-imports*') ? 'active' : '' }}">
+                            <span class="menu-title">Загрузки оплат</span>
+                        </a>
+                    </div>
+                @endcan
+
+                @can('index debt-imports')
+                    <div class="menu-item">
+                        <a href="{{ route('debt_imports.index') }}" class="menu-link {{ request()->is('debt-imports*') ? 'active' : '' }}">
+                            <span class="menu-title">Загрузки долгов</span>
+                        </a>
+                    </div>
+                @endcan
+            @endif
+
+            <div class="menu-item pt-5">
                 <div class="menu-content pb-2">
                     <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Основное</span>
                 </div>
@@ -30,20 +55,6 @@
                     </a>
                 </div>
             @endcan
-
-            @can('index payment-imports')
-                <div class="menu-item">
-                    <a href="{{ route('payment_imports.index') }}" class="menu-link {{ request()->is('payment-imports*') ? 'active' : '' }}">
-                        <span class="menu-title">Загрузки оплат</span>
-                    </a>
-                </div>
-            @endcan
-
-            <div class="menu-item pt-5">
-                <div class="menu-content pb-2">
-                    <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Справочник</span>
-                </div>
-            </div>
 
             @can('index companies')
                 <div class="menu-item">
@@ -80,12 +91,6 @@
                     <span class="menu-title">Отчет по расходам на ЗП ИТР по проектам</span>
                 </a>
             </div>
-
-{{--            <div class="menu-item">--}}
-{{--                <a href="#" class="menu-link">--}}
-{{--                    <span class="menu-title">Банки</span>--}}
-{{--                </a>--}}
-{{--            </div>--}}
 
             @can('show admin-sidebar-menu')
                 <div class="menu-item pt-5">

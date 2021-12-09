@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use App\Services\PermissionService;
 
 class RoleAndPermissionSeeder extends Seeder
 {
@@ -19,7 +19,7 @@ class RoleAndPermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roles = [
+        $permissions = [
             'Панель администратора' => ['admin-sidebar-menu' => ['show']],
             'Пользователи' => ['admin-users' => ['index', 'show', 'create', 'edit']],
             'Роли доступа' => ['admin-roles' => ['index', 'create', 'edit']],
@@ -31,16 +31,7 @@ class RoleAndPermissionSeeder extends Seeder
             'Объекты' => ['objects' => ['index', 'show', 'create', 'edit']],
         ];
 
-        foreach ($roles as $category => $role) {
-            foreach ($role as $name => $rolePrefixes) {
-                foreach ($rolePrefixes as $prefix) {
-                    Permission::create([
-                        'category' => $category,
-                        'name' => "$prefix $name"
-                    ]);
-                }
-            }
-        }
+        (new PermissionService())->createPermissions($permissions);
 
         $superAdminRole = Role::create([
             'name' => 'super-admin',
@@ -48,12 +39,5 @@ class RoleAndPermissionSeeder extends Seeder
         ]);
 
         User::find(1)->assignRole($superAdminRole);
-
-        $testRole = Role::create([
-            'name' => 'test-role',
-            'description' => 'Роль для тестового пользователя',
-        ]);
-
-        User::find(2)->assignRole($testRole);
     }
 }

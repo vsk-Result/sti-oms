@@ -3,12 +3,15 @@
 namespace App\Models\Object;
 
 use App\Models\BankGuarantee;
+use App\Models\Debt\Debt;
+use App\Models\Debt\DebtImport;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 class BObject extends Model
 {
@@ -42,6 +45,11 @@ class BObject extends Model
         return $this->hasMany(BankGuarantee::class, 'object_id');
     }
 
+    public function debts(): HasMany
+    {
+        return $this->hasMany(Debt::class, 'object_id');
+    }
+
     public static function getObjectsList(): array
     {
         $result = [];
@@ -65,5 +73,29 @@ class BObject extends Model
     public function getName(): string
     {
         return $this->code . ' | '  . $this->name;
+    }
+
+    public function getContractorDebts(): Collection
+    {
+        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
+        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+        return $this->debts()->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])->where('type_id', Debt::TYPE_CONTRACTOR)->orderBy('amount')->get();
+    }
+
+    public function getProviderDebts(): Collection
+    {
+        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
+        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+        return $this->debts()->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])->where('type_id', Debt::TYPE_PROVIDER)->orderBy('amount')->get();
+    }
+
+    public function getContractorDebtsAmount(): float
+    {
+        return $this->getContractorDebts()->sum('amount');
+    }
+
+    public function getProviderDebtsAmount(): float
+    {
+        return $this->getProviderDebts()->sum('amount');
     }
 }
