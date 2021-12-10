@@ -110,6 +110,14 @@ class HistoryImportImportService
                 ? round($amount / 6, 2)
                 : 0;
 
+            if (! empty($paymentData[11])) {
+                $description = $description . ' Счет №: ' . $paymentData[11];
+            }
+
+            if (! empty($paymentData[1])) {
+                $description = $description . ' Дата счета: ' . Carbon::parse(Date::excelToDateTimeObject($paymentData[1]))->format('Y-m-d');
+            }
+
             $this->paymentService->createPayment([
                 'company_id' => $companyId,
                 'bank_id' => null,
