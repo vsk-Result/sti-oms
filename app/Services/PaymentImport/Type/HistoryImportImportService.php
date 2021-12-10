@@ -72,15 +72,13 @@ class HistoryImportImportService
             $description = $paymentData[12] ?? '';
 
             $issetPayment = false;
-            if (empty($paymentData[12])) {
+            if (empty($paymentData[15])) {
                 $issetPayment = Payment::where('date', $date)
                     ->where('object_id', $requestData['object_id'])
                     ->where('amount', $amount)
                     ->where('description', $description)
                     ->first();
             }
-
-
 
             $companyId = $paymentData[13] === 'КАССА' ? 1 : Company::where('short_name', $paymentData[13])->first()->id;
 
