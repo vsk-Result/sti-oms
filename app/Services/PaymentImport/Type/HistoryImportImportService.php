@@ -110,8 +110,8 @@ class HistoryImportImportService
                 ? round($amount / 6, 2)
                 : 0;
 
-            if (! empty($paymentData[11])) {
-                $description = $description . ' Счет №: ' . $paymentData[11];
+            if (! empty($paymentData[10])) {
+                $description = $description . ' Счет №: ' . $paymentData[10];
             }
 
             if (! empty($paymentData[1])) {
