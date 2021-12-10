@@ -115,10 +115,10 @@ class HistoryImportImportService
             }
 
             if (! empty($paymentData[1])) {
-                try {
-                    $billDate = Carbon::parse(Date::excelToDateTimeObject($paymentData[1]))->format('Y-m-d');
-                } catch(\Exception $e) {
+                if (is_string($paymentData[1])) {
                     $billDate = $paymentData[1];
+                } else {
+                    $billDate = Carbon::parse(Date::excelToDateTimeObject($paymentData[1]))->format('Y-m-d');
                 }
 
                 $description = $description . ' Дата счета: ' . $billDate;
