@@ -71,7 +71,6 @@ class HistoryImportImportService
 
             $description = $paymentData[12] ?? '';
 
-            $issetPayment = false;
             if (empty($paymentData[15])) {
                 $issetPayment = Payment::where('date', $date)
                     ->whereNotNull('bank_id')
@@ -79,9 +78,11 @@ class HistoryImportImportService
                     ->where('amount', $amount)
                     ->where('description', $description)
                     ->first();
-            }
 
-            if ($issetPayment) {
+                if ($issetPayment) {
+                    continue;
+                }
+            } else {
                 continue;
             }
 
