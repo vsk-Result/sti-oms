@@ -3,6 +3,7 @@
 namespace App\Services\PaymentImport\Type;
 
 use App\Imports\PaymentImport as PImport;
+use App\Models\Company;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
@@ -44,7 +45,7 @@ class HistoryImportImportService
             'company_id' => 1,
             'date' => Carbon::now()->format('Y-m-d'),
             'status_id' => Status::STATUS_ACTIVE,
-            'file' => $this->uploadService->uploadFile('payment-imports/statements', $requestData['file']),
+            'file' => $this->uploadService->uploadFile('payment-imports/history', $requestData['file']),
             'description' => 'Загружен файл ' . $requestData['file']->getClientOriginalName()
         ]);
 
@@ -62,7 +63,26 @@ class HistoryImportImportService
             }
 
             $date = Carbon::parse(Date::excelToDateTimeObject($paymentData[2]))->format('Y-m-d');
-            $amount = (float) $paymentData[5];
+            $amount = (float) $paymentData[6];
+
+            if ($amount == 0) {
+                continue;
+            }
+
+            $description = $paymentData[12] ?? '';
+
+            $issetPayment = false;
+            if (empty($paymentData[12])) {
+                $issetPayment = Payment::where('date', $date)
+                    ->where('object_id', $requestData['object_id'])
+                    ->where('amount', $amount)
+                    ->where('description', $description)
+                    ->first();
+            }
+
+
+
+            $companyId = $paymentData[13] === 'КАССА' ? 1 : Company::where('short_name', $paymentData[13])->first()->id;
 
             if ($amount > 0) {
                 $organizationSender = $this->organizationService->getOrCreateOrganization([
@@ -82,12 +102,12 @@ class HistoryImportImportService
                 ]);
             }
 
-            $nds = $this->paymentService->checkHasNDSFromDescription($paymentData[12])
+            $nds = $this->paymentService->checkHasNDSFromDescription($description)
                 ? round($amount / 6, 2)
                 : 0;
 
             $this->paymentService->createPayment([
-                'company_id' => $import->company_id,
+                'company_id' => $companyId,
                 'bank_id' => null,
                 'import_id' => $import->id,
                 'object_id' => (int) $requestData['object_id'],
@@ -95,15 +115,15 @@ class HistoryImportImportService
                 'organization_sender_id' => $organizationSender->id,
                 'organization_receiver_id' => $organizationReceiver->id,
                 'type_id' => Payment::TYPE_OBJECT,
-                'payment_type_id' => $paymentData[13] === 'STI' ? Payment::PAYMENT_TYPE_NON_CASH : Payment::PAYMENT_TYPE_CASH,
+                'payment_type_id' => $paymentData[13] === 'КАССА' ? Payment::PAYMENT_TYPE_CASH : Payment::PAYMENT_TYPE_NON_CASH,
                 'code' => $paymentData[4],
                 'category' => $paymentData[14],
-                'description' => $paymentData[12],
+                'description' => $description,
                 'date' => $date,
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
                 'is_need_split' => false,
-                'status_id' => Status::STATUS_ACTIVE
+                'status_id' => $issetPayment ? Status::STATUS_BLOCKED : Status::STATUS_ACTIVE
             ]);
         }
 
