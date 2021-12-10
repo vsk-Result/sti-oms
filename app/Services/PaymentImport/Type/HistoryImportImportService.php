@@ -74,10 +74,10 @@ class HistoryImportImportService
             $issetPayment = false;
             if (empty($paymentData[15])) {
                 $issetPayment = Payment::where('date', $date)
+                    ->whereNotNull('bank_id')
                     ->where('object_id', $requestData['object_id'])
                     ->where('amount', $amount)
                     ->where('description', $description)
-                    ->where('created_at', '<', Carbon::now())
                     ->first();
             }
 
