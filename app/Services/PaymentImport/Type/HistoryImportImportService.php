@@ -80,6 +80,10 @@ class HistoryImportImportService
                     ->first();
             }
 
+            if ($issetPayment) {
+                continue;
+            }
+
             $companyId = $paymentData[13] === 'КАССА' ? 1 : Company::where('short_name', $paymentData[13])->first()->id;
 
             if ($amount > 0) {
