@@ -77,6 +77,7 @@ class HistoryImportImportService
                     ->where('object_id', $requestData['object_id'])
                     ->where('amount', $amount)
                     ->where('description', $description)
+                    ->where('created_at', '<', Carbon::now())
                     ->first();
             }
 
@@ -125,7 +126,7 @@ class HistoryImportImportService
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
                 'is_need_split' => false,
-                'status_id' => $issetPayment ? Status::STATUS_BLOCKED : Status::STATUS_ACTIVE
+                'status_id' => Status::STATUS_ACTIVE
             ]);
         }
 
