@@ -115,7 +115,13 @@ class PaymentService
         }
 
         if ($needPaginate) {
-            return $paymentQuery->paginate($requestData['count_in_page'] ?? 30)->withQueryString();
+            $perPage = 30;
+
+            if (! empty($requestData['count_per_page'])) {
+                $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+            }
+
+            return $paymentQuery->paginate($perPage)->withQueryString();
         }
 
         return $paymentQuery->get();

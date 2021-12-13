@@ -167,9 +167,9 @@
                             <div class="form-group">
                                 <label class="form-label">Количество записей на странице</label>
                                 <input
-                                    name="count_in_page"
+                                    name="count_per_page"
                                     class="form-control form-control-solid"
-                                    value="{{ request()->input('count_in_page', '30') }}"
+                                    value="{{ request()->input('count_per_page', '30') }}"
                                 />
                             </div>
                         </div>
