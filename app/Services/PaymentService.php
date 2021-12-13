@@ -84,8 +84,8 @@ class PaymentService
         }
 
         if (! empty($requestData['amount_expression'])) {
-            $expression = str_replace(' ', '', $requestData['amount_expression']);
-            $expression = str_replace(',', '.', $expression);
+            $expression = str_replace(',', '.', $requestData['amount_expression']);
+            $expression = preg_replace("/[^<>=!.0-9]/", '', $expression);
 
             $operators = ['<=', '<', '>=', '>', '!=', '='];
             foreach ($operators as $operator) {

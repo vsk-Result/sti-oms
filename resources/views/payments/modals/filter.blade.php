@@ -104,8 +104,18 @@
                                 <input
                                     name="amount_expression"
                                     class="form-control form-control-solid"
+                                    placeholder=">= 10000"
                                     value="{{ request()->input('amount_expression', '') }}"
                                 />
+                                <p class="text-muted mt-2">
+                                    Операторы:
+                                    <code><=</code>
+                                    <code><</code>
+                                    <code>>=</code>
+                                    <code>></code>
+                                    <code>!=</code>
+                                    <code>=</code>
+                                </p>
                             </div>
                         </div>
                         <div class="col-md-4">
