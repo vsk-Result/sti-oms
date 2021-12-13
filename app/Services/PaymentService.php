@@ -10,6 +10,8 @@ use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
+use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class PaymentService
@@ -30,6 +32,93 @@ class PaymentService
         $this->opsteList = include base_path('resources/categories/opste.php');
         $this->radList = include base_path('resources/categories/rad.php');
         $this->materialList = include base_path('resources/categories/material.php');
+    }
+
+    public function filterPayments(array $requestData, $needPaginate = false): Collection|LengthAwarePaginator
+    {
+        $paymentQuery = Payment::query();
+
+        if (! empty($requestData['period'])) {
+            $period = str_replace('/', '.', $requestData['period']);
+            $startDate = substr($period, 0, strpos($period, ' '));
+            $endDate = substr($period, strpos($period, ' ') + 3);
+
+            $paymentQuery->whereBetween('date', [Carbon::parse($startDate), Carbon::parse($endDate)]);
+        }
+
+        if (! empty($requestData['description'])) {
+            $paymentQuery->where('description', 'LIKE', '%' . $requestData['description'] . '%');
+        }
+
+        if (! empty($requestData['company_id'])) {
+            $paymentQuery->whereIn('company_id', $requestData['company_id']);
+        }
+
+        if (! empty($requestData['organization_sender_id'])) {
+            $paymentQuery->whereIn('organization_sender_id', $requestData['organization_sender_id']);
+        }
+
+        if (! empty($requestData['organization_receiver_id'])) {
+            $paymentQuery->whereIn('organization_receiver_id', $requestData['organization_receiver_id']);
+        }
+
+        if (! empty($requestData['object_id'])) {
+            $paymentQuery->whereIn('object_id', $requestData['object_id']);
+        }
+
+        if (! empty($requestData['object_worktype_id'])) {
+            $paymentQuery->whereIn('object_worktype_id', $requestData['object_worktype_id']);
+        }
+
+        if (! empty($requestData['category'])) {
+            $paymentQuery->whereIn('category', $requestData['category']);
+        }
+
+        if (! empty($requestData['import_type_id'])) {
+            $paymentImportsIds = PaymentImport::whereIn('type_id', $requestData['import_type_id'])->pluck('id');
+            $paymentQuery->whereIn('import_id', $paymentImportsIds);
+        }
+
+        if (! empty($requestData['bank_id'])) {
+            $paymentQuery->whereIn('bank_id', $requestData['bank_id']);
+        }
+
+        if (! empty($requestData['amount_expression'])) {
+            $expression = str_replace(' ', '', $requestData['amount_expression']);
+            $expression = str_replace(',', '.', $expression);
+
+            $operators = ['<=', '<', '>=', '>', '!=', '='];
+            foreach ($operators as $operator) {
+                if (str_contains($expression, $operator)) {
+                    $amount = (float) substr($expression, strpos($expression, $operator) + strlen($operator));
+                    $paymentQuery->where('amount', $operator, $amount);
+                    break;
+                }
+            }
+        }
+
+        $paymentQuery->with('company', 'createdBy', 'object', 'organizationReceiver', 'organizationSender');
+
+        if (! empty($requestData['sort_by'])) {
+            if ($requestData['sort_by'] == 'company_id') {
+                $paymentQuery->orderBy(Company::select('name')->whereColumn('companies.id', 'payments.company_id'), $requestData['sort_direction'] ?? 'asc');
+            } elseif ($requestData['sort_by'] == 'organization_id') {
+                $paymentQuery->orderBy(Organization::select('name')->whereColumn('organizations.id', 'payments.organization_receiver_id')->orWhereColumn('organizations.id', 'payments.organization_sender_id'), $requestData['sort_direction'] ?? 'asc');
+            } elseif ($requestData['sort_by'] == 'object_id') {
+                $paymentQuery->orderBy(BObject::select('code')->whereColumn('objects.id', 'payments.object_id'), $requestData['sort_direction'] ?? 'asc');
+            } else {
+                $paymentQuery->orderBy($requestData['sort_by'], $requestData['sort_direction'] ?? 'asc');
+            }
+        } else {
+            $paymentQuery->orderByDesc('date')
+                ->orderByDesc('id');
+        }
+
+        if ($needPaginate) {
+            return $paymentQuery->paginate($requestData['count_in_page'] ?? 30)->withQueryString();
+        }
+
+        return $paymentQuery->get();
     }
 
     public function createPayment(array $requestData): Payment

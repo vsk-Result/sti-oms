@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Exports\Payment;
+namespace App\Exports\PaymentImport;
 
-use App\Exports\Payment\Sheets\PaymentObjectSheet;
-use App\Exports\Payment\Sheets\PaymentTransferSheet;
-use App\Exports\Payment\Sheets\PaymentGeneralSheet;
+use App\Exports\PaymentImport\Sheets\ObjectSheet;
+use App\Exports\PaymentImport\Sheets\TransferSheet;
+use App\Exports\PaymentImport\Sheets\GeneralSheet;
 use App\Models\Payment;
 use App\Models\Object\BObject;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class PaymentExport implements WithMultipleSheets
+class Export implements WithMultipleSheets
 {
     private Collection $payments;
 
@@ -27,19 +27,19 @@ class PaymentExport implements WithMultipleSheets
         foreach ($groupedByTypePayments as $type => $gPayments) {
             switch ($type) {
                 case Payment::TYPE_NONE:
-                    $sheets[] = new PaymentObjectSheet('Без кода', $gPayments);
+                    $sheets[] = new ObjectSheet('Без кода', $gPayments);
                     break;
                 case Payment::TYPE_OBJECT:
                     $groupedPayments = $gPayments->sortBy('object_id')->groupBy('object_id');
                     foreach ($groupedPayments as $objectId => $payments) {
-                        $sheets[] = new PaymentObjectSheet(BObject::find($objectId)->code, $payments);
+                        $sheets[] = new ObjectSheet(BObject::find($objectId)->code, $payments);
                     }
                     break;
                 case Payment::TYPE_GENERAL:
-                    $sheets[] = new PaymentGeneralSheet($gPayments);
+                    $sheets[] = new GeneralSheet($gPayments);
                     break;
                 case Payment::TYPE_TRANSFER:
-                    $sheets[] = new PaymentTransferSheet($gPayments);
+                    $sheets[] = new TransferSheet($gPayments);
                     break;
                 default:
                     break;
@@ -47,7 +47,7 @@ class PaymentExport implements WithMultipleSheets
         }
 
         $payments = $this->payments->sortBy('type_id')->sortBy('object_id');
-        $sheets[] = new PaymentObjectSheet('Общая таблица', $payments);
+        $sheets[] = new ObjectSheet('Общая таблица', $payments);
 
         return $sheets;
     }

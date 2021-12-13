@@ -14,22 +14,41 @@
                                 <input
                                     name="period"
                                     class="form-control form-control-solid date-range-picker"
-                                    placeholder="Выберите период"
-                                    value="{{ $filterPeriod }}"
+                                    value="{{ request()->input('period', '') }}"
                                     autocomplete="off"/>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Описание</label>
-                                <input name="description" class="form-control form-control-solid" value="{{ $filterDescription }}" />
+                                <input name="description" class="form-control form-control-solid" value="{{ request()->input('description', '') }}" />
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Категория</label>
+                                <select
+                                    name="category[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
+                                    @foreach($categories as $categoryId => $category)
+                                        <option value="{{ $categoryId }}" {{ in_array($categoryId, request()->input('category', [])) ? 'selected' : '' }}>{{ $category }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Категория</label>
-                                <select name="category" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
-                                    <option value="all" {{ $filterCategory === 'all' ? 'selected' : '' }}>Все</option>
-                                    @foreach($categories as $categoryId => $category)
-                                        <option value="{{ $categoryId }}" {{ $filterCategory === $categoryId ? 'selected' : '' }}>{{ $category }}</option>
+                                <label class="form-label">Банк</label>
+                                <select
+                                    name="bank_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
+                                    @foreach($banks as $bankId => $bank)
+                                        <option value="{{ $bankId }}" {{ in_array($bankId, request()->input('bank_id', [])) ? 'selected' : '' }}>{{ $bank }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -37,63 +56,111 @@
                         <div class="col-md-4">
                             <div class="form-group mb-3">
                                 <label class="form-label">Компания</label>
-                                <select name="company_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
-                                    <option value="all" {{ $filterCompanyId === 'all' ? 'selected' : '' }}>Все</option>
+                                <select
+                                    name="company_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
                                     @foreach($companies as $company)
-                                        <option value="{{ $company->id }}" {{ $filterCompanyId === $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                                        <option value="{{ $company->id }}" {{ in_array($company->id, request()->input('company_id', [])) ? 'selected' : '' }}>{{ $company->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Организация отправитель</label>
-                                <select name="organization_sender_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
-                                    <option value="all" {{ $filterOrganizationSenderId === 'all' ? 'selected' : '' }}>Все</option>
+                                <label class="form-label">Отправитель</label>
+                                <select
+                                    name="organization_sender_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
                                     @foreach($organizations as $organization)
-                                        <option value="{{ $organization->id }}" {{ $filterOrganizationSenderId === $organization->id ? 'selected' : '' }}>{{ $organization->name }}</option>
+                                        <option value="{{ $organization->id }}" {{ in_array($organization->id, request()->input('organization_sender_id', [])) ? 'selected' : '' }}>{{ $organization->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Получатель</label>
+                                <select
+                                    name="organization_receiver_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
+                                    @foreach($organizations as $organization)
+                                        <option value="{{ $organization->id }}" {{ in_array($organization->id, request()->input('organization_receiver_id', [])) ? 'selected' : '' }}>{{ $organization->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Организация получатель</label>
-                                <select name="organization_receiver_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
-                                    <option value="all" {{ $filterOrganizationReceiverId === 'all' ? 'selected' : '' }}>Все</option>
-                                    @foreach($organizations as $organization)
-                                        <option value="{{ $organization->id }}" {{ $filterOrganizationReceiverId === $organization->id ? 'selected' : '' }}>{{ $organization->name }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label">Условие для суммы</label>
+                                <input
+                                    name="amount_expression"
+                                    class="form-control form-control-solid"
+                                    value="{{ request()->input('amount_expression', '') }}"
+                                />
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
                                 <label class="form-label">Объект</label>
-                                <select name="object_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
-                                    <option value="all" {{ $filterObjectId === 'all' ? 'selected' : '' }}>Все</option>
+                                <select
+                                    name="object_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
                                     @foreach($objects as $object)
-                                        <option value="{{ $object->id }}" {{ $filterObjectId === $object->id ? 'selected' : '' }}>{{ $object->code . ' ' . $object->name }}</option>
+                                        <option value="{{ $object->id }}" {{ in_array($object->id, request()->input('object_id', [])) ? 'selected' : '' }}>{{ $object->code . ' ' . $object->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Вид работ</label>
-                                <select name="object_worktype_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
-                                    <option value="all" {{ $filterObjectWorktypeId === 'all' ? 'selected' : '' }}>Все</option>
+                                <select
+                                    name="object_worktype_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
                                     @foreach($worktypes as $worktype)
-                                        <option value="{{ $worktype['id'] }}" {{ $filterObjectWorktypeId === $worktype['id'] ? 'selected' : '' }}>{{ $worktype['code'] . ' ' . $worktype['name'] }}</option>
+                                        <option value="{{ $worktype['id'] }}" {{ in_array($worktype['id'], request()->input('object_worktype_id', [])) ? 'selected' : '' }}>{{ $worktype['code'] . ' ' . $worktype['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Источник</label>
+                                <select
+                                    name="import_type_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
+                                    @foreach($importTypes as $typeId => $type)
+                                        <option value="{{ $typeId }}" {{ in_array($typeId, request()->input('import_type_id', [])) ? 'selected' : '' }}>{{ $type }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Источник</label>
-                                <select name="import_type_id" class="form-select form-select-solid" data-control="select2" data-dropdown-parent="#filterPaymentModal">
-                                    <option value="all" {{ $filterImportTypeId === 'all' ? 'selected' : '' }}>Все</option>
-                                    @foreach($importTypes as $typeId => $type)
-                                        <option value="{{ $typeId }}" {{ $filterImportTypeId === $typeId ? 'selected' : '' }}>{{ $type }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label">Количество записей на странице</label>
+                                <input
+                                    name="count_in_page"
+                                    class="form-control form-control-solid"
+                                    value="{{ request()->input('count_in_page', '30') }}"
+                                />
                             </div>
                         </div>
                     </div>

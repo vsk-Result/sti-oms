@@ -17,45 +17,60 @@
                                 <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="black" />
                             </svg>
                         </span>
-                        <input type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Поиск" />
+                        <input disabled type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Поиск" />
                     </div>
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#filterPaymentModal">
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterPaymentModal">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z" fill="black"></path>
                                 </svg>
                             </span>
-                            Фильтр</button>
+                            Фильтр
+                        </button>
+
+                        <form action="{{ route('payments.exports.store') . substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) }}" method="POST" class="hidden">
+                            @csrf
+                            <a
+                                href="javascript:void(0);"
+                                class="btn btn-light-primary me-3"
+                                onclick="event.preventDefault(); this.closest('form').submit();"
+                            >
+                            <span class="svg-icon svg-icon-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.3" x="12.75" y="4.25" width="12" height="2" rx="1" transform="rotate(90 12.75 4.25)" fill="black"></rect>
+                                    <path d="M12.0573 6.11875L13.5203 7.87435C13.9121 8.34457 14.6232 8.37683 15.056 7.94401C15.4457 7.5543 15.4641 6.92836 15.0979 6.51643L12.4974 3.59084C12.0996 3.14332 11.4004 3.14332 11.0026 3.59084L8.40206 6.51643C8.0359 6.92836 8.0543 7.5543 8.44401 7.94401C8.87683 8.37683 9.58785 8.34458 9.9797 7.87435L11.4427 6.11875C11.6026 5.92684 11.8974 5.92684 12.0573 6.11875Z" fill="black"></path>
+                                    <path d="M18.75 8.25H17.75C17.1977 8.25 16.75 8.69772 16.75 9.25C16.75 9.80228 17.1977 10.25 17.75 10.25C18.3023 10.25 18.75 10.6977 18.75 11.25V18.25C18.75 18.8023 18.3023 19.25 17.75 19.25H5.75C5.19772 19.25 4.75 18.8023 4.75 18.25V11.25C4.75 10.6977 5.19771 10.25 5.75 10.25C6.30229 10.25 6.75 9.80228 6.75 9.25C6.75 8.69772 6.30229 8.25 5.75 8.25H4.75C3.64543 8.25 2.75 9.14543 2.75 10.25V19.25C2.75 20.3546 3.64543 21.25 4.75 21.25H18.75C19.8546 21.25 20.75 20.3546 20.75 19.25V10.25C20.75 9.14543 19.8546 8.25 18.75 8.25Z" fill="#C4C4C4"></path>
+                                </svg>
+                            </span>
+                                Экспорт в Excel
+                            </a>
+                        </form>
                     </div>
                 </div>
             </div>
             <div class="card-body py-3">
                 <div class="table-responsive">
-                    <table class="table align-middle table-row-dashed fs-6" id="kt_table_users">
+                    <table class="table align-middle table-row-dashed fs-6">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-120px">Источник</th>
-                            <th class="min-w-120px">Дата</th>
-                            <th class="min-w-120px">Компания</th>
-                            <th class="min-w-120px">Банк</th>
-                            <th class="min-w-120px">Объект</th>
-                            <th class="min-w-70px">Кост код</th>
-                            <th class="min-w-100px">Организация</th>
-                            <th class="min-w-300px">Описание</th>
-                            <th class="min-w-200px">Сумма</th>
-                            <th class="min-w-150px">Категория</th>
-                            <th class="min-w-120px">Создал</th>
-                            <th class="min-w-120px">Статус</th>
+                            <th data-sort-by="date" class="sortable-row min-w-120px">Дата</th>
+                            <th data-sort-by="company_id" class="sortable-row min-w-120px">Компания</th>
+                            <th data-sort-by="bank_id" class="sortable-row min-w-120px">Банк</th>
+                            <th data-sort-by="object_id" class="sortable-row min-w-125px">Объект</th>
+                            <th data-sort-by="code" class="sortable-row min-w-70px">Кост код</th>
+                            <th data-sort-by="organization_receiver_id" class="sortable-row min-w-100px">Организация</th>
+                            <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
+                            <th data-sort-by="amount" class="sortable-row min-w-200px">Сумма</th>
+                            <th data-sort-by="category" class="sortable-row min-w-150px">Категория</th>
                             <th class="min-w-100px text-end rounded-end pe-4">Действия</th>
                         </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($payments as $payment)
                                 <tr>
-                                    <td>{{ $payment->import ? $payment->import->getType() : 'Вручную' }}</td>
                                     <td>{{ $payment->getDateFormatted() }}</td>
                                     <td><a href="#">{{ $payment->company->short_name }}</a></td>
                                     <td><a href="#">{{ $payment->getBankName() }}</a></td>
@@ -74,8 +89,6 @@
                                         <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
                                     </td>
                                     <td>{{ $payment->category }}</td>
-                                    <td>{{ $payment->createdBy->name }}</td>
-                                    <td class="text-end">@include('partials.status', ['status' => $payment->getStatus()])</td>
                                     <td class="text-end text-dark fw-bolder">
                                         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                             <span class="svg-icon svg-icon-5 m-0">
@@ -114,7 +127,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12">
+                                    <td colspan="9">
                                         <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                             Оплаты отсутствуют
                                         </p>
@@ -130,3 +143,39 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            const url = new URL(document.location.href);
+            const sortByField = url.searchParams.get('sort_by');
+            const sortByDirection = url.searchParams.get('sort_direction');
+
+            if (sortByField && sortByDirection) {
+                const sortRow = $('th[data-sort-by=' + sortByField + ']');
+                sortRow.removeClass('sorting-asc').removeClass('sorting-desc');
+                sortRow.addClass('sorting-' + sortByDirection);
+            }
+        });
+
+        $('.sortable-row').on('click', function() {
+            const field = $(this).data('sort-by');
+            const url = new URL(document.location.href);
+
+            if (url.searchParams.has('sort_by')) {
+               url.searchParams.set('sort_by', field);
+            } else {
+               url.searchParams.append('sort_by', field);
+            }
+
+            if (url.searchParams.has('sort_direction')) {
+                url.searchParams.set('sort_direction', url.searchParams.get('sort_direction') === 'asc' ? 'desc' : 'asc');
+            } else {
+                url.searchParams.append('sort_direction', 'asc');
+            }
+
+            document.location = url.toString();
+        });
+    </script>
+@endpush
+

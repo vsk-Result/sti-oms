@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\Payment\Sheets;
+namespace App\Exports\PaymentImport\Sheets;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -17,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class PaymentObjectSheet implements
+class ObjectSheet implements
     WithTitle,
     WithHeadings,
     FromCollection,

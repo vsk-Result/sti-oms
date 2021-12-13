@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\Payment\Sheets;
+namespace App\Exports\PaymentImport\Sheets;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -16,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class PaymentTransferSheet implements
+class GeneralSheet implements
     WithTitle,
     WithHeadings,
     FromCollection,
@@ -34,17 +34,19 @@ class PaymentTransferSheet implements
 
     public function title(): string
     {
-        return 'Трансфер';
+        return 'Общее';
     }
 
     public function headings(): array
     {
         return [
-            'COMPANY FROM',
-            'COMPANY TO',
-            'DESCRIPTION',
-            'TRANSFER AMT',
-            'DATE OUT'
+            'DATE OF COST',
+            'DATE OF TRANSFER',
+            'AMOUNT',
+            'KOST KOD',
+            'ACCOUNT #',
+            'INFO',
+            'COMPANY'
         ];
     }
 
@@ -56,19 +58,22 @@ class PaymentTransferSheet implements
     public function map($row): array
     {
         return [
-            $row->organizationSender->name,
-            $row->organizationReceiver->name,
-            $row->description,
+            Date::dateTimeToExcel(Carbon::parse($row->date)),
+            Date::dateTimeToExcel(Carbon::parse($row->date)),
             $row->amount,
-            Date::dateTimeToExcel(Carbon::parse($row->date))
+            $row->code,
+            $row->company->short_name,
+            $row->description,
+            $row->organizationReceiver->name,
         ];
     }
 
     public function columnFormats(): array
     {
         return [
-            'E' => NumberFormat::FORMAT_DATE_DDMMYYYY,
-            'D' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'A' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'B' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'C' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 

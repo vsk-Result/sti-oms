@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\PaymentImport;
 
-use App\Exports\Payment\PaymentExport;
+use App\Exports\PaymentImport\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class ExportAllController extends Controller
     public function store(Request $request): BinaryFileResponse
     {
         return Excel::download(
-            new PaymentExport(
+            new Export(
                 Payment::whereIn('import_id', json_decode($request->input('payment_imports_ids')))
                     ->with('object', 'company', 'organizationReceiver', 'organizationSender')
                     ->get()
