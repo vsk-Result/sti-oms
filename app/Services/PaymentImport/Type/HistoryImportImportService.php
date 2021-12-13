@@ -69,9 +69,11 @@ class HistoryImportImportService
                 continue;
             }
 
-            $description = $paymentData[12] ?? '';
 
-            if (empty($paymentData[15])) {
+            $bankId = null;
+            $banks = ['VTB' => 1, 'PSB' => 2, 'SBER' => 3];
+            $description = $paymentData[12] ?? '';
+            if (empty($paymentData[15]) || in_array($paymentData[15], ['VTB', 'PSB', 'SBER'])) {
                 $issetPayment = Payment::where('date', $date)
                     ->whereNotNull('bank_id')
                     ->where('object_id', $requestData['object_id'])
@@ -82,6 +84,11 @@ class HistoryImportImportService
                 if ($issetPayment) {
                     continue;
                 }
+
+                if (in_array($paymentData[15], ['VTB', 'PSB', 'SBER'])) {
+                    $bankId = $banks[$paymentData[15]];
+                }
+
             } else {
                 continue;
             }
@@ -126,7 +133,7 @@ class HistoryImportImportService
 
             $this->paymentService->createPayment([
                 'company_id' => $companyId,
-                'bank_id' => null,
+                'bank_id' => $bankId,
                 'import_id' => $import->id,
                 'object_id' => (int) $requestData['object_id'],
                 'object_worktype_id' => (int) $paymentData[3],
