@@ -113,7 +113,8 @@ class HistoryImportImportService
                 ]);
             }
 
-            $nds = $this->paymentService->checkHasNDSFromDescription($description)
+            $hasTableNDS = ! empty($paymentData[16]);
+            $nds = $this->paymentService->checkHasNDSFromDescription($description) || $hasTableNDS
                 ? round($amount / 6, 2)
                 : 0;
 
