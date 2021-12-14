@@ -104,7 +104,6 @@
                                 <input
                                     name="amount_expression"
                                     class="form-control form-control-solid"
-                                    placeholder=">= 10000"
                                     value="{{ request()->input('amount_expression', '') }}"
                                 />
                                 <p class="text-muted mt-2">

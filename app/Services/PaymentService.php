@@ -34,7 +34,7 @@ class PaymentService
         $this->materialList = include base_path('resources/categories/material.php');
     }
 
-    public function filterPayments(array $requestData, $needPaginate = false): Collection|LengthAwarePaginator
+    public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Collection|LengthAwarePaginator
     {
         $paymentQuery = Payment::query();
 
@@ -114,6 +114,8 @@ class PaymentService
                 ->orderByDesc('id');
         }
 
+        $payments = $paymentQuery->get();
+
         if ($needPaginate) {
             $perPage = 30;
 
@@ -121,10 +123,13 @@ class PaymentService
                 $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
             }
 
+            $totalInfo['amount_pay'] = $payments->where('amount', '<', 0)->sum('amount');
+            $totalInfo['amount_receive'] = $payments->where('amount', '>=', 0)->sum('amount');
+
             return $paymentQuery->paginate($perPage)->withQueryString();
         }
 
-        return $paymentQuery->get();
+        return $payments;
     }
 
     public function createPayment(array $requestData): Payment

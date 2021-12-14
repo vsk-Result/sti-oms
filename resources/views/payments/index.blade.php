@@ -10,7 +10,7 @@
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1">
+                    <div class="d-flex align-items-center position-relative my-1 me-6">
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="black" />
@@ -18,6 +18,27 @@
                             </svg>
                         </span>
                         <input disabled type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Поиск" />
+                    </div>
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder">{{ $payments->total() }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Оплат</div>
+                    </div>
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder text-danger">{{ number_format($totalInfo['amount_pay'], 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Расходы</div>
+                    </div>
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder text-success">{{ number_format($totalInfo['amount_receive'], 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Приходы</div>
                     </div>
                 </div>
                 <div class="card-toolbar">
@@ -53,7 +74,7 @@
             </div>
             <div class="card-body py-3">
                 <div class="table-responsive">
-                    <table class="table align-middle table-row-dashed fs-6">
+                    <table class="table table-hover align-middle table-row-dashed fs-6">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th data-sort-by="date" class="sortable-row min-w-120px">Дата</th>

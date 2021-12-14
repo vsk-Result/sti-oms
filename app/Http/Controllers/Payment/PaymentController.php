@@ -36,12 +36,14 @@ class PaymentController extends Controller
         $importTypes = PaymentImport::getTypes();
         $banks = Bank::getBanks();
 
-        $payments = $this->paymentService->filterPayments($request->toArray(), true);
+        $totalInfo = [];
+        $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
 
         return view(
             'payments.index',
             compact(
-                'payments', 'companies', 'objects', 'worktypes', 'organizations', 'categories', 'importTypes', 'banks'
+                'payments', 'companies', 'objects', 'worktypes', 'organizations',
+                'categories', 'importTypes', 'banks', 'totalInfo'
             )
         );
     }
