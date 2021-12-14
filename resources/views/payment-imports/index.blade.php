@@ -76,16 +76,16 @@
                                     <input id="check-all-imports" class="form-check-input" type="checkbox" />
                                 </div>
                             </th>
-                            <th class="min-w-120px">Тип</th>
-                            <th class="min-w-120px">Дата</th>
-                            <th class="min-w-120px">Компания</th>
-                            <th class="min-w-120px">Банк</th>
+                            <th class="min-w-150px">Тип</th>
+                            <th class="min-w-125px">Дата</th>
+                            <th class="min-w-125px">Компания</th>
+                            <th class="min-w-125px">Банк</th>
                             <th class="min-w-80px">Оплат</th>
                             <th class="min-w-150px">Входящий остаток</th>
                             <th class="min-w-150px">Расход</th>
                             <th class="min-w-150px">Приход</th>
                             <th class="min-w-150px">Исходящий остаток</th>
-                            <th class="min-w-120px">Статус</th>
+                            <th class="min-w-125px">Статус</th>
                             <th class="min-w-100px text-end rounded-end pe-4">Действия</th>
                         </tr>
                         </thead>
