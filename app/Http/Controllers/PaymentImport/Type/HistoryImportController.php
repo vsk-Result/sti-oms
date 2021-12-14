@@ -26,6 +26,7 @@ class HistoryImportController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        ini_set('memory_limit', '-1');
         $import = $this->importService->createImport($request->toArray());
         return redirect()->route('payment_imports.edit', $import);
     }
