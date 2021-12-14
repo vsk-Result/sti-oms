@@ -67,6 +67,6 @@ body, html {
 }
 
 /* Фикс высота для инпутов */
-select.form-select, input.form-control {
+select.form-select, span.form-select, input.form-control {
     height: 43px !important;
 }
