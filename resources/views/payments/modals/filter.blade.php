@@ -39,18 +39,21 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Банк</label>
-                                <select
-                                    name="bank_id[]"
-                                    class="form-select form-select-solid"
-                                    data-control="select2"
-                                    data-dropdown-parent="#filterPaymentModal"
-                                    multiple
-                                >
-                                    @foreach($banks as $bankId => $bank)
-                                        <option value="{{ $bankId }}" {{ in_array($bankId, request()->input('bank_id', [])) ? 'selected' : '' }}>{{ $bank }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label">Условие для суммы</label>
+                                <input
+                                    name="amount_expression"
+                                    class="form-control form-control-solid"
+                                    value="{{ request()->input('amount_expression', '') }}"
+                                />
+                                <p class="text-muted mt-2">
+                                    Операторы:
+                                    <code><=</code>
+                                    <code><</code>
+                                    <code>>=</code>
+                                    <code>></code>
+                                    <code>!=</code>
+                                    <code>=</code>
+                                </p>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -70,51 +73,42 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Отправитель</label>
+                                <label class="form-label">Организация</label>
                                 <select
-                                    name="organization_sender_id[]"
+                                    name="organization_id[]"
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
                                     multiple
                                 >
                                     @foreach($organizations as $organization)
-                                        <option value="{{ $organization->id }}" {{ in_array($organization->id, request()->input('organization_sender_id', [])) ? 'selected' : '' }}>{{ $organization->name }}</option>
+                                        <option value="{{ $organization->id }}" {{ in_array($organization->id, request()->input('organization_id', [])) ? 'selected' : '' }}>{{ $organization->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Получатель</label>
+                                <label class="form-label">Банк</label>
                                 <select
-                                    name="organization_receiver_id[]"
+                                    name="bank_id[]"
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
                                     multiple
                                 >
-                                    @foreach($organizations as $organization)
-                                        <option value="{{ $organization->id }}" {{ in_array($organization->id, request()->input('organization_receiver_id', [])) ? 'selected' : '' }}>{{ $organization->name }}</option>
+                                    @foreach($banks as $bankId => $bank)
+                                        <option value="{{ $bankId }}" {{ in_array($bankId, request()->input('bank_id', [])) ? 'selected' : '' }}>{{ $bank }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Условие для суммы</label>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Количество записей на странице</label>
                                 <input
-                                    name="amount_expression"
+                                    name="count_per_page"
                                     class="form-control form-control-solid"
-                                    value="{{ request()->input('amount_expression', '') }}"
+                                    value="{{ request()->input('count_per_page', '30') }}"
                                 />
-                                <p class="text-muted mt-2">
-                                    Операторы:
-                                    <code><=</code>
-                                    <code><</code>
-                                    <code>>=</code>
-                                    <code>></code>
-                                    <code>!=</code>
-                                    <code>=</code>
-                                </p>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -161,15 +155,6 @@
                                         <option value="{{ $typeId }}" {{ in_array($typeId, request()->input('import_type_id', [])) ? 'selected' : '' }}>{{ $type }}</option>
                                     @endforeach
                                 </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Количество записей на странице</label>
-                                <input
-                                    name="count_per_page"
-                                    class="form-control form-control-solid"
-                                    value="{{ request()->input('count_per_page', '30') }}"
-                                />
                             </div>
                         </div>
                     </div>

@@ -16,15 +16,17 @@ use Illuminate\Support\Collection;
 
 class PaymentService
 {
+    private OrganizationService $organizationService;
     private Sanitizer $sanitizer;
     private array $opsteList;
     private array $radList;
     private array $materialList;
     private string $error = '';
 
-    public function __construct(Sanitizer $sanitizer)
+    public function __construct(Sanitizer $sanitizer, OrganizationService $organizationService)
     {
         $this->sanitizer = $sanitizer;
+        $this->organizationService = $organizationService;
     }
 
     public function loadCategoriesList(): void
@@ -54,12 +56,11 @@ class PaymentService
             $paymentQuery->whereIn('company_id', $requestData['company_id']);
         }
 
-        if (! empty($requestData['organization_sender_id'])) {
-            $paymentQuery->whereIn('organization_sender_id', $requestData['organization_sender_id']);
-        }
-
-        if (! empty($requestData['organization_receiver_id'])) {
-            $paymentQuery->whereIn('organization_receiver_id', $requestData['organization_receiver_id']);
+        if (! empty($requestData['organization_id'])) {
+            $organizationIds = $requestData['organization_id'];
+            $paymentQuery->where(function($q) use ($organizationIds) {
+                $q->whereIn('organization_sender_id', $organizationIds)->orWhereIn('organization_receiver_id', $organizationIds);
+            });
         }
 
         if (! empty($requestData['object_id'])) {
@@ -164,12 +165,22 @@ class PaymentService
 
     public function updatePayment(Payment $payment, array $requestData): Payment
     {
+        if (array_key_exists('_token', $requestData)) {
+            unset($requestData['_token']);
+        }
+
+        if (array_key_exists('return_url', $requestData)) {
+            unset($requestData['return_url']);
+        }
+
         if (array_key_exists('amount', $requestData)) {
             $description = array_key_exists('description', $requestData) ? $requestData['description'] : $payment->description;
             $requestData['amount'] = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
             $nds = $this->checkHasNDSFromDescription($description) ? round($requestData['amount'] / 6, 2) : 0;
             $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
-        } elseif (array_key_exists('object_code', $requestData)) {
+        }
+
+        if (array_key_exists('object_code', $requestData)) {
             $requestData['object_id'] = null;
             $requestData['object_worktype_id'] = null;
             $requestData['type_id'] = Payment::TYPE_NONE;
@@ -193,11 +204,60 @@ class PaymentService
             }
 
             unset($requestData['object_code']);
-        } elseif (array_key_exists('code', $requestData)) {
+        }
+
+        if (array_key_exists('code', $requestData)) {
             $requestData['code'] = $this->sanitizer->set($requestData['code'])->toCode()->get();
-        } elseif (array_key_exists('description', $requestData)) {
+        }
+
+        if (array_key_exists('description', $requestData)) {
             $isNeedSplit = $this->checkIsNeedSplitFromDescription($requestData['description']);
             $requestData['is_need_split'] = $isNeedSplit;
+        }
+
+        if (array_key_exists('object_id', $requestData)) {
+            $objectId = $requestData['object_id'];
+            $requestData['object_id'] = null;
+            $requestData['object_worktype_id'] = null;
+            $requestData['type_id'] = Payment::TYPE_NONE;
+
+            if (str_contains($objectId, '::')) {
+                $oId = (int) substr($objectId, 0, strpos($objectId, '::'));
+                $object = BObject::find($oId);
+                if ($object) {
+                    $requestData['object_id'] = $object->id;
+                    $requestData['object_worktype_id'] = (int) substr($objectId, strpos($objectId, '::') + 2);
+                    $requestData['type_id'] = Payment::TYPE_OBJECT;
+                }
+            } else {
+                if ((int) $objectId === Payment::TYPE_GENERAL) {
+                    $requestData['type_id'] = Payment::TYPE_GENERAL;
+                } if ((int) $objectId === Payment::TYPE_TRANSFER) {
+                    $requestData['type_id'] = Payment::TYPE_TRANSFER;
+                }
+            }
+        }
+
+        if (array_key_exists('organization_id', $requestData)) {
+            $requestData['organization_sender_id'] = null;
+            $requestData['organization_receiver_id'] = null;
+
+            $companyOrganization = $this->organizationService->getOrCreateOrganization([
+                'company_id' => 1,
+                'name' => 'ООО "Строй Техно Инженеринг"',
+                'inn' => '7720734368',
+                'kpp' => null
+            ]);
+
+            if ($requestData['amount'] < 0) {
+                $requestData['organization_sender_id'] = $companyOrganization->id;
+                $requestData['organization_receiver_id'] = $requestData['organization_id'];
+            } else {
+                $requestData['organization_sender_id'] = $requestData['organization_id'];
+                $requestData['organization_receiver_id'] = $companyOrganization->id;
+            }
+
+            unset($requestData['organization_id']);
         }
 
         $payment->update($requestData);

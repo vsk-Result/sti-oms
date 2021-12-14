@@ -14,6 +14,7 @@ use App\Models\PaymentImport;
 use App\Services\PaymentService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -65,11 +66,23 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function update(Payment $payment, Request $request): JsonResponse
+    public function edit(Payment $payment): View
     {
+        $categories = Payment::getCategories();
+        $objects = Payment::getTypes() + BObject::getObjectsList();
+        $companies = Company::orderBy('name')->get();
+        $organizations = Organization::orderBy('name')->get();
+        $banks = Bank::getBanks();
+
+        return view('payments.edit', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks'));
+    }
+
+    public function update(Payment $payment, Request $request): JsonResponse|RedirectResponse
+    {
+        $returnUrl = $request->get('return_url');
         $this->paymentService->updatePayment($payment, $request->toArray());
 
-        if ($this->paymentService->hasError()) {
+        if ($request->ajax() && $this->paymentService->hasError()) {
             return response()->json([
                 'status' => 'error',
                 'message' => $this->paymentService->getError()
@@ -78,20 +91,28 @@ class PaymentController extends Controller
 
         $payment->import?->reCalculateAmountsAndCounts();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Оплата успешно изменена'
-        ]);
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Оплата успешно изменена'
+            ]);
+        }
+
+        return redirect($returnUrl ?? route('payments.index'));
     }
 
-    public function destroy(Payment $payment): JsonResponse
+    public function destroy(Payment $payment, Request $request): JsonResponse|RedirectResponse
     {
         $this->paymentService->destroyPayment($payment);
         $payment->import?->reCalculateAmountsAndCounts();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Оплата успешно удалена'
-        ]);
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Оплата успешно удалена'
+            ]);
+        }
+
+        return redirect()->route('payments.index');
     }
 }
