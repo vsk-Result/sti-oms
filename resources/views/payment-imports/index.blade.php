@@ -86,7 +86,7 @@
                             <th class="min-w-150px">Приход</th>
                             <th class="min-w-150px">Исходящий остаток</th>
                             <th class="min-w-125px">Статус</th>
-                            <th class="min-w-100px text-end rounded-end pe-4">Действия</th>
+                            <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
                         </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
