@@ -44,6 +44,7 @@
                                     name="amount_expression"
                                     class="form-control form-control-solid"
                                     value="{{ request()->input('amount_expression', '') }}"
+                                    autocomplete="off"
                                 />
                                 <p class="text-muted mt-2">
                                     Операторы:
@@ -108,6 +109,7 @@
                                     name="count_per_page"
                                     class="form-control form-control-solid"
                                     value="{{ request()->input('count_per_page', '30') }}"
+                                    autocomplete="off"
                                 />
                             </div>
                         </div>
