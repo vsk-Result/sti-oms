@@ -180,6 +180,29 @@ class PaymentService
             $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
         }
 
+        if (array_key_exists('object_id', $requestData)) {
+            $objectId = $requestData['object_id'];
+            $requestData['object_id'] = null;
+            $requestData['object_worktype_id'] = null;
+            $requestData['type_id'] = Payment::TYPE_NONE;
+
+            if (str_contains($objectId, '::')) {
+                $oId = (int) substr($objectId, 0, strpos($objectId, '::'));
+                $object = BObject::find($oId);
+                if ($object) {
+                    $requestData['object_id'] = $object->id;
+                    $requestData['object_worktype_id'] = (int) substr($objectId, strpos($objectId, '::') + 2);
+                    $requestData['type_id'] = Payment::TYPE_OBJECT;
+                }
+            } else {
+                if ((int) $objectId === Payment::TYPE_GENERAL) {
+                    $requestData['type_id'] = Payment::TYPE_GENERAL;
+                } if ((int) $objectId === Payment::TYPE_TRANSFER) {
+                    $requestData['type_id'] = Payment::TYPE_TRANSFER;
+                }
+            }
+        }
+
         if (array_key_exists('object_code', $requestData)) {
             $requestData['object_id'] = null;
             $requestData['object_worktype_id'] = null;
@@ -213,29 +236,6 @@ class PaymentService
         if (array_key_exists('description', $requestData)) {
             $isNeedSplit = $this->checkIsNeedSplitFromDescription($requestData['description']);
             $requestData['is_need_split'] = $isNeedSplit;
-        }
-
-        if (array_key_exists('object_id', $requestData)) {
-            $objectId = $requestData['object_id'];
-            $requestData['object_id'] = null;
-            $requestData['object_worktype_id'] = null;
-            $requestData['type_id'] = Payment::TYPE_NONE;
-
-            if (str_contains($objectId, '::')) {
-                $oId = (int) substr($objectId, 0, strpos($objectId, '::'));
-                $object = BObject::find($oId);
-                if ($object) {
-                    $requestData['object_id'] = $object->id;
-                    $requestData['object_worktype_id'] = (int) substr($objectId, strpos($objectId, '::') + 2);
-                    $requestData['type_id'] = Payment::TYPE_OBJECT;
-                }
-            } else {
-                if ((int) $objectId === Payment::TYPE_GENERAL) {
-                    $requestData['type_id'] = Payment::TYPE_GENERAL;
-                } if ((int) $objectId === Payment::TYPE_TRANSFER) {
-                    $requestData['type_id'] = Payment::TYPE_TRANSFER;
-                }
-            }
         }
 
         if (array_key_exists('organization_id', $requestData)) {
