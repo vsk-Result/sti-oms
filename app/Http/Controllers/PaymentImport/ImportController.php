@@ -21,7 +21,12 @@ class ImportController extends Controller
 
     public function index(): View
     {
-        $importsGroupedByDate = PaymentImport::with('company', 'createdBy')->orderByDesc('date')->orderByDesc('id')->get()->groupBy('date');
+        $query = PaymentImport::query();
+        if (! auth()->user()->hasRole('super-admin')) {
+            $query->where('type_id', '!=', PaymentImport::TYPE_HISTORY);
+        }
+
+        $importsGroupedByDate = $query->with('company', 'createdBy')->orderByDesc('date')->orderByDesc('id')->get()->groupBy('date');
         return view('payment-imports.index', compact('importsGroupedByDate'));
     }
 
