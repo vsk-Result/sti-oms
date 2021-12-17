@@ -22,6 +22,7 @@ class ImportController extends Controller
     public function index(): View
     {
         $query = PaymentImport::query();
+
         if (! auth()->user()->hasRole('super-admin')) {
             $query->where('type_id', '!=', PaymentImport::TYPE_HISTORY);
         }

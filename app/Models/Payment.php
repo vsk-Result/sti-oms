@@ -10,10 +10,12 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class Payment extends Model
+class Payment extends Model implements Audit
 {
-    use SoftDeletes, HasUser, HasStatus, HasBank;
+    use SoftDeletes, HasUser, HasStatus, HasBank, Auditable;
 
     protected $table = 'payments';
 
