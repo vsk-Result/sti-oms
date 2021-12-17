@@ -25,13 +25,13 @@
                     </div>
                 @endcan
 
-                @can('index debt-imports')
-                    <div class="menu-item">
-                        <a href="{{ route('debt_imports.index') }}" class="menu-link {{ request()->is('debt-imports*') ? 'active' : '' }}">
-                            <span class="menu-title">Загрузки долгов</span>
-                        </a>
-                    </div>
-                @endcan
+{{--                @can('index debt-imports')--}}
+{{--                    <div class="menu-item">--}}
+{{--                        <a href="{{ route('debt_imports.index') }}" class="menu-link {{ request()->is('debt-imports*') ? 'active' : '' }}">--}}
+{{--                            <span class="menu-title">Загрузки долгов</span>--}}
+{{--                        </a>--}}
+{{--                    </div>--}}
+{{--                @endcan--}}
             @endif
 
             <div class="menu-item pt-5">
@@ -56,21 +56,21 @@
                 </div>
             @endcan
 
-            @can('index contracts')
-                <div class="menu-item">
-                    <a href="{{ route('contracts.index') }}" class="menu-link {{ request()->is('contracts*') ? 'active' : '' }}">
-                        <span class="menu-title">Договора</span>
-                    </a>
-                </div>
-            @endcan
+{{--            @can('index contracts')--}}
+{{--                <div class="menu-item">--}}
+{{--                    <a href="{{ route('contracts.index') }}" class="menu-link {{ request()->is('contracts*') ? 'active' : '' }}">--}}
+{{--                        <span class="menu-title">Договора</span>--}}
+{{--                    </a>--}}
+{{--                </div>--}}
+{{--            @endcan--}}
 
-            @can('index acts')
-                <div class="menu-item">
-                    <a href="{{ route('acts.index') }}" class="menu-link {{ request()->is('acts*') ? 'active' : '' }}">
-                        <span class="menu-title">Акты</span>
-                    </a>
-                </div>
-            @endcan
+{{--            @can('index acts')--}}
+{{--                <div class="menu-item">--}}
+{{--                    <a href="{{ route('acts.index') }}" class="menu-link {{ request()->is('acts*') ? 'active' : '' }}">--}}
+{{--                        <span class="menu-title">Акты</span>--}}
+{{--                    </a>--}}
+{{--                </div>--}}
+{{--            @endcan--}}
 
             @can('index companies')
                 <div class="menu-item">
@@ -88,13 +88,13 @@
                 </div>
             @endcan
 
-            @can('index bank-guarantees')
-                <div class="menu-item">
-                    <a href="{{ route('bank_guarantees.index') }}" class="menu-link {{ request()->is('bank-guarantees*') ? 'active' : '' }}">
-                        <span class="menu-title">Банковские гарантии</span>
-                    </a>
-                </div>
-            @endcan
+{{--            @can('index bank-guarantees')--}}
+{{--                <div class="menu-item">--}}
+{{--                    <a href="{{ route('bank_guarantees.index') }}" class="menu-link {{ request()->is('bank-guarantees*') ? 'active' : '' }}">--}}
+{{--                        <span class="menu-title">Банковские гарантии</span>--}}
+{{--                    </a>--}}
+{{--                </div>--}}
+{{--            @endcan--}}
 
             <div class="menu-item pt-5">
                 <div class="menu-content pb-2">
