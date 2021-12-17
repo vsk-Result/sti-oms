@@ -8,7 +8,7 @@
         <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
             <div class="d-flex flex-column">
                 <div class="d-flex align-items-center mb-1">
-                    <a href="{{ route('objects.pivot.index', $object) }}" class="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">{{ $object->getName() }}</a>
+                    <a href="{{ route('objects.show', $object) }}" class="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">{{ $object->getName() }}</a>
                     <span class="badge badge-light-success me-auto">Активен</span>
                 </div>
 
