@@ -12,10 +12,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class BObject extends Model
+class BObject extends Model implements Audit
 {
-    use SoftDeletes, HasStatus;
+    use SoftDeletes, HasStatus, Auditable;
 
     protected $table = 'objects';
 
