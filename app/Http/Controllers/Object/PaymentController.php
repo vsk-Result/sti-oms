@@ -34,7 +34,7 @@ class PaymentController extends Controller
         $banks = Bank::getBanks();
 
         $totalInfo = [];
-        $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
+        $payments = $this->paymentService->filterPayments($request->toArray() + ['object_id' => $object->id], true, $totalInfo);
 
         return view(
             'objects.tabs.payments',
