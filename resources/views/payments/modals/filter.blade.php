@@ -1,11 +1,11 @@
-<div class="modal fade" tabindex="-1" id="filterPaymentModal" data-crm-avanses-imports-list-url="{{ route('crm.avanses.imports.index') }}">
+<div class="modal fade" tabindex="-1" id="filterPaymentModal">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Настройте фильтр для получения более точной информации</h4>
             </div>
 
-            <form action="{{ route('payments.index') }}" method="GET">
+            <form action="{{ request()->url() }}" method="GET">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4">
@@ -30,6 +30,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
+                                    data-allow-clear="true"
                                     multiple
                                 >
                                     @foreach($categories as $categoryId => $category)
@@ -65,6 +66,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
+                                    data-allow-clear="true"
                                     multiple
                                 >
                                     @foreach($companies as $company)
@@ -80,6 +82,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
+                                    data-allow-clear="true"
                                     multiple
                                 >
                                     @foreach($organizations as $organization)
@@ -95,6 +98,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
+                                    data-allow-clear="true"
                                     multiple
                                 >
                                     @foreach($banks as $bankId => $bank)
@@ -121,12 +125,18 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
+                                    data-allow-clear="true"
                                     multiple
+                                    {{ isset($object) ? 'disabled' : ''}}
                                 >
-                                    @foreach($objects as $object)
-                                        <option value="{{ $object->id }}" {{ in_array($object->id, request()->input('object_id', [])) ? 'selected' : '' }}>{{ $object->code . ' ' . $object->name }}</option>
+                                    @foreach($objects as $obj)
+                                        <option value="{{ $obj->id }}" {{ (in_array($obj->id, request()->input('object_id', [])) || (isset($object) && $obj->id === $object->id)) ? 'selected' : '' }}>{{ $obj->code . ' ' . $obj->name }}</option>
                                     @endforeach
                                 </select>
+
+                                @if (isset($object))
+                                    <input type="hidden" name="object_id[]" value="{{ $object->id }}">
+                                @endif
                             </div>
 
                             <div class="form-group mb-3">
@@ -136,6 +146,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
+                                    data-allow-clear="true"
                                     multiple
                                 >
                                     @foreach($worktypes as $worktype)
@@ -151,6 +162,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
+                                    data-allow-clear="true"
                                     multiple
                                 >
                                     @foreach($importTypes as $typeId => $type)
@@ -164,7 +176,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light float-left" data-bs-dismiss="modal">Закрыть</button>
-                    <a href="{{ route('payments.index') }}" class="btn btn-light">Сбросить</a>
+                    <a href="{{ request()->url() }}" class="btn btn-light">Сбросить</a>
                     <button id="filter-payment-submit" type="submit" class="btn btn-primary">Применить</button>
                 </div>
             </form>

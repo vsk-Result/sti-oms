@@ -10,15 +10,6 @@
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1 me-6">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="black" />
-                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="black" />
-                            </svg>
-                        </span>
-                        <input disabled type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Поиск" />
-                    </div>
 
                     <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                         <div class="d-flex align-items-center">
@@ -76,23 +67,29 @@
                 <div class="table-responsive">
                     <table class="table table-hover align-middle table-row-dashed fs-6">
                         <thead>
-                        <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th data-sort-by="date" class="sortable-row min-w-125px">Дата</th>
-                            <th data-sort-by="company_id" class="sortable-row min-w-100px">Компания</th>
-                            <th data-sort-by="bank_id" class="sortable-row min-w-125px">Банк</th>
-                            <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>
-                            <th data-sort-by="code" class="sortable-row min-w-70px">Кост код</th>
-                            <th data-sort-by="organization_receiver_id" class="sortable-row min-w-125px">Организация</th>
-                            <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
-                            <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
-                            <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
-                            <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
-                        </tr>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th data-sort-by="date" class="sortable-row min-w-125px">Дата</th>
+                                <th data-sort-by="company_id" class="sortable-row min-w-100px">Компания</th>
+                                <th data-sort-by="bank_id" class="sortable-row min-w-125px">Банк</th>
+                                <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>
+                                <th data-sort-by="code" class="sortable-row min-w-70px">Кост код</th>
+                                <th data-sort-by="organization_receiver_id" class="sortable-row min-w-125px">Организация</th>
+                                <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
+                                <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
+                                <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
+                                <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
+                            </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($payments as $payment)
                                 <tr>
-                                    <td>{{ $payment->getDateFormatted() }}</td>
+                                    <td>
+                                        @if (auth()->user()->can('edit payments'))
+                                            <a target="_blank" href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
+                                        @else
+                                            {{ $payment->getDateFormatted() }}
+                                        @endif
+                                    </td>
                                     <td>{{ $payment->company->short_name }}</td>
                                     <td>{{ $payment->getBankName() }}</td>
                                     <td>{{ $payment->getObject() }}</td>
@@ -118,10 +115,23 @@
                                                     </svg>
                                                 </span>
                                         </a>
-                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
                                             @can('edit payments')
                                                 <div class="menu-item px-3">
                                                     <a target="_blank" href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
+                                                </div>
+
+                                                <div class="menu-item px-3">
+                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">
+                                                        @csrf
+                                                        <a
+                                                            href="javascript:void(0)"
+                                                            class="menu-link px-3"
+                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите сделать копию оплаты?')) {this.closest('form').submit();}"
+                                                        >
+                                                            Сделать копию
+                                                        </a>
+                                                    </form>
                                                 </div>
 
                                                 <div class="menu-item px-3">

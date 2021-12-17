@@ -23,7 +23,7 @@ class ObjectController extends Controller
 
     public function index(): View
     {
-        $objects = BObject::withCount(['payments' => function($query) {
+        $objects = BObject::with('debts', 'payments')->withCount(['payments' => function($query) {
             $query->whereDate('date', '>', Carbon::now()->subWeeks(2)->format('Y-m-d'));
         }])->orderByDesc('payments_count')->orderByDesc('code')->get();
 

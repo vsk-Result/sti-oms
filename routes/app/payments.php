@@ -3,6 +3,7 @@
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\SplitController;
 use App\Http\Controllers\Payment\ExportController;
+use App\Http\Controllers\Payment\CopyController;
 
 // Экспорт оплат
 
@@ -21,5 +22,9 @@ Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name
 // Разбивка оплат
 
 Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name('payments.split.store');
+
+// Копия оплаты
+
+Route::post('payments/{payment}/copy', [CopyController::class, 'store'])->name('payments.copy.store');
 
 

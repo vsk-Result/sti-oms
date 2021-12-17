@@ -163,6 +163,11 @@ class PaymentService
         return $payment;
     }
 
+    public function copyPayment(Payment $payment): void
+    {
+        $this->createPayment($payment->attributesToArray());
+    }
+
     public function updatePayment(Payment $payment, array $requestData): Payment
     {
         if (array_key_exists('_token', $requestData)) {

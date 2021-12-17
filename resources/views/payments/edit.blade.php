@@ -172,9 +172,7 @@
                                                     class="form-control form-control-lg form-control-solid {{ $errors->has('description') ? 'is-invalid' : '' }}"
                                                     rows="3"
                                                     name="description"
-                                                >
-                                                    {{ old('description', $payment->description) }}
-                                                </textarea>
+                                                >{{ old('description', $payment->description) }}</textarea>
                                             </div>
                                             @if ($errors->has('description'))
                                                 <div class="fv-plugins-message-container invalid-feedback">

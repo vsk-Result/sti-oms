@@ -68,5 +68,5 @@ body, html {
 
 /* Фикс высота для инпутов */
 select.form-select, span.form-select, input.form-control {
-    height: 43px !important;
+    min-height: 43px !important;
 }

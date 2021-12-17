@@ -50,7 +50,8 @@
             </div>
 
             <div class="d-flex mb-4">
-                <a href="{{ route('objects.edit', $object) }}" class="btn btn-light btn-active-light-primary btn-sm">Изменить</a>
+                <a href="{{ route('objects.edit', $object) }}" class="btn btn-light btn-active-light-primary btn-sm me-3">Изменить</a>
+                <a href="{{ route('objects.payments.index', $object) }}" class="btn btn-primary btn-active-light-primary btn-sm">Оплаты</a>
             </div>
         </div>
 
@@ -74,24 +75,18 @@
                     </div>
                     <div class="fw-bold fs-6 text-gray-400">Приходы</div>
                 </div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder">0.00</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма договоров</div>
-                </div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getContractorDebtsAmount(), 2, '.', ' ') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Долг подрядчикам</div>
-                </div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getProviderDebtsAmount(), 2, '.', ' ') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Долг поставщикам</div>
-                </div>
+{{--                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">--}}
+{{--                    <div class="d-flex align-items-center">--}}
+{{--                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getContractorDebtsAmount(), 2, '.', ' ') }}</div>--}}
+{{--                    </div>--}}
+{{--                    <div class="fw-bold fs-6 text-gray-400">Долг подрядчикам</div>--}}
+{{--                </div>--}}
+{{--                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">--}}
+{{--                    <div class="d-flex align-items-center">--}}
+{{--                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getProviderDebtsAmount(), 2, '.', ' ') }}</div>--}}
+{{--                    </div>--}}
+{{--                    <div class="fw-bold fs-6 text-gray-400">Долг поставщикам</div>--}}
+{{--                </div>--}}
             </div>
         </div>
     </div>
