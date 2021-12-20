@@ -98,8 +98,6 @@ class PaymentService
             }
         }
 
-        $paymentQuery->with('company', 'createdBy', 'object', 'organizationReceiver', 'organizationSender');
-
         if (! empty($requestData['sort_by'])) {
             if ($requestData['sort_by'] == 'company_id') {
                 $paymentQuery->orderBy(Company::select('name')->whereColumn('companies.id', 'payments.company_id'), $requestData['sort_direction'] ?? 'asc');
@@ -114,6 +112,8 @@ class PaymentService
             $paymentQuery->orderByDesc('date')
                 ->orderByDesc('id');
         }
+
+//        $paymentQuery->with('company', 'createdBy', 'object', 'organizationReceiver', 'organizationSender');
 
         $payments = $paymentQuery->get();
 

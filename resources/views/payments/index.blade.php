@@ -43,7 +43,7 @@
                             Фильтр
                         </button>
 
-                        <form action="{{ route('payments.exports.store') . substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) }}" method="POST" class="hidden">
+                        <form action="{{ route('payments.exports.store') . (strpos(request()->fullUrl(), '?') !== false ? substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) : '') }}" method="POST" class="hidden">
                             @csrf
                             <a
                                 href="javascript:void(0);"
