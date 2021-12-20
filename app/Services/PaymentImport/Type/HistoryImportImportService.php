@@ -33,8 +33,6 @@ class HistoryImportImportService
 
     public function createImport(array $requestData): null|PaymentImport
     {
-        ini_set('memory_limit', '512M');
-
         $historyData = $this->getHistoryDataFromExcel($requestData['file']);
 
         if (empty($historyData)) {
