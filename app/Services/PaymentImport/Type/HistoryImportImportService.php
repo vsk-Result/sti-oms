@@ -33,6 +33,8 @@ class HistoryImportImportService
 
     public function createImport(array $requestData): null|PaymentImport
     {
+        ini_set('max_execution_time', '1000');
+        set_time_limit(1000);
         $historyData = $this->getHistoryDataFromExcel($requestData['file']);
 
         if (empty($historyData)) {
