@@ -34,7 +34,7 @@ class HistoryImportImportService
     public function createImport(array $requestData): null|PaymentImport
     {
         $historyData = $this->getHistoryDataFromExcel($requestData['file']);
-        \Log::info('Data received!');
+
         if (empty($historyData)) {
             return null;
         }
@@ -48,7 +48,7 @@ class HistoryImportImportService
             'file' => $this->uploadService->uploadFile('payment-imports/history', $requestData['file']),
             'description' => 'Загружен файл ' . $requestData['file']->getClientOriginalName()
         ]);
-        \Log::info('Import created!');
+
         $companyOrganization = $this->organizationService->getOrCreateOrganization([
             'company_id' => $import->company->id,
             'name' => $import->company->name,
@@ -56,10 +56,10 @@ class HistoryImportImportService
             'kpp' => null
         ]);
 
-        $allPayments = Payment::all();
-        \Log::info('All payments received!');
+        $allPayments = Payment::select('date', 'bank_id', 'object_id', 'amount', 'description')->get();
+
         $this->paymentService->loadCategoriesList();
-        \Log::info('Categories list loaded!');
+
         foreach ($historyData[0] as $index => $paymentData) {
             if ($index === 0) {
                 continue;
