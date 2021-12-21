@@ -34,7 +34,7 @@ class HistoryImportImportService
     public function createImport(array $requestData): null|PaymentImport
     {
         $historyData = $this->getHistoryDataFromExcel($requestData['file']);
-
+        dd($historyData);
         if (empty($historyData)) {
             return null;
         }
@@ -56,6 +56,7 @@ class HistoryImportImportService
             'kpp' => null
         ]);
 
+        $allPayments = Payment::all();
         $this->paymentService->loadCategoriesList();
         foreach ($historyData[0] as $index => $paymentData) {
             if ($index === 0) {
@@ -68,8 +69,6 @@ class HistoryImportImportService
             if ($amount == 0) {
                 continue;
             }
-
-            $allPayments = Payment::all();
 
             $bankId = null;
             $banks = ['VTB' => 1, 'PSB' => 2, 'SBER' => 3];
