@@ -56,8 +56,6 @@ class HistoryImportImportService
             'kpp' => null
         ]);
 
-        $allPayments = Payment::select('date', 'bank_id', 'object_id', 'amount', 'description')->get();
-
         $this->paymentService->loadCategoriesList();
 
         foreach ($historyData[0] as $index => $paymentData) {
@@ -73,27 +71,7 @@ class HistoryImportImportService
             }
 
             $bankId = null;
-            $banks = ['VTB' => 1, 'PSB' => 2, 'SBER' => 3];
             $description = $paymentData[12] ?? '';
-            if (empty($paymentData[15]) || in_array($paymentData[15], ['VTB', 'PSB', 'SBER'])) {
-                $issetPayment = $allPayments->where('date', $date)
-                    ->whereNotNull('bank_id')
-                    ->where('object_id', $requestData['object_id'])
-                    ->where('amount', $amount)
-                    ->where('description', $description)
-                    ->first();
-
-                if ($issetPayment) {
-                    continue;
-                }
-
-                if (in_array($paymentData[15], ['VTB', 'PSB', 'SBER'])) {
-                    $bankId = $banks[$paymentData[15]];
-                }
-
-            } else {
-                continue;
-            }
 
             $companyId = $paymentData[13] === 'КАССА' ? 1 : Company::where('short_name', $paymentData[13])->first()->id;
 
