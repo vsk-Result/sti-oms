@@ -115,7 +115,9 @@ class PaymentService
 
 //        $paymentQuery->with('company', 'createdBy', 'object', 'organizationReceiver', 'organizationSender');
 
+        \Log::info('before get');
         $payments = $paymentQuery->get();
+        \Log::info('after get');
 
         if ($needPaginate) {
             $perPage = 30;
@@ -124,9 +126,9 @@ class PaymentService
                 $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
             }
 
-            $totalInfo['amount_pay'] = 0;
-            $totalInfo['amount_receive'] = 0;
-
+            $totalInfo['amount_pay'] = $payments->where('amount', '<', 0)->sum('amount');
+            $totalInfo['amount_receive'] = $payments->where('amount', '>=', 0)->sum('amount');
+            \Log::info('before paginate');
             return $paymentQuery->paginate($perPage)->withQueryString();
         }
 
