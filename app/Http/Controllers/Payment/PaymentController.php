@@ -30,7 +30,6 @@ class PaymentController extends Controller
     public function index(Request $request): View
     {
         $companies = Company::orderBy('name')->get();
-        $organizations = Organization::orderBy('name')->get();
         $objects = BObject::orderBy('code')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
@@ -40,11 +39,16 @@ class PaymentController extends Controller
         $totalInfo = [];
         $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
 
+        $activeOrganizations = [];
+        if (! empty($request->get('organization_id'))) {
+            $activeOrganizations = Organization::whereIn('id', $request->get('organization_id'))->orderBy('name')->get();
+        }
+
         return view(
             'payments.index',
             compact(
-                'payments', 'companies', 'objects', 'worktypes', 'organizations',
-                'categories', 'importTypes', 'banks', 'totalInfo'
+                'payments', 'companies', 'objects', 'worktypes', 'categories',
+                'importTypes', 'banks', 'totalInfo', 'activeOrganizations'
             )
         );
     }

@@ -174,6 +174,31 @@
 @push('scripts')
     <script>
         $(function() {
+            $('#organization-select').select2({
+                sorter: function(data) {
+                    return data.sort(function(a, b) {
+                        return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
+                    });
+                },
+                ajax: {
+                    url: '/organizations',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            search: params.term,
+                            objects: $('#filter-object').val()
+                        };
+                    },
+                    processResults: function (data) {
+                        const results = [];
+                        $.each(data.organizations, function(id, text) {
+                            results.push({id, text})
+                        });
+                        return {results};
+                    }
+                }
+            });
+
             const url = new URL(document.location.href);
             const sortByField = url.searchParams.get('sort_by');
             const sortByDirection = url.searchParams.get('sort_direction');

@@ -26,7 +26,6 @@ class PaymentController extends Controller
     public function index(BObject $object, Request $request): View
     {
         $companies = Company::orderBy('name')->get();
-        $organizations = Organization::orderBy('name')->get();
         $objects = BObject::orderBy('code')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
@@ -37,10 +36,15 @@ class PaymentController extends Controller
         $requestData = array_merge(['object_id' => [$object->id]], $request->toArray());
         $payments = $this->paymentService->filterPayments($requestData, true, $totalInfo);
 
+        $activeOrganizations = [];
+        if (! empty($request->get('organization_id'))) {
+            $activeOrganizations = Organization::whereIn('id', $request->get('organization_id'))->orderBy('name')->get();
+        }
+
         return view(
             'objects.tabs.payments',
             compact(
-                'payments', 'companies', 'objects', 'worktypes', 'organizations',
+                'payments', 'companies', 'objects', 'worktypes', 'activeOrganizations',
                 'categories', 'importTypes', 'banks', 'totalInfo', 'object'
             )
         );

@@ -78,15 +78,13 @@
                             <div class="form-group mb-3">
                                 <label class="form-label">Организация</label>
                                 <select
+                                    id="organization-select"
                                     name="organization_id[]"
                                     class="form-select form-select-solid"
-                                    data-control="select2"
-                                    data-dropdown-parent="#filterPaymentModal"
-                                    data-allow-clear="true"
                                     multiple
                                 >
-                                    @foreach($organizations as $organization)
-                                        <option value="{{ $organization->id }}" {{ in_array($organization->id, request()->input('organization_id', [])) ? 'selected' : '' }}>{{ $organization->name }}</option>
+                                    @foreach($activeOrganizations as $organization)
+                                        <option value="{{ $organization->id }}" selected>{{ $organization->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -121,6 +119,7 @@
                             <div class="form-group mb-3">
                                 <label class="form-label">Объект</label>
                                 <select
+                                    id="filter-object"
                                     name="object_id[]"
                                     class="form-select form-select-solid"
                                     data-control="select2"

@@ -69,12 +69,13 @@ class HistoryImportImportService
                 continue;
             }
 
+            $allPayments = Payment::all();
 
             $bankId = null;
             $banks = ['VTB' => 1, 'PSB' => 2, 'SBER' => 3];
             $description = $paymentData[12] ?? '';
             if (empty($paymentData[15]) || in_array($paymentData[15], ['VTB', 'PSB', 'SBER'])) {
-                $issetPayment = Payment::where('date', $date)
+                $issetPayment = $allPayments->where('date', $date)
                     ->whereNotNull('bank_id')
                     ->where('object_id', $requestData['object_id'])
                     ->where('amount', $amount)
