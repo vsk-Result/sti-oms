@@ -34,7 +34,7 @@ class HistoryImportImportService
     public function createImport(array $requestData): null|PaymentImport
     {
         $historyData = $this->getHistoryDataFromExcel($requestData['file']);
-        dd($historyData);
+
         if (empty($historyData)) {
             return null;
         }
