@@ -113,12 +113,30 @@ class StatementImportService
             } elseif ($payment['object'] === 'Общее') {
                 $payment['type_id'] = Payment::TYPE_GENERAL;
             } elseif (! empty($payment['object'])) {
-                if (strpos($payment['object'], ',') !== false) {
+                if (str_contains($payment['object'], ',')) {
                     $payment['object'] = str_replace(',', '.', $payment['object']);
                 }
 
-                $code = substr($payment['object'], 0, strpos($payment['object'], '.'));
-                $workType = substr($payment['object'], strpos($payment['object'], '.') + 1);
+                if ($payment['object'] == '27' || $payment['object'] == '27.1') {
+                    $code = '1';
+                } elseif ($payment['object'] == '27.2') {
+                    $code = '2';
+                } elseif ($payment['object'] == '27.3') {
+                    $code = '4';
+                } elseif ($payment['object'] == '27.4') {
+                    $code = '3';
+                } elseif ($payment['object'] == '27.8') {
+                    $code = '5';
+                } else {
+                    $code = $payment['object'];
+                    $code = substr($code, 0, strpos($code, '.'));
+                }
+
+                $workType = null;
+                if (str_contains($code, '.')) {
+                    $workType = (int) substr($code, strpos($code, '.') + 1);
+                }
+
                 $object = BObject::where('code', $code)->first();
 
                 if (! $object) {
@@ -135,7 +153,7 @@ class StatementImportService
 
                 $payment['type_id'] = Payment::TYPE_OBJECT;
                 $payment['object_id'] = $object->id;
-                $payment['object_worktype_id'] = (int) $workType;
+                $payment['object_worktype_id'] = $workType;
             }
 
             $payment = $this->paymentService->createPayment([

@@ -66,11 +66,22 @@ class CRMCostClosureImportService
         foreach ($items as $item) {
 
             if ($item->object) {
-                if ($item->object->code == '27') {
-                    $item->object->code = '27.1';
+
+                if ($item->object->code == '27' || $item->object->code == '27.1') {
+                    $objectCode = '1';
+                } elseif ($item->object->code == '27.2') {
+                    $objectCode = '2';
+                } elseif ($item->object->code == '27.3') {
+                    $objectCode = '4';
+                } elseif ($item->object->code == '27.4') {
+                    $objectCode = '3';
+                } elseif ($item->object->code == '27.8') {
+                    $objectCode = '5';
+                } else {
+                    $objectCode = $item->object->code;
+                    $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
                 }
 
-                $objectCode = substr($item->object->code, 0, strpos($item->object->code, '.'));
                 if (! $object = BObject::where('code', $objectCode)->first()) {
                     $object = $this->objectService->createObject([
                         'code' => $objectCode,
@@ -83,8 +94,12 @@ class CRMCostClosureImportService
                     ]);
                 }
 
+                $worktypeCode = null;
                 $objectId = $object->id;
-                $worktypeCode = (int) substr($item->object->code, strpos($item->object->code, '.') + 1);
+                if (str_contains($objectCode, '.')) {
+                    $worktypeCode = (int) substr($objectCode, strpos($objectCode, '.') + 1);
+                }
+
                 $typeId = Payment::TYPE_OBJECT;
 
                 if ((float) $item->sum < 0) {

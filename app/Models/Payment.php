@@ -122,7 +122,7 @@ class Payment extends Model implements Audit
     public function getObject(): string
     {
         switch ($this->type_id) {
-            case static::TYPE_OBJECT:      return $this->object->code . '.' . $this->object_worktype_id;
+            case static::TYPE_OBJECT:      return ! is_null($this->object_worktype_id) ? ($this->object->code . '.' . $this->object_worktype_id) : $this->object->code;
             case static::TYPE_TRANSFER:    return 'Трансфер';
             case static::TYPE_GENERAL:     return 'Общее';
             default:

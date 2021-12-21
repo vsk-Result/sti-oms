@@ -216,14 +216,33 @@ class PaymentService
             } else if ($requestData['object_code'] === 'Общее') {
                 $requestData['type_id'] = Payment::TYPE_GENERAL;
             } else if (! empty($requestData['object_code'])) {
-                $code = substr($requestData['object_code'], 0, strpos($requestData['object_code'], '.'));
-                $workType = substr($requestData['object_code'], strpos($requestData['object_code'], '.') + 1);
+
+                if ($requestData['object_code'] == '27' || $requestData['object_code'] == '27.1') {
+                    $code = '1';
+                } elseif ($requestData['object_code'] == '27.2') {
+                    $code = '2';
+                } elseif ($requestData['object_code'] == '27.3') {
+                    $code = '4';
+                } elseif ($requestData['object_code'] == '27.4') {
+                    $code = '3';
+                } elseif ($requestData['object_code'] == '27.8') {
+                    $code = '5';
+                } else {
+                    $code = $requestData['object_code'];
+                    $code = substr($code, 0, strpos($code, '.'));
+                }
+
+                $workType = null;
+                if (str_contains($code, '.')) {
+                    $workType = (int) substr($code, strpos($code, '.') + 1);
+                }
+
                 $object = BObject::where('code', $code)->first();
 
                 if ($object) {
                     $requestData['type_id'] = Payment::TYPE_OBJECT;
                     $requestData['object_id'] = $object->id;
-                    $requestData['object_worktype_id'] = (int) $workType;
+                    $requestData['object_worktype_id'] = $workType;
                 } else {
                     $this->error = 'Объект ' . $requestData['object_code'] . ' не найден в системе. Данные об объекте не сохранятся.';
                 }
