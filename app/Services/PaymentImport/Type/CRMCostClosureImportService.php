@@ -83,6 +83,8 @@ class CRMCostClosureImportService
                         $objectCode = '3';
                     } elseif ($item->object->code == '27.8') {
                         $objectCode = '5';
+                    } elseif ($item->object->code == '28') {
+                        $objectCode = '28';
                     } else {
                         $objectCode = $item->object->code;
                         $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
