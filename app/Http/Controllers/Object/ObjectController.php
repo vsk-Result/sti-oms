@@ -27,7 +27,13 @@ class ObjectController extends Controller
 //            $query->whereDate('date', '>', Carbon::now()->subWeeks(2)->format('Y-m-d'));
 //        }])->orderByDesc('payments_count')->orderByDesc('code')->get();
 
-        $objects = BObject::orderByDesc('code')->get();
+        $query = BObject::query();
+
+        if (auth()->user()->hasRole('object-leader')) {
+            $query->whereIn('id', auth()->user()->objects->pluck('id'));
+        }
+
+        $objects = $query->orderByDesc('code')->get();
 
         return view('objects.index', compact('objects'));
     }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Object\DebtController;
 use App\Http\Controllers\Object\PaymentController;
 use App\Http\Controllers\Object\FileController;
 use App\Http\Controllers\Object\ActivityController;
+use App\Http\Controllers\Object\UserController;
 
 // Объекты
 
@@ -50,5 +51,11 @@ Route::get('objects/{object}/files', [FileController::class, 'index'])->name('ob
 // Активность
 
 Route::get('objects/{object}/activity', [ActivityController::class, 'index'])->name('objects.activity.index');
+
+// Доступ к объектам
+
+Route::get('objects-users', [UserController::class, 'index'])->name('objects.users.index')->middleware('can:index admin-roles');
+Route::get('objects-users/{object}/edit', [UserController::class, 'edit'])->name('objects.users.edit')->middleware('can:edit admin-roles');
+Route::post('objects-users/{object}', [UserController::class, 'update'])->name('objects.users.update')->middleware('can:edit admin-roles');
 
 

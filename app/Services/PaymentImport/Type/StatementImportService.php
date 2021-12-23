@@ -117,7 +117,7 @@ class StatementImportService
                     $payment['object'] = str_replace(',', '.', $payment['object']);
                 }
 
-                if ($payment['object'] == '27' || $payment['object'] == '27.1') {
+                if ($payment['object'] == '27' || $payment['object'] == '27.1' || $payment['object'] == '27.7') {
                     $code = '1';
                 } elseif ($payment['object'] == '27.2') {
                     $code = '2';

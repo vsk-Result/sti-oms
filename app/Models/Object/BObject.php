@@ -7,8 +7,10 @@ use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Payment;
 use App\Models\PaymentImport;
+use App\Models\User;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
@@ -40,6 +42,11 @@ class BObject extends Model implements Audit
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'object_id');
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'object_user', 'user_id', 'object_id');
     }
 
     public function bankGuarantees(): HasMany
