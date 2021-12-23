@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CostClosure extends Model
 {
     protected $table = 'cost_closures';
+    public $timestamps = false;
 
     protected $connection = 'mysql_crm';
 
