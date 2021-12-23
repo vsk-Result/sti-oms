@@ -43,7 +43,7 @@ class CRMCostClosureImportService
             'type_id' => PaymentImport::TYPE_CRM_COST_CLOSURE,
             'bank_id' => null,
             'company_id' => 1,
-            'date' => $closure->date,
+            'date' => now()->format('Y-m-d'),
             'status_id' => Status::STATUS_ACTIVE,
             'file' => null,
             'description' => 'Закрытый период кассы ' . $closure->user->name . ' за ' . Carbon::parse($closure->date)->format('F Y')
@@ -133,7 +133,7 @@ class CRMCostClosureImportService
                     'code' => $item->getKostCode(),
                     'category' => Payment::CATEGORY_RAD,
                     'description' => $item->avans ? ($item->information . ' - ' . $item->avans->employee->getFullName()) : $item->information,
-                    'date' => $import->date,
+                    'date' => $item->date,
                     'amount' => (float) $item->sum,
                     'amount_without_nds' => (float) $item->sum,
                     'is_need_split' => false,
