@@ -34,11 +34,11 @@ class ObjectController extends Controller
             $query->whereIn('id', auth()->user()->objects->pluck('id'));
         }
 
-        $payments = Payment::select('object_id', 'amount')->get();
+        $paymentQuery = Payment::select('object_id', 'amount');
         $objects = $query->orderByDesc('code')->get();
 
         foreach ($objects as $object) {
-            $objectPayments = $payments->where('object_id', $object->id);
+            $objectPayments = (clone $paymentQuery)->where('object_id', $object->id);
             $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
             $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
             $object->total_balance = $object->total_pay + $object->total_receive;
