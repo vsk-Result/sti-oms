@@ -233,11 +233,10 @@ class PaymentService
                 } else {
                     $code = $requestData['object_code'];
                     $code = substr($code, 0, strpos($code, '.'));
-                }
 
-                $workType = null;
-                if (str_contains($code, '.')) {
-                    $workType = (int) substr($code, strpos($code, '.') + 1);
+                    if (str_contains($code, '.')) {
+                        $requestData['object_worktype_id'] = (int) substr($code, strpos($code, '.') + 1);
+                    }
                 }
 
                 $object = BObject::where('code', $code)->first();
@@ -245,7 +244,6 @@ class PaymentService
                 if ($object) {
                     $requestData['type_id'] = Payment::TYPE_OBJECT;
                     $requestData['object_id'] = $object->id;
-                    $requestData['object_worktype_id'] = $workType;
                 } else {
                     $this->error = 'Объект ' . $requestData['object_code'] . ' не найден в системе. Данные об объекте не сохранятся.';
                 }
