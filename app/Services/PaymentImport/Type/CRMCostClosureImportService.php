@@ -70,7 +70,7 @@ class CRMCostClosureImportService
                 $objectId = null;
                 $worktypeCode = null;
 
-                if ($item->type_id === 1) {
+                if ($item->type_id === 1 && ! $item->object) {
                     $typeId = Payment::TYPE_TRANSFER;
                 } else {
                     if ($item->object->code == '27' || $item->object->code == '27.1') {
