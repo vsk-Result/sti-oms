@@ -17,5 +17,5 @@ use Illuminate\Support\Facades\Route;
 require __DIR__.'/auth.php';
 
 Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
-    Route::get('/', fn () => redirect()->route('payment_imports.index'))->name('home');
+    Route::view('/', 'home')->name('home');
 });

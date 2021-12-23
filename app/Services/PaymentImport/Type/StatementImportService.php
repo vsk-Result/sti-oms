@@ -127,6 +127,8 @@ class StatementImportService
                     $code = '3';
                 } elseif ($payment['object'] == '27.8') {
                     $code = '5';
+                } elseif ($payment['object'] == '28') {
+                    $code = '28';
                 } else {
                     $code = $payment['object'];
                     $code = substr($code, 0, strpos($code, '.'));
