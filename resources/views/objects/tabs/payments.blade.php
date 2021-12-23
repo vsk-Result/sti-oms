@@ -20,6 +20,16 @@
 
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                             <div class="d-flex align-items-center">
+                                @php
+                                    $balance = $totalInfo['amount_pay'] + $totalInfo['amount_receive'];
+                                @endphp
+                                <div class="fs-4 fw-bolder {{ $balance >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($balance, 2, '.', ' ') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Баланс</div>
+                        </div>
+
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                            <div class="d-flex align-items-center">
                                 <div class="fs-4 fw-bolder text-danger">{{ number_format($totalInfo['amount_pay'], 2, '.', ' ') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Расходы</div>
