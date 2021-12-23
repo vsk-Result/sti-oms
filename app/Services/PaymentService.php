@@ -234,8 +234,8 @@ class PaymentService
                     $code = $requestData['object_code'];
                     $code = substr($code, 0, strpos($code, '.'));
 
-                    if (str_contains($code, '.')) {
-                        $requestData['object_worktype_id'] = (int) substr($code, strpos($code, '.') + 1);
+                    if (str_contains($requestData['object_code'], '.')) {
+                        $requestData['object_worktype_id'] = (int) substr($requestData['object_code'], strpos($requestData['object_code'], '.') + 1);
                     }
                 }
 
