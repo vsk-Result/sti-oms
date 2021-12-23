@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Object\StoreObjectRequest;
 use App\Http\Requests\Object\UpdateObjectRequest;
 use App\Models\Object\BObject;
+use App\Models\Payment;
 use App\Models\Status;
 use App\Services\ObjectService;
 use Carbon\Carbon;
@@ -33,7 +34,15 @@ class ObjectController extends Controller
             $query->whereIn('id', auth()->user()->objects->pluck('id'));
         }
 
+        $payments = Payment::select('object_id', 'amount')->get();
         $objects = $query->orderByDesc('code')->get();
+
+        foreach ($objects as $object) {
+            $objectPayments = $payments->where('object_id', $object->id);
+            $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
+            $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
+            $object->total_balance = $object->total_pay + $object->total_receive;
+        }
 
         return view('objects.index', compact('objects'));
     }

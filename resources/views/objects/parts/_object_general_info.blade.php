@@ -61,19 +61,19 @@
             <div class="d-flex flex-wrap">
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                     <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder {{ $object->payments->sum('amount') < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($object->payments->sum('amount'), 2, '.', ' ') }}</div>
+                        <div class="fs-4 fw-bolder {{ $object->total_balance ? 'text-danger' : 'text-success' }}">{{ number_format($object->total_balance, 2, '.', ' ') }}</div>
                     </div>
                     <div class="fw-bold fs-6 text-gray-400">Баланс</div>
                 </div>
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                     <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->payments->where('amount', '<', 0)->sum('amount'), 2, '.', ' ') }}</div>
+                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->total_pay, 2, '.', ' ') }}</div>
                     </div>
                     <div class="fw-bold fs-6 text-gray-400">Расходы</div>
                 </div>
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                     <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-success">{{ number_format($object->payments->where('amount', '>=', 0)->sum('amount'), 2, '.', ' ') }}</div>
+                        <div class="fs-4 fw-bolder text-success">{{ number_format($object->total_receive, 2, '.', ' ') }}</div>
                     </div>
                     <div class="fw-bold fs-6 text-gray-400">Приходы</div>
                 </div>
