@@ -340,14 +340,36 @@ class PaymentService
         $organizationReceiverId = Organization::where('name', 'ФИЛИАЛ № 7701 БАНКА ВТБ (ПАО) Г. МОСКВА')->first()->id;
 
         $payments = [];
-        foreach ($amountGroupedByObjectCode as $code => $amount) {
-            $objectCode = substr($code, 0, strpos($code, '.'));
-            $worktypeCode = (int) substr($code, strpos($code, '.') + 1);
+        foreach ($amountGroupedByObjectCode as $oCode => $amount) {
+
+            $worktypeCode = null;
+
+            if ($oCode == '27' || $oCode == '27.1' || $oCode == '27.7') {
+                $code = '1';
+            } elseif ($oCode == '27.2') {
+                $code = '2';
+            } elseif ($oCode == '27.3') {
+                $code = '4';
+            } elseif ($oCode == '27.4') {
+                $code = '3';
+            } elseif ($oCode == '27.8') {
+                $code = '5';
+            } elseif ($oCode == '28') {
+                $code = '28';
+            } else {
+                $code = $oCode;
+                $code = substr($code, 0, strpos($code, '.'));
+
+                if (str_contains($oCode, '.')) {
+                    $worktypeCode = (int) substr($oCode, strpos($oCode, '.') + 1);
+                }
+            }
+
             $payments[] = $this->createPayment([
                 'company_id' => $company->id,
                 'bank_id' => 1,
                 'import_id' => $payment->import_id,
-                'object_id' => BObject::where('code', $objectCode)->first()->id ?? null,
+                'object_id' => BObject::where('code', $code)->first()->id ?? null,
                 'object_worktype_id' => $worktypeCode,
                 'organization_sender_id' => $organizationSenderId,
                 'organization_receiver_id' => $organizationReceiverId,
