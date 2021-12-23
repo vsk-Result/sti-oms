@@ -39,8 +39,8 @@ class ObjectController extends Controller
 
         foreach ($objects as $object) {
             $objectPayments = (clone $paymentQuery)->where('object_id', $object->id);
-            $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
-            $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
+            $object->total_pay = (clone $objectPayments)->where('amount', '<', 0)->sum('amount');
+            $object->total_receive = (clone $objectPayments)->sum('amount') - $object->total_pay;
             $object->total_balance = $object->total_pay + $object->total_receive;
         }
 
