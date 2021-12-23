@@ -37,7 +37,7 @@ class PaymentService
         $this->materialList = include base_path('resources/categories/material.php');
     }
 
-    public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Builder|LengthAwarePaginator
+    public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Collection|LengthAwarePaginator
     {
         $paymentQuery = Payment::query();
 
@@ -129,7 +129,7 @@ class PaymentService
             return $paymentQuery->paginate($perPage)->withQueryString();
         }
 
-        return $paymentQuery;
+        return $paymentQuery->get();
     }
 
     public function createPayment(array $requestData): Payment
