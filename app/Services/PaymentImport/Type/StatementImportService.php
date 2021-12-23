@@ -133,8 +133,8 @@ class StatementImportService
                 }
 
                 $workType = null;
-                if (str_contains($code, '.')) {
-                    $workType = (int) substr($code, strpos($code, '.') + 1);
+                if (str_contains($payment['object'], '.')) {
+                    $workType = (int) substr($payment['object'], strpos($payment['object'], '.') + 1);
                 }
 
                 $object = BObject::where('code', $code)->first();

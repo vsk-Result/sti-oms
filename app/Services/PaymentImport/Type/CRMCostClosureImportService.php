@@ -101,8 +101,8 @@ class CRMCostClosureImportService
 
                     $worktypeCode = null;
                     $objectId = $object->id;
-                    if (str_contains($objectCode, '.')) {
-                        $worktypeCode = (int) substr($objectCode, strpos($objectCode, '.') + 1);
+                    if (str_contains($item->object->code, '.')) {
+                        $worktypeCode = (int) substr($item->object->code, strpos($item->object->code, '.') + 1);
                     }
 
                     $typeId = Payment::TYPE_OBJECT;
