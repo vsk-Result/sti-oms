@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -36,7 +37,7 @@ class PaymentService
         $this->materialList = include base_path('resources/categories/material.php');
     }
 
-    public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Collection|LengthAwarePaginator
+    public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Builder|LengthAwarePaginator
     {
         $paymentQuery = Payment::query();
 
@@ -128,7 +129,7 @@ class PaymentService
             return $paymentQuery->paginate($perPage)->withQueryString();
         }
 
-        return $paymentQuery->get();
+        return $paymentQuery;
     }
 
     public function createPayment(array $requestData): Payment
@@ -227,6 +228,8 @@ class PaymentService
                     $code = '3';
                 } elseif ($requestData['object_code'] == '27.8') {
                     $code = '5';
+                } elseif ($requestData['object_code'] == '28') {
+                    $code = '28';
                 } else {
                     $code = $requestData['object_code'];
                     $code = substr($code, 0, strpos($code, '.'));
