@@ -130,11 +130,10 @@ class StatementImportService
                 } else {
                     $code = $payment['object'];
                     $code = substr($code, 0, strpos($code, '.'));
-                }
 
-                $workType = null;
-                if (str_contains($payment['object'], '.')) {
-                    $workType = (int) substr($payment['object'], strpos($payment['object'], '.') + 1);
+                    if (str_contains($payment['object'], '.')) {
+                        $payment['object_worktype_id'] = (int) substr($payment['object'], strpos($payment['object'], '.') + 1);
+                    }
                 }
 
                 $object = BObject::where('code', $code)->first();
@@ -153,7 +152,6 @@ class StatementImportService
 
                 $payment['type_id'] = Payment::TYPE_OBJECT;
                 $payment['object_id'] = $object->id;
-                $payment['object_worktype_id'] = $workType;
             }
 
             $payment = $this->paymentService->createPayment([

@@ -67,9 +67,10 @@ class CRMCostClosureImportService
 
             if ($item->object || $item->type_id === 1) {
 
+                $objectId = null;
+                $worktypeCode = null;
+
                 if ($item->type_id === 1) {
-                    $objectId = null;
-                    $worktypeCode = null;
                     $typeId = Payment::TYPE_TRANSFER;
                 } else {
                     if ($item->object->code == '27' || $item->object->code == '27.1') {
@@ -85,6 +86,10 @@ class CRMCostClosureImportService
                     } else {
                         $objectCode = $item->object->code;
                         $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
+
+                        if (str_contains($item->object->code, '.')) {
+                            $worktypeCode = (int) substr($item->object->code, strpos($item->object->code, '.') + 1);
+                        }
                     }
 
                     if (! $object = BObject::where('code', $objectCode)->first()) {
@@ -99,12 +104,7 @@ class CRMCostClosureImportService
                         ]);
                     }
 
-                    $worktypeCode = null;
                     $objectId = $object->id;
-                    if (str_contains($item->object->code, '.')) {
-                        $worktypeCode = (int) substr($item->object->code, strpos($item->object->code, '.') + 1);
-                    }
-
                     $typeId = Payment::TYPE_OBJECT;
                 }
 
