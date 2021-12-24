@@ -35,7 +35,7 @@ class ObjectController extends Controller
         }
 
         $paymentQuery = Payment::select('object_id', 'amount');
-        $objects = $query->orderByDesc('code')->get();
+        $objects = $query->orderByRaw('CONVERT(code, SIGNED) desc')->get();
 
         foreach ($objects as $object) {
             $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
