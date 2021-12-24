@@ -28,7 +28,7 @@
             </div>
             <div class="card-body py-3">
                 <div class="table-responsive">
-                    <table class="table align-middle table-row-dashed fs-6">
+                    <table class="table table-hover align-middle table-row-dashed fs-6">
                         <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="min-w-150px">Договор</th>
