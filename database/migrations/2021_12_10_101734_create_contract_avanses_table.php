@@ -33,7 +33,7 @@ class CreateContractAvansesTable extends Migration
             $table->unsignedBigInteger('contract_id');
             $table->unsignedTinyInteger('created_by_user_id');
             $table->unsignedTinyInteger('updated_by_user_id')->nullable();
-            $table->date('date');
+            $table->date('date')->nullable();
             $table->decimal('amount', 19, 4)->default(0);
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();

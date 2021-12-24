@@ -37,7 +37,7 @@ class CreateContractsTable extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->decimal('amount', 19, 4)->default(0);
-            $table->unsignedTinyInteger('amount_type_id');
+            $table->unsignedTinyInteger('amount_type_id')->nullable();
             $table->text('description')->nullable();
             $table->unsignedTinyInteger('stage_id')->default(0);
             $table->unsignedTinyInteger('status_id')->default(0);

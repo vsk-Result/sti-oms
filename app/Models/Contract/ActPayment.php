@@ -9,14 +9,15 @@ use App\Traits\HasUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class ActPayment extends Model
+class ActPayment extends Model implements Audit
 {
-    use SoftDeletes, HasUser, HasStatus;
+    use SoftDeletes, HasUser, HasStatus, Auditable;
 
-    protected $table = 'acts';
+    protected $table = 'act_payments';
 
     protected $fillable = [
         'contract_id', 'act_id', 'company_id', 'object_id', 'created_by_user_id',
@@ -45,7 +46,7 @@ class ActPayment extends Model
 
     public function getDateFormatted(string $format = 'd/m/Y'): string
     {
-        return Carbon::parse($this->date)->format($format);
+        return $this->date ? Carbon::parse($this->date)->format($format) : '';
     }
 
     public function getAmount(): string

@@ -11,10 +11,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class Contract extends Model
+class Contract extends Model implements HasMedia, Audit
 {
-    use SoftDeletes, HasUser, HasStatus;
+    use SoftDeletes, HasUser, HasStatus, InteractsWithMedia, Auditable;
 
     protected $table = 'contracts';
 
@@ -73,17 +77,93 @@ class Contract extends Model
 
     public function getStartDateFormatted(string $format = 'd/m/Y'): string
     {
-        return Carbon::parse($this->start_date)->format($format);
+        return $this->start_date ? Carbon::parse($this->start_date)->format($format) : '';
     }
 
     public function getEndDateFormatted(string $format = 'd/m/Y'): string
     {
-        return Carbon::parse($this->end_date)->format($format);
+        return $this->end_date ? Carbon::parse($this->end_date)->format($format) : '';
     }
 
     public function getAmount(): string
     {
-        return number_format($this->amount, 2, '.', ' ');
+        $amount = $this->amount;
+
+        if ($this->isMain()) {
+            $subContract = $this->children->sortByDesc('id')->first();
+            if ($subContract) {
+                $amount = $subContract->isMainAmount()
+                    ? $subContract->amount
+                    : $amount + $subContract->amount;
+            }
+        }
+
+        return number_format($amount, 2, '.', ' ');
+    }
+
+    public function isMain(): string
+    {
+        return $this->type_id === self::TYPE_MAIN;
+    }
+
+    public function isMainAmount(): string
+    {
+        return $this->amount_type_id === self::AMOUNT_TYPE_MAIN;
+    }
+
+    public function getAvansesAmount(): string
+    {
+        return number_format($this->avanses->sum('amount'), 2, '.', ' ');
+    }
+
+    public function getAvansesReceivedAmount(): string
+    {
+        return number_format($this->avansesReceived->sum('amount'), 2, '.', ' ');
+    }
+
+    public function getAvansesLeftAmount(): string
+    {
+        return number_format($this->avanses->sum('amount') - $this->avansesReceived->sum('amount'), 2, '.', ' ');
+    }
+
+    public function getActsAmount(): string
+    {
+        return number_format($this->acts->sum('amount'), 2, '.', ' ');
+    }
+
+    public function getActsAvasesAmount(): string
+    {
+        return number_format($this->acts->sum('amount_avans'), 2, '.', ' ');
+    }
+
+    public function getActsDepositesAmount(): string
+    {
+        return number_format($this->acts->sum('amount_deposit'), 2, '.', ' ');
+    }
+
+    public function getActsNeedPaidAmount(): string
+    {
+        return number_format($this->acts->sum('amount_need_paid'), 2, '.', ' ');
+    }
+
+    public function getActsPaidAmount(): string
+    {
+        $paid = 0;
+        foreach ($this->acts as $act) {
+            $paid += $act->payments->sum('amount');
+        }
+
+        return number_format($paid, 2, '.', ' ');
+    }
+
+    public function getActsLeftPaidAmount(): string
+    {
+        $paid = 0;
+        foreach ($this->acts as $act) {
+            $paid += $act->payments->sum('amount');
+        }
+
+        return number_format($this->acts->sum('amount_need_paid') - $paid, 2, '.', ' ');
     }
 
     public static function getTypes(): array
@@ -99,8 +179,30 @@ class Contract extends Model
     public static function getAmountTypes(): array
     {
         return [
-            self::AMOUNT_TYPE_MAIN => 'Основной',
-            self::AMOUNT_TYPE_ADDITIONAL => 'Дополнительный',
+            self::AMOUNT_TYPE_MAIN => 'Основная',
+            self::AMOUNT_TYPE_ADDITIONAL => 'Дополнительная',
         ];
+    }
+
+    public function getName(): string
+    {
+        $prefix = match ($this->type_id) {
+            self::TYPE_ADDITIONAL => 'Доп. соглашение ',
+            self::TYPE_PHASE => 'Фаза ',
+            self::TYPE_PRELIMINARY => 'Предв. договор ',
+            default => '',
+        };
+
+        return $prefix . $this->name;
+    }
+
+    public function getType(): string
+    {
+        return self::getTypes()[$this->type_id];
+    }
+
+    public function getAmountType(): string
+    {
+        return self::getAmountTypes()[$this->amount_type_id];
     }
 }

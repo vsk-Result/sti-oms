@@ -3,14 +3,77 @@
 namespace App\Http\Controllers\Contract;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\Contract\Contract;
+use App\Models\Object\BObject;
+use App\Models\Status;
+use App\Services\Contract\ContractService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ContractController extends Controller
 {
+    private ContractService $contractService;
+
+    public function __construct(ContractService $contractService)
+    {
+        $this->contractService = $contractService;
+    }
+
     public function index(): View
     {
-        $contracts = Contract::all();
+        $contracts = Contract::where('type_id', Contract::TYPE_MAIN)
+            ->with('object', 'children', 'acts', 'avanses', 'avansesReceived', 'acts.payments', 'children.acts', 'children.avanses', 'children.avansesReceived', 'children.acts.payments')
+            ->get();
+
         return view('contracts.index', compact('contracts'));
+    }
+
+    public function create(Request $request): View
+    {
+        $mainContracts = Contract::where('type_id', Contract::TYPE_MAIN)->pluck('name', 'id');
+        $types = Contract::getTypes();
+        $amountTypes = Contract::getAmountTypes();
+        $objectId = $request->get('current_object_id') ?? null;
+        $objects = BObject::orderBy('code')->get();
+        $companies = Company::orderBy('name')->get();
+
+        return view('contracts.create', compact('objects', 'companies', 'objectId', 'types', 'mainContracts', 'amountTypes'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $this->contractService->createContract($request->toArray());
+        return redirect()->route('contracts.index');
+    }
+
+    public function show(Contract $contract): View
+    {
+        return view('contracts.show', compact('contract'));
+    }
+
+    public function edit(Contract $contract): View
+    {
+        $mainContracts = Contract::where('type_id', Contract::TYPE_MAIN)->pluck('name', 'id');
+        $types = Contract::getTypes();
+        $amountTypes = Contract::getAmountTypes();
+        $objects = BObject::orderBy('code')->get();
+        $companies = Company::orderBy('name')->get();
+        $statuses = Status::getStatuses();
+
+        return view('contracts.edit', compact('contract', 'objects', 'companies', 'statuses', 'types', 'amountTypes', 'mainContracts'));
+    }
+
+    public function update(Contract $contract, Request $request): RedirectResponse
+    {
+        $this->contractService->updateContract($contract, $request->toArray());
+        return redirect()->route('contracts.index');
+    }
+
+    public function destroy(Contract $contract): RedirectResponse
+    {
+        $this->contractService->destroyContract($contract);
+        return redirect()->route('contracts.index');
     }
 }

@@ -11,15 +11,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class Act extends Model
+class Act extends Model implements Audit
 {
-    use SoftDeletes, HasUser, HasStatus;
+    use SoftDeletes, HasUser, HasStatus, Auditable;
 
     protected $table = 'acts';
 
     protected $fillable = [
-        'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'name', 'date',
+        'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
         'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id'
     ];
 
@@ -53,18 +55,28 @@ class Act extends Model
         return number_format($this->amount, 2, '.', ' ');
     }
 
-    public function getAmountAvans(): string
+    public function getAvansAmount(): string
     {
         return number_format($this->amount_avans, 2, '.', ' ');
     }
 
-    public function getAmountDeposit(): string
+    public function getDepositAmount(): string
     {
         return number_format($this->amount_deposit, 2, '.', ' ');
     }
 
-    public function getAmountNeedPaid(): string
+    public function getNeedPaidAmount(): string
     {
         return number_format($this->amount_need_paid, 2, '.', ' ');
+    }
+
+    public function getPaidAmount(): string
+    {
+        return number_format($this->payments->sum('amount'), 2, '.', ' ');
+    }
+
+    public function getLeftPaidAmount(): string
+    {
+        return number_format($this->amount_need_paid - $this->payments->sum('amount'), 2, '.', ' ');
     }
 }

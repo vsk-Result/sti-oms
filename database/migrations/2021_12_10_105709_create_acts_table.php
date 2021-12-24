@@ -32,7 +32,6 @@ class CreateActsTable extends Migration
             $table->unsignedSmallInteger('object_id');
             $table->unsignedTinyInteger('created_by_user_id');
             $table->unsignedTinyInteger('updated_by_user_id')->nullable();
-            $table->string('name');
             $table->date('date')->nullable();
             $table->decimal('amount', 19, 4)->default(0);
             $table->decimal('amount_avans', 19, 4)->default(0);
