@@ -225,7 +225,7 @@
                     </div>
 
                     <div class="d-flex flex-center py-3">
-                        <a href="{{ route('contracts.index') }}" class="btn btn-light">Отменить</a>
+                        <a href="{{ url()->previous() }}" class="btn btn-light">Отменить</a>
                     </div>
                 </div>
             </div>

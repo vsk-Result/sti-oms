@@ -3,6 +3,8 @@
 namespace App\Models\Object;
 
 use App\Models\BankGuarantee;
+use App\Models\Contract\Act;
+use App\Models\Contract\Contract;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Payment;
@@ -57,6 +59,16 @@ class BObject extends Model implements Audit
     public function debts(): HasMany
     {
         return $this->hasMany(Debt::class, 'object_id');
+    }
+
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class, 'object_id');
+    }
+
+    public function acts(): HasMany
+    {
+        return $this->hasMany(Act::class, 'object_id');
     }
 
     public static function getObjectsList(): array

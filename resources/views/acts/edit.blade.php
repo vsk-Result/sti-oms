@@ -15,6 +15,9 @@
                 <div class="card-body py-3">
                     <form class="form" action="{{ route('acts.update', $act) }}" method="POST" enctype="multipart/form-data">
                         @csrf
+
+                        <input type="hidden" name="return_url" value="{{ url()->previous() }}">
+
                         <div class="row mb-5">
                             <div class="col-md-12 fv-row">
 
@@ -225,7 +228,7 @@
                             <button type="submit" id="kt_modal_new_address_submit" class="btn btn-primary me-3">
                                 <span class="indicator-label">Сохранить</span>
                             </button>
-                            <a href="{{ route('acts.index') }}" class="btn btn-light">Отменить</a>
+                            <a href="{{ url()->previous() }}" class="btn btn-light">Отменить</a>
                         </div>
                     </form>
                 </div>

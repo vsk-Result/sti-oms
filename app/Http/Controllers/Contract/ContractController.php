@@ -45,7 +45,7 @@ class ContractController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $this->contractService->createContract($request->toArray());
-        return redirect()->route('contracts.index');
+        return redirect($request->get('return_url') ?? route('contracts.index'));
     }
 
     public function show(Contract $contract): View
@@ -68,12 +68,12 @@ class ContractController extends Controller
     public function update(Contract $contract, Request $request): RedirectResponse
     {
         $this->contractService->updateContract($contract, $request->toArray());
-        return redirect()->route('contracts.index');
+        return redirect($request->get('return_url') ?? route('contracts.index'));
     }
 
     public function destroy(Contract $contract): RedirectResponse
     {
         $this->contractService->destroyContract($contract);
-        return redirect()->route('contracts.index');
+        return redirect()->back();
     }
 }

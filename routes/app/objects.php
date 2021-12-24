@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Object\ObjectController;
 use App\Http\Controllers\Object\PivotController;
-use App\Http\Controllers\Object\DocumentController;
+use App\Http\Controllers\Object\ContractController;
 use App\Http\Controllers\Object\ActController;
 use App\Http\Controllers\Object\GuaranteeController;
 use App\Http\Controllers\Object\DebtController;
@@ -24,9 +24,9 @@ Route::post('objects/{object}', [ObjectController::class, 'update'])->name('obje
 
 Route::get('objects/{object}/pivot', [PivotController::class, 'index'])->name('objects.pivot.index');
 
-// Документооборот
+// Договора
 
-Route::get('objects/{object}/documents', [DocumentController::class, 'index'])->name('objects.documents.index');
+Route::get('objects/{object}/contracts', [ContractController::class, 'index'])->name('objects.contracts.index');
 
 // Акты
 
