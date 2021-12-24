@@ -56,13 +56,13 @@
                 </div>
             @endcan
 
-{{--            @can('index contracts')--}}
-{{--                <div class="menu-item">--}}
-{{--                    <a href="{{ route('contracts.index') }}" class="menu-link {{ request()->is('contracts*') ? 'active' : '' }}">--}}
-{{--                        <span class="menu-title">Договора</span>--}}
-{{--                    </a>--}}
-{{--                </div>--}}
-{{--            @endcan--}}
+            @can('index contracts')
+                <div class="menu-item">
+                    <a href="{{ route('contracts.index') }}" class="menu-link {{ request()->is('contracts*') ? 'active' : '' }}">
+                        <span class="menu-title">Договора</span>
+                    </a>
+                </div>
+            @endcan
 
 {{--            @can('index acts')--}}
 {{--                <div class="menu-item">--}}
