@@ -70,13 +70,15 @@ class Act extends Model implements Audit
         return number_format($this->amount_need_paid, 2, '.', ' ');
     }
 
-    public function getPaidAmount(): string
+    public function getPaidAmount($formatted = true): string
     {
-        return number_format($this->payments->sum('amount'), 2, '.', ' ');
+        $amount = $this->payments->sum('amount');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getLeftPaidAmount(): string
+    public function getLeftPaidAmount($formatted = true): string
     {
-        return number_format($this->amount_need_paid - $this->payments->sum('amount'), 2, '.', ' ');
+        $amount = $this->amount_need_paid - $this->payments->sum('amount');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 }

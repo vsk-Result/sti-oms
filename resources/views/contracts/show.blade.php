@@ -32,7 +32,7 @@
                                 <label class="col-lg-2 fw-bold text-muted">Объект</label>
                                 <div class="col-lg-10 fv-row">
                                     @if(auth()->user()->can('show objects'))
-                                        <a class="fw-bold fs-6" target="_blank" href="{{ route('objects.show', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
+                                        <a class="fw-bold fs-6" target="_blank" href="{{ route('objects.contracts.index', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
                                     @else
                                         <span class="fw-bold text-gray-800 fs-6">{{ $contract->object->getName() }}</span>
                                     @endif

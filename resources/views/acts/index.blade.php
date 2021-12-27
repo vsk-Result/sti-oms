@@ -7,7 +7,58 @@
     <div class="post">
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
-                <div class="card-title"></div>
+                <div class="card-title">
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder">{{ number_format($acts->sum('amount'), 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Сумма выполнения</div>
+                    </div>
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder">{{ number_format($acts->sum('amount_avans'), 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Сумма удержанного аванса</div>
+                    </div>
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder">{{ number_format($acts->sum('amount_deposit'), 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Сумма удержанного депозита</div>
+                    </div>
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder">{{ number_format($acts->sum('amount_need_paid'), 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Сумма к оплате</div>
+                    </div>
+
+                    @php
+                        $totalPaidAmount = 0;
+                        $totalLeftPaidAmount = 0;
+                        foreach ($acts as $act) {
+                            $totalPaidAmount += $act->getPaidAmount(false);
+                            $totalLeftPaidAmount += $act->getLeftPaidAmount(false);
+                        }
+                    @endphp
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder">{{ number_format($totalPaidAmount, 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Сумма оплачено</div>
+                    </div>
+
+                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder">{{ number_format($totalLeftPaidAmount, 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Сумма неоплаченных работ</div>
+                    </div>
+                </div>
 
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
@@ -55,7 +106,7 @@
                                     </td>
                                     <td>
                                         @if(auth()->user()->can('show objects'))
-                                            <a target="_blank" href="{{ route('objects.show', $act->object) }}" class="show-link">{{ $act->object->getName() }}</a>
+                                            <a target="_blank" href="{{ route('objects.acts.index', $act->object) }}" class="show-link">{{ $act->object->getName() }}</a>
                                         @else
                                             {{ $act->object->getName() }}
                                         @endif

@@ -137,7 +137,7 @@
                                     </td>
                                     <td>
                                         @if(auth()->user()->can('show objects'))
-                                            <a target="_blank" href="{{ route('objects.show', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
+                                            <a target="_blank" href="{{ route('objects.contracts.index', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
                                         @else
                                             {{ $contract->object->getName() }}
                                         @endif
