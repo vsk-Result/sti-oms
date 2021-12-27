@@ -114,42 +114,91 @@ class Contract extends Model implements HasMedia, Audit
     public function getAvansesAmount($formatted = true): string
     {
         $amount = $this->avanses->sum('amount');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->avanses->sum('amount');
+            }
+        }
+
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public function getAvansesReceivedAmount($formatted = true): string
     {
         $amount = $this->avansesReceived->sum('amount');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->avansesReceived->sum('amount');
+            }
+        }
+
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public function getAvansesLeftAmount($formatted = true): string
     {
         $amount = $this->avanses->sum('amount') - $this->avansesReceived->sum('amount');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->avanses->sum('amount') - $subContract->avansesReceived->sum('amount');
+            }
+        }
+
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public function getActsAmount($formatted = true): string
     {
         $amount = $this->acts->sum('amount');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->acts->sum('amount');
+            }
+        }
+
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public function getActsAvasesAmount($formatted = true): string
     {
         $amount = $this->acts->sum('amount_avans');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->acts->sum('amount_avans');
+            }
+        }
+
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public function getActsDepositesAmount($formatted = true): string
     {
         $amount = $this->acts->sum('amount_deposit');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->acts->sum('amount_deposit');
+            }
+        }
+
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public function getActsNeedPaidAmount($formatted = true): string
     {
         $amount = $this->acts->sum('amount_need_paid');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->acts->sum('amount_need_paid');
+            }
+        }
+
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
@@ -158,6 +207,14 @@ class Contract extends Model implements HasMedia, Audit
         $paid = 0;
         foreach ($this->acts as $act) {
             $paid += $act->payments->sum('amount');
+        }
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                foreach ($subContract->acts as $act) {
+                    $paid += $act->payments->sum('amount');
+                }
+            }
         }
 
         $amount = $paid;
@@ -172,7 +229,23 @@ class Contract extends Model implements HasMedia, Audit
             $paid += $act->payments->sum('amount');
         }
 
-        $amount = $this->acts->sum('amount_need_paid') - $paid;
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                foreach ($subContract->acts as $act) {
+                    $paid += $act->payments->sum('amount');
+                }
+            }
+        }
+
+        $amount = $this->acts->sum('amount_need_paid');
+
+        if ($this->isMain()) {
+            foreach ($this->children as $subContract) {
+                $amount += $subContract->acts->sum('amount_need_paid');
+            }
+        }
+
+        $amount -= $paid;
 
         return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }

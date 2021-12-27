@@ -102,7 +102,13 @@
                                     </td>
                                     <td>{{ $payment->company->short_name }}</td>
                                     <td>{{ $payment->getBankName() }}</td>
-                                    <td>{{ $payment->getObject() }}</td>
+                                    <td>
+                                        @if(auth()->user()->can('show objects') && $payment->type_id === \App\Models\Payment::TYPE_OBJECT)
+                                            <a target="_blank" href="{{ route('objects.show', $payment->object) }}" class="show-link">{{ $payment->getObject() }}</a>
+                                        @else
+                                            {{ $payment->getObject() }}
+                                        @endif
+                                    </td>
                                     <td>{{ $payment->code }}</td>
                                     <td>
                                         @if ($payment->amount < 0)

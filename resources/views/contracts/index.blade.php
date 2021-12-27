@@ -4,29 +4,28 @@
 @section('breadcrumbs', Breadcrumbs::render('contracts.index'))
 
 @section('content')
-    @php
-        $totalAmount = 0;
-        $totalAvansesReceivedAmount = 0;
-        $totalActsPaidAmount = 0;
-        $totalAvansesLeftAmount = 0;
-        $totalActsLeftPaidAmount = 0;
-        $totalActsDepositesAmount = 0;
-    @endphp
-
-    @foreach($contracts as $contract)
-        @php
-            $totalAmount += $contract->getAmount(false);
-            $totalAvansesReceivedAmount += $contract->getAvansesReceivedAmount(false);
-            $totalActsPaidAmount += $contract->getActsPaidAmount(false);
-            $totalAvansesLeftAmount += $contract->getAvansesLeftAmount(false);
-            $totalActsLeftPaidAmount += $contract->getActsLeftPaidAmount(false);
-            $totalActsDepositesAmount += $contract->getActsDepositesAmount(false);
-        @endphp
-    @endforeach
-
     <div class="post">
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
+                @php
+                    $totalAmount = 0;
+                    $totalAvansesReceivedAmount = 0;
+                    $totalActsPaidAmount = 0;
+                    $totalAvansesLeftAmount = 0;
+                    $totalActsLeftPaidAmount = 0;
+                    $totalActsDepositesAmount = 0;
+                @endphp
+
+                @foreach($contracts as $contract)
+                    @php
+                        $totalAmount += $contract->getAmount(false);
+                        $totalAvansesReceivedAmount += $contract->getAvansesReceivedAmount(false);
+                        $totalActsPaidAmount += $contract->getActsPaidAmount(false);
+                        $totalAvansesLeftAmount += $contract->getAvansesLeftAmount(false);
+                        $totalActsLeftPaidAmount += $contract->getActsLeftPaidAmount(false);
+                        $totalActsDepositesAmount += $contract->getActsDepositesAmount(false);
+                    @endphp
+                @endforeach
                 <div class="card-title">
                     <div>
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
