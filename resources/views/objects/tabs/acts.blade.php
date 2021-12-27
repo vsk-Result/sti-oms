@@ -99,21 +99,21 @@
                                 <tr>
                                     <td class="px-3">
                                         @if(auth()->user()->can('show contracts'))
-                                            <a target="_blank" href="{{ route('contracts.show', $act->contract) }}" class="show-link">{{ $act->contract->getName() }}</a>
+                                            <a href="{{ route('contracts.show', $act->contract) }}" class="show-link">{{ $act->contract->getName() }}</a>
                                         @else
                                             {{ $act->contract->getName() }}
                                         @endif
                                     </td>
                                     <td>
                                         @if(auth()->user()->can('show objects'))
-                                            <a target="_blank" href="{{ route('objects.show', $act->object) }}" class="show-link">{{ $act->object->getName() }}</a>
+                                            <a href="{{ route('objects.show', $act->object) }}" class="show-link">{{ $act->object->getName() }}</a>
                                         @else
                                             {{ $act->object->getName() }}
                                         @endif
                                     </td>
                                     <td>
                                         @if(auth()->user()->can('show acts'))
-                                            <a target="_blank" href="{{ route('acts.show', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
+                                            <a href="{{ route('acts.show', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
                                         @else
                                             {{ $act->getDateFormatted() }}
                                         @endif

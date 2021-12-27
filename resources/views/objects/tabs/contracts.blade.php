@@ -130,14 +130,14 @@
                                 <tr style="background-color: whitesmoke;">
                                     <td class="px-3">
                                         @if(auth()->user()->can('show contracts'))
-                                            <a target="_blank" href="{{ route('contracts.show', $contract) }}" class="show-link">{{ $contract->getName() }}</a>
+                                            <a href="{{ route('contracts.show', $contract) }}" class="show-link">{{ $contract->getName() }}</a>
                                         @else
                                             {{ $contract->getName() }}
                                         @endif
                                     </td>
                                     <td>
                                         @if(auth()->user()->can('show objects'))
-                                            <a target="_blank" href="{{ route('objects.show', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
+                                            <a href="{{ route('objects.show', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
                                         @else
                                             {{ $contract->object->getName() }}
                                         @endif

@@ -32,7 +32,7 @@
                                 <label class="col-lg-2 fw-bold text-muted">Объект</label>
                                 <div class="col-lg-10 fv-row">
                                     @if(auth()->user()->can('show objects'))
-                                        <a class="fw-bold fs-6" target="_blank" href="{{ route('objects.contracts.index', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
+                                        <a class="fw-bold fs-6" href="{{ route('objects.contracts.index', $contract->object) }}" class="show-link">{{ $contract->object->getName() }}</a>
                                     @else
                                         <span class="fw-bold text-gray-800 fs-6">{{ $contract->object->getName() }}</span>
                                     @endif
@@ -57,7 +57,7 @@
                                 <div class="row mb-7">
                                     <label class="col-lg-2 fw-bold text-muted">Основной договор</label>
                                     <div class="col-lg-10 fv-row">
-                                        <a class="fw-bold fs-6" target="_blank" href="{{ route('contracts.show', $contract->parent) }}">{{ $contract->parent->getName() }}</a>
+                                        <a class="fw-bold fs-6" href="{{ route('contracts.show', $contract->parent) }}">{{ $contract->parent->getName() }}</a>
                                     </div>
                                 </div>
                             @endif
@@ -241,7 +241,7 @@
                                         <tr>
                                             <td>
                                                 @if(auth()->user()->can('show acts'))
-                                                    <a target="_blank" href="{{ route('acts.show', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
+                                                    <a href="{{ route('acts.show', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
                                                 @else
                                                     {{ $act->getDateFormatted() }}
                                                 @endif

@@ -25,7 +25,7 @@
                                 <label class="col-lg-2 fw-bold text-muted">Договор</label>
                                 <div class="col-lg-10 fv-row">
                                     @if(auth()->user()->can('show contracts'))
-                                        <a class="fw-bold fs-6" target="_blank" href="{{ route('contracts.show', $act->contract) }}">{{ $act->contract->getName() }}</a>
+                                        <a class="fw-bold fs-6" href="{{ route('contracts.show', $act->contract) }}">{{ $act->contract->getName() }}</a>
                                     @else
                                         <span class="fw-bold text-gray-800 fs-6">{{ $act->contract->getName() }}</span>
                                     @endif
@@ -43,7 +43,7 @@
                                 <label class="col-lg-2 fw-bold text-muted">Объект</label>
                                 <div class="col-lg-10 fv-row">
                                     @if(auth()->user()->can('show objects'))
-                                        <a class="fw-bold fs-6" target="_blank" href="{{ route('objects.acts.index', $act->object) }}" class="show-link">{{ $act->object->getName() }}</a>
+                                        <a class="fw-bold fs-6" href="{{ route('objects.acts.index', $act->object) }}" class="show-link">{{ $act->object->getName() }}</a>
                                     @else
                                         <span class="fw-bold text-gray-800 fs-6">{{ $act->object->getName() }}</span>
                                     @endif
