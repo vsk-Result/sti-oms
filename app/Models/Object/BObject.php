@@ -119,4 +119,23 @@ class BObject extends Model implements Audit
     {
         return $this->getProviderDebts()->sum('amount');
     }
+
+    public function getEmployeesCount(): int
+    {
+        if (! in_array($this->code, ['353', '1'])) {
+            return 0;
+        }
+
+        $request = \Http::post(config('qr.url'), [
+            'code' => $this->code === '1' ? '27' : $this->code,
+            'verifyHash' => config('qr.verify_hash')
+        ]);
+
+        if ($request->status() === 200) {
+            $data = json_decode($request->body(), true);
+            return $data['value'] ?? 0;
+        }
+
+        return 0;
+    }
 }

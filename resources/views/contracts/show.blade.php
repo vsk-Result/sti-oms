@@ -60,6 +60,14 @@
                                         <a class="fw-bold fs-6" href="{{ route('contracts.show', $contract->parent) }}">{{ $contract->parent->getName() }}</a>
                                     </div>
                                 </div>
+                            @else
+                                <div class="row mb-7">
+                                    <label class="col-lg-2 fw-bold text-muted">Дочерние договора</label>
+                                    <div class="col-lg-10 fv-row">
+                                        @foreach($contract->children as $subContract)
+                                        <a class="fw-bold fs-6" href="{{ route('contracts.show', $contract->parent) }}">{{ $contract->parent->getName() }}</a>
+                                    </div>
+                                </div>
                             @endif
 
                             <div class="row mb-7">
