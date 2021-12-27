@@ -60,22 +60,28 @@
         <div class="d-flex flex-wrap justify-content-start">
             <div class="d-flex flex-wrap">
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder {{ $object->total_balance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($object->total_balance, 2, '.', ' ') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Баланс</div>
+                    <a href="{{ route('objects.payments.index', $object) }}">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder {{ $object->total_balance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($object->total_balance, 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Баланс</div>
+                    </a>
                 </div>
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-danger">{{ number_format($object->total_pay, 2, '.', ' ') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Расходы</div>
+                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression=<0">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder text-danger">{{ number_format($object->total_pay, 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Расходы</div>
+                    </a>
                 </div>
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-success">{{ number_format($object->total_receive, 2, '.', ' ') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Приходы</div>
+                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression=>%3D0">
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder text-success">{{ number_format($object->total_receive, 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Приходы</div>
+                    </a>
                 </div>
 {{--                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">--}}
 {{--                    <div class="d-flex align-items-center">--}}

@@ -85,7 +85,7 @@ class Contract extends Model implements HasMedia, Audit
         return $this->end_date ? Carbon::parse($this->end_date)->format($format) : '';
     }
 
-    public function getAmount(): string
+    public function getAmount($formatted = true): string
     {
         $amount = $this->amount;
 
@@ -98,7 +98,7 @@ class Contract extends Model implements HasMedia, Audit
             }
         }
 
-        return number_format($amount, 2, '.', ' ');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public function isMain(): string
@@ -111,59 +111,70 @@ class Contract extends Model implements HasMedia, Audit
         return $this->amount_type_id === self::AMOUNT_TYPE_MAIN;
     }
 
-    public function getAvansesAmount(): string
+    public function getAvansesAmount($formatted = true): string
     {
-        return number_format($this->avanses->sum('amount'), 2, '.', ' ');
+        $amount = $this->avanses->sum('amount');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getAvansesReceivedAmount(): string
+    public function getAvansesReceivedAmount($formatted = true): string
     {
-        return number_format($this->avansesReceived->sum('amount'), 2, '.', ' ');
+        $amount = $this->avansesReceived->sum('amount');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getAvansesLeftAmount(): string
+    public function getAvansesLeftAmount($formatted = true): string
     {
-        return number_format($this->avanses->sum('amount') - $this->avansesReceived->sum('amount'), 2, '.', ' ');
+        $amount = $this->avanses->sum('amount') - $this->avansesReceived->sum('amount');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getActsAmount(): string
+    public function getActsAmount($formatted = true): string
     {
-        return number_format($this->acts->sum('amount'), 2, '.', ' ');
+        $amount = $this->acts->sum('amount');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getActsAvasesAmount(): string
+    public function getActsAvasesAmount($formatted = true): string
     {
-        return number_format($this->acts->sum('amount_avans'), 2, '.', ' ');
+        $amount = $this->acts->sum('amount_avans');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getActsDepositesAmount(): string
+    public function getActsDepositesAmount($formatted = true): string
     {
-        return number_format($this->acts->sum('amount_deposit'), 2, '.', ' ');
+        $amount = $this->acts->sum('amount_deposit');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getActsNeedPaidAmount(): string
+    public function getActsNeedPaidAmount($formatted = true): string
     {
-        return number_format($this->acts->sum('amount_need_paid'), 2, '.', ' ');
+        $amount = $this->acts->sum('amount_need_paid');
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getActsPaidAmount(): string
+    public function getActsPaidAmount($formatted = true): string
     {
         $paid = 0;
         foreach ($this->acts as $act) {
             $paid += $act->payments->sum('amount');
         }
 
-        return number_format($paid, 2, '.', ' ');
+        $amount = $paid;
+
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
-    public function getActsLeftPaidAmount(): string
+    public function getActsLeftPaidAmount($formatted = true): string
     {
         $paid = 0;
         foreach ($this->acts as $act) {
             $paid += $act->payments->sum('amount');
         }
 
-        return number_format($this->acts->sum('amount_need_paid') - $paid, 2, '.', ' ');
+        $amount = $this->acts->sum('amount_need_paid') - $paid;
+
+        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
     }
 
     public static function getTypes(): array

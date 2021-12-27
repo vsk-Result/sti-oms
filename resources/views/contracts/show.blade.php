@@ -221,6 +221,49 @@
                             @empty
                                 <span class="fw-bold text-gray-800 fs-6">Отсутствуют</span>
                             @endforelse
+
+                            <h3 class="fw-bolder fs-3 my-9">Акты</h3>
+
+                            <table class="table table-hover align-middle table-row-dashed fs-6">
+                                <thead>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="min-w-150px">Дата</th>
+                                    <th class="min-w-150px">Выполнено</th>
+                                    <th class="min-w-150px">Аванс удержан</th>
+                                    <th class="min-w-150px">Депозит удержан</th>
+                                    <th class="min-w-150px">К оплате</th>
+                                    <th class="min-w-150px">Оплачено</th>
+                                    <th class="min-w-150px">Сумма неоплаченных работ</th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-gray-600 fw-bold">
+                                    @forelse($contract->acts as $act)
+                                        <tr>
+                                            <td>
+                                                @if(auth()->user()->can('show acts'))
+                                                    <a target="_blank" href="{{ route('acts.show', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
+                                                @else
+                                                    {{ $act->getDateFormatted() }}
+                                                @endif
+                                            </td>
+                                            <td>{{ $act->getAmount() }}</td>
+                                            <td>{{ $act->getAvansAmount() }}</td>
+                                            <td>{{ $act->getDepositAmount() }}</td>
+                                            <td>{{ $act->getNeedPaidAmount() }}</td>
+                                            <td>{{ $act->getPaidAmount() }}</td>
+                                            <td>{{ $act->getLeftPaidAmount() }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7">
+                                                <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                    Акты отсутствуют
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 

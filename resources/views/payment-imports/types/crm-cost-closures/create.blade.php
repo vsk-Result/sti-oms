@@ -34,7 +34,9 @@
                                     <label class="required fs-5 fw-bold mb-2">Не разбитые периоды</label>
                                     <select name="crm_cost_closure_id" class="form-select form-select-solid" data-control="select2">
                                         @foreach($closures as $closure)
-                                            <option value="{{ $closure->id }}">{{ $closure->user->name . ' | ' . \Carbon\Carbon::parse($closure->date)->format('F Y') . ' | ' . number_format($closure->balance, 2, '.', ' ') }}</option>
+                                            <option value="{{ $closure->id }}">
+                                                {{ $closure->user->name . ' (' . $closure->cost->name . ') ' . ' | ' . \Carbon\Carbon::parse($closure->date)->format('F Y') . ' | ' . number_format($closure->balance, 2, '.', ' ') }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
