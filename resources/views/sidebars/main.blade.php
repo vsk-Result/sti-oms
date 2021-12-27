@@ -54,6 +54,12 @@
                         <span class="menu-title">Оплаты</span>
                     </a>
                 </div>
+
+                <div class="menu-item">
+                    <a href="{{ route('payments.history.index') }}" class="menu-link {{ request()->is('payments/history/*') ? 'active' : '' }}">
+                        <span class="menu-title">История оплат</span>
+                    </a>
+                </div>
             @endcan
 
             @can('index contracts')
