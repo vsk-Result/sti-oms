@@ -84,6 +84,8 @@
                                                         {{ $banks[$changes['old']] }}
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['old']))
                                                         {{ $organizations[$changes['old']] }}
+                                                    @elseif ($fieldName === 'amount'))
+                                                        {{ number_format($changes['old'] ?? 0, 2, '.', ' ') }}
                                                     @else
                                                         {{ $changes['old'] ?? '' }}
                                                     @endif
@@ -103,6 +105,8 @@
                                                         {{ $banks[$changes['new']] }}
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['new']))
                                                         {{ $organizations[$changes['new']] }}
+                                                    @elseif ($fieldName === 'amount'))
+                                                        {{ number_format($changes['new'] ?? 0, 2, '.', ' ') }}
                                                     @else
                                                         {{ $changes['new'] ?? '' }}
                                                     @endif
