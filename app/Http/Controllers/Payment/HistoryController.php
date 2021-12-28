@@ -30,7 +30,6 @@ class HistoryController extends Controller
             'description' => 'Описание',
             'organization_sender_id' => 'Организация отправитель',
             'organization_receiver_id' => 'Организация получатель',
-            'status_id' => 'Статус',
             'amount' => 'Сумма',
             'type_id' => 'Тип',
         ];
