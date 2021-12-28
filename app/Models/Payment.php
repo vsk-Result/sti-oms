@@ -112,6 +112,11 @@ class Payment extends Model implements Audit
         ];
     }
 
+    public function getPaymentType(): string
+    {
+        return self::getPaymentTypes()[$this->payment_type_id];
+    }
+
     public function getObjectId(): string
     {
         return ($this->type_id === static::TYPE_OBJECT)
