@@ -47,7 +47,7 @@ class PaymentSheet implements
         return [
             'Объект',
             'Расход/Приход',
-            'Тип',
+            'Тип оплаты',
             'Дата оплаты',
             'Код затрат',
             'Сумма c НДС',
@@ -88,19 +88,11 @@ class PaymentSheet implements
         ];
     }
 
-    public function styles(Worksheet $sheet): array
+    public function styles(Worksheet $sheet): void
     {
-        $styles = [];
-        $count = $this->payments->count();
-        for ($i = 0; $i <= $count; $i++) {
-            $styles[$i + 1] = [
-                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
-            ];
-        }
-
-        $styles[1] += ['font' => ['bold' => true]];
-
-        return $styles;
+        $sheet->getStyle('A1:J' . ($this->payments->count() + 1))->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
+        ]);
     }
 
     public function columnWidths(): array
