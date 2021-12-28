@@ -76,18 +76,21 @@ class HistoryController extends Controller
 
         if (! empty($requestData['list_fields'])) {
             $listFields = $requestData['list_fields'];
-            $query->where(function($q) use($listFields) {
-
-                foreach ($listFields as $index => $field) {
-                    if ($index == 0) {
-                        $q->where('old_values', 'LIKE', '%' . $field . '%');
-                    } else {
-                        $q->orWhere('old_values', 'LIKE', '%' . $field . '%');
-                    }
-                    $q->orWhere('new_values', 'LIKE', '%' . $field . '%');
-                }
-            });
+        } else {
+            $listFields = array_keys($fields);
         }
+
+        $query->where(function($q) use($listFields) {
+
+            foreach ($listFields as $index => $field) {
+                if ($index == 0) {
+                    $q->where('old_values', 'LIKE', '%' . $field . '%');
+                } else {
+                    $q->orWhere('old_values', 'LIKE', '%' . $field . '%');
+                }
+                $q->orWhere('new_values', 'LIKE', '%' . $field . '%');
+            }
+        });
 
         $query->where('auditable_type', Payment::class);
 
