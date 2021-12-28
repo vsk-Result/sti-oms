@@ -50,13 +50,13 @@
 
             @can('index payments')
                 <div class="menu-item">
-                    <a href="{{ route('payments.index') }}" class="menu-link {{ request()->is('payments*') ? 'active' : '' }}">
+                    <a href="{{ route('payments.index') }}" class="menu-link {{ request()->is('payments*') && ! request()->is('payments/history*') ? 'active' : '' }}">
                         <span class="menu-title">Оплаты</span>
                     </a>
                 </div>
 
                 <div class="menu-item">
-                    <a href="{{ route('payments.history.index') }}" class="menu-link {{ request()->is('payments/history/*') ? 'active' : '' }}">
+                    <a href="{{ route('payments.history.index') }}" class="menu-link {{ request()->is('payments/history*') ? 'active' : '' }}">
                         <span class="menu-title">История оплат</span>
                     </a>
                 </div>
