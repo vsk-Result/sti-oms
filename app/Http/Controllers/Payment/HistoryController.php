@@ -92,7 +92,7 @@ class HistoryController extends Controller
 
         $query->where('auditable_type', Payment::class);
 
-        $perPage = 8;
+        $perPage = 15;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }

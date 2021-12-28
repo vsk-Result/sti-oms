@@ -96,7 +96,7 @@
                                 <input
                                     name="count_per_page"
                                     class="form-control form-control-solid"
-                                    value="{{ request()->input('count_per_page', '8') }}"
+                                    value="{{ request()->input('count_per_page', '15') }}"
                                     autocomplete="off"
                                 />
                             </div>
