@@ -96,7 +96,7 @@ class HistoryController extends Controller
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $audits = $query->latest()->paginate($perPage);
+        $audits = $query->latest()->paginate($perPage)->withQueryString();
 
         return view(
             'payments.history.index',
