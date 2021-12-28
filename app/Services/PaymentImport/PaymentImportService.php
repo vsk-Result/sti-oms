@@ -15,11 +15,11 @@ class PaymentImportService
 
     public function destroyImport(PaymentImport $import): PaymentImport
     {
-        $import->delete();
-
         foreach ($import->payments as $payment) {
             $this->paymentService->destroyPayment($payment);
         }
+
+        $import->delete();
 
         return $import;
     }
