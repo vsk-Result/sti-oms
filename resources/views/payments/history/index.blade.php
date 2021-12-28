@@ -62,7 +62,7 @@
                                                     Оплата #{{ $audit->auditable_id }}
                                                 @endif
                                             </td>
-                                            @if ($audit->event === 'created')
+                                            @if ($audit->event !== 'updated')
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
