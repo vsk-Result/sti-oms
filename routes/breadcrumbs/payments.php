@@ -25,3 +25,8 @@ Breadcrumbs::for('payments.edit', function (BreadcrumbTrail $trail, Payment $pay
     $trail->parent('payments.show', $payment);
     $trail->push('Изменение оплаты');
 });
+
+Breadcrumbs::for('payments.history.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('payments.index');
+    $trail->push('История оплат');
+});

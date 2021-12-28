@@ -6,6 +6,10 @@ use App\Http\Controllers\Payment\ExportController;
 use App\Http\Controllers\Payment\CopyController;
 use App\Http\Controllers\Payment\HistoryController;
 
+// История оплат
+
+Route::get('payments/history', [HistoryController::class, 'index'])->name('payments.history.index');
+
 // Экспорт оплат
 
 Route::post('payments/export', [ExportController::class, 'store'])->name('payments.exports.store');
@@ -27,9 +31,5 @@ Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name
 // Копия оплаты
 
 Route::post('payments/{payment}/copy', [CopyController::class, 'store'])->name('payments.copy.store');
-
-// История оплат
-
-Route::post('payments/history', [HistoryController::class, 'index'])->name('payments.history.index');
 
 

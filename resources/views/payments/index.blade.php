@@ -95,7 +95,7 @@
                                 <tr>
                                     <td>
                                         @if (auth()->user()->can('edit payments'))
-                                            <a target="_blank" href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
+                                            <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
                                         @else
                                             {{ $payment->getDateFormatted() }}
                                         @endif
@@ -104,7 +104,7 @@
                                     <td>{{ $payment->getBankName() }}</td>
                                     <td>
                                         @if(auth()->user()->can('show objects') && $payment->type_id === \App\Models\Payment::TYPE_OBJECT)
-                                            <a target="_blank" href="{{ route('objects.show', $payment->object) }}" class="show-link">{{ $payment->getObject() }}</a>
+                                            <a href="{{ route('objects.show', $payment->object) }}" class="show-link">{{ $payment->getObject() }}</a>
                                         @else
                                             {{ $payment->getObject() }}
                                         @endif
@@ -134,7 +134,7 @@
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
                                             @can('edit payments')
                                                 <div class="menu-item px-3">
-                                                    <a target="_blank" href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
+                                                    <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
                                                 </div>
 
                                                 <div class="menu-item px-3">
@@ -149,6 +149,16 @@
                                                         </a>
                                                     </form>
                                                 </div>
+
+                                                @if ($payment->audits->count() > 0)
+                                                    <div class="menu-item px-3">
+                                                        <a href="{{ route('payments.history.index') }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>
+                                                    </div>
+                                                @else
+                                                    <div class="menu-item px-3" style="cursor:default !important;">
+                                                        <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
+                                                    </div>
+                                                @endif
 
                                                 <div class="menu-item px-3">
                                                     <form action="{{ route('payments.destroy', $payment) }}" method="POST" class="hidden">
