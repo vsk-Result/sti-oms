@@ -85,7 +85,7 @@
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['old']))
                                                         {{ $organizations[$changes['old']] }}
                                                     @else
-                                                        {{ $changes['old'] ?? '-' }}
+                                                        {{ $changes['old'] ?? '' }}
                                                     @endif
                                                 </td>
                                                 <td>
@@ -104,7 +104,7 @@
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['new']))
                                                         {{ $organizations[$changes['new']] }}
                                                     @else
-                                                        {{ $changes['new'] }}
+                                                        {{ $changes['new'] ?? '' }}
                                                     @endif
                                                 </td>
                                             @endif
