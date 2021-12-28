@@ -85,7 +85,7 @@
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['old']))
                                                         {{ $organizations[$changes['old']] }}
                                                     @elseif ($fieldName === 'amount')
-                                                        {{ number_format($changes['old'] ?? 0, 2, '.', ' ') }}
+                                                        <span class="{{ ($changes['old'] ?? 0) < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($changes['old'] ?? 0, 2, '.', ' ') }}</span>
                                                     @else
                                                         {{ $changes['old'] ?? '' }}
                                                     @endif
@@ -106,7 +106,7 @@
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['new']))
                                                         {{ $organizations[$changes['new']] }}
                                                     @elseif ($fieldName === 'amount')
-                                                        {{ number_format($changes['new'] ?? 0, 2, '.', ' ') }}
+                                                        <span class="{{ ($changes['new'] ?? 0) < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($changes['new'] ?? 0, 2, '.', ' ') }}</span>
                                                     @else
                                                         {{ $changes['new'] ?? '' }}
                                                     @endif
