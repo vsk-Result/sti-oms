@@ -6,6 +6,7 @@ use App\Http\Controllers\PaymentImport\ExportAllController;
 use App\Http\Controllers\PaymentImport\Type\StatementImportController;
 use App\Http\Controllers\PaymentImport\Type\CRMCostClosureImportController;
 use App\Http\Controllers\PaymentImport\Type\HistoryImportController;
+use App\Http\Controllers\PaymentImport\Type\PaymentImportController;
 
 // Загрузка оплат
 
@@ -33,3 +34,8 @@ Route::post('payment-imports/types/crm_cost_closures', [CRMCostClosureImportCont
 
 Route::get('payment-imports/types/history/create', [HistoryImportController::class, 'create'])->name('payment_imports.types.history.create')->middleware('can:create payment-imports');
 Route::post('payment-imports/types/history', [HistoryImportController::class, 'store'])->name('payment_imports.types.history.store')->middleware('can:create payment-imports');
+
+// Загрузка оплат из Excel
+
+Route::get('payment-imports/types/payments/create', [PaymentImportController::class, 'create'])->name('payment_imports.types.payments.create')->middleware('can:create payment-imports');
+Route::post('payment-imports/types/payments', [PaymentImportController::class, 'store'])->name('payment_imports.types.payments.store')->middleware('can:create payment-imports');

@@ -53,6 +53,12 @@
                                         Из истории оплат
                                     </a>
                                 </div>
+
+                                <div class="menu-item px-3">
+                                    <a href="{{ route('payment_imports.types.payments.create') }}" class="menu-link px-3">
+                                        Оплаты из Excel
+                                    </a>
+                                </div>
                             </div>
                         @endcan
                     </div>

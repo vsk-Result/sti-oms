@@ -35,3 +35,8 @@ Breadcrumbs::for('payment_imports.types.history.create', function (BreadcrumbTra
     $trail->parent('payment_imports.index');
     $trail->push('Загрузка из истории оплат');
 });
+
+Breadcrumbs::for('payment_imports.types.payments.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('payment_imports.index');
+    $trail->push('Загрузка оплат из Excel');
+});

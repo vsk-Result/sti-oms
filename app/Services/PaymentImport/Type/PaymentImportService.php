@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class StatementImportService
+class PaymentImportService
 {
     private PaymentService $paymentService;
     private OrganizationService $organizationService;
@@ -37,20 +37,20 @@ class StatementImportService
 
     public function createImport(array $requestData): null|PaymentImport
     {
-        $statementData = $this->getStatementDataFromExcel($requestData['file']);
+        $importData = Excel::toArray(new PImport(), $requestData['file']);
 
-        if (empty($statementData)) {
+        if (empty($importData)) {
             return null;
         }
 
         $import = PaymentImport::create([
-            'type_id' => PaymentImport::TYPE_STATEMENT,
+            'type_id' => PaymentImport::TYPE_PAYMENTS,
             'bank_id' => $requestData['bank_id'],
             'company_id' => $requestData['company_id'],
-            'date' => $requestData['date'],
+            'date' => Carbon::now(),
             'status_id' => Status::STATUS_BLOCKED,
-            'file' => $this->uploadService->uploadFile('payment-imports/statements', $requestData['file']),
-            'description' => ''
+            'file' => $this->uploadService->uploadFile('payment-imports/payments', $requestData['file']),
+            'description' => $requestData['description'],
         ]);
 
         $companyOrganization = $this->organizationService->getOrCreateOrganization([
@@ -61,12 +61,9 @@ class StatementImportService
         ]);
 
         $this->paymentService->loadCategoriesList();
-        $processInfo = $this->processInfoFromStatementData($statementData);
+        $processInfo = $this->processInfoFromImportData($importData);
 
         foreach ($processInfo['payments'] as $payment) {
-            if (str_contains($payment['organization_name'], 'НДС полученный')) {
-                $payment['organization_name'] = 'Филиал "Центральный" Банка ВТБ (ПАО)';
-            }
 
             if ($payment['pay_amount'] == 0) {
                 $amount = $payment['receive_amount'];
@@ -91,8 +88,6 @@ class StatementImportService
             $nds = $this->paymentService->checkHasNDSFromDescription($payment['description'])
                 ? round($amount / 6, 2)
                 : 0;
-
-            $isNeedSplit = $this->paymentService->checkIsNeedSplitFromDescription($payment['description']);
 
             $payment['object_id'] = null;
             $payment['object_worktype_id'] = null;
@@ -159,10 +154,10 @@ class StatementImportService
                 'code' => $payment['code'] ?? null,
                 'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
                 'description' => $payment['description'],
-                'date' => $import->company->short_name === 'БАМС' ? $payment['date'] : $import->date,
+                'date' => $payment['date'],
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
-                'is_need_split' => $isNeedSplit,
+                'is_need_split' => false,
                 'status_id' => Status::STATUS_BLOCKED
             ]);
 
@@ -190,27 +185,19 @@ class StatementImportService
             }
         }
 
-        $import->update([
-            'incoming_balance' => $processInfo['incoming_balance'],
-            'outgoing_balance' => $processInfo['outgoing_balance']
-        ]);
-
         $import->reCalculateAmountsAndCounts();
 
         return $import;
     }
 
-    private function processInfoFromStatementData(array $statementData): array
+    private function processInfoFromImportData(array $importData): array
     {
         $returnData = [];
-        $importData = $statementData[0];
-
-        $returnData['incoming_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][0]);
-        $returnData['outgoing_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][1]);
+        $importData = $importData[0];
 
         foreach ($importData as $rowNum => $rowData) {
 
-            if ($rowNum < 5) {
+            if ($rowNum === 0) {
                 continue;
             }
 
@@ -246,10 +233,5 @@ class StatementImportService
     private function cleanValue($value): string
     {
         return str_replace("\n", '', (string) $value);
-    }
-
-    private function getStatementDataFromExcel(UploadedFile $file): array
-    {
-        return Excel::toArray(new PImport(), $file);
     }
 }
