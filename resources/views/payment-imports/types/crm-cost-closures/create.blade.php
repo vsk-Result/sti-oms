@@ -35,7 +35,7 @@
                                     <select name="crm_cost_closure_id" class="form-select form-select-solid" data-control="select2">
                                         @foreach($closures as $closure)
                                             <option value="{{ $closure->id }}">
-                                                {{ $closure->user->name . ' (' . $closure->cost->name . ') ' . ' | ' . \Carbon\Carbon::parse($closure->date)->format('F Y') . ' | ' . number_format($closure->balance, 2, '.', ' ') }}
+                                                {{ $closure->cost->user->name . ' (' . $closure->cost->name . ') ' . ' | ' . \Carbon\Carbon::parse($closure->date)->format('F Y') . ' | ' . number_format($closure->balance, 2, '.', ' ') }}
                                             </option>
                                         @endforeach
                                     </select>

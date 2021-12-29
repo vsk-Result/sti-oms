@@ -3,6 +3,7 @@
 namespace App\Models\CRM;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cost extends Model
@@ -14,5 +15,10 @@ class Cost extends Model
     public function items(): HasMany
     {
         return $this->hasMany(CostItem::class, 'cost_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
