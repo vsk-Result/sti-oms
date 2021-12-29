@@ -24,7 +24,7 @@ class StoreOrUpdateOrganizationRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:120',
+            'name' => 'required|string|max:200',
             'inn' => 'required|max:12',
             'kpp' => 'max:9',
             'status_id' => 'integer'
