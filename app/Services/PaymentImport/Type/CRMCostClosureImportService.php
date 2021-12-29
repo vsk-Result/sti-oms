@@ -87,9 +87,9 @@ class CRMCostClosureImportService
                         $objectCode = '28';
                     } else {
                         $objectCode = $item->object->code;
-                        $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
 
                         if (str_contains($item->object->code, '.')) {
+                            $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
                             $worktypeCode = (int) substr($item->object->code, strpos($item->object->code, '.') + 1);
                         }
                     }

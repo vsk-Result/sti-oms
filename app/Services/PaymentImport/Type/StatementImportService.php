@@ -121,9 +121,9 @@ class StatementImportService
                     $code = '28';
                 } else {
                     $code = $payment['object'];
-                    $code = substr($code, 0, strpos($code, '.'));
 
                     if (str_contains($payment['object'], '.')) {
+                        $code = substr($code, 0, strpos($code, '.'));
                         $payment['object_worktype_id'] = (int) substr($payment['object'], strpos($payment['object'], '.') + 1);
                     }
                 }

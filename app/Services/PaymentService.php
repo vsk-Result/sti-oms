@@ -232,13 +232,12 @@ class PaymentService
                     $code = '28';
                 } else {
                     $code = $requestData['object_code'];
-                    $code = substr($code, 0, strpos($code, '.'));
 
                     if (str_contains($requestData['object_code'], '.')) {
+                        $code = substr($code, 0, strpos($code, '.'));
                         $requestData['object_worktype_id'] = (int) substr($requestData['object_code'], strpos($requestData['object_code'], '.') + 1);
                     }
                 }
-
                 $object = BObject::where('code', $code)->first();
 
                 if ($object) {
