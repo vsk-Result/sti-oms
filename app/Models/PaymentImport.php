@@ -25,6 +25,7 @@ class PaymentImport extends Model
     const TYPE_STATEMENT = 0;
     const TYPE_CRM_COST_CLOSURE = 1;
     const TYPE_HISTORY = 2;
+    const TYPE_PAYMENTS = 3;
 
     private function getStatusesList(): array
     {
@@ -89,6 +90,7 @@ class PaymentImport extends Model
             self::TYPE_STATEMENT => 'Выписка',
             self::TYPE_CRM_COST_CLOSURE => 'Касса CRM',
             self::TYPE_HISTORY => 'История оплат',
+            self::TYPE_PAYMENTS => 'Оплаты',
         ];
     }
 
