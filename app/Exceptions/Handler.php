@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use App\Notifications\ErrorOccurred;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Notification;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -35,7 +37,7 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            Notification::send([-1001732880675], new ErrorOccurred($e));
         });
     }
 }
