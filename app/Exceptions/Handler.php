@@ -37,7 +37,7 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            Notification::send([-1001732880675], new ErrorOccurred($e));
+            Notification::send([config('services.telegram-bot-api.channel_id_for_errors')], new ErrorOccurred($e));
         });
     }
 }

@@ -15,8 +15,7 @@ class ErrorOccurred extends Notification
         $this->error = $e;
     }
 
-
-    public function via()
+    public function via(): array
     {
         return ['telegram'];
     }
@@ -25,6 +24,17 @@ class ErrorOccurred extends Notification
     {
         return TelegramMessage::create()
             ->to($notifiable)
-            ->content("Пользователь: " . auth()->user()->name . "\nURL: " . request()->fullUrl() . "\nОшибка: " . substr($this->error->getMessage(), 0, 300) . '...');
+            ->content(
+                sprintf(
+                    "*Пользователь:* %s\n---\n*Пред. URL:* %s\n*URL:* %s (%s)\n---\n*Файл:* %s (%s)\n---\n*Ошибка:* %s...",
+                    auth()->user()->name,
+                    url()->previous(),
+                    request()->fullUrl(),
+                    request()->method(),
+                    $this->error->getFile(),
+                    $this->error->getLine(),
+                    mb_substr($this->error->getMessage(), 0, 300, 'UTF-8')
+                )
+            );
     }
 }
