@@ -33,9 +33,9 @@
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>--}}
 {{--                        </li>--}}
-{{--                        <li class="nav-item">--}}
-{{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/debts') ? 'active' : '' }}" href="{{ route('objects.debts.index', $object) }}">Долги</a>--}}
-{{--                        </li>--}}
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/debts') ? 'active' : '' }}" href="{{ route('objects.debts.index', $object) }}">Долги</a>
+                        </li>
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/files') ? 'active' : '' }}" href="{{ route('objects.files.index', $object) }}">Файлы</a>--}}
 {{--                        </li>--}}

@@ -25,13 +25,13 @@
                     </div>
                 @endcan
 
-{{--                @can('index debt-imports')--}}
-{{--                    <div class="menu-item">--}}
-{{--                        <a href="{{ route('debt_imports.index') }}" class="menu-link {{ request()->is('debt-imports*') ? 'active' : '' }}">--}}
-{{--                            <span class="menu-title">Загрузки долгов</span>--}}
-{{--                        </a>--}}
-{{--                    </div>--}}
-{{--                @endcan--}}
+                @can('index debt-imports')
+                    <div class="menu-item">
+                        <a href="{{ route('debt_imports.index') }}" class="menu-link {{ request()->is('debt-imports*') ? 'active' : '' }}">
+                            <span class="menu-title">Загрузки долгов</span>
+                        </a>
+                    </div>
+                @endcan
             @endif
 
             <div class="menu-item pt-5">

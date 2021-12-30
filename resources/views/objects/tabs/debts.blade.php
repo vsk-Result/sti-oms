@@ -9,7 +9,15 @@
                 <div class="card-header mt-6">
                     <div class="card-title flex-column">
                         <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
-                        <div class="fs-6 fw-bold text-gray-400">На {{ now()->format('d.m.Y') }}</div>
+                    </div>
+
+                    <div class="card-toolbar">
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getContractorDebts()->sum('amount'), 2, '.', ' ') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Итого</div>
+                        </div>
                     </div>
                 </div>
 
@@ -47,7 +55,15 @@
                 <div class="card-header mt-6">
                     <div class="card-title flex-column">
                         <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
-                        <div class="fs-6 fw-bold text-gray-400">На {{ now()->format('d.m.Y') }}</div>
+                    </div>
+
+                    <div class="card-toolbar">
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getProviderDebts()->sum('amount'), 2, '.', ' ') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Итого</div>
+                        </div>
                     </div>
                 </div>
 
