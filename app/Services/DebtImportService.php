@@ -51,6 +51,7 @@ class DebtImportService
         'Боско' => '309',
         'Эвалар' => '352',
         'Пестово' => '320',
+        'Прачечная' => '357',
     ];
 
     public function __construct(
