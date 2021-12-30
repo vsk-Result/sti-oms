@@ -3,6 +3,7 @@
 namespace App\Exports\Payment;
 
 use App\Exports\Payment\Sheets\PaymentSheet;
+use App\Exports\Payment\Sheets\PivotSheet;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -17,10 +18,9 @@ class Export implements WithMultipleSheets
 
     public function sheets(): array
     {
-        $sheets = [];
-
-        $sheets[] = new PaymentSheet('Таблица оплат', $this->payments);
-
-        return $sheets;
+        return [
+            new PivotSheet('Сводная', $this->payments),
+            new PaymentSheet('Таблица оплат', $this->payments, $this->payments->count())
+        ];
     }
 }

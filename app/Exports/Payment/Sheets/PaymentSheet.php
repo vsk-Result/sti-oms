@@ -31,10 +31,13 @@ class PaymentSheet implements
 
     private Builder $payments;
 
-    public function __construct(string $sheetName, Builder $payments)
+    private int $paymentCount;
+
+    public function __construct(string $sheetName, Builder $payments, int $paymentCount)
     {
         $this->sheetName = $sheetName;
         $this->payments = $payments;
+        $this->paymentCount = $paymentCount;
     }
 
     public function title(): string
@@ -90,9 +93,13 @@ class PaymentSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $sheet->getStyle('A1:J' . ($this->payments->count() + 1))->applyFromArray([
+        $sheet->getStyle('A1:J' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
+
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+
+        $sheet->setAutoFilter('A1:J' . ($this->paymentCount + 1));
     }
 
     public function columnWidths(): array
