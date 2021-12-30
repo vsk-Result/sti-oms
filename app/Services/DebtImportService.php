@@ -52,6 +52,7 @@ class DebtImportService
         'Эвалар' => '352',
         'Пестово' => '320',
         'Прачечная' => '357',
+        'Мост ' => '317',
     ];
 
     public function __construct(
