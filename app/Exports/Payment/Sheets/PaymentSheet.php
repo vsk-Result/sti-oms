@@ -58,6 +58,7 @@ class PaymentSheet implements
             'Организация',
             'Информация',
             'Категория',
+            'ID оплаты в STI OMS',
         ];
     }
 
@@ -79,6 +80,7 @@ class PaymentSheet implements
             $row->amount < 0 ? ($row->organizationReceiver->name ?? '') : ($row->organizationSender->name ?? ''),
             $row->description,
             $row->category,
+            $row->id,
         ];
     }
 
@@ -93,13 +95,13 @@ class PaymentSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $sheet->getStyle('A1:J' . ($this->paymentCount + 1))->applyFromArray([
+        $sheet->getStyle('A1:K' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
-        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
 
-        $sheet->setAutoFilter('A1:J' . ($this->paymentCount + 1));
+        $sheet->setAutoFilter('A1:K' . ($this->paymentCount + 1));
     }
 
     public function columnWidths(): array
