@@ -71,7 +71,7 @@
                                                 <td>{{ $fields[$fieldName] }}</td>
                                                 <td>
                                                     @if ($fieldName === 'object_id' && isset($changes['old']))
-                                                        {{ $objects[$changes['old']] }}
+                                                        {{ $objects[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'type_id' && isset($changes['old']))
                                                         {{ $types[$changes['old']] }}
                                                     @elseif ($fieldName === 'status_id' && isset($changes['old']))
@@ -92,7 +92,7 @@
                                                 </td>
                                                 <td>
                                                     @if ($fieldName === 'object_id' && isset($changes['new']))
-                                                        {{ $objects[$changes['new']] }}
+                                                        {{ $objects[$changes['new']] ?? '' }}
                                                     @elseif ($fieldName === 'type_id' && isset($changes['new']))
                                                         {{ $types[$changes['new']] }}
                                                     @elseif ($fieldName === 'status_id' && isset($changes['new']))
