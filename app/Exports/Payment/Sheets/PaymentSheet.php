@@ -80,6 +80,7 @@ class PaymentSheet implements
             $row->amount < 0 ? ($row->organizationReceiver->name ?? '') : ($row->organizationSender->name ?? ''),
             $row->description,
             $row->category,
+            $row->company->name ?? '',
             $row->id,
         ];
     }
@@ -95,13 +96,13 @@ class PaymentSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $sheet->getStyle('A1:K' . ($this->paymentCount + 1))->applyFromArray([
+        $sheet->getStyle('A1:L' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
-        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
 
-        $sheet->setAutoFilter('A1:K' . ($this->paymentCount + 1));
+        $sheet->setAutoFilter('A1:L' . ($this->paymentCount + 1));
     }
 
     public function columnWidths(): array
