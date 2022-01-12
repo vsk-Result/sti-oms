@@ -30,7 +30,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
-                                    data-allow-clear="true"
+
                                     multiple
                                 >
                                     @foreach($categories as $categoryId => $category)
@@ -40,22 +40,43 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Условие для суммы</label>
-                                <input
-                                    name="amount_expression"
-                                    class="form-control form-control-solid"
-                                    value="{{ request()->input('amount_expression', '') }}"
-                                    autocomplete="off"
-                                />
-                                <p class="text-muted mt-2">
-                                    Операторы:
-                                    <code><=</code>
-                                    <code><</code>
-                                    <code>>=</code>
-                                    <code>></code>
-                                    <code>!=</code>
-                                    <code>=</code>
-                                </p>
+                                <div class="form-group">
+                                    <label class="form-label">Условие для суммы</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            @php
+                                                $expressionOperators = [
+                                                    '<=' => 'Меньше или равно',
+                                                    '<' => 'Меньше',
+                                                    '>' => 'Больше',
+                                                    '>=' => 'Больше или равно',
+                                                    '=' => 'Равно',
+                                                    '!=' => 'Не равно',
+                                                ];
+                                            @endphp
+                                            <select
+                                                name="amount_expression_operator"
+                                                class="form-select form-select-solid"
+                                                data-control="select2"
+                                                data-dropdown-parent="#filterPaymentModal"
+
+                                            >
+                                                <option value=""></option>
+                                                @foreach($expressionOperators as $operator => $expression)
+                                                    <option value="{{ $operator }}" {{ $operator === request()->input('amount_expression_operator') ? 'selected' : '' }}>{{ $expression }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input
+                                                name="amount_expression"
+                                                class="form-control form-control-solid"
+                                                value="{{ request()->input('amount_expression', '') }}"
+                                                autocomplete="off"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -66,7 +87,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
-                                    data-allow-clear="true"
+
                                     multiple
                                 >
                                     @foreach($companies as $company)
@@ -96,7 +117,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
-                                    data-allow-clear="true"
+
                                     multiple
                                 >
                                     @foreach($banks as $bankId => $bank)
@@ -124,7 +145,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
-                                    data-allow-clear="true"
+
                                     multiple
                                     {{ isset($object) ? 'disabled' : ''}}
                                 >
@@ -145,7 +166,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
-                                    data-allow-clear="true"
+
                                     multiple
                                 >
                                     @foreach($worktypes as $worktype)
@@ -161,7 +182,7 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
-                                    data-allow-clear="true"
+
                                     multiple
                                 >
                                     @foreach($importTypes as $typeId => $type)

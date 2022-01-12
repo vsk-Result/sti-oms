@@ -85,18 +85,11 @@ class PaymentService
             $paymentQuery->whereIn('bank_id', $requestData['bank_id']);
         }
 
-        if (! empty($requestData['amount_expression'])) {
-            $expression = str_replace(',', '.', $requestData['amount_expression']);
-            $expression = preg_replace("/[^-<>=!.0-9]/", '', $expression);
+        if (! empty($requestData['amount_expression_operator']) && ! empty($requestData['amount_expression'])) {
+            $expressionAmount = str_replace(',', '.', $requestData['amount_expression']);
+            $expressionAmount = preg_replace("/[^-.0-9]/", '', $expressionAmount);
 
-            $operators = ['<=', '<', '>=', '>', '!=', '='];
-            foreach ($operators as $operator) {
-                if (str_contains($expression, $operator)) {
-                    $amount = (float) substr($expression, strpos($expression, $operator) + strlen($operator));
-                    $paymentQuery->where('amount', $operator, $amount);
-                    break;
-                }
-            }
+            $paymentQuery->where('amount', $requestData['amount_expression_operator'], $expressionAmount);
         }
 
         if (! empty($requestData['sort_by'])) {
