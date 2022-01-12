@@ -58,6 +58,7 @@ class PaymentSheet implements
             'Организация',
             'Информация',
             'Категория',
+            'Компания',
             'ID оплаты в STI OMS',
         ];
     }
