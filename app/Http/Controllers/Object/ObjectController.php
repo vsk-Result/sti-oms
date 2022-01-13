@@ -11,7 +11,9 @@ use App\Models\Status;
 use App\Services\ObjectService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class ObjectController extends Controller
 {
@@ -22,26 +24,40 @@ class ObjectController extends Controller
         $this->objectService = $objectService;
     }
 
-    public function index(): View
+    public function index(Request $request): View|JsonResponse
     {
+        if (! request()->ajax()) {
+            return view('objects.index');
+        }
+
         $query = BObject::query();
+
+        if (! empty($request->input('q'))) {
+            $filterName = $request->input('q');
+            $query->where(function($q) use($filterName) {
+                $q->where('name', 'LIKE', '%' . $filterName . '%');
+                $q->orWhere('code', 'LIKE', '%' . $filterName . '%');
+            });
+        }
 
         if (auth()->user()->hasRole('object-leader')) {
             $query->whereIn('id', auth()->user()->objects->pluck('id'));
         }
 
         $paymentQuery = Payment::select('object_id', 'amount');
-        $objects = $query->orderByRaw('CONVERT(code, SIGNED) desc')->get();
+        $objects = $query->orderByRaw('CONVERT(code, SIGNED) desc')->paginate(10)->withQueryString();
 
         foreach ($objects as $object) {
-            $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
-
-            $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
-            $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
+            $object->total_pay = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');
+            $object->total_receive = (clone $paymentQuery)->where('object_id', $object->id)->sum('amount') - $object->total_pay;
             $object->total_balance = $object->total_pay + $object->total_receive;
         }
 
-        return view('objects.index', compact('objects'));
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Объекты успешно получены',
+            'objects_view' => view('objects.parts._objects', compact('objects'))->render()
+        ]);
     }
 
     public function create(): View

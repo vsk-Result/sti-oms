@@ -36,40 +36,55 @@
             </div>
         </div>
 
-        @foreach($objects as $object)
-            <div data-object-name="{{ $object->getName() }}" class="row mb-4 object-row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body pt-9 pb-0">
-                            @include('objects.parts._object_general_info')
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endforeach
+        <div id="objects-container" data-objects-index-url="{{ route('objects.index') }}" class="min-h-100px"></div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
-        let delayTimer;
-        $('#object-search').on('keyup', function() {
-            const value = $(this).val();
-            clearTimeout(delayTimer);
-            delayTimer = setTimeout(function() {
-                filterObjects(value.toLowerCase());
-            }, 200);
+        const $filterSearch = $('#object-search');
+        const $objectsContainer = $('#objects-container');
+        const objectsContainerblockUI = new KTBlockUI($objectsContainer.get(0), {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Загрузка объектов...</div>',
         });
 
-        function filterObjects(value) {
-            const objectRows = $('.object-row');
-            objectRows.show();
+        $(function() {
+            loadObjects();
+        });
 
-            objectRows.each(function() {
-                if ($(this).data('object-name').toLowerCase().indexOf(value) === -1) {
-                    $(this).hide();
+        $(document).on('click', '.page-link', function(e) {
+            loadObjects($(this).attr('href').split('=').pop());
+            return false;
+        });
+
+        let delayTimer;
+        $filterSearch.on('keyup', function() {
+            clearTimeout(delayTimer);
+            delayTimer = setTimeout(function() {
+                filterObjects();
+            }, 400);
+        });
+
+        function filterObjects() {
+            loadObjects();
+        }
+
+        function loadObjects(page) {
+            $objectsContainer.html('');
+            page = page || '';
+            objectsContainerblockUI.block();
+            mainApp.sendAJAX(
+                $objectsContainer.data('objects-index-url') + '?q=' + $filterSearch.val() + '&page=' + page,
+                'GET',
+                {},
+                (data) => {
+                    $objectsContainer.html(data.objects_view);
+                },
+                {},
+                () => {
+                    objectsContainerblockUI.release();
                 }
-            });
+            )
         }
     </script>
 @endpush
