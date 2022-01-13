@@ -34,6 +34,7 @@ class PaymentController extends Controller
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
         $importTypes = PaymentImport::getTypes();
+        $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
 
         $totalInfo = [];
@@ -48,7 +49,7 @@ class PaymentController extends Controller
             'payments.index',
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'categories',
-                'importTypes', 'banks', 'totalInfo', 'activeOrganizations'
+                'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes'
             )
         );
     }

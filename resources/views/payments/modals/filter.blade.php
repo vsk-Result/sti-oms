@@ -19,7 +19,12 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Описание</label>
+                                <label class="form-label">
+                                    Описание
+                                    <button type="button" class="btn btn-sm btn-icon h-20px" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="right" title="Часть фразы или фразу целиком">
+                                        <i class="las la-info-circle fs-3 me-2"></i>
+                                    </button>
+                                </label>
                                 <input name="description" class="form-control form-control-solid" value="{{ request()->input('description', '') }}" />
                             </div>
 
@@ -39,7 +44,7 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <div class="form-group">
                                     <label class="form-label">Условие для суммы</label>
                                     <div class="row">
@@ -77,6 +82,11 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Кост код</label>
+                                <input name="code" class="form-control form-control-solid" value="{{ request()->input('code', '') }}" />
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -182,11 +192,25 @@
                                     class="form-select form-select-solid"
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
-
                                     multiple
                                 >
                                     @foreach($importTypes as $typeId => $type)
                                         <option value="{{ $typeId }}" {{ in_array($typeId, request()->input('import_type_id', [])) ? 'selected' : '' }}>{{ $type }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Тип</label>
+                                <select
+                                    name="payment_type_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
+                                    @foreach($paymentTypes as $typeId => $type)
+                                        <option value="{{ $typeId }}" {{ in_array($typeId, request()->input('payment_type_id', [])) ? 'selected' : '' }}>{{ $type }}</option>
                                     @endforeach
                                 </select>
                             </div>

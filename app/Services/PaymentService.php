@@ -92,6 +92,14 @@ class PaymentService
             $paymentQuery->where('amount', $requestData['amount_expression_operator'], $expressionAmount);
         }
 
+        if (! empty($requestData['payment_type_id'])) {
+            $paymentQuery->whereIn('payment_type_id', $requestData['payment_type_id']);
+        }
+
+        if (! empty($requestData['code'])) {
+            $paymentQuery->where('code', $requestData['code']);
+        }
+
         if (! empty($requestData['sort_by'])) {
             if ($requestData['sort_by'] == 'company_id') {
                 $paymentQuery->orderBy(Company::select('name')->whereColumn('companies.id', 'payments.company_id'), $requestData['sort_direction'] ?? 'asc');
