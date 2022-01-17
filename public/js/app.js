@@ -170,3 +170,21 @@ const mainApp = function() {
 KTUtil.onDOMContentLoaded(function () {
     mainApp.init();
 });
+
+$(document).on('click', '.balance-copy', function() {
+    copyToClipboard(this);
+    toastr.success('Баланс успешно скопирован.');
+});
+
+function copyToClipboard(element) {
+    const $temp = $("<input>");
+    $("body").append($temp);
+
+    const value = $(element).data('clipboard-value').toString().replace('.', ',');
+
+    $temp.val(value).select();
+
+    document.execCommand("copy");
+
+    $temp.remove();
+}
