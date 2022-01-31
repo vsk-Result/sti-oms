@@ -159,6 +159,10 @@
                                     multiple
                                     {{ isset($object) ? 'disabled' : ''}}
                                 >
+
+                                    <option value="Общее" {{ (in_array('Общее', request()->input('object_id', [])) || (isset($object) && 'Общее' === $object)) ? 'selected' : '' }}>Общее</option>
+                                    <option value="Трансфер" {{ (in_array('Трансфер', request()->input('object_id', [])) || (isset($object) && 'Трансфер' === $object)) ? 'selected' : '' }}>Трансфер</option>
+
                                     @foreach($objects as $obj)
                                         <option value="{{ $obj->id }}" {{ (in_array($obj->id, request()->input('object_id', [])) || (isset($object) && $obj->id === $object->id)) ? 'selected' : '' }}>{{ $obj->code . ' ' . $obj->name }}</option>
                                     @endforeach

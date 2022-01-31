@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Reports\ITRObjectSalary;
+namespace App\Http\Controllers\Report;
 
 use App\Exports\ITRObjectSalaryExport;
 use App\Http\Controllers\Controller;
@@ -12,11 +12,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ITRObjectSalaryController extends Controller
 {
-    public function create(): View
-    {
-        return view('reports.itr-salary-object.create');
-    }
-
     public function store(Request $request): BinaryFileResponse
     {
         $data = [];
