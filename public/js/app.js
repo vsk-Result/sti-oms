@@ -171,7 +171,7 @@ KTUtil.onDOMContentLoaded(function () {
     mainApp.init();
 });
 
-$(document).on('click', '.balance-copy', function() {
+$(document).on('click', '.btn-copy', function() {
     copyToClipboard(this);
     toastr.success('Баланс успешно скопирован.');
 });

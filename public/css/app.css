@@ -82,3 +82,18 @@ td > a.show-link:hover {
     color: #88babf;
     border-bottom: 1px dashed #88babf !important;
 }
+
+/* Кнопка копирования */
+.btn-copy {
+    background-color: #fff !important;
+    width: 22px !important;
+    height: 22px !important;
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    display: none !important;
+}
+
+.pivot-box:hover .btn-copy {
+    display: inline-flex !important;
+}
