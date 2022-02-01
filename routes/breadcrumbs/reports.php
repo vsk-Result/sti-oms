@@ -9,8 +9,3 @@ Breadcrumbs::for('reports.index', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Отчеты', $route);
 });
-
-Breadcrumbs::for('reports.itr_salary_object.create', function (BreadcrumbTrail $trail) {
-    $trail->parent('reports.index');
-    $trail->push('Отчет по расходам на ЗП ИТР по проектам');
-});

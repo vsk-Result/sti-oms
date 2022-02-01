@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Exports\ITRObjectSalaryExport;
+use App\Exports\Report\ITRObjectSalaryExport;
 use App\Http\Controllers\Controller;
 use App\Imports\Reports\ITRObjectSalary\ITRObjectSalaryImport;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
