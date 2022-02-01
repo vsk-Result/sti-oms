@@ -29,7 +29,9 @@ class PaymentNDSAnalyzeController extends Controller
         $strangeReceiveOrganizations = array_unique($strangeReceiveOrganizations);
 
         $strangePayments = [];
-        foreach (Organization::whereIn('id', $strangePayOrganizations)->with('paymentsSend')->get() as $organization) {
+        foreach (Organization::whereIn('id', $strangePayOrganizations)->with(['paymentsSend' => function($q) {
+            $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('type_id', Payment::TYPE_OBJECT);
+        }])->get() as $organization) {
             foreach ($organization->paymentsSend as $payment) {
                 if ($payment->amount === $payment->amount_without_nds) {
                     $strangePayments[] = $payment->id;
@@ -37,7 +39,9 @@ class PaymentNDSAnalyzeController extends Controller
             }
         }
 
-        foreach (Organization::whereIn('id', $strangeReceiveOrganizations)->with('paymentsReceive')->get() as $organization) {
+        foreach (Organization::whereIn('id', $strangeReceiveOrganizations)->with(['paymentsReceive' => function($q) {
+            $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('type_id', Payment::TYPE_OBJECT);
+        }])->get() as $organization) {
             foreach ($organization->paymentsReceive as $payment) {
                 if ($payment->amount === $payment->amount_without_nds) {
                     $strangePayments[] = $payment->id;
@@ -48,7 +52,9 @@ class PaymentNDSAnalyzeController extends Controller
         $strangePayments = array_unique($strangePayments);
         $strangePayments = array_slice($strangePayments, 0, 500);
 
-        $payments = Payment::whereIn('id', $strangePayments)->orderBy('date');
+        $payments = Payment::whereIn('id', $strangePayments)
+            ->with('company', 'organizationReceiver', 'organizationSender')
+            ->orderBy('date');
 
         return Excel::download(new Export($payments), 'Анализ оплат на предмет вычета НДС.xlsx');
     }
