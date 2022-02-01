@@ -33,7 +33,7 @@ class PaymentNDSAnalyzeController extends Controller
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('type_id', Payment::TYPE_OBJECT);
         }])->get() as $organization) {
             foreach ($organization->paymentsSend as $payment) {
-                if ($payment->amount === $payment->amount_without_nds) {
+                if ($payment->amount === $payment->amount_without_nds && ! str_contains($payment->description, 'НДС не облагается')) {
                     $strangePayments[] = $payment->id;
                 }
             }
@@ -43,7 +43,7 @@ class PaymentNDSAnalyzeController extends Controller
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('type_id', Payment::TYPE_OBJECT);
         }])->get() as $organization) {
             foreach ($organization->paymentsReceive as $payment) {
-                if ($payment->amount === $payment->amount_without_nds) {
+                if ($payment->amount === $payment->amount_without_nds && ! str_contains($payment->description, 'НДС не облагается')) {
                     $strangePayments[] = $payment->id;
                 }
             }
