@@ -22,7 +22,8 @@ class Export implements WithMultipleSheets
         $object = null;
         $objectIds = (clone $this->payments)->pluck('object_id')->unique('object_id');
         if (count($objectIds) === 1) {
-            $object = BObject::find($objectIds[0])->getName() ?? '';
+            $object = BObject::find($objectIds[0]);
+            $object = $object ? $object->getName() : '';
         }
 
         return [
