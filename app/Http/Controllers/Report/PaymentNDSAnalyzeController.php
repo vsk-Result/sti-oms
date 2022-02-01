@@ -50,7 +50,7 @@ class PaymentNDSAnalyzeController extends Controller
         }
 
         $strangePayments = array_unique($strangePayments);
-        $strangePayments = array_slice($strangePayments, 0, 500);
+        $strangePayments = array_slice($strangePayments, 0, 1000);
 
         $payments = Payment::whereIn('id', $strangePayments)
             ->with('company', 'organizationReceiver', 'organizationSender')
