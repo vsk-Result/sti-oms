@@ -14,7 +14,7 @@ class PaymentNDSAnalyzeController extends Controller
     {
         $strangePayOrganizations = [];
         $strangeReceiveOrganizations = [];
-        Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->chunk(1000, function ($payments) use (&$strangePayOrganizations, &$strangeReceiveOrganizations) {
+        Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('type_id', Payment::TYPE_OBJECT)->chunk(1000, function ($payments) use (&$strangePayOrganizations, &$strangeReceiveOrganizations) {
             foreach ($payments as $payment) {
                 if ($payment->amount !== $payment->amount_without_nds) {
                     if ($payment->amount > 0) {
