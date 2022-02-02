@@ -12,7 +12,7 @@ Breadcrumbs::for('payments.index', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('payments.create', function (BreadcrumbTrail $trail) {
     $trail->parent('payments.index');
-    $trail->push('Загрузить оплату');
+    $trail->push('Новая оплата');
 });
 
 Breadcrumbs::for('payments.show', function (BreadcrumbTrail $trail, Payment $payment) {

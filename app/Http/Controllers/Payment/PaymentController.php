@@ -54,21 +54,50 @@ class PaymentController extends Controller
         );
     }
 
-    public function store(Request $request): JsonResponse
+    public function create(): View
     {
-        $payment = $this->paymentService->createPayment($request->toArray());
+        $categories = Payment::getCategories();
+        $objects = Payment::getTypes() + BObject::getObjectsList();
+        $companies = Company::orderBy('name')->get();
+        $organizations = Organization::orderBy('name')->get();
+        $banks = Bank::getBanks();
+        $paymentTypes = Payment::getPaymentTypes();
+
+        return view('payments.create', compact('categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'));
+    }
+
+    public function store(Request $request): JsonResponse|RedirectResponse
+    {
+        if ($request->ajax()) {
+
+            $payment = $this->paymentService->createPayment($request->toArray());
+            $payment->import?->reCalculateAmountsAndCounts();
+
+            $objects = Payment::getTypes() + BObject::getObjectsList();
+            $categories = Payment::getCategories();
+
+            $paymentHtml = view('payment-imports.partials._edit_payment_table_row', compact('payment', 'objects', 'categories'))->render();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Оплата успешно создана',
+                'payment_html' => $paymentHtml
+            ]);
+        }
+
+        $returnUrl = $request->get('return_url');
+
+        $info = [
+            'import_id' => null,
+            ''
+        ];
+
+        $requestData = $request->toArray() + $info;
+
+        $payment = $this->paymentService->createPayment($requestData);
         $payment->import?->reCalculateAmountsAndCounts();
 
-        $objects = Payment::getTypes() + BObject::getObjectsList();
-        $categories = Payment::getCategories();
-
-        $paymentHtml = view('payment-imports.partials._edit_payment_table_row', compact('payment', 'objects', 'categories'))->render();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Оплата успешно создана',
-            'payment_html' => $paymentHtml
-        ]);
+        return redirect($returnUrl ?? route('payments.index'));
     }
 
     public function edit(Payment $payment): View
@@ -78,8 +107,9 @@ class PaymentController extends Controller
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
+        $paymentTypes = Payment::getPaymentTypes();
 
-        return view('payments.edit', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks'));
+        return view('payments.edit', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'));
     }
 
     public function update(Payment $payment, Request $request): JsonResponse|RedirectResponse

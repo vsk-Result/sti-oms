@@ -97,3 +97,13 @@ td > a.show-link:hover {
 .pivot-box:hover .btn-copy {
     display: inline-flex !important;
 }
+
+/* Круг с цветом в меню */
+.menu-color {
+    background-color: black;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    margin-bottom: 2px;
+}

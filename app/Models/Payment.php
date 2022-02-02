@@ -22,7 +22,11 @@ class Payment extends Model implements Audit
     protected $fillable = [
         'import_id', 'company_id', 'bank_id', 'object_id', 'object_worktype_id', 'organization_sender_id',
         'organization_receiver_id', 'created_by_user_id', 'updated_by_user_id', 'type_id', 'payment_type_id', 'category',
-        'code', 'description', 'date', 'amount', 'amount_without_nds', 'is_need_split', 'status_id'
+        'code', 'description', 'date', 'amount', 'amount_without_nds', 'is_need_split', 'status_id', 'parameters'
+    ];
+
+    protected $casts = [
+        'parameters' => 'json',
     ];
 
     const TYPE_NONE = 0;
@@ -136,8 +140,18 @@ class Payment extends Model implements Audit
         return '';
     }
 
-    public function isNeedSplit()
+    public function isNeedSplit(): bool
     {
         return $this->is_need_split;
+    }
+
+    public function isTransfer(): bool
+    {
+        return $this->type_id === static::TYPE_TRANSFER;
+    }
+
+    public function getParameter(string $key)
+    {
+        return $this->parameters[$key] ?? null;
     }
 }

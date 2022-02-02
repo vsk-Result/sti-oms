@@ -172,10 +172,12 @@ class PaymentService
         if (array_key_exists('base_payment_id', $requestData)) {
             $basePayment = Payment::find($requestData['base_payment_id']);
             $requestData = $basePayment->attributesToArray();
+        } else {
+            $this->prepareRequestData($requestData, null);
         }
 
         $payment = Payment::create([
-            'import_id' => $requestData['import_id'],
+            'import_id' => $requestData['import_id'] ?? null,
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
             'object_id' => $requestData['object_id'],
@@ -189,9 +191,10 @@ class PaymentService
             'description' => $this->sanitizer->set($requestData['description'])->upperCaseFirstWord()->get(),
             'date' => $requestData['date'],
             'amount' => $requestData['amount'],
+            'parameters' => $requestData['parameters'] ?? [],
             'amount_without_nds' => $requestData['amount_without_nds'],
-            'is_need_split' => $requestData['is_need_split'],
-            'status_id' => $requestData['status_id']
+            'is_need_split' => $requestData['is_need_split'] ?? false,
+            'status_id' => $requestData['status_id'] ?? Status::STATUS_ACTIVE
         ]);
 
         return $payment;
@@ -204,118 +207,7 @@ class PaymentService
 
     public function updatePayment(Payment $payment, array $requestData): Payment
     {
-        if (array_key_exists('_token', $requestData)) {
-            unset($requestData['_token']);
-        }
-
-        if (array_key_exists('return_url', $requestData)) {
-            unset($requestData['return_url']);
-        }
-
-        if (array_key_exists('amount', $requestData)) {
-            $description = array_key_exists('description', $requestData) ? $requestData['description'] : $payment->description;
-            $requestData['amount'] = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
-            $nds = $this->checkHasNDSFromDescription($description) ? round($requestData['amount'] / 6, 2) : 0;
-            $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
-        }
-
-        if (array_key_exists('object_id', $requestData)) {
-            $objectId = $requestData['object_id'];
-            $requestData['object_id'] = null;
-            $requestData['object_worktype_id'] = null;
-            $requestData['type_id'] = Payment::TYPE_NONE;
-
-            if (str_contains($objectId, '::')) {
-                $oId = (int) substr($objectId, 0, strpos($objectId, '::'));
-                $object = BObject::find($oId);
-                if ($object) {
-                    $requestData['object_id'] = $object->id;
-                    $requestData['object_worktype_id'] = (int) substr($objectId, strpos($objectId, '::') + 2);
-                    $requestData['type_id'] = Payment::TYPE_OBJECT;
-                }
-            } else {
-                if ((int) $objectId === Payment::TYPE_GENERAL) {
-                    $requestData['type_id'] = Payment::TYPE_GENERAL;
-                } if ((int) $objectId === Payment::TYPE_TRANSFER) {
-                    $requestData['type_id'] = Payment::TYPE_TRANSFER;
-                }
-            }
-        }
-
-        if (array_key_exists('object_code', $requestData)) {
-            $requestData['object_id'] = null;
-            $requestData['object_worktype_id'] = null;
-            $requestData['type_id'] = Payment::TYPE_NONE;
-
-            if ($requestData['object_code'] === 'Трансфер') {
-                $requestData['type_id'] = Payment::TYPE_TRANSFER;
-            } else if ($requestData['object_code'] === 'Общее') {
-                $requestData['type_id'] = Payment::TYPE_GENERAL;
-            } else if (! empty($requestData['object_code'])) {
-
-                if ($requestData['object_code'] == '27' || $requestData['object_code'] == '27.1') {
-                    $code = '1';
-                } elseif ($requestData['object_code'] == '27.2') {
-                    $code = '2';
-                } elseif ($requestData['object_code'] == '27.3') {
-                    $code = '4';
-                } elseif ($requestData['object_code'] == '27.4') {
-                    $code = '3';
-                } elseif ($requestData['object_code'] == '27.8') {
-                    $code = '5';
-                } elseif ($requestData['object_code'] == '28') {
-                    $code = '28';
-                } else {
-                    $code = $requestData['object_code'];
-
-                    if (str_contains($requestData['object_code'], '.')) {
-                        $code = substr($code, 0, strpos($code, '.'));
-                        $requestData['object_worktype_id'] = (int) substr($requestData['object_code'], strpos($requestData['object_code'], '.') + 1);
-                    }
-                }
-                $object = BObject::where('code', $code)->first();
-
-                if ($object) {
-                    $requestData['type_id'] = Payment::TYPE_OBJECT;
-                    $requestData['object_id'] = $object->id;
-                } else {
-                    $this->error = 'Объект ' . $requestData['object_code'] . ' не найден в системе. Данные об объекте не сохранятся.';
-                }
-            }
-
-            unset($requestData['object_code']);
-        }
-
-        if (array_key_exists('code', $requestData)) {
-            $requestData['code'] = $this->sanitizer->set($requestData['code'])->toCode()->get();
-        }
-
-        if (array_key_exists('description', $requestData)) {
-            $isNeedSplit = $this->checkIsNeedSplitFromDescription($requestData['description']);
-            $requestData['is_need_split'] = $isNeedSplit;
-        }
-
-        if (array_key_exists('organization_id', $requestData)) {
-            $requestData['organization_sender_id'] = null;
-            $requestData['organization_receiver_id'] = null;
-
-            $companyOrganization = $this->organizationService->getOrCreateOrganization([
-                'company_id' => 1,
-                'name' => 'ООО "Строй Техно Инженеринг"',
-                'inn' => '7720734368',
-                'kpp' => null
-            ]);
-
-            if ($requestData['amount'] < 0) {
-                $requestData['organization_sender_id'] = $companyOrganization->id;
-                $requestData['organization_receiver_id'] = $requestData['organization_id'];
-            } else {
-                $requestData['organization_sender_id'] = $requestData['organization_id'];
-                $requestData['organization_receiver_id'] = $companyOrganization->id;
-            }
-
-            unset($requestData['organization_id']);
-        }
+        $this->prepareRequestData($requestData, $payment);
 
         $payment->update($requestData);
 
@@ -488,5 +380,129 @@ class PaymentService
     public function getError()
     {
         return $this->error;
+    }
+
+    private function prepareRequestData(array &$requestData, Payment|null $payment): void
+    {
+        if (array_key_exists('_token', $requestData)) {
+            unset($requestData['_token']);
+        }
+
+        if (array_key_exists('return_url', $requestData)) {
+            unset($requestData['return_url']);
+        }
+
+        if (array_key_exists('amount', $requestData)) {
+            $description = array_key_exists('description', $requestData) ? $requestData['description'] : $payment->description ?? '';
+            $requestData['amount'] = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
+            $nds = $this->checkHasNDSFromDescription($description) ? round($requestData['amount'] / 6, 2) : 0;
+            $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
+        }
+
+        if (array_key_exists('object_id', $requestData)) {
+            $objectId = $requestData['object_id'];
+            $requestData['object_id'] = null;
+            $requestData['object_worktype_id'] = null;
+            $requestData['type_id'] = Payment::TYPE_NONE;
+
+            if (str_contains($objectId, '::')) {
+                $oId = (int) substr($objectId, 0, strpos($objectId, '::'));
+                $object = BObject::find($oId);
+                if ($object) {
+                    $requestData['object_id'] = $object->id;
+                    $requestData['object_worktype_id'] = (int) substr($objectId, strpos($objectId, '::') + 2);
+                    $requestData['type_id'] = Payment::TYPE_OBJECT;
+                }
+            } else {
+                if ((int) $objectId === Payment::TYPE_GENERAL) {
+                    $requestData['type_id'] = Payment::TYPE_GENERAL;
+                } if ((int) $objectId === Payment::TYPE_TRANSFER) {
+                    $requestData['type_id'] = Payment::TYPE_TRANSFER;
+                }
+            }
+        }
+
+        if (array_key_exists('object_code', $requestData)) {
+            $requestData['object_id'] = null;
+            $requestData['object_worktype_id'] = null;
+            $requestData['type_id'] = Payment::TYPE_NONE;
+
+            if ($requestData['object_code'] === 'Трансфер') {
+                $requestData['type_id'] = Payment::TYPE_TRANSFER;
+            } else if ($requestData['object_code'] === 'Общее') {
+                $requestData['type_id'] = Payment::TYPE_GENERAL;
+            } else if (! empty($requestData['object_code'])) {
+
+                if ($requestData['object_code'] == '27' || $requestData['object_code'] == '27.1') {
+                    $code = '1';
+                } elseif ($requestData['object_code'] == '27.2') {
+                    $code = '2';
+                } elseif ($requestData['object_code'] == '27.3') {
+                    $code = '4';
+                } elseif ($requestData['object_code'] == '27.4') {
+                    $code = '3';
+                } elseif ($requestData['object_code'] == '27.8') {
+                    $code = '5';
+                } elseif ($requestData['object_code'] == '28') {
+                    $code = '28';
+                } else {
+                    $code = $requestData['object_code'];
+
+                    if (str_contains($requestData['object_code'], '.')) {
+                        $code = substr($code, 0, strpos($code, '.'));
+                        $requestData['object_worktype_id'] = (int) substr($requestData['object_code'], strpos($requestData['object_code'], '.') + 1);
+                    }
+                }
+                $object = BObject::where('code', $code)->first();
+
+                if ($object) {
+                    $requestData['type_id'] = Payment::TYPE_OBJECT;
+                    $requestData['object_id'] = $object->id;
+                } else {
+                    $this->error = 'Объект ' . $requestData['object_code'] . ' не найден в системе. Данные об объекте не сохранятся.';
+                }
+            }
+
+            unset($requestData['object_code']);
+        }
+
+        if (array_key_exists('code', $requestData)) {
+            $requestData['code'] = $this->sanitizer->set($requestData['code'])->toCode()->get();
+        }
+
+        if (array_key_exists('description', $requestData)) {
+            $isNeedSplit = $this->checkIsNeedSplitFromDescription($requestData['description']);
+            $requestData['is_need_split'] = $isNeedSplit;
+        }
+
+        if (array_key_exists('organization_id', $requestData)) {
+            $requestData['organization_sender_id'] = null;
+            $requestData['organization_receiver_id'] = null;
+
+            $companyOrganization = $this->organizationService->getOrCreateOrganization([
+                'company_id' => 1,
+                'name' => 'ООО "Строй Техно Инженеринг"',
+                'inn' => '7720734368',
+                'kpp' => null
+            ]);
+
+            if ($requestData['amount'] < 0) {
+                $requestData['organization_sender_id'] = $companyOrganization->id;
+                $requestData['organization_receiver_id'] = $requestData['organization_id'];
+            } else {
+                $requestData['organization_sender_id'] = $requestData['organization_id'];
+                $requestData['organization_receiver_id'] = $companyOrganization->id;
+            }
+
+            unset($requestData['organization_id']);
+        }
+
+        if (array_key_exists('parameters', $requestData)) {
+            [$key, $value] = explode('::', $requestData['parameters']);
+
+            $parameters = $payment->parameters ?? [];
+            $parameters[$key] = $value;
+            $requestData['parameters'] = $parameters;
+        }
     }
 }

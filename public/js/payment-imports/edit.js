@@ -181,7 +181,6 @@ $(document).on('blur', '.db-field', function() {
     }
 
     if ($that.data('initial-text') !== text) {
-        console.log($that.closest('tr').data('update-payment-url'));
         updatePayment($that.closest('tr'), field, text);
     }
 });
@@ -213,13 +212,13 @@ function updateCRMAvansesImportsList(amount) {
     );
 }
 
-function updatePayment($row, $field, $value) {
+function updatePayment($row, field, value) {
     const url =  $row.data('payment-update-url');
 
     mainApp.sendAJAX(
         url,
         'POST',
-        {[$field]: $value}
+        {[field]: value}
     );
 }
 

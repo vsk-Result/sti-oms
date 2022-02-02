@@ -70,6 +70,19 @@
                                 Экспорт в Excel
                             </a>
                         </form>
+
+                        @can('create payments')
+                            <a href="{{ route('payments.create') }}" class="btn btn-light-primary">
+                            <span class="svg-icon svg-icon-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
+                                    <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
+                                    <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
+                                </svg>
+                            </span>
+                                Новая оплата
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -92,7 +105,17 @@
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($payments as $payment)
-                                <tr>
+                                @php
+                                    $style = '';
+                                    if ($payment->getParameter('transfer_background_color') !== null) {
+                                        $style .= '--bs-table-accent-bg: ' . $payment->getParameter('transfer_background_color') . ' !important;';
+                                        $style .= 'background-color: ' . $payment->getParameter('transfer_background_color') . ' !important;';
+                                    }
+                                    if ($payment->getParameter('transfer_font_color') !== null) {
+                                        $style .= 'color: ' . $payment->getParameter('transfer_font_color') . ' !important;';
+                                    }
+                                @endphp
+                                <tr data-payment-update-url="{{ route('payments.update', $payment) }}" style="{{ $style }}">
                                     <td>
                                         @if (auth()->user()->can('edit payments'))
                                             <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
@@ -136,6 +159,34 @@
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
                                                 </div>
+
+                                                @if ($payment->isTransfer())
+                                                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-end">
+                                                        <a href="#" class="menu-link px-3">
+                                                            <span class="menu-title">Выделить</span>
+                                                            <span class="menu-arrow"></span>
+                                                        </a>
+                                                        <div class="menu-sub menu-sub-dropdown w-175px py-4" style="">
+                                                            <div class="menu-item px-3 text-center">
+                                                                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Шрифт</div>
+                                                            </div>
+                                                            <div class="menu-item px-3">
+                                                                <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="#7e8299" style="color: #7e8299;">Сбросить</a>
+                                                                <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="red" style="color: red;">Красный</a>
+                                                                <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="#60bd60" style="color: #60bd60;">Зеленый</a>
+                                                            </div>
+                                                            <div class="menu-item px-3 text-center">
+                                                                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Оплату</div>
+                                                            </div>
+                                                            <div class="menu-item px-3">
+                                                                <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#ffffff" style="background-color: #ffffff;">Сбросить</a>
+                                                                <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#fdfd6b" style="background-color: #fdfd6b;">&nbsp;</a>
+                                                                <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#60bd60" style="background-color: #60bd60; color: white;">&nbsp;</a>
+                                                                <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#d7ffb7" style="background-color: #d7ffb7;">&nbsp;</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
 
                                                 <div class="menu-item px-3">
                                                     <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">
@@ -235,7 +286,8 @@
             }
         });
 
-        $('.sortable-row').on('click', function() {
+        $('.sortable-row').on('click', function(e) {
+            e.preventDefault();
             const field = $(this).data('sort-by');
             const url = new URL(document.location.href);
 
@@ -253,6 +305,34 @@
 
             document.location = url.toString();
         });
+
+        $('.payment-fill-row').on('click', function() {
+            const $that = $(this);
+            const $tr = $that.closest('tr');
+            const color = $tr.css('color');
+
+            $tr.css('cssText', '--bs-table-accent-bg: ' + $that.data('color') + ';background-color: ' + $that.data('color') + ' !important; color: ' + color + ' !important');
+            updatePayment($tr, 'parameters', 'transfer_background_color::' + $that.data('color'));
+        });
+
+        $('.payment-fill-color').on('click', function() {
+            const $that = $(this);
+            const $tr = $that.closest('tr');
+            const bgColor = $tr.css('background-color');
+
+            $tr.css('cssText', '--bs-table-accent-bg: ' + bgColor + ';background-color: ' + bgColor + ' !important; color: ' + $that.data('color') + ' !important');
+            updatePayment($tr, 'parameters', 'transfer_font_color::' + $that.data('color'));
+        });
+
+        function updatePayment($row, field, value) {
+            const url =  $row.data('payment-update-url');
+
+            mainApp.sendAJAX(
+                url,
+                'POST',
+                {[field]: value}
+            );
+        }
     </script>
 @endpush
 
