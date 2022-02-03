@@ -94,6 +94,7 @@ class PaymentController extends Controller
 
         $requestData = $request->toArray() + $info;
 
+        $this->paymentService->prepareRequestData($requestData, null);
         $payment = $this->paymentService->createPayment($requestData);
         $payment->import?->reCalculateAmountsAndCounts();
 

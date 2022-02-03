@@ -172,8 +172,6 @@ class PaymentService
         if (array_key_exists('base_payment_id', $requestData)) {
             $basePayment = Payment::find($requestData['base_payment_id']);
             $requestData = $basePayment->attributesToArray();
-        } else {
-            $this->prepareRequestData($requestData, null);
         }
 
         $payment = Payment::create([
@@ -382,7 +380,7 @@ class PaymentService
         return $this->error;
     }
 
-    private function prepareRequestData(array &$requestData, Payment|null $payment): void
+    public function prepareRequestData(array &$requestData, Payment|null $payment): void
     {
         if (array_key_exists('_token', $requestData)) {
             unset($requestData['_token']);
