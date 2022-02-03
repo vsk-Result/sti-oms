@@ -52,6 +52,7 @@
                         <table class="table-payments table align-middle table-row-dashed fs-6 gy-5">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="min-w-120px">Дата</th>
                                 <th class="min-w-120px">Объект</th>
                                 <th class="min-w-70px">Кост код</th>
                                 <th class="min-w-100px">Организация</th>
@@ -63,6 +64,7 @@
                             <tbody class="text-gray-600 fw-bold">
                                 @forelse($import->payments as $payment)
                                     <tr>
+                                        <td class="ps-4">{{ $payment->getDateFormatted() }}</td>
                                         <td class="ps-4">{{ $payment->getObject() }}</td>
                                         <td>{{ $payment->code }}</td>
                                         <td>
@@ -81,7 +83,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7">
+                                        <td colspan="8">
                                             <p class="text-center text-dark fw-bolder d-block mb-1 fs-6">Оплаты отсутствуют</p>
                                         </td>
                                     </tr>
