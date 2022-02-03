@@ -160,7 +160,7 @@
                                                     <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
                                                 </div>
 
-                                                @if ($payment->isTransfer())
+                                                @if ($payment->isTransfer() && auth()->user()->hasRole('super-admin'))
                                                     <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-end">
                                                         <a href="#" class="menu-link px-3">
                                                             <span class="menu-title">Выделить</span>
