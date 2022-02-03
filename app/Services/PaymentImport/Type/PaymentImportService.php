@@ -3,6 +3,7 @@
 namespace App\Services\PaymentImport\Type;
 
 use App\Imports\PaymentImport as PImport;
+use App\Models\Company;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\PaymentImport;
@@ -64,6 +65,16 @@ class PaymentImportService
         $processInfo = $this->processInfoFromImportData($importData);
 
         foreach ($processInfo['payments'] as $payment) {
+
+            if (isset($payment['company_id'])) {
+                $company = Company::find($payment['company_id']);
+                $companyOrganization = $this->organizationService->getOrCreateOrganization([
+                    'company_id' => $company->id,
+                    'name' => $company->name,
+                    'inn' => $company->inn,
+                    'kpp' => null
+                ]);
+            }
 
             if ($payment['pay_amount'] == 0) {
                 $amount = $payment['receive_amount'];
@@ -142,7 +153,7 @@ class PaymentImportService
             }
 
             $payment = $this->paymentService->createPayment([
-                'company_id' => $import->company_id,
+                'company_id' => $payment['company_id'] ?? $import->company_id,
                 'bank_id' => $import->bank_id,
                 'import_id' => $import->id,
                 'object_id' => $payment['object_id'],
@@ -150,7 +161,7 @@ class PaymentImportService
                 'organization_sender_id' => $organizationSender->id,
                 'organization_receiver_id' => $organizationReceiver->id,
                 'type_id' => $payment['type_id'],
-                'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
+                'payment_type_id' => $payment['payment_type_id'] ?? Payment::PAYMENT_TYPE_NON_CASH,
                 'code' => $payment['code'] ?? null,
                 'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
                 'description' => $payment['description'],
@@ -158,7 +169,8 @@ class PaymentImportService
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
                 'is_need_split' => false,
-                'status_id' => Status::STATUS_BLOCKED
+                'status_id' => Status::STATUS_BLOCKED,
+                'parameters' => $payment['parameters'] ?? []
             ]);
 
             $isCode = false;
@@ -198,6 +210,75 @@ class PaymentImportService
         foreach ($importData as $rowNum => $rowData) {
 
             if ($rowNum === 0) {
+                continue;
+            }
+
+            if (count($rowData) === 12) {
+                if ($rowData[6] === 'у') {
+                    $payment = Payment::find($rowData[9]);
+                    if ($payment) {
+                        $this->paymentService->destroyPayment($payment);
+                    }
+                } elseif ($rowData[6] === 'и') {
+                    $payment = Payment::find($rowData[9]);
+                    if ($payment) {
+                        $parameters = [];
+
+                        if ($rowData[7] === 'з') {
+                            $parameters['transfer_font_color'] = '#60bd60';
+                        } elseif ($rowData[7] === 'к') {
+                            $parameters['transfer_font_color'] = '#ff0000';
+                        }
+
+                        if ($rowData[8] === 'з') {
+                            $parameters['transfer_background_color'] = '#d7ffb7';
+                        } elseif ($rowData[8] === 'ж') {
+                            $parameters['transfer_background_color'] = '#fdfd6b';
+                        }
+
+                        $payment->update([
+                            'parameters' => $parameters
+                        ]);
+                    }
+                } elseif ($rowData[6] === 'д') {
+                    $description = $this->cleanValue($rowData[4]);
+                    $amount = (float) $rowData[5];
+
+                    if ($amount < 0) {
+                        $payAmount = $amount;
+                        $receiveAmount = 0;
+                    } else {
+                        $payAmount = 0;
+                        $receiveAmount = $amount;
+                    }
+
+                    $parameters = [];
+
+                    if ($rowData[7] === 'з') {
+                        $parameters['transfer_font_color'] = '#60bd60';
+                    } elseif ($rowData[7] === 'к') {
+                        $parameters['transfer_font_color'] = '#ff0000';
+                    }
+
+                    if ($rowData[8] === 'з') {
+                        $parameters['transfer_background_color'] = '#d7ffb7';
+                    } elseif ($rowData[8] === 'ж') {
+                        $parameters['transfer_background_color'] = '#fdfd6b';
+                    }
+
+                    $returnData['payments'][] = [
+                        'object' => 'Трансфер',
+                        'code' => $rowData[1],
+                        'date' => Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d'),
+                        'pay_amount' => $payAmount,
+                        'receive_amount' => $receiveAmount,
+                        'organization_name' => $this->cleanValue($rowData[3]),
+                        'description' => $description,
+                        'parameters' => $parameters,
+                        'company_id' => $rowData[11],
+                        'payment_type_id' => $rowData[10],
+                    ];
+                }
                 continue;
             }
 

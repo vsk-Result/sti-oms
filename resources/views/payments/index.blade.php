@@ -181,7 +181,6 @@
                                                             <div class="menu-item px-3">
                                                                 <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#ffffff" style="background-color: #ffffff;">Сбросить</a>
                                                                 <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#fdfd6b" style="background-color: #fdfd6b;">&nbsp;</a>
-                                                                <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#60bd60" style="background-color: #60bd60; color: white;">&nbsp;</a>
                                                                 <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#d7ffb7" style="background-color: #d7ffb7;">&nbsp;</a>
                                                             </div>
                                                         </div>
