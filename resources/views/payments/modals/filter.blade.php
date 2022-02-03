@@ -145,6 +145,22 @@
                                     autocomplete="off"
                                 />
                             </div>
+
+                            @if (auth()->user()->hasRole('super-admin'))
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Цвет шрифта</label>
+                                    <select
+                                        name="parameter_font_color[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterPaymentModal"
+                                        multiple
+                                    >
+                                        <option value="transfer_font_color::#60bd60" {{ in_array('transfer_font_color::#60bd60', request()->input('parameter_font_color', [])) ? 'selected' : '' }}>Зеленый</option>
+                                        <option value="transfer_font_color::#ff0000" {{ in_array('transfer_font_color::#ff0000', request()->input('parameter_font_color', [])) ? 'selected' : '' }}>Красный</option>
+                                    </select>
+                                </div>
+                            @endif
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
@@ -218,6 +234,22 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            @if (auth()->user()->hasRole('super-admin'))
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Цвет фона</label>
+                                    <select
+                                        name="parameter_background_color[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterPaymentModal"
+                                        multiple
+                                    >
+                                        <option value="transfer_background_color::#d7ffb7" {{ in_array('transfer_background_color::#d7ffb7', request()->input('parameter_background_color', [])) ? 'selected' : '' }}>Зеленый</option>
+                                        <option value="transfer_background_color::#fdfd6b" {{ in_array('transfer_background_color::#fdfd6b', request()->input('parameter_background_color', [])) ? 'selected' : '' }}>Желтый</option>
+                                    </select>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

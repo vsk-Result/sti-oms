@@ -134,6 +134,24 @@ class PaymentService
             $paymentQuery->where('code', $requestData['code']);
         }
 
+        if (! empty($requestData['parameter_font_color'])) {
+            $paymentQuery->where(function ($q) use ($requestData) {
+                foreach ($requestData['parameter_font_color'] as $parameter) {
+                    [$key, $value] = explode('::', $parameter);
+                    $q->orWhere('parameters', 'LIKE', '%"' . $key . '": "' . $value . '"%');
+                }
+            });
+        }
+
+        if (! empty($requestData['parameter_background_color'])) {
+            $paymentQuery->where(function ($q) use ($requestData) {
+                foreach ($requestData['parameter_background_color'] as $parameter) {
+                    [$key, $value] = explode('::', $parameter);
+                    $q->orWhere('parameters', 'LIKE', '%"' . $key . '": "' . $value . '"%');
+                }
+            });
+        }
+
         if (! empty($requestData['sort_by'])) {
             if ($requestData['sort_by'] == 'company_id') {
                 $paymentQuery->orderBy(Company::select('name')->whereColumn('companies.id', 'payments.company_id'), $requestData['sort_direction'] ?? 'asc');
