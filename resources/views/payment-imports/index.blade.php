@@ -74,7 +74,7 @@
                                     <input id="check-all-imports" class="form-check-input" type="checkbox" />
                                 </div>
                             </th>
-                            <th class="min-w-150px">Тип</th>
+                            <th class="min-w-200px">Тип</th>
                             <th class="min-w-125px">Дата</th>
                             <th class="min-w-125px">Компания</th>
                             <th class="min-w-125px">Банк</th>
@@ -103,7 +103,14 @@
                                                 <input class="form-check-input widget-9-check" type="checkbox" value="{{ $import->id }}">
                                             </div>
                                         </td>
-                                        <td class="text-dark fw-bolder">{{ $import->getType() }}</td>
+                                        <td class="text-dark fw-bolder">
+                                            {{ $import->getType() }}
+                                            @if (! empty($import->description))
+                                                <button type="button" class="btn btn-sm btn-icon h-20px" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="right" title="{{ $import->description }}">
+                                                    <i class="las la-info-circle fs-3 me-2"></i>
+                                                </button>
+                                            @endif
+                                        </td>
                                         <td class="text-dark fw-bolder">
                                             @if (auth()->user()->can('show payment-imports'))
                                                 <div class="menu-item px-3">
