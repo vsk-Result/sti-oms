@@ -74,7 +74,7 @@
                                     <input id="check-all-imports" class="form-check-input" type="checkbox" />
                                 </div>
                             </th>
-                            <th class="min-w-200px">Тип</th>
+                            <th class="min-w-175px">Тип</th>
                             <th class="min-w-125px">Дата</th>
                             <th class="min-w-125px">Компания</th>
                             <th class="min-w-125px">Банк</th>
