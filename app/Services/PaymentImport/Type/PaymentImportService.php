@@ -267,7 +267,7 @@ class PaymentImportService
                     }
 
                     $returnData['payments'][] = [
-                        'object' => 'Трансфер',
+                        'object' => $rowData[0],
                         'code' => $rowData[1],
                         'date' => Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d'),
                         'pay_amount' => $payAmount,
