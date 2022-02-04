@@ -234,11 +234,18 @@ class PaymentService
             $isCode = true;
         }
 
+        $isCategory = false;
+        if (empty($payment->category) && $payment->type_id !== Payment::TYPE_OBJECT) {
+            $isCategory = true;
+        } elseif (! empty($payment->category)) {
+            $isCategory = true;
+        }
+
         if (
             $payment->type_id !== Payment::TYPE_NONE
             && $isCode
             && ! empty($payment->description)
-            && ! is_null($payment->category)
+            && $isCategory
             && ! is_null($payment->amount)
         ) {
             if (! $payment->isActive()) {
