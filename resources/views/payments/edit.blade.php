@@ -162,7 +162,6 @@
                                                     type="text"
                                                     name="code"
                                                     value="{{ old('code', $payment->code) }}"
-                                                    required
                                                 />
                                             </div>
                                             @if ($errors->has('code'))

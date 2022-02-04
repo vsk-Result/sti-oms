@@ -155,7 +155,6 @@
                                                     type="text"
                                                     name="code"
                                                     value="{{ old('code') }}"
-                                                    required
                                                 />
                                             </div>
                                             @if ($errors->has('code'))
