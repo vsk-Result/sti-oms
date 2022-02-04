@@ -11,7 +11,7 @@
                     </svg>
                 </span>
             </div>
-            <a href="#">
+            <a href="{{ route('home') }}">
                 <img alt="Logo" src="{{ asset('images/logo.png') }}" class="d-none d-lg-inline h-45px" />
             </a>
         </div>
