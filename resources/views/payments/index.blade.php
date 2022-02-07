@@ -357,23 +357,25 @@
         });
 
         $('.copy-payment').on('click', function() {
-            $('#createPaymentModal .modal-content').html('');
-            const url = $(this).data('create-payment-url');
-            mainApp.sendAJAX(
-                url,
-                'GET',
-                {},
-                (data) => {
-                    $('#createPaymentModal .modal-content').html(data.payment_form);
-                },
-                {},
-                () => {
-                    KTApp.init();
-                    mainApp.init();
-                    $('[name=return_url]').val(window.location.href);
-                    $('#createPaymentModal').modal('show');
-                }
-            );
+            if (confirm('Вы действительно создать оплату на основе данной?')) {
+                $('#createPaymentModal .modal-content').html('');
+                const url = $(this).data('create-payment-url');
+                mainApp.sendAJAX(
+                    url,
+                    'GET',
+                    {},
+                    (data) => {
+                        $('#createPaymentModal .modal-content').html(data.payment_form);
+                    },
+                    {},
+                    () => {
+                        KTApp.init();
+                        mainApp.init();
+                        $('[name=return_url]').val(window.location.href);
+                        $('#createPaymentModal').modal('show');
+                    }
+                );
+            }
         });
 
         $('.edit-payment').on('click', function() {
