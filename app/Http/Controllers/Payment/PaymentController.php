@@ -114,7 +114,7 @@ class PaymentController extends Controller
         return redirect($returnUrl ?? route('payments.index'));
     }
 
-    public function edit(Payment $payment): View
+    public function edit(Payment $payment, Request $request): View|JsonResponse
     {
         $categories = Payment::getCategories();
         $objects = Payment::getTypes() + BObject::getObjectsList();
@@ -122,6 +122,13 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'payment_form' => view('payments.parts._edit_payment_form', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'))->render()
+            ]);
+        }
 
         return view('payments.edit', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'));
     }

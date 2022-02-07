@@ -6,6 +6,7 @@
 @section('content')
     @include('payments.modals.filter')
     @include('payments.modals.create')
+    @include('payments.modals.edit')
 
     <div class="post">
         <div class="card mb-5 mb-xl-8">
@@ -158,7 +159,21 @@
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
                                             @can('edit payments')
                                                 <div class="menu-item px-3">
-                                                    <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
+                                                    <a href="javascript:void(0);" data-edit-payment-url="{{ route('payments.edit', $payment) }}" class="edit-payment menu-link px-3">Изменить</a>
+                                                </div>
+
+                                                <div class="menu-item px-3">
+                                                    {{--                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">--}}
+                                                    {{--                                                        @csrf--}}
+                                                    {{--                                                        <a--}}
+                                                    {{--                                                            href="javascript:void(0)"--}}
+                                                    {{--                                                            class="menu-link px-3"--}}
+                                                    {{--                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите сделать копию оплаты?')) {this.closest('form').submit();}"--}}
+                                                    {{--                                                        >--}}
+                                                    {{--                                                            Сделать копию--}}
+                                                    {{--                                                        </a>--}}
+                                                    {{--                                                    </form>--}}
+                                                    <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
                                                 </div>
 
                                                 @if ($payment->isTransfer() && auth()->user()->hasRole('super-admin'))
@@ -187,20 +202,6 @@
                                                         </div>
                                                     </div>
                                                 @endif
-
-                                                <div class="menu-item px-3">
-{{--                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">--}}
-{{--                                                        @csrf--}}
-{{--                                                        <a--}}
-{{--                                                            href="javascript:void(0)"--}}
-{{--                                                            class="menu-link px-3"--}}
-{{--                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите сделать копию оплаты?')) {this.closest('form').submit();}"--}}
-{{--                                                        >--}}
-{{--                                                            Сделать копию--}}
-{{--                                                        </a>--}}
-{{--                                                    </form>--}}
-                                                        <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
-                                                </div>
 
                                                 @if ($payment->audits->count() > 0)
                                                     <div class="menu-item px-3">
@@ -371,6 +372,26 @@
                     mainApp.init();
                     $('[name=return_url]').val(window.location.href);
                     $('#createPaymentModal').modal('show');
+                }
+            );
+        });
+
+        $('.edit-payment').on('click', function() {
+            $('#editPaymentModal .modal-content').html('');
+            const url = $(this).data('edit-payment-url');
+            mainApp.sendAJAX(
+                url,
+                'GET',
+                {},
+                (data) => {
+                    $('#editPaymentModal .modal-content').html(data.payment_form);
+                },
+                {},
+                () => {
+                    KTApp.init();
+                    mainApp.init();
+                    $('[name=return_url]').val(window.location.href);
+                    $('#editPaymentModal').modal('show');
                 }
             );
         });
