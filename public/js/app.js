@@ -126,7 +126,9 @@ const mainApp = function() {
                 if (successCallback) {
                     successCallback(data);
                 }
-                toastr.success(data.message);
+                if (data.message) {
+                    toastr.success(data.message);
+                }
             } else if (data.status === 'error') {
                 if (errorCallback) {
                     errorCallback(data);

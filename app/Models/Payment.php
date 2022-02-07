@@ -154,4 +154,9 @@ class Payment extends Model implements Audit
     {
         return $this->parameters[$key] ?? null;
     }
+
+    public function getOrganizationId(): int|null
+    {
+        return $this->amount < 0 ? $this->organization_receiver_id : $this->organization_sender_id;
+    }
 }

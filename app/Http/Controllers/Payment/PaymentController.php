@@ -54,7 +54,7 @@ class PaymentController extends Controller
         );
     }
 
-    public function create(): View
+    public function create(Request $request): View|JsonResponse
     {
         $categories = Payment::getCategories();
         $objects = Payment::getTypes() + BObject::getObjectsList();
@@ -62,6 +62,19 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
+
+        if ($request->ajax()) {
+
+            $copyPayment = null;
+            if ($request->has('copy_payment_id')) {
+                $copyPayment = Payment::find($request->get('copy_payment_id'));
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'payment_form' => view('payments.parts._payment_form', compact('copyPayment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'))->render()
+            ]);
+        }
 
         return view('payments.create', compact('categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'));
     }

@@ -5,6 +5,7 @@
 
 @section('content')
     @include('payments.modals.filter')
+    @include('payments.modals.create')
 
     <div class="post">
         <div class="card mb-5 mb-xl-8">
@@ -72,7 +73,7 @@
                         </form>
 
                         @can('create payments')
-                            <a href="{{ route('payments.create') }}" class="btn btn-light-primary">
+                            <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}" class="create-payment btn btn-light-primary">
                             <span class="svg-icon svg-icon-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
@@ -188,16 +189,17 @@
                                                 @endif
 
                                                 <div class="menu-item px-3">
-                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">
-                                                        @csrf
-                                                        <a
-                                                            href="javascript:void(0)"
-                                                            class="menu-link px-3"
-                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите сделать копию оплаты?')) {this.closest('form').submit();}"
-                                                        >
-                                                            Сделать копию
-                                                        </a>
-                                                    </form>
+{{--                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">--}}
+{{--                                                        @csrf--}}
+{{--                                                        <a--}}
+{{--                                                            href="javascript:void(0)"--}}
+{{--                                                            class="menu-link px-3"--}}
+{{--                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите сделать копию оплаты?')) {this.closest('form').submit();}"--}}
+{{--                                                        >--}}
+{{--                                                            Сделать копию--}}
+{{--                                                        </a>--}}
+{{--                                                    </form>--}}
+                                                        <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
                                                 </div>
 
                                                 @if ($payment->audits->count() > 0)
@@ -332,6 +334,46 @@
                 {[field]: value}
             );
         }
+
+        $('.create-payment').on('click', function() {
+            $('#createPaymentModal .modal-content').html('');
+            const url = $(this).data('create-payment-url');
+            mainApp.sendAJAX(
+                url,
+                'GET',
+                {},
+                (data) => {
+                    $('#createPaymentModal .modal-content').html(data.payment_form);
+                },
+                {},
+                () => {
+                    KTApp.init();
+                    mainApp.init();
+                    $('[name=return_url]').val(window.location.href);
+                    $('#createPaymentModal').modal('show');
+                }
+            );
+        });
+
+        $('.copy-payment').on('click', function() {
+            $('#createPaymentModal .modal-content').html('');
+            const url = $(this).data('create-payment-url');
+            mainApp.sendAJAX(
+                url,
+                'GET',
+                {},
+                (data) => {
+                    $('#createPaymentModal .modal-content').html(data.payment_form);
+                },
+                {},
+                () => {
+                    KTApp.init();
+                    mainApp.init();
+                    $('[name=return_url]').val(window.location.href);
+                    $('#createPaymentModal').modal('show');
+                }
+            );
+        });
     </script>
 @endpush
 

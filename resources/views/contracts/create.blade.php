@@ -316,6 +316,8 @@
 
                 mainApp.init();
             });
+
+            $('.amount-formatted').on('key')
         });
     </script>
 @endpush

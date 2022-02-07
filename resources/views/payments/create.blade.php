@@ -41,7 +41,7 @@
                                             <div class="position-relative mb-3">
                                                 <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     @foreach($companies as $company)
-                                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                                        <option value="{{ $company->id }}" {{ $company->id === 1 ? 'selected' : '' }}>{{ $company->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -175,6 +175,7 @@
                                                     class="form-control form-control-lg form-control-solid {{ $errors->has('description') ? 'is-invalid' : '' }}"
                                                     rows="3"
                                                     name="description"
+                                                    required
                                                 >{{ old('description') }}</textarea>
                                             </div>
                                             @if ($errors->has('description'))
