@@ -7,6 +7,7 @@ use App\Models\Contract\Act;
 use App\Models\Contract\Contract;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\User;
@@ -19,7 +20,7 @@ use Illuminate\Support\Collection;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class BObject extends Model implements Audit
+class  BObject extends Model implements Audit
 {
     use SoftDeletes, HasStatus, Auditable;
 
@@ -96,28 +97,63 @@ class BObject extends Model implements Audit
         return $this->code . ' | '  . $this->name;
     }
 
-    public function getContractorDebts(): Collection
+    public function getContractorDebts(): array
     {
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
-        return $this->debts()->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])->where('type_id', Debt::TYPE_CONTRACTOR)->orderBy('amount')->get();
+
+        $debts = $this
+            ->debts()
+            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+            ->where('type_id', Debt::TYPE_CONTRACTOR)
+            ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
+            ->orderBy('amount')
+            ->get();
+
+        $result = [];
+
+        foreach ($debts as $debt) {
+            if (! isset($result[$debt->organization->name])) {
+                $result[$debt->organization->name] = 0;
+            }
+            $result[$debt->organization->name] += $debt->amount;
+        }
+
+        return $result;
     }
 
-    public function getProviderDebts(): Collection
+    public function getProviderDebts(): array
     {
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
-        return $this->debts()->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])->where('type_id', Debt::TYPE_PROVIDER)->orderBy('amount')->get();
+        $debts = $this
+            ->debts()
+            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+            ->where('type_id', Debt::TYPE_PROVIDER)
+            ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
+            ->orderBy('amount')
+            ->get();
+
+        $result = [];
+
+        foreach ($debts as $debt) {
+            if (! isset($result[$debt->organization->name])) {
+                $result[$debt->organization->name] = 0;
+            }
+            $result[$debt->organization->name] += $debt->amount;
+        }
+
+        return $result;
     }
 
     public function getContractorDebtsAmount(): float
     {
-        return $this->getContractorDebts()->sum('amount');
+        return array_sum($this->getContractorDebts());
     }
 
     public function getProviderDebtsAmount(): float
     {
-        return $this->getProviderDebts()->sum('amount');
+        return array_sum($this->getProviderDebts());
     }
 
     public function getEmployeesCount(): int

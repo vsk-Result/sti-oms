@@ -14,7 +14,7 @@
                     <div class="card-toolbar">
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getContractorDebts()->sum('amount'), 2, ',', ' ') }}</div>
+                                <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getContractorDebtsAmount(), 2, ',', ' ') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Итого</div>
                         </div>
@@ -30,10 +30,10 @@
                         </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
-                            @forelse($object->getContractorDebts() as $debt)
+                            @forelse($object->getContractorDebts() as $organizationName => $amount)
                                 <tr>
-                                    <td>{{ $debt->organization->name }}</td>
-                                    <td class="text-danger">{{ number_format($debt->amount, 2, ',', ' ') }}</td>
+                                    <td>{{ $organizationName }}</td>
+                                    <td class="text-danger">{{ number_format($amount, 2, ',', ' ') }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -60,7 +60,7 @@
                     <div class="card-toolbar">
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getProviderDebts()->sum('amount'), 2, ',', ' ') }}</div>
+                                <div class="fs-4 fw-bolder text-danger">{{ number_format($object->getProviderDebtsAmount(), 2, ',', ' ') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Итого</div>
                         </div>
@@ -76,10 +76,10 @@
                         </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
-                            @forelse($object->getProviderDebts() as $debt)
+                            @forelse($object->getProviderDebts() as $organizationName => $amount)
                                 <tr>
-                                    <td>{{ $debt->organization->name }}</td>
-                                    <td class="text-danger">{{ number_format($debt->amount, 2, ',', ' ') }}</td>
+                                    <td>{{ $organizationName }}</td>
+                                    <td class="text-danger">{{ number_format($amount, 2, ',', ' ') }}</td>
                                 </tr>
                             @empty
                                 <tr>
