@@ -53,6 +53,7 @@ class DebtImportService
         'Пестово' => '320',
         'Прачечная' => '357',
         'Мост ' => '317',
+        'Мос' => '317',
     ];
 
     public function __construct(
@@ -109,6 +110,9 @@ class DebtImportService
                 $isContractor = false;
                 $providerIndex = $index + 2;
             } else if (in_array($possibleWorktype, $availableWorktypes)) {
+                if ($possibleWorktype === '!') {
+                    $possibleWorktype = 1;
+                }
                 $possibleWorktype = (int) $possibleWorktype;
                 if ($possibleWorktype === 0) {
                     $possibleWorktype = 1;
