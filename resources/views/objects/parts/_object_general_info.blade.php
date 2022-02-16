@@ -71,8 +71,8 @@
                         $general = $object->payments->where('object_worktype_id', 7)->sum('amount');
                         $one =  $object->payments->where('object_worktype_id', 1)->sum('amount');
                         $twoFour = $object->payments->whereIn('object_worktype_id', [2, 4])->sum('amount');
-                        $oneBalance = ($one / $object->total_balance * $general) + $one;
-                        $twoFourBalance = ($twoFour / $object->total_balance * $general) + $twoFour;
+                        $oneBalance = ($one / ($one + $twoFour) * $general) + $one;
+                        $twoFourBalance = ($twoFour / ($one + $twoFour) * $general) + $twoFour;
                     @endphp
 
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
