@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Contract\ActController;
+use App\Http\Controllers\Act\ActController;
 
 // Акты
 

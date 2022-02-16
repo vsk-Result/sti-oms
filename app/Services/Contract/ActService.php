@@ -7,14 +7,17 @@ use App\Models\Contract\Act;
 use App\Models\Contract\ActPayment;
 use App\Models\Contract\Contract;
 use App\Models\Status;
+use App\Services\CurrencyExchangeRateService;
 
 class ActService
 {
     private Sanitizer $sanitizer;
+    private CurrencyExchangeRateService $currencyService;
 
-    public function __construct(Sanitizer $sanitizer)
+    public function __construct(Sanitizer $sanitizer, CurrencyExchangeRateService $currencyService)
     {
         $this->sanitizer = $sanitizer;
+        $this->currencyService = $currencyService;
     }
 
     public function createAct(array $requestData): void
@@ -30,6 +33,8 @@ class ActService
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'status_id' => Status::STATUS_ACTIVE,
+            'currency' => $contract->currency,
+            'currency_rate' => $contract->currency_rate,
         ]);
 
         $act->update([
@@ -48,6 +53,10 @@ class ActService
                         'date' => $paymentDate,
                         'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $act->currency,
+                        'currency_rate' => $act->currency !== 'RUB'
+                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
+                            : $act->currency_rate,
                     ]);
                 }
             }
@@ -67,6 +76,8 @@ class ActService
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'status_id' => $requestData['status_id'],
+            'currency' => $contract->currency,
+            'currency_rate' => $contract->currency_rate,
         ]);
 
         $act->update([
@@ -82,6 +93,10 @@ class ActService
                     $payment->update([
                         'date' => $paymentDate,
                         'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
+                        'currency' => $contract->currency,
+                        'currency_rate' => $act->currency !== 'RUB'
+                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
+                            : $act->currency_rate,
                     ]);
                 } else {
                     $payment->delete();
@@ -101,6 +116,10 @@ class ActService
                         'date' => $paymentDate,
                         'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $contract->currency,
+                        'currency_rate' => $act->currency !== 'RUB'
+                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
+                            : $act->currency_rate,
                     ]);
                 }
             }

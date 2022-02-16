@@ -149,12 +149,25 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-12 mb-10 fv-row">
+                                    <div class="col-md-2 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Валюта</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="currency" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($currencies as $currency)
+                                                        <option value="{{ $currency }}">{{ $currency }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-10 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                    class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="amount"
                                                     value="{{ old('amount') }}"
@@ -317,7 +330,20 @@
                 mainApp.init();
             });
 
-            $('.amount-formatted').on('key')
+            // $('.amount-formatted').on('input', function() {
+            //     let value = $(this).val().replace(/[^-.,0-9]/, '').replace(',', '.');
+            //     const currency = $('[name=currency]').val();
+            //     const formatter = new Intl.NumberFormat('en-US', {
+            //         style: 'currency',
+            //         currency: currency,
+            //
+            //         // These options are needed to round to whole numbers if that's what you want.
+            //         minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+            //         maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+            //     });
+            //
+            //     $(this).val(formatter.format(value));
+            // });
         });
     </script>
 @endpush

@@ -38,8 +38,9 @@ class ContractController extends Controller
         $objectId = $request->get('current_object_id') ?? null;
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
+        $currencies = ['RUB', 'EUR'];
 
-        return view('contracts.create', compact('objects', 'companies', 'objectId', 'types', 'mainContracts', 'amountTypes'));
+        return view('contracts.create', compact('objects', 'companies', 'objectId', 'types', 'mainContracts', 'amountTypes', 'currencies'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -50,7 +51,7 @@ class ContractController extends Controller
 
     public function show(Contract $contract): View
     {
-        return view('contracts.show', compact('contract'));
+        return view('contracts.tabs.information', compact('contract'));
     }
 
     public function edit(Contract $contract): View
@@ -61,8 +62,9 @@ class ContractController extends Controller
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $statuses = Status::getStatuses();
+        $currencies = ['RUB', 'EUR'];
 
-        return view('contracts.edit', compact('contract', 'objects', 'companies', 'statuses', 'types', 'amountTypes', 'mainContracts'));
+        return view('contracts.edit', compact('contract', 'objects', 'companies', 'statuses', 'types', 'amountTypes', 'mainContracts', 'currencies'));
     }
 
     public function update(Contract $contract, Request $request): RedirectResponse

@@ -29,7 +29,7 @@ class CreateBankGuaranteesTable extends Migration
             $table->smallIncrements('id');
             $table->unsignedTinyInteger('company_id');
             $table->unsignedSmallInteger('object_id');
-            $table->unsignedTinyInteger('bank_id');
+            $table->unsignedTinyInteger('bank_id')->nullable();
             $table->unsignedTinyInteger('created_by_user_id');
             $table->unsignedTinyInteger('updated_by_user_id')->nullable();
             $table->date('start_date')->nullable();

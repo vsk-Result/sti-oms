@@ -7,14 +7,17 @@ use App\Models\Contract\Contract;
 use App\Models\Contract\ContractAvans;
 use App\Models\Contract\ContractReceivedAvans;
 use App\Models\Status;
+use App\Services\CurrencyExchangeRateService;
 
 class ContractService
 {
     private Sanitizer $sanitizer;
+    private CurrencyExchangeRateService $currencyService;
 
-    public function __construct(Sanitizer $sanitizer)
+    public function __construct(Sanitizer $sanitizer, CurrencyExchangeRateService $currencyService)
     {
         $this->sanitizer = $sanitizer;
+        $this->currencyService = $currencyService;
     }
 
     public function createContract(array $requestData): void
@@ -32,6 +35,8 @@ class ContractService
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'stage_id' => 0,
             'status_id' => Status::STATUS_ACTIVE,
+            'currency' => $requestData['currency'],
+            'currency_rate' => 1,
         ]);
 
         if (! empty($requestData['files'])) {
@@ -49,6 +54,8 @@ class ContractService
                         'object_id' => $requestData['object_id'],
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $contract->currency,
+                        'currency_rate' => $contract->currency_rate,
                     ]);
                 }
             }
@@ -65,6 +72,10 @@ class ContractService
                         'date' => $avansDate,
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $contract->currency,
+                        'currency_rate' => $contract->currency !== 'RUB'
+                            ? $this->currencyService->parseRateFromCBR($avansDate, $contract->currency)
+                            : $contract->currency_rate,
                     ]);
                 }
             }
@@ -86,6 +97,8 @@ class ContractService
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'stage_id' => 0,
             'status_id' => $requestData['status_id'],
+            'currency' => $requestData['currency'],
+            'currency_rate' => 1,
         ]);
 
         if (! empty($requestData['files'])) {
@@ -100,6 +113,7 @@ class ContractService
                 if ((float) $avansAmount > 0) {
                     $avans->update([
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                        'currency' => $contract->currency,
                     ]);
                 } else {
                     $avans->delete();
@@ -116,6 +130,8 @@ class ContractService
                         'object_id' => $requestData['object_id'],
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $contract->currency,
+                        'currency_rate' => $contract->currency_rate,
                     ]);
                 }
             }
@@ -130,6 +146,10 @@ class ContractService
                     $avans->update([
                         'date' => $avansDate,
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                        'currency' => $contract->currency,
+                        'currency_rate' => $contract->currency !== 'RUB'
+                            ? $this->currencyService->parseRateFromCBR($avansDate, $contract->currency)
+                            : $contract->currency_rate,
                     ]);
                 } else {
                     $avans->delete();
@@ -148,6 +168,10 @@ class ContractService
                         'date' => $avansDate,
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $contract->currency,
+                        'currency_rate' => $contract->currency !== 'RUB'
+                            ? $this->currencyService->parseRateFromCBR($avansDate, $contract->currency)
+                            : $contract->currency_rate,
                     ]);
                 }
             }

@@ -3,6 +3,7 @@
 namespace App\Models\Contract;
 
 use App\Models\Company;
+use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
@@ -19,7 +20,8 @@ class ContractAvans extends Model implements Audit
     protected $table = 'contract_avanses';
 
     protected $fillable = [
-        'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'amount', 'status_id'
+        'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'amount', 'status_id',
+        'currency', 'currency_rate'
     ];
 
     public function contract(): BelongsTo
@@ -39,6 +41,6 @@ class ContractAvans extends Model implements Audit
 
     public function getAmount(): string
     {
-        return number_format($this->amount, 2, '.', ' ');
+        return $this->amount;
     }
 }

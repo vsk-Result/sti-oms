@@ -3,6 +3,7 @@
 namespace App\Models\Contract;
 
 use App\Models\Company;
+use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
@@ -22,7 +23,8 @@ class Act extends Model implements Audit
 
     protected $fillable = [
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
-        'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id'
+        'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id',
+        'currency', 'currency_rate'
     ];
 
     public function contract(): BelongsTo
@@ -52,33 +54,31 @@ class Act extends Model implements Audit
 
     public function getAmount(): string
     {
-        return number_format($this->amount, 2, '.', ' ');
+        return $this->amount;
     }
 
     public function getAvansAmount(): string
     {
-        return number_format($this->amount_avans, 2, '.', ' ');
+        return $this->amount_avans;
     }
 
     public function getDepositAmount(): string
     {
-        return number_format($this->amount_deposit, 2, '.', ' ');
+        return $this->amount_deposit;
     }
 
     public function getNeedPaidAmount(): string
     {
-        return number_format($this->amount_need_paid, 2, '.', ' ');
+        return $this->amount_need_paid;
     }
 
-    public function getPaidAmount($formatted = true): string
+    public function getPaidAmount(): string
     {
-        $amount = $this->payments->sum('amount');
-        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
+        return $this->payments->sum('amount');
     }
 
-    public function getLeftPaidAmount($formatted = true): string
+    public function getLeftPaidAmount(): string
     {
-        $amount = $this->amount_need_paid - $this->payments->sum('amount');
-        return $formatted ? number_format($amount, 2, '.', ' ') : $amount;
+        return $this->amount_need_paid - $this->payments->sum('amount');
     }
 }

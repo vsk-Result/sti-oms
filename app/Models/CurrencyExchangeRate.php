@@ -11,4 +11,15 @@ class CurrencyExchangeRate extends Model
     protected $fillable = ['currency', 'date', 'rate', 'diff_rate'];
 
     public $timestamps = false;
+
+    public static function format(string $amount, string $currency): string
+    {
+        $amount = number_format($amount, 2, '.', ' ');
+        return match ($currency) {
+            'EUR' => $amount . ' €',
+            'USD' => '$' . $amount,
+            'RUB' => $amount . ' ₽',
+            default => $amount,
+        };
+    }
 }

@@ -68,8 +68,11 @@
 
                 @if ($object->code === '288')
                     @php
-                        $one = $object->payments->where('object_worktype_id', 1)->sum('amount');
+                        $general = $object->payments->where('object_worktype_id', 7)->sum('amount');
+                        $one =  $object->payments->where('object_worktype_id', 1)->sum('amount');
                         $twoFour = $object->payments->whereIn('object_worktype_id', [2, 4])->sum('amount');
+                        $oneBalance = ($one / $object->total_balance * $general) + $one;
+                        $twoFourBalance = ($twoFour / $object->total_balance * $general) + $twoFour;
                     @endphp
 
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
@@ -94,13 +97,13 @@
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
                         <a href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=1">
                             <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder {{ $one < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($one, 2, '.', ' ') }}</div>
+                                <div class="fs-4 fw-bolder {{ $oneBalance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($oneBalance, 2, '.', ' ') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">
                                 Баланс (1)
                             </div>
                         </a>
-                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $one }}">
+                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $oneBalance }}">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>
@@ -113,11 +116,11 @@
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
                         <a href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
                             <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder {{ $twoFour < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($twoFour, 2, '.', ' ') }}</div>
+                                <div class="fs-4 fw-bolder {{ $twoFourBalance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($twoFourBalance, 2, '.', ' ') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Баланс (2 и 4)</div>
                         </a>
-                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $twoFour }}">
+                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $twoFourBalance }}">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>

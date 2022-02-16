@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Traits\HasBank;
 use App\Traits\HasStatus;
@@ -21,12 +22,23 @@ class BankGuarantee extends Model implements HasMedia
 
     protected $fillable = [
         'company_id', 'bank_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'start_date',
-        'end_date', 'amount', 'start_date_deposit', 'end_date_deposit', 'amount_deposit', 'target', 'status_id'
+        'end_date', 'amount', 'start_date_deposit', 'end_date_deposit', 'amount_deposit', 'target', 'status_id',
+        'contract_id', 'organization_id', 'number'
     ];
 
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function contract(): BelongsTo
+    {
+        return $this->belongsTo(Contract::class, 'contract_id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
     }
 
     public function object(): BelongsTo
