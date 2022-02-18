@@ -267,9 +267,9 @@ class DebtImportService
     {
         foreach ($organizations as $organizationName => $objectCodes) {
 
-//            if ($organizationName === 'ДТ Термо') {
-//                continue;
-//            }
+            if ($organizationName === 'ДТ Термо') {
+                continue;
+            }
 
             $organization = $this->organizationService->getOrCreateOrganization([
                 'inn' => null,

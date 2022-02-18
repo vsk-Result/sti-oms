@@ -26,24 +26,60 @@
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th>Организация</th>
-                            <th>Сумма</th>
+                            @if ($object->code === '288')
+                                <th>Сумма 1</th>
+                                <th>Сумма 2,4</th>
+                            @else
+                                <th>Сумма</th>
+                            @endif
                         </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
-                            @forelse($object->getContractorDebts() as $organizationName => $amount)
-                                <tr>
-                                    <td>{{ $organizationName }}</td>
-                                    <td class="text-danger">{{ number_format($amount, 2, ',', ' ') }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="2">
-                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                            Долги отсутствуют
-                                        </p>
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @if ($object->code === '288')
+                                @forelse($object->getContractorDebts() as $organizationName => $debt)
+                                    @php
+                                        $one = $debt[1] ?? 0;
+                                        $two = $debt[2] ?? 0;
+                                        $four = $debt[4] ?? 0;
+                                        $seven = $debt[7] ?? 0;
+                                        $total = $one + $two + $four;
+                                        $oneTotal = 0;
+                                        $twoFourTotal = 0;
+                                        if ($total !== 0) {
+                                            $oneTotal = $one / $total;
+                                            $twoFourTotal = ($two + $four) / $total;
+                                        }
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $organizationName }}</td>
+                                        <td class="text-danger">{{ number_format((($oneTotal * $seven)) + $one, 2, ',', ' ') }}</td>
+                                        <td class="text-danger">{{ number_format((($twoFourTotal * $seven)) + $two + $four, 2, ',', ' ') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3">
+                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                Долги отсутствуют
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            @else
+                                @forelse($object->getContractorDebts() as $organizationName => $amount)
+                                    <tr>
+                                        <td>{{ $organizationName }}</td>
+                                        <td class="text-danger">{{ number_format($amount, 2, ',', ' ') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2">
+                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                Долги отсутствуют
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -72,10 +108,45 @@
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th>Организация</th>
-                            <th>Сумма</th>
+                            @if ($object->code === '288')
+                                <th>Сумма 1</th>
+                                <th>Сумма 2,4</th>
+                            @else
+                                <th>Сумма</th>
+                            @endif
                         </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
+                        @if ($object->code === '288')
+                            @forelse($object->getProviderDebts() as $organizationName => $debt)
+                                @php
+                                    $one = $debt[1] ?? 0;
+                                    $two = $debt[2] ?? 0;
+                                    $four = $debt[4] ?? 0;
+                                    $seven = $debt[7] ?? 0;
+                                    $total = $one + $two + $four;
+                                    $oneTotal = 0;
+                                    $twoFourTotal = 0;
+                                    if ($total !== 0) {
+                                        $oneTotal = $one / $total;
+                                        $twoFourTotal = ($two + $four) / $total;
+                                    }
+                                @endphp
+                                <tr>
+                                    <td>{{ $organizationName }}</td>
+                                    <td class="text-danger">{{ number_format((($oneTotal * $seven)) + $one, 2, ',', ' ') }}</td>
+                                    <td class="text-danger">{{ number_format((($twoFourTotal * $seven)) + $two + $four, 2, ',', ' ') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3">
+                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                            Долги отсутствуют
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        @else
                             @forelse($object->getProviderDebts() as $organizationName => $amount)
                                 <tr>
                                     <td>{{ $organizationName }}</td>
@@ -90,6 +161,7 @@
                                     </td>
                                 </tr>
                             @endforelse
+                        @endif
                         </tbody>
                     </table>
                 </div>

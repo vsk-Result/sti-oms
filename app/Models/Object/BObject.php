@@ -110,14 +110,26 @@ class  BObject extends Model implements Audit
             ->orderBy('amount')
             ->get();
 
-        $result = [];
+        if ($this->code === '288') {
+            $result = [];
 
-        foreach ($debts as $debt) {
-            if (! isset($result[$debt->organization->name])) {
-                $result[$debt->organization->name] = 0;
+            foreach ($debts as $debt) {
+                if (! isset($result[$debt->organization->name][$debt->object_worktype_id])) {
+                    $result[$debt->organization->name][$debt->object_worktype_id] = 0;
+                }
+                $result[$debt->organization->name][$debt->object_worktype_id] += $debt->amount;
             }
-            $result[$debt->organization->name] += $debt->amount;
+        } else {
+            $result = [];
+
+            foreach ($debts as $debt) {
+                if (! isset($result[$debt->organization->name])) {
+                    $result[$debt->organization->name] = 0;
+                }
+                $result[$debt->organization->name] += $debt->amount;
+            }
         }
+
 
         return $result;
     }
@@ -134,13 +146,24 @@ class  BObject extends Model implements Audit
             ->orderBy('amount')
             ->get();
 
-        $result = [];
+        if ($this->code === '288') {
+            $result = [];
 
-        foreach ($debts as $debt) {
-            if (! isset($result[$debt->organization->name])) {
-                $result[$debt->organization->name] = 0;
+            foreach ($debts as $debt) {
+                if (! isset($result[$debt->organization->name][$debt->object_worktype_id])) {
+                    $result[$debt->organization->name][$debt->object_worktype_id] = 0;
+                }
+                $result[$debt->organization->name][$debt->object_worktype_id] += $debt->amount;
             }
-            $result[$debt->organization->name] += $debt->amount;
+        } else {
+            $result = [];
+
+            foreach ($debts as $debt) {
+                if (! isset($result[$debt->organization->name])) {
+                    $result[$debt->organization->name] = 0;
+                }
+                $result[$debt->organization->name] += $debt->amount;
+            }
         }
 
         return $result;
@@ -148,12 +171,20 @@ class  BObject extends Model implements Audit
 
     public function getContractorDebtsAmount(): float
     {
-        return array_sum($this->getContractorDebts());
+        $amount = 0;
+        foreach ($this->getContractorDebts() as $debt) {
+            $amount += array_sum($debt);
+        }
+        return $amount;
     }
 
     public function getProviderDebtsAmount(): float
     {
-        return array_sum($this->getProviderDebts());
+        $amount = 0;
+        foreach ($this->getProviderDebts() as $debt) {
+            $amount += array_sum($debt);
+        }
+        return $amount;
     }
 
     public function getEmployeesCount(): int
