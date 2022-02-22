@@ -16,7 +16,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Объект</label>
                             <div class="position-relative mb-3">
-                                <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     @foreach($objects as $objectId => $objectName)
                                         <option value="{{ $objectId }}" {{ $payment->getObjectId() == $objectId ? 'selected' : '' }}>{{ $objectName }}</option>
                                     @endforeach
@@ -29,7 +29,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Компания</label>
                             <div class="position-relative mb-3">
-                                <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     @foreach($companies as $company)
                                         <option value="{{ $company->id }}" {{ $company->id === $payment->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
                                     @endforeach
@@ -42,7 +42,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Банк</label>
                             <div class="position-relative mb-3">
-                                <select name="bank_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                <select name="bank_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     <option value="" {{ is_null($payment->bank_id) ? 'selected' : '' }}>Не указан</option>
                                     @foreach($banks as $bankId => $bankName)
                                         <option value="{{ $bankId }}" {{ $bankId === $payment->bank_id ? 'selected' : '' }}>{{ $bankName }}</option>
@@ -98,7 +98,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Тип</label>
                             <div class="position-relative mb-3">
-                                <select name="payment_type_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                <select name="payment_type_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     @foreach($paymentTypes as $typeId => $type)
                                         <option value="{{ $typeId }}" {{ $typeId === $payment->payment_type_id ? 'selected' : '' }}>{{ $type }}</option>
                                     @endforeach
@@ -113,7 +113,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Категория</label>
                             <div class="position-relative mb-3">
-                                <select name="category" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                <select name="category" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     <option value="" {{ is_null($payment->category) ? 'selected' : '' }}>Не указана</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category }}" {{ $category === $payment->category ? 'selected' : '' }}>{{ $category }}</option>
@@ -127,7 +127,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Организация</label>
                             <div class="position-relative mb-3">
-                                <select name="organization_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                <select name="organization_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     @php
                                         if ($payment->amount < 0) {
                                             $paymentOrganizationId = $payment->organization_receiver_id;

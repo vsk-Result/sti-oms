@@ -74,15 +74,15 @@ class CRMCostClosureImportService
                     $typeId = Payment::TYPE_TRANSFER;
                 } else {
                     if ($item->object->code == '27' || $item->object->code == '27.1' || $item->object->code == '27.7') {
-                        $objectCode = '1';
+                        $objectCode = '27.1';
                     } elseif ($item->object->code == '27.2') {
-                        $objectCode = '2';
+                        $objectCode = '27.2';
                     } elseif ($item->object->code == '27.3') {
-                        $objectCode = '4';
+                        $objectCode = '27.3';
                     } elseif ($item->object->code == '27.4') {
-                        $objectCode = '3';
+                        $objectCode = '27.4';
                     } elseif ($item->object->code == '27.8') {
-                        $objectCode = '5';
+                        $objectCode = '27.8';
                     } elseif ($item->object->code == '28') {
                         $objectCode = '28';
                     } else {

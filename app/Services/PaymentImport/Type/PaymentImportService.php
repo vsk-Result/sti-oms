@@ -114,15 +114,15 @@ class PaymentImportService
                 }
 
                 if ($payment['object'] == '27' || $payment['object'] == '27.1' || $payment['object'] == '27.7') {
-                    $code = '1';
+                    $code = '27.1';
                 } elseif ($payment['object'] == '27.2') {
-                    $code = '2';
+                    $code = '27.2';
                 } elseif ($payment['object'] == '27.3') {
-                    $code = '4';
+                    $code = '27.3';
                 } elseif ($payment['object'] == '27.4') {
-                    $code = '3';
+                    $code = '27.4';
                 } elseif ($payment['object'] == '27.8') {
-                    $code = '5';
+                    $code = '27.8';
                 } elseif ($payment['object'] == '28') {
                     $code = '28';
                 } else {

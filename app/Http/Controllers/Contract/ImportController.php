@@ -131,25 +131,25 @@ class ImportController extends Controller
             }
         }
 
-        foreach ($importData['Банковские гарантии'] as $index => $guaranteeRow) {
-            if ($index === 0) continue;
-
-            BankGuarantee::create([
-                'company_id' => 1,
-                'bank_id' => null,
-                'object_id' => BObject::where('code', $guaranteeRow[0])->first()->id,
-                'start_date' => null,
-                'end_date' => $guaranteeRow[1] === null ? null : Carbon::parse(Date::excelToDateTimeObject($guaranteeRow[1]))->format('Y-m-d'),
-                'amount' => $guaranteeRow[2],
-                'start_date_deposit' => null,
-                'end_date_deposit' => $guaranteeRow[3] === null ? null : Carbon::parse(Date::excelToDateTimeObject($guaranteeRow[3]))->format('Y-m-d'),
-                'amount_deposit' => $guaranteeRow[4],
-                'target' => null,
-                'status_id' => Status::STATUS_ACTIVE,
-                'currency' => $guaranteeRow[5],
-                'currency_rate' => 1,
-            ]);
-        }
+//        foreach ($importData['Банковские гарантии'] as $index => $guaranteeRow) {
+//            if ($index === 0) continue;
+//
+//            BankGuarantee::create([
+//                'company_id' => 1,
+//                'bank_id' => null,
+//                'object_id' => BObject::where('code', $guaranteeRow[0])->first()->id,
+//                'start_date' => null,
+//                'end_date' => $guaranteeRow[1] === null ? null : Carbon::parse(Date::excelToDateTimeObject($guaranteeRow[1]))->format('Y-m-d'),
+//                'amount' => $guaranteeRow[2],
+//                'start_date_deposit' => null,
+//                'end_date_deposit' => $guaranteeRow[3] === null ? null : Carbon::parse(Date::excelToDateTimeObject($guaranteeRow[3]))->format('Y-m-d'),
+//                'amount_deposit' => $guaranteeRow[4],
+//                'target' => null,
+//                'status_id' => Status::STATUS_ACTIVE,
+//                'currency' => $guaranteeRow[5],
+//                'currency_rate' => 1,
+//            ]);
+//        }
 
         return redirect()->back();
     }

@@ -146,11 +146,10 @@
                 </div>
                 <div class="card-body py-3">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6">
+                        <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="min-w-150px">Номер</th>
-                                <th class="min-w-150px">Объект</th>
                                 <th class="min-w-150px">Сумма</th>
                                 <th class="min-w-150px">Сумма аванса</th>
                                 <th class="min-w-150px">Сумма полученного аванса</th>
@@ -172,13 +171,6 @@
                                                 <a target="_blank" href="{{ route('contracts.show', $subContract) }}" class="show-link">{{ $subContract->getName() }}</a>
                                             @else
                                                 {{ $subContract->getName() }}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if(auth()->user()->can('show objects'))
-                                                <a target="_blank" href="{{ route('objects.show', $subContract->object) }}" class="show-link">{{ $subContract->object->code }}</a>
-                                            @else
-                                                {{ $subContract->object->code }}
                                             @endif
                                         </td>
                                         <td>{{ \App\Models\CurrencyExchangeRate::format($subContract->getAmount(), $subContract->currency) }}</td>

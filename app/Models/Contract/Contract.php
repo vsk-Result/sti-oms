@@ -79,12 +79,12 @@ class Contract extends Model implements HasMedia, Audit
 
     public function getStartDateFormatted(string $format = 'd/m/Y'): string
     {
-        return $this->start_date ? Carbon::parse($this->start_date)->format($format) : '';
+        return $this->start_date ? Carbon::parse($this->start_date)->format($format) : '...';
     }
 
     public function getEndDateFormatted(string $format = 'd/m/Y'): string
     {
-        return $this->end_date ? Carbon::parse($this->end_date)->format($format) : '';
+        return $this->end_date ? Carbon::parse($this->end_date)->format($format) : '...';
     }
 
     public function isMain(): string

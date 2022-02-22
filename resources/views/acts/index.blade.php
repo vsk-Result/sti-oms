@@ -117,8 +117,8 @@
                     <table class="table table-hover align-middle table-row-dashed fs-6">
                         <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-150px">Договор</th>
                                 <th class="min-w-150px">Объект</th>
+                                <th class="min-w-150px">Договор</th>
                                 <th class="min-w-150px">Дата</th>
                                 <th class="min-w-150px">Выполнено</th>
                                 <th class="min-w-150px">Аванс удержан</th>
@@ -132,18 +132,18 @@
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($acts as $act)
                                 <tr>
-                                    <td class="px-3">
-                                        @if(auth()->user()->can('show contracts'))
-                                            <a href="{{ route('contracts.show', $act->contract) }}" class="show-link">{{ $act->contract->getName() }}</a>
-                                        @else
-                                            {{ $act->contract->getName() }}
-                                        @endif
-                                    </td>
                                     <td>
                                         @if(auth()->user()->can('show objects'))
                                             <a href="{{ route('objects.acts.index', $act->object) }}" class="show-link">{{ $act->object->code }}</a>
                                         @else
                                             {{ $act->object->code }}
+                                        @endif
+                                    </td>
+                                    <td class="px-3">
+                                        @if(auth()->user()->can('show contracts'))
+                                            <a href="{{ route('contracts.show', $act->contract) }}" class="show-link">{{ $act->contract->getName() }}</a>
+                                        @else
+                                            {{ $act->contract->getName() }}
                                         @endif
                                     </td>
                                     <td>

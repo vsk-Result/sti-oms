@@ -49,9 +49,9 @@ class ContractController extends Controller
         return redirect($request->get('return_url') ?? route('contracts.index'));
     }
 
-    public function show(Contract $contract): View
+    public function show(Contract $contract): RedirectResponse
     {
-        return view('contracts.tabs.information', compact('contract'));
+        return redirect()->route('contracts.acts.index', $contract);
     }
 
     public function edit(Contract $contract): View

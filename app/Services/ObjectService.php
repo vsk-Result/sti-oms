@@ -20,7 +20,7 @@ class ObjectService
     public function createObject(array $requestData): BObject
     {
         $object = BObject::create([
-            'code' => $this->sanitizer->set($requestData['code'])->toNumber()->get(),
+            'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
             'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
             'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
             'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),
@@ -46,7 +46,7 @@ class ObjectService
         }
 
         $object->update([
-            'code' => $this->sanitizer->set($requestData['code'])->toNumber()->get(),
+            'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
             'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
             'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
             'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),

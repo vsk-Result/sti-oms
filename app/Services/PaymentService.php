@@ -294,15 +294,15 @@ class PaymentService
             $worktypeCode = null;
 
             if ($oCode == '27' || $oCode == '27.1' || $oCode == '27.7') {
-                $code = '1';
+                $code = '27.1';
             } elseif ($oCode == '27.2') {
-                $code = '2';
+                $code = '27.2';
             } elseif ($oCode == '27.3') {
-                $code = '4';
+                $code = '27.3';
             } elseif ($oCode == '27.4') {
-                $code = '3';
+                $code = '27.4';
             } elseif ($oCode == '27.8') {
-                $code = '5';
+                $code = '27.8';
             } elseif ($oCode == '28') {
                 $code = '28';
             } else {
@@ -433,7 +433,8 @@ class PaymentService
                 $object = BObject::find($oId);
                 if ($object) {
                     $requestData['object_id'] = $object->id;
-                    $requestData['object_worktype_id'] = (int) substr($objectId, strpos($objectId, '::') + 2);
+                    $wt = substr($objectId, strpos($objectId, '::') + 2);
+                    $requestData['object_worktype_id'] = empty($wt) ? null : $wt;
                     $requestData['type_id'] = Payment::TYPE_OBJECT;
                 }
             } else {
@@ -456,16 +457,16 @@ class PaymentService
                 $requestData['type_id'] = Payment::TYPE_GENERAL;
             } else if (! empty($requestData['object_code'])) {
 
-                if ($requestData['object_code'] == '27' || $requestData['object_code'] == '27.1') {
-                    $code = '1';
+                if ($requestData['object_code'] == '27' || $requestData['object_code'] == '27.1' || $requestData['object_code'] == '27.7') {
+                    $code = '27.1';
                 } elseif ($requestData['object_code'] == '27.2') {
-                    $code = '2';
+                    $code = '27.2';
                 } elseif ($requestData['object_code'] == '27.3') {
-                    $code = '4';
+                    $code = '27.3';
                 } elseif ($requestData['object_code'] == '27.4') {
-                    $code = '3';
+                    $code = '27.4';
                 } elseif ($requestData['object_code'] == '27.8') {
-                    $code = '5';
+                    $code = '27.8';
                 } elseif ($requestData['object_code'] == '28') {
                     $code = '28';
                 } else {

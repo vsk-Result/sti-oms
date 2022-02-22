@@ -79,8 +79,12 @@ class  BObject extends Model implements Audit
         $objects = static::orderBy('code')->get();
 
         foreach ($objects as $object) {
-            foreach ($workTypes as $workType) {
-                $result[$object->id . '::' . $workType['id']] = $object->code . '.' . $workType['code'];
+            if (in_array($object->code, ['27.1', '27.2', '27.3', '27.4', '27.5', '27.6', '27.7', '27.8', '28'])) {
+                $result[$object->id . '::' . null] = $object->code;
+            } else {
+                foreach ($workTypes as $workType) {
+                    $result[$object->id . '::' . $workType['id']] = $object->code . '.' . $workType['code'];
+                }
             }
         }
 
