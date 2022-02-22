@@ -3,6 +3,7 @@
 use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\Report\ITRObjectSalaryController;
 use App\Http\Controllers\Report\PaymentNDSAnalyzeController;
+use App\Http\Controllers\Report\UpdatePaymentController;
 
 // Отчеты
 Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
@@ -14,3 +15,7 @@ Route::post('reports/itr-salary-object', [ITRObjectSalaryController::class, 'sto
 // Анализ оплат на предмет необходимости вычесть НДС
 
 Route::post('reports/payment-nds-analyze', [PaymentNDSAnalyzeController::class, 'store'])->name('reports.payment_nds_analyze.store');
+
+// Обновление записей оплат
+
+Route::post('reports/update-payments', [UpdatePaymentController::class, 'store'])->name('reports.update_payments.store');

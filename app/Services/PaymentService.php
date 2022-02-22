@@ -497,6 +497,13 @@ class PaymentService
         if (array_key_exists('description', $requestData)) {
             $isNeedSplit = $this->checkIsNeedSplitFromDescription($requestData['description']);
             $requestData['is_need_split'] = $isNeedSplit;
+
+            if (! isset($requestData['amount'])) {
+                $requestData['amount'] = $payment->amount;
+            }
+
+            $nds = $this->checkHasNDSFromDescription($requestData['description']) ? round($requestData['amount'] / 6, 2) : 0;
+            $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
         }
 
         if (array_key_exists('organization_id', $requestData)) {

@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Http\Controllers\Report;
+
+use App\Http\Controllers\Controller;
+use App\Imports\UpdatePaymentImport;
+use App\Models\Payment;
+use App\Services\PaymentService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+
+class UpdatePaymentController extends Controller
+{
+    private PaymentService $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $requestData = $request->toArray();
+        $importData = Excel::toArray(new UpdatePaymentImport(), $requestData['file']);
+
+        $fields = [];
+        foreach ($importData['Исправить'] as $index => $row) {
+            if ($index === 0) {
+                foreach ($row as $field) {
+                    $fields[] = $field;
+                }
+                continue;
+            }
+
+            $payment = Payment::find($row[0]);
+
+            if (! $payment) {
+                continue;
+            }
+
+            $fieldsToUpdate = [];
+            foreach ($fields as $index => $field) {
+                if ($field !== 'id') {
+                    $fieldsToUpdate[$field] = $row[$index];
+                }
+            }
+
+            $this->paymentService->updatePayment($payment, $fieldsToUpdate);
+        }
+
+        return redirect()->back();
+    }
+}
