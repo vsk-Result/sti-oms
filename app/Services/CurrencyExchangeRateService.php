@@ -55,7 +55,7 @@ class CurrencyExchangeRateService
     public function parseRateFromCBR(string $date, string $currency): ?float
     {
         $date = Carbon::parse($date)->format('d/m/Y');
-        $requestUrl = self::CBRAPIUrl . '?' . http_build_query(['date_req' => $date]);
+        $requestUrl = self::CBRAPIUrl . '?date_reg=' . $date;
         $parseXMLData = simplexml_load_file($requestUrl);
 
         if (! empty($parseXMLData)) {
