@@ -175,6 +175,10 @@ class  BObject extends Model implements Audit
 
     public function getContractorDebtsAmount(): float
     {
+        if ($this->code !== '288') {
+            return array_sum($this->getContractorDebts());
+        }
+
         $amount = 0;
         foreach ($this->getContractorDebts() as $debt) {
             $amount += array_sum($debt);
@@ -184,6 +188,10 @@ class  BObject extends Model implements Audit
 
     public function getProviderDebtsAmount(): float
     {
+        if ($this->code !== '288') {
+            return array_sum($this->getProviderDebts());
+        }
+
         $amount = 0;
         foreach ($this->getProviderDebts() as $debt) {
             $amount += array_sum($debt);
