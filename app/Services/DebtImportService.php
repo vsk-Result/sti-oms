@@ -109,7 +109,7 @@ class DebtImportService
                     break;
                 }
                 $isContractor = false;
-                $providerIndex = $index + 2;
+                $providerIndex = $index + 3;
             } else if (in_array($possibleWorktype, $availableWorktypes)) {
                 if ($possibleWorktype === '!') {
                     $possibleWorktype = 1;
