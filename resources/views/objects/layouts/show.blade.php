@@ -33,7 +33,7 @@
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>--}}
 {{--                        </li>--}}
-                        @can('index contracts')
+                        @can('index debts')
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/debts') ? 'active' : '' }}" href="{{ route('objects.debts.index', $object) }}">Долги</a>
                             </li>
