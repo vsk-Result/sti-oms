@@ -48,6 +48,8 @@
                                         if ($total !== 0) {
                                             $oneTotal = $one / $total;
                                             $twoFourTotal = ($two + $four) / $total;
+                                        } elseif ($total === 0 && $seven !== 0) {
+                                            $twoFourTotal = 1;
                                         }
                                     @endphp
                                     <tr>
