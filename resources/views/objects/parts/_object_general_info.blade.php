@@ -151,7 +151,7 @@
                 @endif
 
                 <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression=<0">
+                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression_operator=<&amount_expression=0">
                         <div class="d-flex align-items-center">
                             <div class="fs-4 fw-bolder text-danger">{{ number_format($object->total_pay, 2, '.', ' ') }}</div>
                         </div>
@@ -167,7 +167,7 @@
                     </button>
                 </div>
                 <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression=>%3D0">
+                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression_operator=>%3D&amount_expression=0">
                         <div class="d-flex align-items-center">
                             <div class="fs-4 fw-bolder text-success">{{ number_format($object->total_receive, 2, '.', ' ') }}</div>
                         </div>
