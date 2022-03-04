@@ -119,7 +119,7 @@ class PaymentService
             $paymentQuery->whereIn('bank_id', $requestData['bank_id']);
         }
 
-        if (! empty($requestData['amount_expression_operator']) && ! empty($requestData['amount_expression'])) {
+        if (! empty($requestData['amount_expression_operator']) && isset($requestData['amount_expression'])) {
             $expressionAmount = str_replace(',', '.', $requestData['amount_expression']);
             $expressionAmount = preg_replace("/[^-.0-9]/", '', $expressionAmount);
 

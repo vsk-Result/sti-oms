@@ -22,7 +22,7 @@ class ActPayment extends Model implements Audit
 
     protected $fillable = [
         'contract_id', 'act_id', 'company_id', 'object_id', 'created_by_user_id',
-        'updated_by_user_id', 'date', 'amount', 'status_id', 'currency', 'currency_rate'
+        'updated_by_user_id', 'date', 'amount', 'status_id', 'currency', 'currency_rate', 'description'
     ];
 
     public function act(): BelongsTo

@@ -22,7 +22,7 @@ class ContractReceivedAvans extends Model implements Audit
 
     protected $fillable = [
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date', 'amount',
-        'status_id', 'currency', 'currency_rate'
+        'status_id', 'currency', 'currency_rate', 'description'
     ];
 
     public function contract(): BelongsTo
