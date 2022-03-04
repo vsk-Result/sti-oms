@@ -7,9 +7,6 @@
 
     <title>{{ config('app.name', 'Система управления объектами') }}</title>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/plugins.bundle.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.bundle.css') }}">
