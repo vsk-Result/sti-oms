@@ -61,8 +61,9 @@ class OrganizationController extends Controller
 
     public function create(): View
     {
+        $NDSStatuses = Organization::getNDSStatuses();
         $companies = Company::orderBy('name')->get();
-        return view('organizations.create', compact('companies'));
+        return view('organizations.create', compact('companies', 'NDSStatuses'));
     }
 
     public function store(StoreOrUpdateOrganizationRequest $request): RedirectResponse
@@ -74,8 +75,9 @@ class OrganizationController extends Controller
     public function edit(Organization $organization): View
     {
         $statuses = Status::getStatuses();
+        $NDSStatuses = Organization::getNDSStatuses();
         $companies = Company::orderBy('name')->get();
-        return view('organizations.edit', compact('organization', 'companies', 'statuses'));
+        return view('organizations.edit', compact('organization', 'companies', 'statuses', 'NDSStatuses'));
     }
 
     public function update(Organization $organization, StoreOrUpdateOrganizationRequest $request): RedirectResponse

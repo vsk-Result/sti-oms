@@ -418,7 +418,7 @@ class PaymentService
         if (array_key_exists('amount', $requestData)) {
             $description = array_key_exists('description', $requestData) ? $requestData['description'] : $payment->description ?? '';
             $requestData['amount'] = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
-            $nds = $this->checkHasNDSFromDescription($description) ? round($requestData['amount'] / 6, 2) : 0;
+            $nds = $this->checkNeedNDS($description) ? round($requestData['amount'] / 6, 2) : 0;
             $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
         }
 
@@ -502,7 +502,7 @@ class PaymentService
                 $requestData['amount'] = $payment->amount;
             }
 
-            $nds = $this->checkHasNDSFromDescription($requestData['description']) ? round($requestData['amount'] / 6, 2) : 0;
+            $nds = $this->checkNeedNDS($requestData['description']) ? round($requestData['amount'] / 6, 2) : 0;
             $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
         }
 
@@ -535,5 +535,13 @@ class PaymentService
             $parameters[$key] = $value;
             $requestData['parameters'] = $parameters;
         }
+    }
+
+    public function checkNeedNDS(Payment $payment): bool
+    {
+        $organization = $payment->organizationSender;
+        return $organization->isNDSAuto()
+            ? $this->checkHasNDSFromDescription($payment->description)
+            :  $organization->isNDSAlways();
     }
 }

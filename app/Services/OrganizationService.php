@@ -9,10 +9,12 @@ use App\Models\Status;
 class OrganizationService
 {
     private Sanitizer $sanitizer;
+    private PaymentService $paymentService;
 
-    public function __construct(Sanitizer $sanitizer)
+    public function __construct(Sanitizer $sanitizer, PaymentService $paymentService)
     {
         $this->sanitizer = $sanitizer;
+        $this->paymentService = $paymentService;
     }
 
     public function getOrCreateOrganization(array $requestData): Organization
@@ -33,7 +35,8 @@ class OrganizationService
             'name' => $this->sanitizer->set($requestData['name'])->get(),
             'inn' => $this->sanitizer->set($requestData['inn'])->toNumber()->get(),
             'kpp' => $this->sanitizer->set($requestData['kpp'])->toNumber()->get(),
-            'status_id' => Status::STATUS_ACTIVE
+            'status_id' => Status::STATUS_ACTIVE,
+            'nds_status_id' => $requestData['nds_status_id'],
         ]);
 
         return $organization;
@@ -46,8 +49,13 @@ class OrganizationService
             'name' => $this->sanitizer->set($requestData['name'])->get(),
             'inn' => $this->sanitizer->set($requestData['inn'])->toNumber()->get(),
             'kpp' => $this->sanitizer->set($requestData['kpp'])->toNumber()->get(),
-            'status_id' => $requestData['status_id']
+            'status_id' => $requestData['status_id'],
+            'nds_status_id' => $requestData['nds_status_id'],
         ]);
+
+        foreach ($organization->paymentsSend as $payment) {
+            $this->paymentService->updatePayment($payment, ['amount' => $payment->amount]);
+        }
 
         return $organization;
     }

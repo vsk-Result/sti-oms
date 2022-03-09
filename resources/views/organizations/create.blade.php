@@ -80,6 +80,17 @@
                                             </div>
                                         @endif
                                     </div>
+
+                                    <div class="mb-10 fv-row">
+                                        <label class="form-label fw-bolder text-dark fs-6">Тип расчета НДС</label>
+                                        <div class="position-relative mb-3">
+                                            <select name="nds_status_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                @foreach($NDSStatuses as $statusId => $status)
+                                                    <option value="{{ $statusId }}">{{ $status }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

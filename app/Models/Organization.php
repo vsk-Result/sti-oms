@@ -14,7 +14,11 @@ class Organization extends Model
 
     protected $table = 'organizations';
 
-    protected $fillable = ['company_id', 'name', 'inn', 'kpp', 'status_id'];
+    protected $fillable = ['company_id', 'name', 'inn', 'kpp', 'status_id', 'nds_status_id'];
+
+    const NDS_STATUS_AUTO = 0;
+    const NDS_STATUS_ALWAYS = 1;
+    const NDS_STATUS_NEVER = 2;
 
     public function company(): BelongsTo
     {
@@ -29,5 +33,29 @@ class Organization extends Model
     public function paymentsReceive(): HasMany
     {
         return $this->hasMany(Payment::class, 'organization_receiver_id');
+    }
+
+    public static function getNDSStatuses(): array
+    {
+        return [
+            self::NDS_STATUS_AUTO => 'Автоматический',
+            self::NDS_STATUS_ALWAYS => 'Всегда',
+            self::NDS_STATUS_NEVER => 'Никогда'
+        ];
+    }
+
+    public function isNDSAuto(): bool
+    {
+        return $this->nds_status_id === self::NDS_STATUS_AUTO;
+    }
+
+    public function isNDSAlways(): bool
+    {
+        return $this->nds_status_id === self::NDS_STATUS_ALWAYS;
+    }
+
+    public function isNDSNever(): bool
+    {
+        return $this->nds_status_id === self::NDS_STATUS_NEVER;
     }
 }
