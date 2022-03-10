@@ -9,6 +9,7 @@ use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Status;
 use App\Services\OrganizationService;
+use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,10 +18,12 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class OrganizationController extends Controller
 {
     private OrganizationService $organizationService;
+    private PaymentService $paymentService;
 
-    public function __construct(OrganizationService $organizationService)
+    public function __construct(OrganizationService $organizationService, PaymentService $paymentService)
     {
         $this->organizationService = $organizationService;
+        $this->paymentService = $paymentService;
     }
 
     public function index(Request $request): View|JsonResponse
@@ -83,6 +86,9 @@ class OrganizationController extends Controller
     public function update(Organization $organization, StoreOrUpdateOrganizationRequest $request): RedirectResponse
     {
         $this->organizationService->updateOrganization($organization, $request->toArray());
+        foreach ($organization->paymentsSend as $payment) {
+            $this->paymentService->updatePayment($payment, ['amount' => $payment->amount]);
+        }
         return redirect()->route('organizations.index');
     }
 

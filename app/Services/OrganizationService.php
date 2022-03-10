@@ -9,12 +9,10 @@ use App\Models\Status;
 class OrganizationService
 {
     private Sanitizer $sanitizer;
-    private PaymentService $paymentService;
 
-    public function __construct(Sanitizer $sanitizer, PaymentService $paymentService)
+    public function __construct(Sanitizer $sanitizer)
     {
         $this->sanitizer = $sanitizer;
-        $this->paymentService = $paymentService;
     }
 
     public function getOrCreateOrganization(array $requestData): Organization
@@ -52,10 +50,6 @@ class OrganizationService
             'status_id' => $requestData['status_id'],
             'nds_status_id' => $requestData['nds_status_id'],
         ]);
-
-        foreach ($organization->paymentsSend as $payment) {
-            $this->paymentService->updatePayment($payment, ['amount' => $payment->amount]);
-        }
 
         return $organization;
     }
