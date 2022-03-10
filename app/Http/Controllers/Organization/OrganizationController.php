@@ -86,9 +86,15 @@ class OrganizationController extends Controller
     public function update(Organization $organization, StoreOrUpdateOrganizationRequest $request): RedirectResponse
     {
         $this->organizationService->updateOrganization($organization, $request->toArray());
+
         foreach ($organization->paymentsSend as $payment) {
             $this->paymentService->updatePayment($payment, ['amount' => $payment->amount]);
         }
+
+        foreach ($organization->paymentsReceive as $payment) {
+            $this->paymentService->updatePayment($payment, ['amount' => $payment->amount]);
+        }
+
         return redirect()->route('organizations.index');
     }
 

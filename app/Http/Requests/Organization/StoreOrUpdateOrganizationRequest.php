@@ -25,7 +25,7 @@ class StoreOrUpdateOrganizationRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:200',
-            'inn' => 'required|max:12',
+            'inn' => 'max:12',
             'kpp' => 'max:9',
             'status_id' => 'integer'
         ];

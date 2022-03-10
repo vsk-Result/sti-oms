@@ -418,7 +418,11 @@ class PaymentService
         if (array_key_exists('amount', $requestData)) {
             $description = array_key_exists('description', $requestData) ? $requestData['description'] : $payment->description ?? '';
             $requestData['amount'] = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
-            $nds = $this->checkNeedNDS($description) ? round($requestData['amount'] / 6, 2) : 0;
+            $organizationID = $requestData['organization_id'] ?? null;
+            if ($payment) {
+                $organizationID = $payment->amount >= 0 ? $payment->organization_sender_id : $payment->organization_receiver_id;
+            }
+            $nds = $this->checkNeedNDS($description, $organizationID) ? round($requestData['amount'] / 6, 2) : 0;
             $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
         }
 
@@ -502,7 +506,11 @@ class PaymentService
                 $requestData['amount'] = $payment->amount;
             }
 
-            $nds = $this->checkNeedNDS($requestData['description']) ? round($requestData['amount'] / 6, 2) : 0;
+            $organizationID = $requestData['organization_id'] ?? null;
+            if ($payment) {
+                $organizationID = $payment->amount >= 0 ? $payment->organization_sender_id : $payment->organization_receiver_id;
+            }
+            $nds = $this->checkNeedNDS($requestData['description'], $organizationID) ? round($requestData['amount'] / 6, 2) : 0;
             $requestData['amount_without_nds'] = $requestData['amount'] - $nds;
         }
 
@@ -537,11 +545,16 @@ class PaymentService
         }
     }
 
-    public function checkNeedNDS(Payment $payment): bool
+    public function checkNeedNDS(string $description, int|null $organizationID): bool
     {
-        $organization = $payment->organizationSender;
+        if (is_null($organizationID)) {
+            return $this->checkHasNDSFromDescription($description);
+        }
+
+        $organization = Organization::find($organizationID);
+
         return $organization->isNDSAuto()
-            ? $this->checkHasNDSFromDescription($payment->description)
-            :  $organization->isNDSAlways();
+            ? $this->checkHasNDSFromDescription($description)
+            : $organization->isNDSAlways();
     }
 }
