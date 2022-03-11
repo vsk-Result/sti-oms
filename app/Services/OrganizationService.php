@@ -34,7 +34,7 @@ class OrganizationService
             'inn' => $this->sanitizer->set($requestData['inn'])->toNumber()->get(),
             'kpp' => $this->sanitizer->set($requestData['kpp'])->toNumber()->get(),
             'status_id' => Status::STATUS_ACTIVE,
-            'nds_status_id' => $requestData['nds_status_id'],
+            'nds_status_id' => $requestData['nds_status_id'] ?? Organization::NDS_STATUS_AUTO,
         ]);
 
         return $organization;
@@ -48,7 +48,7 @@ class OrganizationService
             'inn' => $this->sanitizer->set($requestData['inn'])->toNumber()->get(),
             'kpp' => $this->sanitizer->set($requestData['kpp'])->toNumber()->get(),
             'status_id' => $requestData['status_id'],
-            'nds_status_id' => $requestData['nds_status_id'],
+            'nds_status_id' => $requestData['nds_status_id'] ?? Organization::NDS_STATUS_AUTO,
         ]);
 
         return $organization;
