@@ -105,4 +105,10 @@ class Sanitizer
         $this->value = preg_replace("/[^.@a-zA-Z0-9]/", '', $this->value);
         return $this;
     }
+
+    public function maxLength(int $length): self
+    {
+        $this->value = mb_substr($this->value, 0, $length, $this->encoding);
+        return $this;
+    }
 }

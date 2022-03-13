@@ -200,6 +200,8 @@
                             @endforelse
                         </tbody>
                     </table>
+
+                    {{ $importsPaginated->links() }}
                 </div>
             </div>
         </div>

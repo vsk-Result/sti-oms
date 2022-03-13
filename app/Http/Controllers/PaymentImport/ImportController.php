@@ -27,8 +27,14 @@ class ImportController extends Controller
             $query->where('type_id', '!=', PaymentImport::TYPE_HISTORY);
         }
 
-        $importsGroupedByDate = $query->with('company', 'createdBy')->orderByDesc('date')->orderByDesc('id')->get()->groupBy('date');
-        return view('payment-imports.index', compact('importsGroupedByDate'));
+        $importsPaginated = $query->with('company', 'createdBy')
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->paginate(30);
+
+        $importsGroupedByDate = collect($importsPaginated->items())->groupBy('date');
+
+        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate'));
     }
 
     public function show(PaymentImport $import): View

@@ -6,6 +6,7 @@ use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -57,5 +58,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getPhoto(): string
     {
         return $this->photo ? "/storage/$this->photo" : asset('images/blanks/user_avatar_blank.png');
+    }
+
+    public function favouriteLinks(): HasMany
+    {
+        return $this->hasMany(FavouriteLink::class, 'created_by_user_id')->orderBy('order');
     }
 }

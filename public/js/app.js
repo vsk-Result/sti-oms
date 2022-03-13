@@ -153,10 +153,31 @@ const mainApp = function() {
         });
     }
 
+    const initFavouriteLinksCreateHandler = function() {
+        $('#create-favourite-link-submit').on('click', function() {
+            const name = $('input[name=favourite_link_name]').val();
+            if (name.length === 0) {
+                return false;
+            }
+            const $modal = $('#createFavouriteLinkModal')
+            const url = $modal.data('store-favourite-link-url');
+            const link = location.pathname + location.search;
+            initSendAJAX(
+                url,
+                'POST',
+                {link, name},
+                () => {
+                    $modal.modal('hide');
+                }
+            );
+        });
+    }
+
     return {
         init: function () {
             initAjaxSetup();
             initSetToastrOptions();
+            initFavouriteLinksCreateHandler();
             initDateRangePicker();
 
             if ($('#show-date-and-time').length > 0) {
