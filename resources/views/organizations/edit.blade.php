@@ -59,7 +59,6 @@
                                             type="text"
                                             name="inn"
                                             value="{{ old('inn', $organization->inn) }}"
-                                            required
                                         />
                                         @if ($errors->has('inn'))
                                             <div class="fv-plugins-message-container invalid-feedback">

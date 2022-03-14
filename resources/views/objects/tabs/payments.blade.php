@@ -201,7 +201,7 @@
                     });
                 },
                 ajax: {
-                    url: '/organizations',
+                    url: '/organizations?type=select',
                     dataType: 'json',
                     data: function (params) {
                         return {

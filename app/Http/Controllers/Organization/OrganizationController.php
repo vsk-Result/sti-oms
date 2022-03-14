@@ -28,7 +28,12 @@ class OrganizationController extends Controller
 
     public function index(Request $request): View|JsonResponse
     {
-        if ($request->ajax() && ! empty($request->get('search'))) {
+        if ($request->ajax()) {
+
+            if (empty($request->get('search')) && $request->get('type') === 'select') {
+                return response()->json();
+            }
+
             $query = Organization::query();
             $objectIds = $request->get('objects');
 
@@ -53,8 +58,16 @@ class OrganizationController extends Controller
                 }
             }
 
-            $organizations = $query->orderBy('name')->pluck('name', 'id');
-            return response()->json(compact('organizations'));
+            if ($request->get('type') === 'select') {
+                $organizations = $query->orderBy('name')->pluck('name', 'id');
+                return response()->json(compact('organizations'));
+            }
+
+            $organizations = $query->orderBy('name')->paginate(20)->withQueryString();
+            return response()->json([
+                'status' => 'success',
+                'organizations_view' => view('organizations.parts._organizations', compact('organizations'))->render()
+            ]);
         }
 
         $organizations = Organization::orderBy('name')->paginate(30);

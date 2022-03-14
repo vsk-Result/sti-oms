@@ -8,7 +8,15 @@
         <div class="card">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1"></div>
+                    <div class="d-flex flex-wrap align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-3 position-absolute ms-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="black"></rect>
+                                    <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="black"></path>
+                                </svg>
+                            </span>
+                        <input autofocus id="organization-search" type="text" class="form-control form-control-sm form-control-solid w-300px ps-10" placeholder="Поиск">
+                    </div>
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
@@ -28,65 +36,58 @@
                 </div>
             </div>
             <div class="card-body pt-0">
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
-                    <thead>
-                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                        <th class="min-w-125px">Организация</th>
-                        <th class="min-w-125px">ИНН</th>
-                        <th class="min-w-125px">КПП</th>
-                        <th class="min-w-125px">Статус</th>
-                        <th class="text-end min-w-100px">Действия</th>
-                    </tr>
-                    </thead>
-                    <tbody class="text-gray-600 fw-bold">
-                        @foreach($organizations as $organization)
-                            <tr>
-                                <td>{{ $organization->name }}</td>
-                                <td>{{ $organization->inn }}</td>
-                                <td>{{ $organization->kpp }}</td>
-                                <td>@include('partials.status', ['status' => $organization->getStatus()])</td>
-                                <td class="text-end">
-                                    <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
-                                        <span class="svg-icon svg-icon-5 m-0">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                            <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                                                        </svg>
-                                                    </span>
-                                    </a>
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-175px py-4" data-kt-menu="true">
-                                        @can('edit organizations')
-                                            <div class="menu-item px-3">
-                                                <a href="{{ route('organizations.transfer_payments.create', $organization) }}" class="menu-link px-3">Перенести оплаты</a>
-                                            </div>
-                                        @endcan
-                                        @can('edit organizations')
-                                            <div class="menu-item px-3">
-                                                <a href="{{ route('organizations.edit', $organization) }}" class="menu-link px-3">Изменить</a>
-                                            </div>
-
-                                            <div class="menu-item px-3">
-                                                <form action="{{ route('organizations.destroy', $organization) }}" method="POST" class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <a
-                                                        href="{{ route('organizations.destroy', $organization) }}"
-                                                        class="menu-link px-3 text-danger"
-                                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить организацию?')) {this.closest('form').submit();}"
-                                                    >
-                                                        Удалить
-                                                    </a>
-                                                </form>
-                                            </div>
-                                        @endcan
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                {{ $organizations->links() }}
+                <div id="organizations-container" data-organizations-index-url="{{ route('organizations.index') }}" class="min-h-100px"></div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        const $filterSearch = $('#organization-search');
+        const $organizationsContainer = $('#organizations-container');
+        const organizationsContainerblockUI = new KTBlockUI($organizationsContainer.get(0), {
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Загрузка организаций...</div>',
+        });
+
+        $(function() {
+            loadOrganizations();
+        });
+
+        $(document).on('click', '.page-link', function(e) {
+            loadOrganizations($(this).attr('href').split('=').pop());
+            return false;
+        });
+
+        let delayTimer;
+        $filterSearch.on('keyup', function() {
+            clearTimeout(delayTimer);
+            delayTimer = setTimeout(function() {
+                filterOrganizations();
+            }, 400);
+        });
+
+        function filterOrganizations() {
+            loadOrganizations();
+        }
+
+        function loadOrganizations(page) {
+            $organizationsContainer.html('');
+            page = page || '';
+            organizationsContainerblockUI.block();
+            mainApp.sendAJAX(
+                $organizationsContainer.data('organizations-index-url') + '?search=' + $filterSearch.val() + '&page=' + page,
+                'GET',
+                {},
+                (data) => {
+                    $organizationsContainer.html(data.organizations_view);
+                },
+                {},
+                () => {
+                    organizationsContainerblockUI.release();
+                    KTMenu.createInstances();
+                }
+            )
+        }
+    </script>
+@endpush

@@ -58,7 +58,6 @@
                                             class="form-control form-control-lg form-control-solid {{ $errors->has('inn') ? 'is-invalid' : '' }}"
                                             type="text"
                                             name="inn"
-                                            required
                                         />
                                         @if ($errors->has('inn'))
                                             <div class="fv-plugins-message-container invalid-feedback">
