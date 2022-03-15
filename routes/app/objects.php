@@ -7,6 +7,7 @@ use App\Http\Controllers\Object\ActController;
 use App\Http\Controllers\Object\GuaranteeController;
 use App\Http\Controllers\Object\DebtController;
 use App\Http\Controllers\Object\PaymentController;
+use App\Http\Controllers\Object\CashPaymentController;
 use App\Http\Controllers\Object\FileController;
 use App\Http\Controllers\Object\ActivityController;
 use App\Http\Controllers\Object\UserController;
@@ -40,9 +41,13 @@ Route::get('objects/{object}/guarantees', [GuaranteeController::class, 'index'])
 
 Route::get('objects/{object}/debts', [DebtController::class, 'index'])->name('objects.debts.index');
 
-// Оплаты
+// Оплаты (безнал)
 
 Route::get('objects/{object}/payments', [PaymentController::class, 'index'])->name('objects.payments.index');
+
+// Касса
+
+Route::get('objects/{object}/cash-payments', [CashPaymentController::class, 'index'])->name('objects.cash_payments.index');
 
 // Файлы
 
