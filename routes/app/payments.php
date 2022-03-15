@@ -2,9 +2,18 @@
 
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\SplitController;
+use App\Http\Controllers\Payment\SplitResidenceController;
 use App\Http\Controllers\Payment\ExportController;
 use App\Http\Controllers\Payment\CopyController;
 use App\Http\Controllers\Payment\HistoryController;
+
+// Разбивка оплат
+
+Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name('payments.split.store');
+
+// Разбивка оплат проживания
+
+Route::post('payments/split_residence', [SplitResidenceController::class, 'store'])->name('payments.split_residence.store');
 
 // История оплат
 
@@ -23,10 +32,6 @@ Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('paym
 Route::post('payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
 Route::get('payments/{payment}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
 Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
-
-// Разбивка оплат
-
-Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name('payments.split.store');
 
 // Копия оплаты
 

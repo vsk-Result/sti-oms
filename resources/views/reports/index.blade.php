@@ -70,6 +70,51 @@
                     </div>
                 </div>
 
+                @can('index payments')
+                    <div class="col-md-4">
+                        <div class="card mb-5 mb-xl-8">
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1">Разбить проживание</span>
+                                </h3>
+                            </div>
+                            <div class="card-body py-3">
+                                <form class="form" action="{{ route('payments.split_residence.store') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+
+                                    <div class="col-md-12 fv-row mb-5">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Месяц</label>
+                                            <div class="position-relative mb-3">
+                                                @php
+                                                    $months = [];
+                                                    foreach (['2022', '2021'] as $year) {
+                                                        foreach (['Декабрь', 'Ноябрь', 'Октябрь', 'Сентябрь', 'Август', 'Июль', 'Июнь', 'Май', 'Апрель', 'Март', 'Февраль', 'Январь'] as $m) {
+                                                            $months[] = $m . ' ' . $year;
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                <select name="month" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($months as $month)
+                                                        <option value="{{ $month }}">{{ $month }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-center py-3">
+                                        <button type="submit" class="btn btn-primary me-3">
+                                            <span class="indicator-label">Загрузить</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endcan
+
                 @if (auth()->user()->hasRole('super-admin'))
                     <div class="col-md-4">
                         <div class="card mb-5 mb-xl-8">
