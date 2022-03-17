@@ -20,6 +20,10 @@
                             @foreach($months as $m => $month)
                                 <button data-month="{{ $m }}" type="button" class="cash-month btn btn-light mt-1 {{ $m == request()->input('month', '') ? 'active' : '' }}">{{ $month }}</button>
                             @endforeach
+                        @else
+                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                Оплаты кассы отсутствуют
+                            </p>
                         @endif
                     </div>
 
