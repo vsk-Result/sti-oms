@@ -27,27 +27,63 @@ class CashPaymentController extends Controller
     public function index(BObject $object, Request $request): View|JsonResponse
     {
         if ($request->ajax()) {
-            $payments = Payment::where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
-                ->where('object_id', $object->id)
-                ->where('date', 'LIKE', $request->get('year') . '-' . $request->get('month') . '%')
-                ->orderBy('date', 'DESC')
-                ->paginate(30);
+
+            if ($request->get('get_type') === 'years') {
+                $months = Payment::select('id', 'payment_type_id', 'object_id', 'date', \DB::raw('MONTH(date) month'))
+                    ->where('date', 'LIKE', $request->get('year') . '-%')
+                    ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
+                    ->where('object_id', $object->id)
+                    ->get()
+                    ->groupBy('month')
+                    ->toArray();
+
+                $months = array_reverse(array_keys($months));
+                foreach ($months as $index => $month) {
+                    if ($month < 10) {
+                        $months[$index] = '0' . $month;
+                    } else {
+                        $months[$index] = '' . $month;
+                    }
+                }
+
+                return response()->json([
+                    'status' => 'success',
+                    'months' => $months
+                ]);
+            }
+
+            $totalInfo = [];
+            $requestData = array_merge(['object_id' => [$object->id], 'payment_type_id' => [Payment::PAYMENT_TYPE_CASH]], $request->toArray());
+            $payments = $this->paymentService->filterPayments($requestData, true, $totalInfo);
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Оплаты успешно получены',
-                'payments_view' => view('objects.parts._cash_payments', compact('payments'))->render()
+                'payments_view' => view('objects.parts._cash_payments', compact('payments', 'totalInfo'))->render(),
             ]);
         }
 
-        $years = [
-            2022 => '2022',
-            2021 => '2021',
-            2020 => '2020',
-            2019 => '2019',
-            2018 => '2018',
-            2017 => '2017'
-        ];
+        $companies = Company::orderBy('name')->get();
+        $objects = BObject::orderBy('code')->get();
+        $worktypes = WorkType::getWorkTypes();
+        $categories = Payment::getCategories();
+        $importTypes = PaymentImport::getTypes();
+        $paymentTypes = Payment::getPaymentTypes();
+        $banks = Bank::getBanks();
+
+        $activeOrganizations = [];
+        if (! empty($request->get('organization_id'))) {
+            $activeOrganizations = Organization::whereIn('id', $request->get('organization_id'))->orderBy('name')->get();
+        }
+
+        $years = Payment::select('id', 'payment_type_id', 'object_id', \DB::raw('YEAR(date) year'))
+            ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
+            ->where('object_id', $object->id)
+            ->get()
+            ->groupBy('year')
+            ->toArray();
+
+        $years = array_reverse(array_keys($years));
+
         $months = [
             '01' => 'Январь',
             '02' => 'Февраль',
@@ -62,8 +98,13 @@ class CashPaymentController extends Controller
             '11' => 'Ноябрь',
             '12' => 'Декабрь'
         ];
-//        $years = Payment::where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->where('object_id', $object->id)->get()->
 
-        return view('objects.tabs.cash', compact('object', 'years', 'months'));
+        return view(
+            'objects.tabs.cash',
+            compact(
+                'object', 'years', 'months', 'companies', 'objects',
+                'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations'
+            )
+        );
     }
 }

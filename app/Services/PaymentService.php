@@ -49,6 +49,10 @@ class PaymentService
             $paymentQuery->whereBetween('date', [Carbon::parse($startDate), Carbon::parse($endDate)]);
         }
 
+        if (! empty($requestData['year']) && ! empty($requestData['month'])) {
+            $paymentQuery->where('date', 'LIKE', $requestData['year'] . '-' . $requestData['month'] . '%');
+        }
+
         if (! empty($requestData['description'])) {
             $paymentQuery->where('description', 'LIKE', '%' . $requestData['description'] . '%');
         }
@@ -167,7 +171,7 @@ class PaymentService
                 ->orderByDesc('id');
         }
 
-        $paymentQuery->with('company', 'createdBy', 'object');
+        $paymentQuery->with('company', 'import', 'createdBy', 'object');
 
         if ($needPaginate) {
             $perPage = 30;

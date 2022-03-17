@@ -6,6 +6,19 @@
             </div>
 
             <form action="{{ request()->url() }}" method="GET">
+
+                <input
+                    type="hidden"
+                    name="year"
+                    value="{{ request()->input('year', '') }}"
+                />
+
+                <input
+                    type="hidden"
+                    name="month"
+                    value="{{ request()->input('month', '') }}"
+                />
+
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4">
