@@ -16,9 +16,11 @@
                     </div>
 
                     <div class="mt-3 mb-3">
-                        @foreach($months as $m => $month)
-                            <button data-month="{{ $m }}" type="button" class="cash-month btn btn-light mt-1 {{ $m == request()->input('month', '') ? 'active' : '' }}">{{ $month }}</button>
-                        @endforeach
+                        @if (count($years) > 0)
+                            @foreach($months as $m => $month)
+                                <button data-month="{{ $m }}" type="button" class="cash-month btn btn-light mt-1 {{ $m == request()->input('month', '') ? 'active' : '' }}">{{ $month }}</button>
+                            @endforeach
+                        @endif
                     </div>
 
                     <div
