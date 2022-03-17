@@ -27,7 +27,15 @@ class SplitResidenceController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $month = $request->get('month');
-        $paymentsForSplit = Payment::where('description', 'LIKE', '%проживание по договору К-003 от 30.10.17 за ' . mb_strtolower($month, 'UTF-8') . '%')->orderBy('amount')->get();
+        $object = BObject::where('code', '288')->first();
+        if (! $object) {
+            return redirect()->back();
+        }
+
+        $paymentsForSplit = Payment::where('object_id', $object->id)
+            ->where('description', 'LIKE', '%проживание по договору К-003 от 30.10.17 за ' . mb_strtolower($month, 'UTF-8') . '%')
+            ->orderBy('amount')
+            ->get();
 
         if ($paymentsForSplit->count() === 0) {
             return redirect()->back();
@@ -62,12 +70,15 @@ class SplitResidenceController extends Controller
         }
         $employeesCount = [];
         $crm = Workhour::select(['id', 'date', 'o_id', 'e_id'])->where('date', 'LIKE', $year . '-' . $date . '%')->get()->groupBy('o_id');
-        $notCodes = ['349', '346', '358'];
+        $notCodes = ['349', '346', '358', 349, 346, 358];
         foreach ($crm as $oId => $entries) {
             $object = CObject::find($oId);
             $code = substr($object->code, 0, strpos($object->code, '.'));
             if (in_array($code, $notCodes)) {
                 continue;
+            }
+            if ($code == 27) {
+                $code = '27.1';
             }
             if (! isset($employeesCount[$code])) {
                 $employeesCount[$code] = 0;
@@ -119,7 +130,7 @@ class SplitResidenceController extends Controller
             $requestData = $payment->attributesToArray();
 
             foreach($codes as $code => $amount) {
-                if ($code === '27' || $code === 27) {
+                if ($code == 27) {
                     $code = '27.1';
                 }
 

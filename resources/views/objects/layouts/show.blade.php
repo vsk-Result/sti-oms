@@ -19,9 +19,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/payments') ? 'active' : '' }}" href="{{ route('objects.payments.index', $object) }}">Оплаты</a>
                             </li>
-{{--                            <li class="nav-item">--}}
-{{--                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/cash-payments') ? 'active' : '' }}" href="{{ route('objects.cash_payments.index', $object) }}">Касса</a>--}}
-{{--                            </li>--}}
+                            <li class="nav-item">
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/cash-payments') ? 'active' : '' }}" href="{{ route('objects.cash_payments.index', $object) }}">Касса</a>
+                            </li>
                         @endcan
                         @can('index contracts')
                             <li class="nav-item">
