@@ -99,11 +99,13 @@ class CashPaymentController extends Controller
             '12' => 'Декабрь'
         ];
 
+        $pType = Payment::PAYMENT_TYPE_CASH;
+
         return view(
             'objects.tabs.cash',
             compact(
                 'object', 'years', 'months', 'companies', 'objects',
-                'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations'
+                'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations', 'pType'
             )
         );
     }

@@ -31,7 +31,7 @@
                         id="cash-payment-container"
                         data-index-payments-url="{{ route('objects.cash_payments.index', $object) }}"
                         data-object-id="{{ $object->id }}"
-                        data-payment-type-id="{{ \App\Models\Payment::PAYMENT_TYPE_CASH }}"
+                        data-payment-type-id="{{ $pType }}"
                     ></div>
                 </div>
             </div>

@@ -241,11 +241,16 @@
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentModal"
                                     multiple
+                                    {{ isset($pType) ? 'disabled' : ''}}
                                 >
                                     @foreach($paymentTypes as $typeId => $type)
-                                        <option value="{{ $typeId }}" {{ in_array($typeId, request()->input('payment_type_id', [])) ? 'selected' : '' }}>{{ $type }}</option>
+                                        <option value="{{ $typeId }}" {{ (in_array($typeId, request()->input('payment_type_id', [])) || (isset($pType) && $typeId === $pType)) ? 'selected' : '' }}>{{ $type }}</option>
                                     @endforeach
                                 </select>
+
+                                @if (isset($pType))
+                                    <input type="hidden" name="payment_type_id[]" value="{{ $pType }}">
+                                @endif
                             </div>
 
                             @if (auth()->user()->hasRole('super-admin'))
