@@ -26,6 +26,7 @@ class SplitNDFLController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $paymentsForSplit = Payment::where('type_id', Payment::TYPE_GENERAL)
+            ->where('company_id', 1)
             ->whereBetween('date', ['2021-11-01', '2021-12-15'])
             ->where('description', 'NDFL')
             ->orderBy('amount')
@@ -88,6 +89,7 @@ class SplitNDFLController extends Controller
         // -----------------------------------------------------------
 
         $paymentsForSplit = Payment::where('type_id', Payment::TYPE_GENERAL)
+            ->where('company_id', 1)
             ->whereBetween('date', ['2021-12-16', '2021-12-31'])
             ->where('description', 'NDFL')
             ->orderBy('amount')
