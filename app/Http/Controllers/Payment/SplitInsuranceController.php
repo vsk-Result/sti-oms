@@ -12,7 +12,7 @@ use App\Services\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class SplitResidenceController extends Controller
+class SplitInsuranceController extends Controller
 {
     private PaymentService $paymentService;
     private ObjectService $objectService;
@@ -26,13 +26,9 @@ class SplitResidenceController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $month = $request->get('month');
-        $object = BObject::where('code', '288')->first();
-        if (! $object) {
-            return redirect()->back();
-        }
 
-        $paymentsForSplit = Payment::where('object_id', $object->id)
-            ->where('description', 'LIKE', '%проживание по договору К-003 от 30.10.17 за ' . mb_strtolower($month, 'UTF-8') . '%')
+        $paymentsForSplit = Payment::where('type_id', Payment::TYPE_GENERAL)
+            ->where('description', 'LIKE', 'Страховые взносы за ' . mb_strtolower($month, 'UTF-8') . '%')
             ->orderBy('amount')
             ->get();
 
@@ -69,13 +65,10 @@ class SplitResidenceController extends Controller
         }
         $employeesCount = [];
         $crm = Workhour::select(['id', 'date', 'o_id', 'e_id'])->where('date', 'LIKE', $year . '-' . $date . '%')->get()->groupBy('o_id');
-        $notCodes = ['349', '346', '358', 349, 346, 358];
         foreach ($crm as $oId => $entries) {
             $object = CObject::find($oId);
             $code = substr($object->code, 0, strpos($object->code, '.'));
-            if (in_array($code, $notCodes)) {
-                continue;
-            }
+
             if ($code == 27) {
                 $code = '27.1';
             }
@@ -90,66 +83,33 @@ class SplitResidenceController extends Controller
 
         $totalAmount = abs($paymentsForSplit->sum('amount'));
 
-        $codeAmount = [];
+        $payment = Payment::find($paymentsForSplit[0]->id);
         foreach ($employeesCount as $code => $count) {
-            $codeAmount[$code] = ($count / $totalEmployees) * $totalAmount;
-        }
-
-        $payments = [];
-        foreach ($paymentsForSplit as $payment) {
-            $payments[$payment->id] = abs($payment->amount);
-        }
-
-        $result = [];
-        foreach ($codeAmount as $code => $amount) {
-            foreach ($payments as $id => $pAmount) {
-                if (! isset($result[$id][$code])) {
-                    $result[$id][$code] = 0;
-                }
-                if ($amount > $pAmount) {
-                    $amount -= $pAmount;
-                    $codeAmount[$code] -= $pAmount;
-                    $result[$id][$code] += $pAmount;
-                    unset($payments[$id]);
-                } else {
-                    $payments[$id] -= $amount;
-                    $result[$id][$code] += $amount;
-                    unset($codeAmount[$code]);
-
-                    if ($payments[$id] === 0) {
-                        unset($payments[$id]);
-                    }
-                    break;
-                }
-            }
-        }
-
-        foreach ($result as $paymentId => $codes) {
-            $payment = Payment::find($paymentId);
+            $amount = ($count / $totalEmployees) * $totalAmount;
             $requestData = $payment->attributesToArray();
 
-            foreach($codes as $code => $amount) {
-                if ($code == 27) {
-                    $code = '27.1';
-                }
-
-                $object = BObject::where('code', $code)->first();
-                if (! $object) {
-                    $object = $this->objectService->createObject([
-                        'code' => $code,
-                        'name' => 'Без названия',
-                        'address' => null,
-                        'responsible_name' => null,
-                        'responsible_email' => null,
-                        'responsible_phone' => null,
-                        'photo' => null
-                    ]);
-                }
-
-                $requestData['object_id'] = $object->id;
-                $requestData['amount'] = -$amount;
-                $this->paymentService->createPayment($requestData);
+            if ($code == 27) {
+                $code = '27.1';
             }
+
+            $object = BObject::where('code', $code)->first();
+            if (! $object) {
+                $object = $this->objectService->createObject([
+                    'code' => $code,
+                    'name' => 'Без названия',
+                    'address' => null,
+                    'responsible_name' => null,
+                    'responsible_email' => null,
+                    'responsible_phone' => null,
+                    'photo' => null
+                ]);
+            }
+
+            $requestData['type_id'] = Payment::TYPE_OBJECT;
+            $requestData['object_id'] = $object->id;
+            $requestData['object_worktype_id'] = 1;
+            $requestData['amount'] = -$amount;
+            $this->paymentService->createPayment($requestData);
         }
 
         foreach ($paymentsForSplit as $payment) {

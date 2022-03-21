@@ -3,6 +3,8 @@
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\SplitController;
 use App\Http\Controllers\Payment\SplitResidenceController;
+use App\Http\Controllers\Payment\SplitInsuranceController;
+use App\Http\Controllers\Payment\SplitNDFLController;
 use App\Http\Controllers\Payment\ExportController;
 use App\Http\Controllers\Payment\CopyController;
 use App\Http\Controllers\Payment\HistoryController;
@@ -14,6 +16,14 @@ Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name
 // Разбивка оплат проживания
 
 Route::post('payments/split_residence', [SplitResidenceController::class, 'store'])->name('payments.split_residence.store');
+
+// Разбивка оплат страховых взносов
+
+Route::post('payments/split_insurance', [SplitInsuranceController::class, 'store'])->name('payments.split_insurance.store');
+
+// Разбивка оплат НДФЛ
+
+Route::post('payments/split_ndfl', [SplitNDFLController::class, 'store'])->name('payments.split_ndfl.store');
 
 // История оплат
 
