@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class CurrencyExchangeRateService
 {
-    const CBRAPIUrl = 'http://www.cbr.ru/scripts/XML_daily.asp';
+    const CBRAPIUrl = 'https://www.cbr.ru/scripts/XML_daily.asp';
 
     public function getExchangeRate(string $date, string $currency): ?CurrencyExchangeRate
     {
@@ -25,7 +25,7 @@ class CurrencyExchangeRateService
 
             $canCreateRate = true;
             if (Carbon::parse($date)->greaterThan(Carbon::now())) {
-                $start = Carbon::createFromTimeString('15:10');
+                $start = Carbon::createFromTimeString('18:00');
                 $end = Carbon::createFromTimeString('23:59');
                 if (! Carbon::now()->between($start, $end)) {
                     $canCreateRate = false;
