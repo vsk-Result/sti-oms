@@ -2,11 +2,7 @@
     <tr class="subcontract-row">
         <td></td>
         <td class="px-3">
-            @if(auth()->user()->can('show contracts'))
-                <a target="_blank" href="{{ route('contracts.show', $contract) }}" class="show-link">{{ $contract->getName() }}</a>
-            @else
-                {{ $contract->getName() }}
-            @endif
+            {{ $contract->getName() }}
         </td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAmount(), $contract->currency) }}</td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount(), $contract->currency) }}</td>

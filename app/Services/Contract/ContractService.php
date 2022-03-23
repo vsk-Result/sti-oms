@@ -8,6 +8,7 @@ use App\Models\Contract\ContractAvans;
 use App\Models\Contract\ContractReceivedAvans;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ContractService
 {
@@ -18,6 +19,31 @@ class ContractService
     {
         $this->sanitizer = $sanitizer;
         $this->currencyService = $currencyService;
+    }
+
+    public function filterContracts(array $requestData): LengthAwarePaginator
+    {
+        $contractQuery = Contract::query();
+
+        $contractQuery->where('type_id', Contract::TYPE_MAIN);
+
+        if (! empty($requestData['name'])) {
+            $contractQuery->where('name', 'LIKE', '%' . $requestData['name'] . '%');
+        }
+
+        if (! empty($requestData['object_id'])) {
+            $contractQuery->whereIn('object_id', $requestData['object_id']);
+        }
+
+        $contractQuery->with('object', 'children', 'acts', 'avanses', 'avansesReceived', 'acts.payments', 'children.acts', 'children.avanses', 'children.avansesReceived', 'children.acts.payments');
+
+        $perPage = 30;
+
+        if (! empty($requestData['count_per_page'])) {
+            $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+        }
+
+        return $contractQuery->paginate($perPage)->withQueryString();
     }
 
     public function createContract(array $requestData): void

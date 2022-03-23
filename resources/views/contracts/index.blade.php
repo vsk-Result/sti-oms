@@ -4,6 +4,9 @@
 @section('breadcrumbs', Breadcrumbs::render('contracts.index'))
 
 @section('content')
+
+    @include('contracts.modals.filter')
+
     <div class="post">
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
@@ -118,6 +121,15 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterContractModal">
+                            <span class="svg-icon svg-icon-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z" fill="black"></path>
+                                </svg>
+                            </span>
+                            Фильтр
+                        </button>
+
                         @can('create contracts')
                             <a href="{{ route('contracts.create') }}" class="btn btn-light-primary">
                                 <span class="svg-icon svg-icon-3">
@@ -151,8 +163,8 @@
                     <table class="table table-hover align-middle table-row-dashed fs-6">
                         <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-150px ps-4">Объект</th>
-                                <th class="min-w-200px">Номер</th>
+                                <th class="min-w-100px ps-4">Объект</th>
+                                <th class="min-w-250px">Номер</th>
                                 <th class="min-w-150px">Сумма</th>
                                 <th class="min-w-150px">Сумма аванса</th>
                                 <th class="min-w-150px">Сумма получ. аванса</th>
@@ -180,11 +192,7 @@
                                         @endif
                                     </td>
                                     <td class="px-3">
-                                        @if(auth()->user()->can('show contracts'))
-                                            <a href="{{ route('contracts.show', $contract) }}" class="show-link">{{ $contract->getName() }}</a>
-                                        @else
-                                            {{ $contract->getName() }}
-                                        @endif
+                                        {{ $contract->getName() }}
                                     </td>
                                     <td>
                                         @foreach($contract->getAmount(false) as $currency => $amount)
@@ -351,11 +359,6 @@
                                             </span>
                                         </a>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                                            @can('show contracts')
-                                                <div class="menu-item px-3">
-                                                    <a target="_blank" href="{{ route('contracts.show', $contract) }}" class="menu-link px-3">Посмотреть</a>
-                                                </div>
-                                            @endcan
                                             @can('edit contracts')
                                                 <div class="menu-item px-3">
                                                     <a target="_blank" href="{{ route('contracts.edit', $contract) }}" class="menu-link px-3">Изменить</a>
@@ -389,6 +392,8 @@
                             @endforelse
                         </tbody>
                     </table>
+
+                    {{ $contracts->links() }}
                 </div>
             </div>
         </div>
@@ -426,6 +431,10 @@
                 (data) => {
                     $tr.after(data.contracts_view);
                     $tr.addClass('contract-row-active');
+                },
+                {},
+                () => {
+                    KTMenu.createInstances();
                 },
             )
         });

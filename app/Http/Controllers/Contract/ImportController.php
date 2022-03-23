@@ -66,6 +66,7 @@ class ImportController extends Controller
                 if (! empty($row[17])) {
                     $parentName = $this->sanitizer->set($row[17])->get();
                     $parent = Contract::where('name', $parentName)->first()->id;
+                    $contractName = $this->sanitizer->set($contractName)->replace($parentName, '')->trim()->onlyOneSpace()->get();
                 }
 
                 $contract = Contract::create([

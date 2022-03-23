@@ -449,9 +449,9 @@ class Contract extends Model implements HasMedia, Audit
     public function getName(): string
     {
         $prefix = match ($this->type_id) {
-            self::TYPE_ADDITIONAL => 'Доп. соглашение ',
-            self::TYPE_PHASE => '',
-            self::TYPE_PRELIMINARY => 'Предв. договор ',
+//            self::TYPE_ADDITIONAL => 'Доп. соглашение ',
+//            self::TYPE_PHASE => '',
+//            self::TYPE_PRELIMINARY => 'Предв. договор ',
             default => '',
         };
 

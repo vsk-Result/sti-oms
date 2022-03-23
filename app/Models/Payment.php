@@ -123,15 +123,30 @@ class Payment extends Model implements Audit
 
     public function getObjectId(): string
     {
-        return ($this->type_id === static::TYPE_OBJECT)
-            ? "$this->object_id::$this->object_worktype_id"
-            : $this->type_id;
+        if ($this->type_id === static::TYPE_OBJECT) {
+            if (in_array($this->object->code, ['27.1', '27.2', '27.3', '27.4', '27.5', '27.6', '27.7', '27.8', '28'])) {
+                return $this->object_id . '::' . null;
+            }
+            return "$this->object_id::$this->object_worktype_id";
+        }
+
+        return $this->type_id;
     }
 
     public function getObject(): string
     {
+        if ($this->type_id === static::TYPE_OBJECT) {
+            if (! is_null($this->object_worktype_id)) {
+                if (in_array($this->object->code, ['27.1', '27.2', '27.3', '27.4', '27.5', '27.6', '27.7', '27.8', '28'])) {
+                    return $this->object->code;
+                }
+                return $this->object->code . '.' . $this->object_worktype_id;
+            }
+
+            return $this->object->code;
+        }
+
         switch ($this->type_id) {
-            case static::TYPE_OBJECT:      return ! is_null($this->object_worktype_id) ? ($this->object->code . '.' . $this->object_worktype_id) : $this->object->code;
             case static::TYPE_TRANSFER:    return 'Трансфер';
             case static::TYPE_GENERAL:     return 'Общее';
             default:

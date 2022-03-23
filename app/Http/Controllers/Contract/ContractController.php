@@ -21,13 +21,12 @@ class ContractController extends Controller
         $this->contractService = $contractService;
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $contracts = Contract::where('type_id', Contract::TYPE_MAIN)
-            ->with('object', 'children', 'acts', 'avanses', 'avansesReceived', 'acts.payments', 'children.acts', 'children.avanses', 'children.avansesReceived', 'children.acts.payments')
-            ->get();
+        $contracts = $this->contractService->filterContracts($request->toArray());
+        $objects = BObject::whereIn('id', $contracts->pluck('object_id')->toArray())->orderBy('code')->get();
 
-        return view('contracts.index', compact('contracts'));
+        return view('contracts.index', compact('contracts', 'objects'));
     }
 
     public function create(Request $request): View
@@ -47,11 +46,6 @@ class ContractController extends Controller
     {
         $this->contractService->createContract($request->toArray());
         return redirect($request->get('return_url') ?? route('contracts.index'));
-    }
-
-    public function show(Contract $contract): RedirectResponse
-    {
-        return redirect()->route('contracts.acts.index', $contract);
     }
 
     public function edit(Contract $contract): View
