@@ -73,17 +73,17 @@
                                                     @if ($fieldName === 'object_id' && isset($changes['old']))
                                                         {{ $objects[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'type_id' && isset($changes['old']))
-                                                        {{ $types[$changes['old']] }}
+                                                        {{ $types[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'status_id' && isset($changes['old']))
-                                                        {{ $statuses[$changes['old']] }}
+                                                        {{ $statuses[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'object_worktype_id' && isset($changes['old']))
-                                                        {{ $workTypes[$changes['old']] }}
+                                                        {{ $workTypes[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'company_id' && isset($changes['old']))
-                                                        {{ $companies[$changes['old']] }}
+                                                        {{ $companies[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'bank_id' && isset($changes['old']))
-                                                        {{ $banks[$changes['old']] }}
+                                                        {{ $banks[$changes['old']] ?? '' }}
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['old']))
-                                                        {{ $organizations[$changes['old']] }}
+                                                        {{ $organizations[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'amount')
                                                         <span class="{{ ($changes['old'] ?? 0) < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($changes['old'] ?? 0, 2, '.', ' ') }}</span>
                                                     @else
@@ -94,15 +94,15 @@
                                                     @if ($fieldName === 'object_id' && isset($changes['new']))
                                                         {{ $objects[$changes['new']] ?? '' }}
                                                     @elseif ($fieldName === 'type_id' && isset($changes['new']))
-                                                        {{ $types[$changes['new']] }}
+                                                        {{ $types[$changes['new']] ?? '' }}
                                                     @elseif ($fieldName === 'status_id' && isset($changes['new']))
-                                                        {{ $statuses[$changes['new']] }}
+                                                        {{ $statuses[$changes['new']] ?? '' }}
                                                     @elseif ($fieldName === 'object_worktype_id' && isset($changes['new']))
-                                                        {{ $workTypes[$changes['new']] }}
+                                                        {{ $workTypes[$changes['new']] ?? '' }}
                                                     @elseif ($fieldName === 'company_id' && isset($changes['new']))
-                                                        {{ $companies[$changes['new']] }}
+                                                        {{ $companies[$changes['new']] ?? '' }}
                                                     @elseif ($fieldName === 'bank_id' && isset($changes['new']))
-                                                        {{ $banks[$changes['new']] }}
+                                                        {{ $banks[$changes['new']] ?? '' }}
                                                     @elseif (($fieldName === 'organization_sender_id' || $fieldName === 'organization_receiver_id') && isset($changes['new']))
                                                         {{ $organizations[$changes['new']] }}
                                                     @elseif ($fieldName === 'amount')
