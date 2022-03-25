@@ -541,11 +541,13 @@ class PaymentService
         }
 
         if (array_key_exists('parameters', $requestData)) {
-            [$key, $value] = explode('::', $requestData['parameters']);
+            if (str_contains($requestData['parameters'], '::')) {
+                [$key, $value] = explode('::', $requestData['parameters']);
 
-            $parameters = $payment->parameters ?? [];
-            $parameters[$key] = $value;
-            $requestData['parameters'] = $parameters;
+                $parameters = $payment->parameters ?? [];
+                $parameters[$key] = $value;
+                $requestData['parameters'] = $parameters;
+            }
         }
     }
 
