@@ -25,7 +25,7 @@ const mainApp = function() {
             autoUpdateInput: false,
             locale: {
                 firstDay: 1,
-                format: "DD/MM/Y",
+                format: "DD.MM.Y",
                 cancelLabel: 'Очистить',
                 separator: " - ",
                 applyLabel: "Применить",
@@ -56,7 +56,7 @@ const mainApp = function() {
         });
 
         $('.date-range-picker').on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('DD/MM/Y') + ' - ' + picker.endDate.format('DD/MM/Y'));
+            $(this).val(picker.startDate.format('DD.MM.Y') + ' - ' + picker.endDate.format('DD.MM.Y'));
         });
 
         $('.date-range-picker').on('cancel.daterangepicker', function() {

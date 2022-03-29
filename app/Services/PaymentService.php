@@ -42,11 +42,8 @@ class PaymentService
         $paymentQuery = Payment::query();
 
         if (! empty($requestData['period'])) {
-            $period = str_replace('/', '.', $requestData['period']);
-            $startDate = substr($period, 0, strpos($period, ' '));
-            $endDate = substr($period, strpos($period, ' ') + 3);
-
-            $paymentQuery->whereBetween('date', [Carbon::parse($startDate), Carbon::parse($endDate)]);
+            $period = explode(' - ', $requestData['period']);
+            $paymentQuery->whereBetween('date', [Carbon::parse($period[0]), Carbon::parse($period[1])]);
         }
 
         if (! empty($requestData['year']) && ! empty($requestData['month'])) {
