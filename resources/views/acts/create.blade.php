@@ -62,7 +62,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-12 mb-10 fv-row">
+                                    <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма выполнения</label>
                                             <div class="position-relative mb-3">
@@ -72,6 +72,7 @@
                                                     name="amount"
                                                     value="{{ old('amount') }}"
                                                     required
+                                                    autocomplete="off"
                                                 />
                                             </div>
                                             @if ($errors->has('amount'))
@@ -81,10 +82,8 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-md-12 mb-10 fv-row">
+                                    <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма удержания аванса</label>
                                             <div class="position-relative mb-3">
@@ -94,6 +93,7 @@
                                                     name="amount_avans"
                                                     value="{{ old('amount_avans') }}"
                                                     required
+                                                    autocomplete="off"
                                                 />
                                             </div>
                                             @if ($errors->has('amount_avans'))
@@ -106,7 +106,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-12 mb-10 fv-row">
+                                    <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма удержания депозита</label>
                                             <div class="position-relative mb-3">
@@ -116,6 +116,7 @@
                                                     name="amount_deposit"
                                                     value="{{ old('amount_deposit') }}"
                                                     required
+                                                    autocomplete="off"
                                                 />
                                             </div>
                                             @if ($errors->has('amount_deposit'))
@@ -125,18 +126,18 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-md-12 mb-10 fv-row">
+                                    <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Описание</label>
                                             <div class="position-relative mb-3">
-                                                <textarea
+                                                <input
                                                     class="form-control form-control-lg form-control-solid {{ $errors->has('description') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="description"
-                                                >{{ old('description') }}</textarea>
+                                                    value="{{ old('description') }}"
+                                                    autocomplete="off"
+                                                />
                                             </div>
                                             @if ($errors->has('description'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
@@ -150,37 +151,112 @@
                         </div>
 
                         <div class="row mb-5">
-                            <h3 class="fw-bolder mb-8">Оплаты</h3>
+                            <h3 class="fw-bolder">Оплаты по акту</h3>
 
                             <div id="payment-template" class="col-md-3 mb-10 fv-row" style="display: none;">
-                                <div class="mb-1">
-                                    <label class="form-label fw-bolder text-dark fs-6">Дата</label>
-                                    <div class="position-relative mb-3">
-                                        <input
-                                            class="date-range-picker-single form-control form-control-lg form-control-solid"
-                                            type="text"
-                                            name="payments_date[]"
-                                            value=""
-                                            readonly
-                                        />
-                                    </div>
-                                </div>
-
-                                <div class="mb-1 mt-10">
-                                    <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
-                                    <div class="position-relative mb-3">
-                                        <input
-                                            class="form-control form-control-lg form-control-solid"
-                                            type="text"
-                                            name="payments_amount[]"
-                                            value=""
-                                        />
-                                    </div>
-                                </div>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <input
+                                                    class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_date[]"
+                                                    value=""
+                                                    readonly
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_amount[]"
+                                                    value=""
+                                                    autocomplete="off"
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_description[]"
+                                                    value=""
+                                                    autocomplete="off"
+                                                />
+                                            </td>
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    class="destroy-payment btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                                >
+                                                    Удалить
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <div class="col-md-2 mb-10 fv-row">
-                                <button type="button" id="create-payment" class="mt-9 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2">Добавить</button>
+                            <div class="mb-4 d-flex flex-left">
+                                <button
+                                    type="button"
+                                    id="create-payment"
+                                    class="mt-4 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2"
+                                >
+                                    Добавить запись
+                                </button>
+                            </div>
+
+                            <div class="d-flex flex-left mb-4">
+                                <table id="payments-table" class="table align-middle table-row-dashed fs-6">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-150px">Дата оплаты</th>
+                                        <th class="min-w-150px">Сумма оплаты</th>
+                                        <th class="min-w-150px">Описание</th>
+                                        <th class="min-w-150px rounded-end pe-4">Действие</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-gray-600 fw-bold">
+                                        <tr>
+                                            <td>
+                                                <input
+                                                    class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_date[]"
+                                                    value=""
+                                                    readonly
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_amount[]"
+                                                    value=""
+                                                    autocomplete="off"
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_description[]"
+                                                    value=""
+                                                    autocomplete="off"
+                                                />
+                                            </td>
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    class="destroy-payment btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                                >
+                                                    Удалить
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -202,11 +278,13 @@
         $(function() {
             $('#create-payment').on('click', function () {
                 const $payment = $('#payment-template').clone();
-                $payment.attr('id', '');
-                $payment.show();
-                $(this).parent().before($payment);
+                $('#payments-table tbody').append($payment.find('tr'));
 
                 mainApp.init();
+            });
+
+            $(document).on('click', '.destroy-payment', function() {
+                $(this).closest('tr').remove();
             });
         });
     </script>

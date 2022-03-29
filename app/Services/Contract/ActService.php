@@ -8,6 +8,7 @@ use App\Models\Contract\ActPayment;
 use App\Models\Contract\Contract;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ActService
 {
@@ -18,6 +19,47 @@ class ActService
     {
         $this->sanitizer = $sanitizer;
         $this->currencyService = $currencyService;
+    }
+
+    public function filterActs(array $requestData, array &$total): LengthAwarePaginator
+    {
+        $actQuery = Act::query();
+
+        if (! empty($requestData['contract_id'])) {
+            $actQuery->whereIn('contract_id', $requestData['contract_id']);
+        }
+
+        if (! empty($requestData['object_id'])) {
+            $actQuery->whereIn('object_id', $requestData['object_id']);
+        }
+
+        $actQuery->with('object', 'contract', 'payments');
+
+        $perPage = 30;
+
+        if (! empty($requestData['count_per_page'])) {
+            $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+        }
+
+        $currencies = ['RUB', 'EUR'];
+        foreach ($currencies as $currency) {
+            $total['amount'][$currency] = 0;
+            $total['avanses_amount'][$currency] = 0;
+            $total['deposites_amount'][$currency] = 0;
+            $total['need_paid_amount'][$currency] = 0;
+            $total['paid_amount'][$currency] = 0;
+            $total['left_paid_amount'][$currency] = 0;
+            foreach ((clone $actQuery)->where('currency', $currency)->get() as $act) {
+                $total['amount'][$currency] += $act->getAmount();
+                $total['avanses_amount'][$currency] += $act->getAvansAmount();
+                $total['deposites_amount'][$currency] += $act->getDepositAmount();
+                $total['need_paid_amount'][$currency] += $act->getNeedPaidAmount();
+                $total['paid_amount'][$currency] += $act->getPaidAmount();
+                $total['left_paid_amount'][$currency] += $act->getLeftPaidAmount();
+            }
+        }
+
+        return $actQuery->paginate($perPage)->withQueryString();
     }
 
     public function createAct(array $requestData): void
@@ -44,6 +86,7 @@ class ActService
         if (! empty($requestData['payments_date'])) {
             foreach ($requestData['payments_date'] as $index => $paymentDate) {
                 $paymentAmount = (float) $requestData['payments_amount'][$index];
+                $description = $requestData['payments_description'][$index];
                 if ($paymentAmount > 0) {
                     ActPayment::create([
                         'contract_id' => $contract->id,
@@ -51,6 +94,7 @@ class ActService
                         'company_id' => $act->company_id,
                         'object_id' => $act->object_id,
                         'date' => $paymentDate,
+                        'description' => $this->sanitizer->set($description)->get(),
                         'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $act->currency,
@@ -84,29 +128,37 @@ class ActService
             'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
         ]);
 
+        $currentPaymentsIds = $act->payments()->pluck('id', 'id')->toArray();
+
         if (! empty($requestData['isset_payments_date'])) {
             foreach ($requestData['isset_payments_date'] as $paymentId => $paymentDate) {
                 $payment = ActPayment::find($paymentId);
                 $paymentAmount = (float) $requestData['isset_payments_amount'][$paymentId];
+                $description = $requestData['isset_payments_description'][$paymentId];
 
-                if ($paymentAmount > 0) {
-                    $payment->update([
-                        'date' => $paymentDate,
-                        'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
-                        'currency' => $contract->currency,
-                        'currency_rate' => $act->currency !== 'RUB'
-                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
-                            : $act->currency_rate,
-                    ]);
-                } else {
-                    $payment->delete();
-                }
+                $payment->update([
+                    'date' => $paymentDate,
+                    'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
+                    'currency' => $contract->currency,
+                    'description' => $this->sanitizer->set($description)->get(),
+                    'currency_rate' => $act->currency !== 'RUB'
+                        ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
+                        : $act->currency_rate,
+                ]);
+
+                unset($currentPaymentsIds[$paymentId]);
             }
+        }
+
+        foreach ($currentPaymentsIds as $paymentId) {
+            $payment = ActPayment::find($paymentId);
+            $payment->delete();
         }
 
         if (! empty($requestData['payments_date'])) {
             foreach ($requestData['payments_date'] as $index => $paymentDate) {
                 $paymentAmount = (float) $requestData['payments_amount'][$index];
+                $description = $requestData['payments_description'][$index];
                 if ($paymentAmount > 0) {
                     ActPayment::create([
                         'contract_id' => $contract->id,
@@ -114,6 +166,7 @@ class ActService
                         'company_id' => $act->company_id,
                         'object_id' => $act->object_id,
                         'date' => $paymentDate,
+                        'description' => $this->sanitizer->set($description)->get(),
                         'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,

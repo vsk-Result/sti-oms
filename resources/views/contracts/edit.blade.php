@@ -76,7 +76,7 @@
 
                                     <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Номер</label>
+                                            <label class="form-label fw-bolder text-dark fs-6">Номер договора</label>
                                             <div class="position-relative mb-3">
                                                 <input
                                                     class="form-control form-control-lg form-control-solid {{ $errors->has('name') ? 'is-invalid' : '' }}"
@@ -243,104 +243,190 @@
                         </div>
 
                         <div class="row mb-5">
-                            <h3 class="fw-bolder mb-8">Авансы</h3>
+                            <h3 class="fw-bolder">Авансы по договору</h3>
 
-                            @foreach($contract->avanses as $avans)
-                                <div class="col-md-3 mb-10 fv-row">
-                                    <div class="mb-1">
-                                        <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
-                                        <div class="position-relative mb-3">
+                            <div id="avans-template" class="col-md-3 mb-10 fv-row" style="display: none;">
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <td>
                                             <input
                                                 class="form-control form-control-lg form-control-solid"
                                                 type="text"
-                                                name="isset_avanses[{{ $avans->id }}]"
-                                                value="{{ $avans->amount }}"
+                                                name="avanses[]"
+                                                value=""
+                                                autocomplete="off"
                                             />
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-
-                            <div id="avans-template" class="col-md-3 mb-10 fv-row" style="display: none;">
-                                <div class="mb-1">
-                                    <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
-                                    <div class="position-relative mb-3">
-                                        <input
-                                            class="form-control form-control-lg form-control-solid"
-                                            type="text"
-                                            name="avanses[]"
-                                            value=""
-                                        />
-                                    </div>
-                                </div>
+                                        </td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="destroy-avans btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                            >
+                                                Удалить
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <div class="col-md-2 mb-10 fv-row">
-                                <button type="button" id="create-avans" class="mt-9 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2">Добавить</button>
+                            <div class="d-flex flex-left mb-4">
+                                <button
+                                    type="button"
+                                    id="create-avans"
+                                    class="mt-4 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2"
+                                >
+                                    Добавить запись
+                                </button>
+                            </div>
+
+                            <div class="d-flex flex-left mb-4">
+                                <div class="col-md-6">
+                                    <table id="avanses-table" class="table align-middle table-row-dashed fs-6">
+                                        <thead>
+                                        <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-150px">Сумма аванса</th>
+                                            <th class="min-w-150px rounded-end pe-4">Действие</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="text-gray-600 fw-bold">
+                                            @foreach($contract->avanses as $avans)
+                                                <tr>
+                                                    <td>
+                                                        <input
+                                                            class="form-control form-control-lg form-control-solid"
+                                                            type="text"
+                                                            name="isset_avanses[{{ $avans->id }}]"
+                                                            value="{{ $avans->amount }}"
+                                                            autocomplete="off"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            type="button"
+                                                            class="destroy-avans btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                                        >
+                                                            Удалить
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
                         <div class="row mb-5">
-                            <h3 class="fw-bolder mb-8">Полученные авансы</h3>
+                            <h3 class="fw-bolder">Полученные авансы</h3>
 
-                            @foreach($contract->avansesReceived as $avans)
-                                <div class="col-md-3 mb-10 fv-row">
-                                    <div class="mb-1">
-                                        <label class="form-label fw-bolder text-dark fs-6">Дата</label>
-                                        <div class="position-relative mb-3">
+                            <div id="received-avans-template" class="col-md-3 mb-10 fv-row" style="display: none;">
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <td>
                                             <input
                                                 class="date-range-picker-single form-control form-control-lg form-control-solid"
                                                 type="text"
-                                                name="isset_received_avanses_date[{{ $avans->id }}]"
-                                                value="{{ $avans->date }}"
+                                                name="received_avanses_date[]"
+                                                value=""
                                                 readonly
                                             />
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-1 mt-10">
-                                        <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
-                                        <div class="position-relative mb-3">
+                                        </td>
+                                        <td>
                                             <input
                                                 class="form-control form-control-lg form-control-solid"
                                                 type="text"
-                                                name="isset_received_avanses_amount[{{ $avans->id }}]"
-                                                value="{{ $avans->amount }}"
+                                                name="received_avanses_amount[]"
+                                                value=""
+                                                autocomplete="off"
                                             />
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-
-                            <div id="received-avans-template" class="col-md-3 mb-10 fv-row" style="display: none;">
-                                <div class="mb-1">
-                                    <label class="form-label fw-bolder text-dark fs-6">Дата</label>
-                                    <div class="position-relative mb-3">
-                                        <input
-                                            class="date-range-picker-single form-control form-control-lg form-control-solid"
-                                            type="text"
-                                            name="received_avanses_date[]"
-                                            value=""
-                                            readonly
-                                        />
-                                    </div>
-                                </div>
-
-                                <div class="mb-1 mt-10">
-                                    <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
-                                    <div class="position-relative mb-3">
-                                        <input
-                                            class="form-control form-control-lg form-control-solid"
-                                            type="text"
-                                            name="received_avanses_amount[]"
-                                            value=""
-                                        />
-                                    </div>
-                                </div>
+                                        </td>
+                                        <td>
+                                            <input
+                                                class="form-control form-control-lg form-control-solid"
+                                                type="text"
+                                                name="received_avanses_description[]"
+                                                value=""
+                                                autocomplete="off"
+                                            />
+                                        </td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="destroy-avans btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                            >
+                                                Удалить
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <div class="col-md-2 mb-10 fv-row">
-                                <button type="button" id="create-received-avans" class="mt-9 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2">Добавить</button>
+                            <div class="mb-4 d-flex flex-left">
+                                <button
+                                    type="button"
+                                    id="create-received-avans"
+                                    class="mt-4 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2"
+                                >
+                                    Добавить запись
+                                </button>
+                            </div>
+
+                            <div class="d-flex flex-left mb-4">
+                                <table id="avanses-received-table" class="table align-middle table-row-dashed fs-6">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-150px">Дата аванса</th>
+                                        <th class="min-w-150px">Сумма аванса</th>
+                                        <th class="min-w-150px">Описание</th>
+                                        <th class="min-w-150px rounded-end pe-4">Действие</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-gray-600 fw-bold">
+                                        @foreach($contract->avansesReceived as $avans)
+                                            <tr>
+                                                <td>
+                                                    <input
+                                                        class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                        type="text"
+                                                        name="isset_received_avanses_date[{{ $avans->id }}]"
+                                                        value="{{ $avans->date }}"
+                                                        readonly
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        type="text"
+                                                        name="isset_received_avanses_amount[{{ $avans->id }}]"
+                                                        value="{{ $avans->amount }}"
+                                                        autocomplete="off"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        type="text"
+                                                        name="isset_received_avanses_description[{{ $avans->id }}]"
+                                                        value="{{ $avans->description }}"
+                                                        autocomplete="off"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        type="button"
+                                                        class="destroy-avans btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                                    >
+                                                        Удалить
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -372,16 +458,16 @@
 
             $('#create-avans').on('click', function () {
                 const $avans = $('#avans-template').clone();
-                $avans.attr('id', '');
-                $avans.show();
-                $(this).parent().before($avans);
+                $('#avanses-table tbody').append($avans.find('tr'));
+            });
+
+            $(document).on('click', '.destroy-avans', function() {
+                $(this).closest('tr').remove();
             });
 
             $('#create-received-avans').on('click', function () {
                 const $avans = $('#received-avans-template').clone();
-                $avans.attr('id', '');
-                $avans.show();
-                $(this).parent().before($avans);
+                $('#avanses-received-table tbody').append($avans.find('tr'));
 
                 mainApp.init();
             });

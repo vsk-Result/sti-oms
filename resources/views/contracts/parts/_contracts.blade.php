@@ -4,16 +4,16 @@
         <td class="px-3">
             {{ $contract->getName() }}
         </td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount(), $contract->currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount(), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount(false, $contract->currency), $contract->currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount(false, $contract->currency), $contract->currency) }}</td>
         <td>
             <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                 <span class="svg-icon svg-icon-5 m-0">
@@ -23,11 +23,6 @@
                 </span>
             </a>
             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                @can('show contracts')
-                    <div class="menu-item px-3">
-                        <a target="_blank" href="{{ route('contracts.show', $contract) }}" class="menu-link px-3">Посмотреть</a>
-                    </div>
-                @endcan
                 @can('edit contracts')
                     <div class="menu-item px-3">
                         <a target="_blank" href="{{ route('contracts.edit', $contract) }}" class="menu-link px-3">Изменить</a>

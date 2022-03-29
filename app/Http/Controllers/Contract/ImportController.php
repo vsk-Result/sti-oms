@@ -103,10 +103,10 @@ class ImportController extends Controller
             if (! empty($avanseDate) && ! empty($row[6])) {
                 $description = null;
                 $date = null;
-                if (is_string($avanseDate)) {
-                    $description = $this->sanitizer->set($avanseDate)->get();
-                } else {
+                if (is_numeric($avanseDate)) {
                     $date = Carbon::parse(Date::excelToDateTimeObject($avanseDate))->format('Y-m-d');
+                } else {
+                    $description = $this->sanitizer->set($avanseDate)->get();
                 }
 
                 ContractReceivedAvans::create([
@@ -119,12 +119,12 @@ class ImportController extends Controller
                     'status_id' => Status::STATUS_ACTIVE,
                     'currency' => $contract->currency,
                     'currency_rate' => $contract->currency !== 'RUB' && ! is_null($date)
-                        ? $this->currencyService->parseRateFromCBR($avanseDate, $contract->currency) ?? 0
+                        ? $this->currencyService->parseRateFromCBR($date, $contract->currency) ?? 0
                         : $contract->currency_rate,
                 ]);
             }
 
-            if (! empty($row[8]) || ! empty($row[9]) || ! empty($row[10]) || ! empty($row[11]) || ! empty($row[12]) || ! empty($row[13]) || ! empty($row[14])) {
+            if (! empty($row[8]) || ! empty($row[9]) || ! empty($row[10]) || ! empty($row[11]) || ! empty($row[12]) || ! empty($row[13]) || ! empty($row[14]) || ! empty($row[15])) {
 
                 $date = null;
                 if (! empty($row[8])) {
@@ -153,10 +153,10 @@ class ImportController extends Controller
                     $description = null;
                     $date = null;
                     if (! empty($row[13])) {
-                        if (is_string($row[13])) {
-                            $description = $this->sanitizer->set($row[13])->get();
-                        } else {
+                        if (is_numeric($row[13])) {
                             $date = Carbon::parse(Date::excelToDateTimeObject($row[13]))->format('Y-m-d');
+                        } else {
+                            $description = $this->sanitizer->set($row[13])->get();
                         }
                     }
 
@@ -167,6 +167,7 @@ class ImportController extends Controller
                         'object_id' => $act->object_id,
                         'date' => $date,
                         'amount' => $row[14],
+                        'description' => $description,
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $act->currency,
                         'currency_rate' => $contract->currency !== 'RUB' && ! is_null($date)

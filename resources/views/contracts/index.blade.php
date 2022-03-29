@@ -10,65 +10,20 @@
     <div class="post">
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
-                @php
-                    $totalAmount = [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ];
-                    $totalAvansesReceivedAmount = [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ];
-                    $totalActsPaidAmount = [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ];
-                    $totalAvansesLeftAmount = [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ];
-                    $totalActsLeftPaidAmount = [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ];
-                    $totalActsDepositesAmount = [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ];
-
-                    $totalNonClosesAmount = [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ];
-                @endphp
-
-                @foreach(['RUB', 'EUR'] as $currency)
-                    @foreach($contracts as $contract)
-                        @php
-                            $totalAmount[$currency] += $contract->getAmount(true, $currency);
-                            $totalAvansesReceivedAmount[$currency] += $contract->getAvansesReceivedAmount(true, $currency);
-                            $totalActsPaidAmount[$currency] += $contract->getActsPaidAmount(true, $currency);
-                            $totalAvansesLeftAmount[$currency] += $contract->getAvansesLeftAmount(true, $currency);
-                            $totalActsLeftPaidAmount[$currency] += $contract->getActsLeftPaidAmount(true, $currency);
-                            $totalActsDepositesAmount[$currency] += $contract->getActsDepositesAmount(true, $currency);
-                            $totalNonClosesAmount[$currency] += $totalAmount[$currency] - $totalAvansesReceivedAmount[$currency] - $totalActsPaidAmount[$currency] - $totalActsDepositesAmount[$currency] - $totalActsLeftPaidAmount[$currency];
-                        @endphp
-                    @endforeach
-                @endforeach
                 <div class="card-title">
                     <div>
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalAmount['RUB'], 'RUB') }}</div>
-                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalAmount['EUR'], 'EUR') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Сумма договоров</div>
                         </div>
 
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalAvansesReceivedAmount['RUB'], 'RUB') }}</div>
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalAvansesReceivedAmount['EUR'], 'EUR') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Сумма полученных авансов</div>
                         </div>
@@ -77,16 +32,16 @@
                     <div>
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalAvansesLeftAmount['RUB'], 'RUB') }}</div>
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalAvansesLeftAmount['EUR'], 'EUR') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_left_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_left_amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Сумма аванса к получению</div>
                         </div>
 
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalActsPaidAmount['RUB'], 'RUB') }}</div>
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalActsPaidAmount['EUR'], 'EUR') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Сумма оплаченных актов</div>
                         </div>
@@ -95,16 +50,16 @@
                     <div>
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalActsLeftPaidAmount['RUB'], 'RUB') }}</div>
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalActsLeftPaidAmount['EUR'], 'EUR') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_left_paid_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_left_paid_amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Долг подписанных актов</div>
                         </div>
 
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalActsDepositesAmount['RUB'], 'RUB') }}</div>
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalActsDepositesAmount['EUR'], 'EUR') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_deposites_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_deposites_amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Долг ГУ</div>
                         </div>
@@ -112,8 +67,8 @@
                     <div>
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalNonClosesAmount['RUB'], 'RUB') }}</div>
-                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalNonClosesAmount['EUR'], 'EUR') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Не закрытая сумма договоров</div>
                         </div>

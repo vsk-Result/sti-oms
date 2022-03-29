@@ -107,9 +107,9 @@
                                     <td>{{ $payment->code }}</td>
                                     <td>
                                         @if ($payment->amount < 0)
-                                            {{ $payment->organizationReceiver->name }}
+                                            {{ $payment->organizationReceiver?->name }}
                                         @else
-                                            {{ $payment->organizationSender->name }}
+                                            {{ $payment->organizationSender?->name }}
                                         @endif
                                     </td>
                                     <td>{{ $payment->description }}</td>

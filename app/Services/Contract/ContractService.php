@@ -21,7 +21,7 @@ class ContractService
         $this->currencyService = $currencyService;
     }
 
-    public function filterContracts(array $requestData): LengthAwarePaginator
+    public function filterContracts(array $requestData, array &$total): LengthAwarePaginator
     {
         $contractQuery = Contract::query();
 
@@ -41,6 +41,26 @@ class ContractService
 
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+        }
+
+        $currencies = ['RUB', 'EUR'];
+        foreach ($currencies as $currency) {
+            $total['amount'][$currency] = 0;
+            $total['avanses_received_amount'][$currency] = 0;
+            $total['avanses_left_amount'][$currency] = 0;
+            $total['avanses_acts_paid_amount'][$currency] = 0;
+            $total['avanses_acts_left_paid_amount'][$currency] = 0;
+            $total['avanses_acts_deposites_amount'][$currency] = 0;
+            $total['avanses_non_closes_amount'][$currency] = 0;
+            foreach ((clone $contractQuery)->get() as $contract) {
+                $total['amount'][$currency] += $contract->getAmount(true, $currency);
+                $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount(true, $currency);
+                $total['avanses_left_amount'][$currency] += $contract->getAvansesLeftAmount(true, $currency);
+                $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount(true, $currency);
+                $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount(true, $currency);
+                $total['avanses_acts_deposites_amount'][$currency] += $contract->getActsDepositesAmount(true, $currency);
+                $total['avanses_non_closes_amount'][$currency] += $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_deposites_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency];
+            }
         }
 
         return $contractQuery->paginate($perPage)->withQueryString();
@@ -90,6 +110,7 @@ class ContractService
         if (! empty($requestData['received_avanses_date'])) {
             foreach ($requestData['received_avanses_date'] as $index => $avansDate) {
                 $avansAmount = (float) $requestData['received_avanses_amount'][$index];
+                $description = $requestData['received_avanses_description'][$index];
                 if ($avansAmount > 0) {
                     ContractReceivedAvans::create([
                         'contract_id' => $contract->id,
@@ -97,6 +118,7 @@ class ContractService
                         'object_id' => $requestData['object_id'],
                         'date' => $avansDate,
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                        'description' => $this->sanitizer->set($description)->get(),
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,
                         'currency_rate' => $contract->currency !== 'RUB'
@@ -133,18 +155,22 @@ class ContractService
             }
         }
 
+        $currentAvansesIds = $contract->avanses()->pluck('id', 'id')->toArray();
+
         if (! empty($requestData['isset_avanses'])) {
             foreach ($requestData['isset_avanses'] as $avansId => $avansAmount) {
                 $avans = ContractAvans::find($avansId);
-                if ((float) $avansAmount > 0) {
-                    $avans->update([
-                        'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
-                        'currency' => $contract->currency,
-                    ]);
-                } else {
-                    $avans->delete();
-                }
+                $avans->update([
+                    'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                    'currency' => $contract->currency,
+                ]);
+                unset($currentAvansesIds[$avansId]);
             }
+        }
+
+        foreach ($currentAvansesIds as $avansId) {
+            $avans = ContractAvans::find($avansId);
+            $avans->delete();
         }
 
         if (! empty($requestData['avanses'])) {
@@ -163,35 +189,43 @@ class ContractService
             }
         }
 
+        $currentAvansesIds = $contract->avansesReceived()->pluck('id', 'id')->toArray();
+
         if (! empty($requestData['isset_received_avanses_date'])) {
             foreach ($requestData['isset_received_avanses_date'] as $avansId => $avansDate) {
                 $avans = ContractReceivedAvans::find($avansId);
                 $avansAmount = (float) $requestData['isset_received_avanses_amount'][$avansId];
+                $description = $requestData['isset_received_avanses_description'][$avansId];
 
-                if ($avansAmount > 0) {
-                    $avans->update([
-                        'date' => $avansDate,
-                        'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
-                        'currency' => $contract->currency,
-                        'currency_rate' => $contract->currency !== 'RUB'
-                            ? $this->currencyService->parseRateFromCBR($avansDate, $contract->currency)
-                            : $contract->currency_rate,
-                    ]);
-                } else {
-                    $avans->delete();
-                }
+                $avans->update([
+                    'date' => $avansDate,
+                    'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                    'currency' => $contract->currency,
+                    'description' => $this->sanitizer->set($description)->get(),
+                    'currency_rate' => $contract->currency !== 'RUB'
+                        ? $this->currencyService->parseRateFromCBR($avansDate, $contract->currency)
+                        : $contract->currency_rate,
+                ]);
+                unset($currentAvansesIds[$avansId]);
             }
+        }
+
+        foreach ($currentAvansesIds as $avansId) {
+            $avans = ContractReceivedAvans::find($avansId);
+            $avans->delete();
         }
 
         if (! empty($requestData['received_avanses_date'])) {
             foreach ($requestData['received_avanses_date'] as $index => $avansDate) {
                 $avansAmount = (float) $requestData['received_avanses_amount'][$index];
+                $description = $requestData['received_avanses_description'][$index];
                 if ($avansAmount > 0) {
                     ContractReceivedAvans::create([
                         'contract_id' => $contract->id,
                         'company_id' => $requestData['company_id'],
                         'object_id' => $requestData['object_id'],
                         'date' => $avansDate,
+                        'description' => $this->sanitizer->set($description)->get(),
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,

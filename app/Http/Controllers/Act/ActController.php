@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Act;
 use App\Http\Controllers\Controller;
 use App\Models\Contract\Act;
 use App\Models\Contract\Contract;
+use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Services\Contract\ActService;
 use Illuminate\Http\RedirectResponse;
@@ -20,10 +21,13 @@ class ActController extends Controller
         $this->actService = $actService;
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $acts = Act::with('payments')->get();
-        return view('acts.index', compact('acts'));
+        $total = [];
+        $acts = $this->actService->filterActs($request->toArray(), $total);
+        $objects = BObject::orderBy('code')->get();
+        $contracts = Contract::with('parent')->orderBy('name')->get();
+        return view('acts.index', compact('acts', 'total', 'objects', 'contracts'));
     }
 
     public function create(Request $request): View

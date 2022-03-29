@@ -23,10 +23,11 @@ class ContractController extends Controller
 
     public function index(Request $request): View
     {
-        $contracts = $this->contractService->filterContracts($request->toArray());
-        $objects = BObject::whereIn('id', $contracts->pluck('object_id')->toArray())->orderBy('code')->get();
+        $total = [];
+        $contracts = $this->contractService->filterContracts($request->toArray(), $total);
+        $objects = BObject::orderBy('code')->get();
 
-        return view('contracts.index', compact('contracts', 'objects'));
+        return view('contracts.index', compact('contracts', 'objects', 'total'));
     }
 
     public function create(Request $request): View

@@ -13,6 +13,7 @@ class SubContractController extends Controller
     {
         if (request()->ajax()) {
             $contracts = $contract->children()->where('currency', request()->get('currency', ''))->with('object', 'acts', 'avanses', 'avansesReceived', 'acts.payments')->get();
+
             return response()->json([
                 'status' => 'success',
                 'contracts_view' => view('contracts.parts._contracts', compact('contracts'))->render()

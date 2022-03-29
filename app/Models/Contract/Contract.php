@@ -109,7 +109,6 @@ class Contract extends Model implements HasMedia, Audit
             }
 
         } else if ($this->isMain() && ! $generalAmount) {
-
             if ($this->children->where('type_id', self::TYPE_PHASE)->count() > 0) {
                 $result = [];
 
@@ -156,7 +155,6 @@ class Contract extends Model implements HasMedia, Audit
                 return [$this->currency => $amount];
             }
         }
-
         return $amount;
     }
 
@@ -425,7 +423,7 @@ class Contract extends Model implements HasMedia, Audit
             }
         }
 
-        return $amount;
+        return $amount - $paid;
     }
 
     public static function getTypes(): array

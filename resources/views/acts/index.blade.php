@@ -4,99 +4,77 @@
 @section('breadcrumbs', Breadcrumbs::render('acts.index'))
 
 @section('content')
+    @include('acts.modals.filter')
     <div class="post">
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    @php
-                        $totalAmount = [
-                            'RUB' => 0,
-                            'EUR' => 0,
-                        ];
-                        $totalAvansesAmount = [
-                            'RUB' => 0,
-                            'EUR' => 0,
-                        ];
-                        $totalDepositesAmount = [
-                            'RUB' => 0,
-                            'EUR' => 0,
-                        ];
-                        $totalNeedPaidAmount = [
-                            'RUB' => 0,
-                            'EUR' => 0,
-                        ];
-                        $totalPaidAmount = [
-                            'RUB' => 0,
-                            'EUR' => 0,
-                        ];
-                        $totalLeftPaidAmount = [
-                            'RUB' => 0,
-                            'EUR' => 0,
-                        ];
-
-                        foreach(['RUB', 'EUR'] as $currency) {
-                            foreach ($acts->where('currency', $currency) as $act) {
-                                $totalAmount[$currency] += $act->getAmount();
-                                $totalAvansesAmount[$currency] += $act->getAvansAmount();
-                                $totalDepositesAmount[$currency] += $act->getDepositAmount();
-                                $totalNeedPaidAmount[$currency] += $act->getNeedPaidAmount();
-                                $totalPaidAmount[$currency] += $act->getPaidAmount();
-                                $totalLeftPaidAmount[$currency] += $act->getLeftPaidAmount();
-                            }
-                        }
-                    @endphp
-
-                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                        <div class="d-flex flex-column align-items-left">
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalAmount['RUB'], 'RUB') }}</div>
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalAmount['EUR'], 'EUR') }}</div>
+                    <div>
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма выполнения</div>
                         </div>
-                        <div class="fw-bold fs-6 text-gray-400">Сумма выполнения</div>
+
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма удержанного аванса</div>
+                        </div>
                     </div>
 
-                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                        <div class="d-flex flex-column align-items-left">
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalAvansesAmount['RUB'], 'RUB') }}</div>
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalAvansesAmount['EUR'], 'EUR') }}</div>
+                    <div>
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['EUR'], 'EUR') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма удержанного депозита</div>
                         </div>
-                        <div class="fw-bold fs-6 text-gray-400">Сумма удержанного аванса</div>
+
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['EUR'], 'EUR') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма к оплате</div>
+                        </div>
                     </div>
 
-                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                        <div class="d-flex flex-column align-items-left">
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalDepositesAmount['RUB'], 'RUB') }}</div>
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalDepositesAmount['EUR'], 'EUR') }}</div>
+                    <div>
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['EUR'], 'EUR') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма оплачено</div>
                         </div>
-                        <div class="fw-bold fs-6 text-gray-400">Сумма удержанного депозита</div>
-                    </div>
 
-                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                        <div class="d-flex flex-column align-items-left">
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalNeedPaidAmount['RUB'], 'RUB') }}</div>
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalNeedPaidAmount['EUR'], 'EUR') }}</div>
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['EUR'], 'EUR') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма неоплаченных работ</div>
                         </div>
-                        <div class="fw-bold fs-6 text-gray-400">Сумма к оплате</div>
-                    </div>
-
-                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                        <div class="d-flex flex-column align-items-left">
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalPaidAmount['RUB'], 'RUB') }}</div>
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalPaidAmount['EUR'], 'EUR') }}</div>
-                        </div>
-                        <div class="fw-bold fs-6 text-gray-400">Сумма оплачено</div>
-                    </div>
-
-                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                        <div class="d-flex flex-column align-items-left">
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalLeftPaidAmount['RUB'], 'RUB') }}</div>
-                            <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($totalLeftPaidAmount['EUR'], 'EUR') }}</div>
-                        </div>
-                        <div class="fw-bold fs-6 text-gray-400">Сумма неоплаченных работ</div>
                     </div>
                 </div>
 
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterActModal">
+                            <span class="svg-icon svg-icon-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z" fill="black"></path>
+                                </svg>
+                            </span>
+                            Фильтр
+                        </button>
+
                         @can('create acts')
                             <a href="{{ route('acts.create') }}" class="btn btn-light-primary">
                                 <span class="svg-icon svg-icon-3">
@@ -117,7 +95,7 @@
                     <table class="table table-hover align-middle table-row-dashed fs-6">
                         <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-150px">Объект</th>
+                                <th class="min-w-100px ps-4">Объект</th>
                                 <th class="min-w-150px">Договор</th>
                                 <th class="min-w-150px">Дата</th>
                                 <th class="min-w-150px">Выполнено</th>
@@ -132,27 +110,15 @@
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($acts as $act)
                                 <tr>
-                                    <td>
+                                    <td class="ps-4">
                                         @if(auth()->user()->can('show objects'))
                                             <a href="{{ route('objects.acts.index', $act->object) }}" class="show-link">{{ $act->object->code }}</a>
                                         @else
                                             {{ $act->object->code }}
                                         @endif
                                     </td>
-                                    <td class="px-3">
-                                        @if(auth()->user()->can('show contracts'))
-                                            <a href="{{ route('contracts.show', $act->contract) }}" class="show-link">{{ $act->contract->getName() }}</a>
-                                        @else
-                                            {{ $act->contract->getName() }}
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if(auth()->user()->can('show acts'))
-                                            <a href="{{ route('acts.show', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
-                                        @else
-                                            {{ $act->getDateFormatted() }}
-                                        @endif
-                                    </td>
+                                    <td class="px-3">{{ $act->contract->getName() }}</td>
+                                    <td>{{ $act->getDateFormatted() }}</td>
                                     <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAmount(), $act->currency) }}</td>
                                     <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAvansAmount(), $act->currency) }}</td>
                                     <td>{{ \App\Models\CurrencyExchangeRate::format($act->getDepositAmount(), $act->currency) }}</td>
@@ -168,11 +134,6 @@
                                             </span>
                                         </a>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                                            @can('show acts')
-                                                <div class="menu-item px-3">
-                                                    <a target="_blank" href="{{ route('acts.show', $act) }}" class="menu-link px-3">Посмотреть</a>
-                                                </div>
-                                            @endcan
                                             @can('edit acts')
                                                 <div class="menu-item px-3">
                                                     <a target="_blank" href="{{ route('acts.edit', $act) }}" class="menu-link px-3">Изменить</a>
@@ -206,6 +167,8 @@
                             @endforelse
                         </tbody>
                     </table>
+
+                    {{ $acts->links() }}
                 </div>
             </div>
         </div>
