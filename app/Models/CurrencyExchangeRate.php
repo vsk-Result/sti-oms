@@ -14,7 +14,7 @@ class CurrencyExchangeRate extends Model
 
     public static function format(string $amount, string $currency): string
     {
-        $amount = number_format($amount, 2, '.', ' ');
+        $amount = number_format($amount, 0, '.', ' ');
         return match ($currency) {
             'EUR' => $amount . ' €',
             'USD' => '$' . $amount,

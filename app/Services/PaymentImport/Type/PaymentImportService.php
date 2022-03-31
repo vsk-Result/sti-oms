@@ -276,6 +276,7 @@ class PaymentImportService
                         'description' => $description,
                         'parameters' => $parameters,
                         'company_id' => $rowData[11],
+                        'bank_id' => $rowData[10] === Payment::PAYMENT_TYPE_NON_CASH ? $rowData[12] : null,
                         'payment_type_id' => $rowData[10],
                     ];
                 }

@@ -333,3 +333,7 @@ td > a.show-link:hover {
     margin-right: 6px;
     margin-bottom: 2px;
 }
+
+.min-w-130px {
+    min-width: 130px!important;
+}

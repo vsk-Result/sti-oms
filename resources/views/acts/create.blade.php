@@ -28,10 +28,10 @@
                                             <div class="position-relative mb-3">
                                                 <select name="contract_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     @foreach($contracts as $contract)
-                                                        <option value="{{ $contract->id }}">{{ $contract->getName() }}</option>
+                                                        <option value="{{ $contract->id }}">{{ $contract->object->code }} | {{ $contract->getName() }}</option>
 
                                                         @foreach($contract->children as $subContract)
-                                                            <option value="{{ $subContract->id }}">{{ $contract->getName() . ' | ' . $subContract->getName() }}</option>
+                                                            <option value="{{ $subContract->id }}">{{ $subContract->object->code }} | {{ $contract->getName() . ' | ' . $subContract->getName() }}</option>
                                                         @endforeach
                                                     @endforeach
                                                 </select>

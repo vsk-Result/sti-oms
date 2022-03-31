@@ -120,16 +120,16 @@
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="min-w-100px ps-4">Объект</th>
                                 <th class="min-w-250px">Номер</th>
-                                <th class="min-w-150px">Сумма</th>
-                                <th class="min-w-150px">Сумма аванса</th>
-                                <th class="min-w-150px">Сумма получ. аванса</th>
-                                <th class="min-w-150px">Сумма аванса к получению</th>
-                                <th class="min-w-150px">Выполнено по актам</th>
-                                <th class="min-w-150px">Аванс удержан по актам</th>
-                                <th class="min-w-150px">Депозит удержан по актам</th>
-                                <th class="min-w-150px">К оплате по актам</th>
-                                <th class="min-w-150px">Оплачено по актам</th>
-                                <th class="min-w-150px">Сумма неоплаченных работ по актам</th>
+                                <th class="min-w-130px">Сумма</th>
+                                <th class="min-w-130px">Сумма аванса</th>
+                                <th class="min-w-130px">Сумма получ. аванса</th>
+                                <th class="min-w-130px">Сумма аванса к получению</th>
+                                <th class="min-w-130px">Выполнено по актам</th>
+                                <th class="min-w-130px">Аванс удержан по актам</th>
+                                <th class="min-w-130px">Депозит удержан по актам</th>
+                                <th class="min-w-130px">К оплате по актам</th>
+                                <th class="min-w-130px">Оплачено по актам</th>
+                                <th class="min-w-130px">Сумма неоплаченных работ по актам</th>
                                 <th class="min-w-150px rounded-end pe-4">Действия</th>
                             </tr>
                         </thead>

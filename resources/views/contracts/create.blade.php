@@ -231,7 +231,21 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5">
+                        <div class="form-check form-check-custom form-check-solid mb-6 fw-bold fs-6 container-check" data-target="#avanses-container">
+                            <input class="form-check-input" type="checkbox" value="" id="showAvansesCheckbox"/>
+                            <label class="form-check-label" for="showAvansesCheckbox">
+                                Добавить авансы
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-custom form-check-solid fw-bold fs-6 container-check" data-target="#avanses-received-container">
+                            <input class="form-check-input" type="checkbox" value="" id="showAvansesReceivedCheckbox"/>
+                            <label class="form-check-label" for="showAvansesReceivedCheckbox">
+                                Добавить полученные авансы
+                            </label>
+                        </div>
+
+                        <div id="avanses-container" class="row mb-5 mt-10" style="display: none;">
                             <h3 class="fw-bolder">Авансы по договору</h3>
 
                             <div id="avans-template" class="col-md-3 mb-10 fv-row" style="display: none;">
@@ -305,7 +319,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5">
+                        <div id="avanses-received-container" class="row mb-5 mt-10" style="display: none;">
                             <h3 class="fw-bolder">Полученные авансы</h3>
 
                             <div id="received-avans-template" class="col-md-3 mb-10 fv-row" style="display: none;">
@@ -439,6 +453,11 @@
                         $(this).css('display', 'none');
                     })
                 }
+            });
+
+            $('.container-check input').on('click', function () {
+                const checked = $(this).prop('checked');
+                $($(this).parent().data('target')).toggle(checked);
             });
 
             $('#create-avans').on('click', function () {
