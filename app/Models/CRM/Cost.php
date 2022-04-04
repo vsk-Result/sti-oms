@@ -17,6 +17,11 @@ class Cost extends Model
         return $this->hasMany(CostItem::class, 'cost_id');
     }
 
+    public function closures(): HasMany
+    {
+        return $this->hasMany(CostClosure::class, 'cost_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

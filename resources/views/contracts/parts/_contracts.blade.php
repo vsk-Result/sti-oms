@@ -4,6 +4,7 @@
         <td class="px-3">
             {{ $contract->getName() }}
         </td>
+        <td></td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAmount(false, $contract->currency), $contract->currency) }}</td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount(false, $contract->currency), $contract->currency) }}</td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount(false, $contract->currency), $contract->currency) }}</td>

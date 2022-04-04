@@ -27,6 +27,15 @@ class PaymentImport extends Model
     const TYPE_HISTORY = 2;
     const TYPE_PAYMENTS = 3;
 
+    public static function getStatusesLists(): array
+    {
+        return [
+            Status::STATUS_ACTIVE => 'Заполнен',
+            Status::STATUS_BLOCKED => 'Не заполнен',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+    }
+
     private function getStatusesList(): array
     {
         return [

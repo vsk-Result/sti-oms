@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\PaymentImport;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bank;
+use App\Models\Company;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Object\BObject;
 use App\Services\PaymentImport\PaymentImportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
@@ -19,22 +22,17 @@ class ImportController extends Controller
         $this->importService = $importService;
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $query = PaymentImport::query();
+        $companies = Company::orderBy('name')->get();
+        $types = PaymentImport::getTypes();
+        $banks = Bank::getBanks();
+        $statuses = PaymentImport::getStatusesLists();
 
-        if (! auth()->user()->hasRole('super-admin')) {
-            $query->where('type_id', '!=', PaymentImport::TYPE_HISTORY);
-        }
-
-        $importsPaginated = $query->with('company', 'createdBy')
-            ->orderByDesc('date')
-            ->orderByDesc('id')
-            ->paginate(30);
-
+        $importsPaginated = $this->importService->filterImport($request->toArray());
         $importsGroupedByDate = collect($importsPaginated->items())->groupBy('date');
 
-        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate'));
+        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate', 'companies', 'types', 'banks', 'statuses'));
     }
 
     public function show(PaymentImport $import): View
