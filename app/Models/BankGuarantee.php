@@ -23,7 +23,7 @@ class BankGuarantee extends Model implements HasMedia
     protected $fillable = [
         'company_id', 'bank_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'start_date',
         'end_date', 'amount', 'start_date_deposit', 'end_date_deposit', 'amount_deposit', 'target', 'status_id',
-        'contract_id', 'organization_id', 'number'
+        'contract_id', 'organization_id', 'number', 'commission', 'currency', 'currency_rate'
     ];
 
     public function company(): BelongsTo
@@ -56,11 +56,6 @@ class BankGuarantee extends Model implements HasMedia
         return $this->end_date ? Carbon::parse($this->end_date)->format($format) : '';
     }
 
-    public function getAmount(): string
-    {
-        return number_format($this->amount, 2, '.', ' ');
-    }
-
     public function getStartDateDepositFormatted(string $format = 'd/m/Y'): string
     {
         return $this->start_date_deposit ? Carbon::parse($this->start_date_deposit)->format($format) : '';
@@ -71,12 +66,7 @@ class BankGuarantee extends Model implements HasMedia
         return $this->end_date_deposit ? Carbon::parse($this->end_date_deposit)->format($format) : '';
     }
 
-    public function getAmountDeposit(): string
-    {
-        return number_format($this->amount_deposit, 2, '.', ' ');
-    }
-
-    public static function getTargetsList()
+    public static function getTargetsList(): array
     {
        return [
           '-',
@@ -84,5 +74,13 @@ class BankGuarantee extends Model implements HasMedia
           'Обеспечение контракта',
           'Обеспечение депозита',
        ] ;
+    }
+
+    public function getAvansesLeftAmount(): string
+    {
+        $avansesReceived = $this->contract?->avansesReceived->sum('amount');
+        $avansesWithheld = $this->contract?->acts->sum('amount_avans');
+
+        return $avansesReceived - $avansesWithheld;
     }
 }

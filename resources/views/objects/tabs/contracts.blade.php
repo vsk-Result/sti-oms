@@ -104,17 +104,19 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="min-w-100px ps-4">Объект</th>
                                 <th class="min-w-250px">Номер</th>
-                                <th class="min-w-150px">Сумма</th>
-                                <th class="min-w-150px">Сумма аванса</th>
-                                <th class="min-w-150px">Сумма получ. аванса</th>
-                                <th class="min-w-150px">Сумма аванса к получению</th>
-                                <th class="min-w-150px">Выполнено по актам</th>
-                                <th class="min-w-150px">Аванс удержан по актам</th>
-                                <th class="min-w-150px">Депозит удержан по актам</th>
-                                <th class="min-w-150px">К оплате по актам</th>
-                                <th class="min-w-150px">Оплачено по актам</th>
-                                <th class="min-w-150px">Сумма неоплаченных работ по актам</th>
+                                <th class="min-w-100px"></th>
+                                <th class="min-w-130px">Сумма</th>
+                                <th class="min-w-130px">Сумма аванса</th>
+                                <th class="min-w-130px">Сумма получ. аванса</th>
+                                <th class="min-w-130px">Сумма аванса к получению</th>
+                                <th class="min-w-130px">Выполнено по актам</th>
+                                <th class="min-w-130px">Аванс удержан по актам</th>
+                                <th class="min-w-130px">Депозит удержан по актам</th>
+                                <th class="min-w-130px">К оплате по актам</th>
+                                <th class="min-w-130px">Оплачено по актам</th>
+                                <th class="min-w-130px">Сумма неоплаченных работ по актам</th>
                                 <th class="min-w-150px rounded-end pe-4">Действия</th>
                             </tr>
                             </thead>
@@ -124,6 +126,13 @@
                                     $childrenCount = $contract->children->count();
                                 @endphp
                                 <tr>
+                                    <td class="ps-4">
+                                        @if(auth()->user()->can('show objects'))
+                                            <a href="{{ route('objects.contracts.index', $contract->object) }}" class="show-link">{{ $contract->object->code }}</a>
+                                        @else
+                                            {{ $contract->object->code }}
+                                        @endif
+                                    </td>
                                     <td class="px-3">
                                         {{ $contract->getName() }}
                                     </td>
@@ -132,159 +141,80 @@
                                             @if ($childrenCount > 0 && $amount !== 0)
                                                 <a
                                                     href="#"
-                                                    class="show-link show-subcontracts"
+                                                    class="btn btn-outline btn-outline-dashed btn-outline-default me-2 mb-2 show-subcontracts"
                                                     data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
                                                     data-currency="{{ $currency }}"
+                                                    style="padding: 0.4rem 0.5rem;font-size: 0.9rem;"
                                                 >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                                                    <i class="fas fa-arrow-down me-1"></i>
+                                                    {{ $currency }}
                                                 </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                                                <br>
                                             @endif
-
+                                        @endforeach
+                                    </td>
+                                    <td>
+                                        @foreach($contract->getAmount(false) as $currency => $amount)
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getAvansesAmount(false) as $currency => $amount)
-                                            @if ($childrenCount > 0 && $amount !== 0)
-                                                <a
-                                                    href="#"
-                                                    class="show-link show-subcontracts"
-                                                    data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
-                                                    data-currency="{{ $currency }}"
-                                                >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                                </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                            @endif
-
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getAvansesReceivedAmount(false) as $currency => $amount)
-                                            @if ($childrenCount > 0 && $amount !== 0)
-                                                <a
-                                                    href="#"
-                                                    class="show-link show-subcontracts"
-                                                    data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
-                                                    data-currency="{{ $currency }}"
-                                                >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                                </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                            @endif
-
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getAvansesLeftAmount(false) as $currency => $amount)
-                                            <span>{{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}</span>
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getActsAmount(false) as $currency => $amount)
-                                            @if ($childrenCount > 0 && $amount !== 0)
-                                                <a
-                                                    href="#"
-                                                    class="show-link show-subcontracts"
-                                                    data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
-                                                    data-currency="{{ $currency }}"
-                                                >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                                </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                            @endif
-
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getActsAvasesAmount(false) as $currency => $amount)
-                                            @if ($childrenCount > 0 && $amount !== 0)
-                                                <a
-                                                    href="#"
-                                                    class="show-link show-subcontracts"
-                                                    data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
-                                                    data-currency="{{ $currency }}"
-                                                >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                                </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                            @endif
-
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getActsDepositesAmount(false) as $currency => $amount)
-                                            @if ($childrenCount > 0 && $amount !== 0)
-                                                <a
-                                                    href="#"
-                                                    class="show-link show-subcontracts"
-                                                    data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
-                                                    data-currency="{{ $currency }}"
-                                                >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                                </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                            @endif
-
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getActsNeedPaidAmount(false) as $currency => $amount)
-                                            @if ($childrenCount > 0 && $amount !== 0)
-                                                <a
-                                                    href="#"
-                                                    class="show-link show-subcontracts"
-                                                    data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
-                                                    data-currency="{{ $currency }}"
-                                                >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                                </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                            @endif
-
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getActsPaidAmount(false) as $currency => $amount)
-                                            @if ($childrenCount > 0 && $amount !== 0)
-                                                <a
-                                                    href="#"
-                                                    class="show-link show-subcontracts"
-                                                    data-show-subcontracts-url="{{ route('contracts.subcontracts.index', $contract) }}"
-                                                    data-currency="{{ $currency }}"
-                                                >
-                                                    {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                                </a>
-                                            @else
-                                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
-                                            @endif
-
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach($contract->getActsLeftPaidAmount(false) as $currency => $amount)
-                                            <span>{{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}</span>
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
                                             <br>
                                         @endforeach
                                     </td>
                                     <td>
-                                        <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
+                                        <a href="#" class="btn-menu btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                             <span class="svg-icon svg-icon-5 m-0">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                                     <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
@@ -316,7 +246,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12">
+                                    <td colspan="13">
                                         <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                             Договора отсутствуют
                                         </p>

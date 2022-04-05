@@ -1,59 +1,60 @@
-@extends('layouts.app')
+@extends('objects.layouts.show')
 
-@section('toolbar-title', 'Банковские гарантии и депозиты')
-@section('breadcrumbs', Breadcrumbs::render('bank_guarantees.index'))
+@section('object-tab-title', 'Банковские гарантии')
 
-@section('content')
+@section('object-tab-content')
     @include('bank-guarantees.modals.filter')
-    <div class="post">
-        <div class="card">
-            <div class="card-header border-0 pt-6">
-                <div class="card-title"></div>
-                <div class="card-toolbar">
-                    <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterBGModal">
+
+    <div class="row g-6 g-xl-9">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title"></div>
+                    <div class="card-toolbar">
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterBGModal">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z" fill="black"></path>
                                 </svg>
                             </span>
-                        Фильтр
-                    </button>
+                            Фильтр
+                        </button>
 
-                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        @can('create bank-guarantees')
-                            <a href="{{ route('bank_guarantees.create') }}" class="btn btn-light-primary">
-                                <span class="svg-icon svg-icon-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
-                                        <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
-                                        <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
-                                    </svg>
-                                </span>
-                                Новая банковская гарантия
-                            </a>
-                        @endcan
+                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            @can('create bank-guarantees')
+                                <a href="{{ route('bank_guarantees.create') }}?current_object_id={{ $object->id }}" class="btn btn-light-primary">
+                                    <span class="svg-icon svg-icon-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
+                                            <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
+                                            <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
+                                        </svg>
+                                    </span>
+                                    Новая банковская гарантия
+                                </a>
+                            @endcan
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body pt-0 table-responsive">
-                <table class="table table-hover align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
-                    <thead>
-                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                        <th class="min-w-100px">Объект</th>
-                        <th class="min-w-200px">Договор</th>
-                        <th class="min-w-200px">Номер</th>
-                        <th class="min-w-100px">Компания</th>
-                        <th class="min-w-300px">Организация</th>
-                        <th class="min-w-125px">Дата БГ</th>
-                        <th class="min-w-125px">Сумма БГ</th>
-                        <th class="min-w-125px">Комиссия БГ</th>
-                        <th class="min-w-150px">Остаток неотработанного аванса</th>
-                        <th class="min-w-125px">Дата депозита</th>
-                        <th class="min-w-125px">Сумма депозита</th>
-                        <th class="min-w-150px">Действия</th>
-                    </tr>
-                    </thead>
-                    <tbody class="text-gray-600 fw-bold">
+                <div class="card-body pt-0 table-responsive">
+                    <table class="table table-hover align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+                        <thead>
+                        <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <th class="min-w-100px">Объект</th>
+                            <th class="min-w-200px">Договор</th>
+                            <th class="min-w-200px">Номер</th>
+                            <th class="min-w-100px">Компания</th>
+                            <th class="min-w-300px">Организация</th>
+                            <th class="min-w-125px">Дата БГ</th>
+                            <th class="min-w-125px">Сумма БГ</th>
+                            <th class="min-w-125px">Комиссия БГ</th>
+                            <th class="min-w-150px">Остаток неотработанного аванса</th>
+                            <th class="min-w-125px">Дата депозита</th>
+                            <th class="min-w-125px">Сумма депозита</th>
+                            <th class="min-w-150px">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-gray-600 fw-bold">
                         @forelse($bankGuarantees as $guarantee)
                             <tr>
                                 <td>
@@ -115,11 +116,71 @@
                                 </td>
                             </tr>
                         @endforelse
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
 
-                {{ $bankGuarantees->links() }}
+                    {{ $bankGuarantees->links() }}
+                </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $('.show-subcontracts').on('click', function(e) {
+            e.preventDefault();
+
+            if ($(this).hasClass('show-active')) {
+                $('a').removeClass('show-active');
+                $('tr').removeClass('contract-row-active');
+                $('.subcontract-row').remove();
+                return;
+            }
+
+            $('a').removeClass('show-active');
+            $('tr').removeClass('contract-row-active');
+            $('.subcontract-row').remove();
+
+            const $tr = $(this).closest('tr');
+            const url = $(this).data('show-subcontracts-url');
+            const currency = $(this).data('currency');
+
+            $(this).addClass('show-active');
+
+            mainApp.sendAJAX(
+                url,
+                'GET',
+                {
+                    currency
+                },
+                (data) => {
+                    $tr.after(data.contracts_view);
+                    $tr.addClass('contract-row-active');
+                },
+                {},
+                () => {
+                    KTMenu.createInstances();
+                },
+            )
+        });
+    </script>
+@endpush
+
+@push('styles')
+    <style>
+        .subcontract-row {
+            background-color: #fff1e1;
+            border-top: 1px solid #ddc4c4 !important;
+        }
+
+        .contract-row-active, .contract-row-active:hover {
+            background-color: bisque !important;
+            --bs-table-accent-bg: bisque !important;
+        }
+
+        .show-subcontracts.show-active {
+            color: #ff8100 !important
+        }
+    </style>
+@endpush

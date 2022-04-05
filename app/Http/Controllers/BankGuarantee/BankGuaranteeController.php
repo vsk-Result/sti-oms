@@ -8,7 +8,9 @@ use App\Http\Requests\BankGuarantee\UpdateBankGuaranteeRequest;
 use App\Models\Bank;
 use App\Models\BankGuarantee;
 use App\Models\Company;
+use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
+use App\Models\Organization;
 use App\Models\Status;
 use App\Services\BankGuaranteeService;
 use Illuminate\Http\RedirectResponse;
@@ -24,10 +26,12 @@ class BankGuaranteeController extends Controller
         $this->guaranteeService = $guaranteeService;
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $bankGuarantees = BankGuarantee::with('company', 'object')->get();
-        return view('bank-guarantees.index', compact('bankGuarantees'));
+        $objects = BObject::orderBy('code')->get();
+        $contracts = Contract::with('parent')->orderBy('name')->get();
+        $bankGuarantees = $this->guaranteeService->filterBankGuarantee($request->toArray());
+        return view('bank-guarantees.index', compact('bankGuarantees', 'contracts', 'objects'));
     }
 
     public function create(Request $request): View
@@ -36,8 +40,10 @@ class BankGuaranteeController extends Controller
         $objectId = $request->get('current_object_id') ?? null;
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
+        $organizations = Organization::orderBy('name')->get();
+        $contracts = Contract::with('parent')->orderBy('name')->get();
         $targets = BankGuarantee::getTargetsList();
-        return view('bank-guarantees.create', compact('banks', 'objects', 'companies', 'targets', 'objectId'));
+        return view('bank-guarantees.create', compact('banks', 'objects', 'companies', 'targets', 'objectId', 'organizations', 'contracts'));
     }
 
     public function store(StoreBankGuaranteeRequest $request): RedirectResponse
@@ -57,8 +63,10 @@ class BankGuaranteeController extends Controller
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $targets = BankGuarantee::getTargetsList();
+        $organizations = Organization::orderBy('name')->get();
+        $contracts = Contract::with('parent')->orderBy('name')->get();
         $statuses = Status::getStatuses();
-        return view('bank-guarantees.edit', compact('guarantee', 'banks', 'objects', 'companies', 'targets', 'statuses'));
+        return view('bank-guarantees.edit', compact('guarantee', 'banks', 'objects', 'companies', 'targets', 'statuses', 'organizations', 'contracts'));
     }
 
     public function update(BankGuarantee $guarantee, UpdateBankGuaranteeRequest $request): RedirectResponse

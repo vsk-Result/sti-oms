@@ -96,6 +96,7 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="min-w-100px ps-4">Объект</th>
                                 <th class="min-w-150px">Договор</th>
                                 <th class="min-w-150px">Дата</th>
                                 <th class="min-w-150px">Выполнено</th>
@@ -108,56 +109,63 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($acts as $act)
-                                    <tr>
-                                        <td class="px-3">{{ $act->contract->getName() }}</td>
-                                        <td>{{ $act->getDateFormatted() }}</td>
-                                        <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAmount(), $act->currency) }}</td>
-                                        <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAvansAmount(), $act->currency) }}</td>
-                                        <td>{{ \App\Models\CurrencyExchangeRate::format($act->getDepositAmount(), $act->currency) }}</td>
-                                        <td>{{ \App\Models\CurrencyExchangeRate::format($act->getNeedPaidAmount(), $act->currency) }}</td>
-                                        <td>{{ \App\Models\CurrencyExchangeRate::format($act->getPaidAmount(), $act->currency) }}</td>
-                                        <td>{{ \App\Models\CurrencyExchangeRate::format($act->getLeftPaidAmount(), $act->currency) }}</td>
-                                        <td>
-                                            <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
-                                                <span class="svg-icon svg-icon-5 m-0">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                        <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                                                    </svg>
-                                                </span>
-                                            </a>
-                                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                                                @can('edit acts')
-                                                    <div class="menu-item px-3">
-                                                        <a target="_blank" href="{{ route('acts.edit', $act) }}" class="menu-link px-3">Изменить</a>
-                                                    </div>
+                            @forelse($acts as $act)
+                                <tr>
+                                    <td class="ps-4">
+                                        @if(auth()->user()->can('show objects'))
+                                            <a href="{{ route('objects.acts.index', $act->object) }}" class="show-link">{{ $act->object->code }}</a>
+                                        @else
+                                            {{ $act->object->code }}
+                                        @endif
+                                    </td>
+                                    <td class="px-3">{{ $act->contract->getName() }}</td>
+                                    <td>{{ $act->getDateFormatted() }}</td>
+                                    <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAmount(), $act->currency) }}</td>
+                                    <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAvansAmount(), $act->currency) }}</td>
+                                    <td>{{ \App\Models\CurrencyExchangeRate::format($act->getDepositAmount(), $act->currency) }}</td>
+                                    <td>{{ \App\Models\CurrencyExchangeRate::format($act->getNeedPaidAmount(), $act->currency) }}</td>
+                                    <td>{{ \App\Models\CurrencyExchangeRate::format($act->getPaidAmount(), $act->currency) }}</td>
+                                    <td>{{ \App\Models\CurrencyExchangeRate::format($act->getLeftPaidAmount(), $act->currency) }}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
+                                            <span class="svg-icon svg-icon-5 m-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                            @can('edit acts')
+                                                <div class="menu-item px-3">
+                                                    <a target="_blank" href="{{ route('acts.edit', $act) }}" class="menu-link px-3">Изменить</a>
+                                                </div>
 
-                                                    <div class="menu-item px-3">
-                                                        <form action="{{ route('acts.destroy', $act) }}" method="POST" class="hidden">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <a
-                                                                href="#"
-                                                                class="menu-link px-3 text-danger"
-                                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить акт?')) {this.closest('form').submit();}"
-                                                            >
-                                                                Удалить
-                                                            </a>
-                                                        </form>
-                                                    </div>
-                                                @endcan
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9">
-                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                                Акты отсутствуют
-                                            </p>
-                                        </td>
-                                    </tr>
-                                @endforelse
+                                                <div class="menu-item px-3">
+                                                    <form action="{{ route('acts.destroy', $act) }}" method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <a
+                                                            href="#"
+                                                            class="menu-link px-3 text-danger"
+                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить акт?')) {this.closest('form').submit();}"
+                                                        >
+                                                            Удалить
+                                                        </a>
+                                                    </form>
+                                                </div>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="10">
+                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                            Акты отсутствуют
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
                             </tbody>
                         </table>
 

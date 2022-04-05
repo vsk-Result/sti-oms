@@ -41,6 +41,11 @@
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/debts') ? 'active' : '' }}" href="{{ route('objects.debts.index', $object) }}">Долги</a>
                             </li>
                         @endcan
+                        @can('index bank-guarantees')
+                            <li class="nav-item">
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/bank-guarantees') ? 'active' : '' }}" href="{{ route('objects.bank_guarantees.index', $object) }}">БГ</a>
+                            </li>
+                        @endcan
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/files') ? 'active' : '' }}" href="{{ route('objects.files.index', $object) }}">Файлы</a>--}}
 {{--                        </li>--}}

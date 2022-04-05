@@ -18,6 +18,58 @@
                         <div class="row mb-5">
                             <div class="col-md-12 fv-row">
 
+                                <div class="mb-10 fv-row">
+                                    <div class="mb-1">
+                                        <label class="form-label fw-bolder text-dark fs-6">Номер</label>
+                                        <div class="position-relative mb-3">
+                                            <input
+                                                class="form-control form-control-lg form-control-solid {{ $errors->has('number') ? 'is-invalid' : '' }}"
+                                                type="text"
+                                                name="number"
+                                                value="{{ old('number') }}"
+                                                required
+                                            />
+                                        </div>
+                                        @if ($errors->has('number'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div>{{ implode(' ', $errors->get('number')) }}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Договор</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="contract_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($contracts as $contract)
+                                                        <option value="{{ $contract->id }}">{{ $contract->object->code }} | {{ $contract->getName() }}</option>
+
+                                                        @foreach($contract->children as $subContract)
+                                                            <option value="{{ $subContract->id }}">{{ $subContract->object->code }} | {{ $contract->getName() . ' | ' . $subContract->getName() }}</option>
+                                                        @endforeach
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Организация</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="organization_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($organizations as $organization)
+                                                        <option value="{{ $organization->id }}">{{ $organization->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
@@ -38,7 +90,7 @@
                                             <div class="position-relative mb-3">
                                                 <select name="target" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     @foreach($targets as $target)
-                                                        <option value="{{ $target }}">{{$target }}</option>
+                                                        <option value="{{ $target }}">{{ $target }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -53,7 +105,7 @@
                                             <div class="position-relative mb-3">
                                                 <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     @foreach($companies as $company)
-                                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                                        <option value="{{ $company->id }}" {{ $company->id === 1 ? 'selected' : '' }}>{{ $company->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -131,6 +183,26 @@
                                         @if ($errors->has('amount'))
                                             <div class="fv-plugins-message-container invalid-feedback">
                                                 <div>{{ implode(' ', $errors->get('amount')) }}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="mb-10 fv-row">
+                                    <div class="mb-1">
+                                        <label class="form-label fw-bolder text-dark fs-6">Комиссия</label>
+                                        <div class="position-relative mb-3">
+                                            <input
+                                                class="form-control form-control-lg form-control-solid {{ $errors->has('commission') ? 'is-invalid' : '' }}"
+                                                type="text"
+                                                name="commission"
+                                                value="{{ old('commission') }}"
+                                                required
+                                            />
+                                        </div>
+                                        @if ($errors->has('commission'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div>{{ implode(' ', $errors->get('commission')) }}</div>
                                             </div>
                                         @endif
                                     </div>

@@ -11,6 +11,7 @@ use App\Http\Controllers\Object\CashPaymentController;
 use App\Http\Controllers\Object\FileController;
 use App\Http\Controllers\Object\ActivityController;
 use App\Http\Controllers\Object\UserController;
+use App\Http\Controllers\Object\BankGuaranteeController;
 
 // Объекты
 
@@ -32,6 +33,10 @@ Route::get('objects/{object}/contracts', [ContractController::class, 'index'])->
 // Акты
 
 Route::get('objects/{object}/acts', [ActController::class, 'index'])->name('objects.acts.index');
+
+// Банковские гарантии
+
+Route::get('objects/{object}/bank-guarantees', [BankGuaranteeController::class, 'index'])->name('objects.bank_guarantees.index');
 
 // Гарантийные удержания
 
