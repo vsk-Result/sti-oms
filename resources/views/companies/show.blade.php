@@ -9,7 +9,7 @@
             <div class="card h-100">
                 <div class="card-body p-9">
 
-                    <div class="fs-2hx fw-bolder">1 325 729 ₽</div>
+                    <div class="fs-2hx fw-bolder">{{ \App\Models\CurrencyExchangeRate::format(array_sum($balance), 'RUB') }}</div>
 
                     <div class="d-flex align-items-center fs-4 fw-bold text-gray-400 mb-7">
                         <span class="d-flex">Баланс на {{ $date->format('d.m.Y') }}</span>
