@@ -51,7 +51,7 @@ class CompanyController extends Controller
                 ->where('bank_id', $bankId)
                 ->orderBy('date', 'desc')
                 ->first()
-                ?->incoming_balance;
+                ?->outcoming_balance;
 
             $balances[Bank::getBankName($bankId)] = $balance ?? 0;
         }
