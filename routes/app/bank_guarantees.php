@@ -1,6 +1,12 @@
 <?php
 
 use App\Http\Controllers\BankGuarantee\BankGuaranteeController;
+use App\Http\Controllers\BankGuarantee\ImportController;
+
+// Загрузка договоров
+
+Route::post('bank-guarantees/import', [ImportController::class, 'store'])->name('bank_guarantees.import.store')->middleware('can:create bank_guarantees');
+
 
 // Банковские гарантии и депозиты
 
