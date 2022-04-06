@@ -54,7 +54,7 @@
                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                         @can('show companies')
                                             <div class="menu-item px-3">
-                                                <a href="{{ route('companies.edit', $company) }}" class="menu-link px-3">Посмотреть</a>
+                                                <a href="{{ route('companies.show', $company) }}" class="menu-link px-3">Посмотреть</a>
                                             </div>
                                         @endcan
                                         @can('edit companies')

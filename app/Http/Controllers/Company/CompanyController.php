@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreOrUpdateCompanyRequest;
+use App\Models\Bank;
 use App\Models\Company;
+use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Services\CompanyService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CompanyController extends Controller
@@ -21,7 +25,7 @@ class CompanyController extends Controller
 
     public function index(): View
     {
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         return view('companies.index', compact('companies'));
     }
 
@@ -34,6 +38,25 @@ class CompanyController extends Controller
     {
         $this->companyService->createCompany($request->toArray());
         return redirect()->route('companies.index');
+    }
+
+    public function show(Company $company, Request $request): View
+    {
+        $date = Carbon::parse($request->get('balance_date', now()));
+        $balances = [];
+
+        foreach (Bank::getBanks() as $bankId => $banks) {
+            $balance = PaymentImport::where('company_id', $company->id)
+                ->where('date', '<=', $date)
+                ->where('bank_id', $bankId)
+                ->orderBy('date', 'desc')
+                ->first()
+                ?->incoming_balance;
+
+            $balances[Bank::getBankName($bankId)] = $balance ?? 0;
+        }
+
+        return view('companies.show', compact('company', 'balances', 'date'));
     }
 
     public function edit(Company $company): View
