@@ -40,7 +40,7 @@
                     <thead>
                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                         <th class="min-w-100px">Объект</th>
-                        <th class="min-w-200px">Договор</th>
+                        <th class="min-w-250px">Договор</th>
                         <th class="min-w-200px">Номер</th>
                         <th class="min-w-100px">Компания</th>
                         <th class="min-w-300px">Организация</th>
