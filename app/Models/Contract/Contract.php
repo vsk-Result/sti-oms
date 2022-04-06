@@ -383,7 +383,7 @@ class Contract extends Model implements HasMedia, Audit
     public function getActsLeftPaidAmount($generalAmount = true, string $currency = null): string|array
     {
         $paid = 0;
-        foreach ($this->acts->where('currency', $currency) as $act) {
+        foreach ($this->acts as $act) {
             $paid += $act->payments->sum('amount');
         }
 
@@ -395,15 +395,12 @@ class Contract extends Model implements HasMedia, Audit
             }
         }
 
-        $amount = $this->acts->where('currency', $currency)->sum('amount_need_paid');
+        $amount = $this->acts->sum('amount_need_paid');
 
         if ($this->isMain() && $generalAmount) {
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->acts->sum('amount_need_paid');
             }
-
-            $amount -= $paid;
-
         } else if ($this->isMain() && ! $generalAmount) {
 
             if ($this->children->where('type_id', self::TYPE_PHASE)->count() > 0) {
@@ -419,7 +416,7 @@ class Contract extends Model implements HasMedia, Audit
 
                 return $result;
             } else {
-                return [$this->currency => $amount];
+                return [$this->currency => $amount - $paid];
             }
         }
 
