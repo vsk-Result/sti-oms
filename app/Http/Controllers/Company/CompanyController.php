@@ -64,11 +64,11 @@ class CompanyController extends Controller
                 'bank' => Bank::getBankName(1),
                 'contract' => '№ ВЛ/002020-006438 от 25.12.2020',
                 'amount' => 100000000,
-                'sent' => Payment::where('date', '>=', $startCreditDate)->where('description', 'LIKE', 'Погашение основного долга по договору № ВЛ/002020-006438 от 25.12.2020%')->sum('amount'),
-                'received' => Payment::where('date', '>=', $startCreditDate)->where('description', 'LIKE', 'Выдача кредита по договору № ВЛ/002020-006438 от 25.12.2020%')->sum('amount')
+                'sent' => Payment::where('date', '>=', $startCreditDate)->where('date', '<=', $date)->where('description', 'LIKE', 'Погашение основного долга по договору № ВЛ/002020-006438 от 25.12.2020%')->sum('amount'),
+                'received' => Payment::where('date', '>=', $startCreditDate)->where('date', '<=', $date)->where('description', 'LIKE', 'Выдача кредита по договору № ВЛ/002020-006438 от 25.12.2020%')->sum('amount')
             ]
         ];
-        $totalCreditAmount = $credits[0]['amount'] - $credits[0]['received'] + $credits[0]['sent'];
+        $totalCreditAmount = $credits[0]['amount'] - $credits[0]['amount'] - $credits[0]['received'];
 
         return view('companies.show', compact('company', 'balances', 'date', 'credits', 'totalCreditAmount'));
     }
