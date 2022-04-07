@@ -86,8 +86,12 @@
                                         <span class="text-muted fs-8">Доступно</span>
                                         {{ \App\Models\CurrencyExchangeRate::format($credit['amount'] - $credit['received'], 'RUB') }}
                                     </div>
-                                    <div class="d-flex flex-column">
+                                    <div class="d-flex flex-column me-8">
                                         <span class="text-muted fs-8">В использовании</span>
+                                        {{ \App\Models\CurrencyExchangeRate::format(abs($credit['sent']), 'RUB') }}
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-muted fs-8">Всего</span>
                                         {{ \App\Models\CurrencyExchangeRate::format($credit['amount'], 'RUB') }}
                                     </div>
                                 </div>
