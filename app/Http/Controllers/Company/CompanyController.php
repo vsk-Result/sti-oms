@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreOrUpdateCompanyRequest;
 use App\Models\Bank;
 use App\Models\Company;
+use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Services\CompanyService;
@@ -56,7 +57,20 @@ class CompanyController extends Controller
             $balances[Bank::getBankName($bankId)] = $balance ?? 0;
         }
 
-        return view('companies.show', compact('company', 'balances', 'date'));
+        $startCreditDate = Carbon::parse('2022-02-13');
+        $credits = [
+            [
+                'bank_id' => 1,
+                'bank' => Bank::getBankName(1),
+                'contract' => '№ ВЛ/002020-006438 от 25.12.2020',
+                'amount' => 100000000,
+                'sent' => Payment::where('date', '>=', $startCreditDate)->where('description', 'LIKE', 'Погашение основного долга по договору № ВЛ/002020-006438 от 25.12.2020%')->sum('amount'),
+                'received' => Payment::where('date', '>=', $startCreditDate)->where('description', 'LIKE', 'Выдача кредита по договору № ВЛ/002020-006438 от 25.12.2020%')->sum('amount')
+            ]
+        ];
+        $totalCreditAmount = $credits[0]['amount'] - $credits[0]['received'] + $credits[0]['sent'];
+
+        return view('companies.show', compact('company', 'balances', 'date', 'credits', 'totalCreditAmount'));
     }
 
     public function edit(Company $company): View
