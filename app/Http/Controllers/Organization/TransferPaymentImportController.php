@@ -30,20 +30,8 @@ class TransferPaymentImportController extends Controller
         foreach ($importData['Организации'] as $index => $row) {
             if ($index === 0) continue;
 
-            $newOrganizaition = Organization::where('name', $row[2])->first();
-
-            if (! $newOrganizaition) {
-                continue;
-            }
-
-            Debt::where('organization_id', $row[0])->update([
-                'organization_id' => $newOrganizaition->id
-            ]);
-
-            continue;
-
             $organization = Organization::find($row[0]);
-
+            $newOrganizaition = Organization::where('name', $row[2])->first();
 
             if (! $organization || ! $newOrganizaition) {
                 continue;
