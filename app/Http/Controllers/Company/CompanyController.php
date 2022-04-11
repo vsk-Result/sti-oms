@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreOrUpdateCompanyRequest;
 use App\Models\Bank;
 use App\Models\Company;
+use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
@@ -70,7 +71,33 @@ class CompanyController extends Controller
         ];
         $totalCreditAmount = $credits[0]['amount'] - $credits[0]['amount'] - $credits[0]['received'];
 
-        return view('companies.show', compact('company', 'balances', 'date', 'credits', 'totalCreditAmount'));
+        $DTOrganization = Organization::where('name', 'ООО "ДТ ТЕРМО ГРУПП"')->first();
+        $PTIOrganization = Organization::where('name', 'ООО "ПРОМТЕХИНЖИНИРИНГ"')->first();
+
+        $totalDebtDTAmount = - Payment::where('date', '>=', '2020-12-17')
+            ->where('date', '<=', $date)
+            ->where('type_id', Payment::TYPE_TRANSFER)
+            ->where(function($q) use ($DTOrganization) {
+                $q->where('organization_receiver_id', $DTOrganization->id);
+                $q->orWhere('organization_sender_id', $DTOrganization->id);
+            })
+            ->sum('amount');
+
+        $totalDebtPTIAmount = - Payment::where('date', '>=', '2021-02-12')
+            ->where('date', '<=', $date)
+            ->where('type_id', Payment::TYPE_TRANSFER)
+            ->where('description', '!=', 'PATRIOT')
+            ->where(function($q) {
+                $q->where('bank_id', 1);
+                $q->orWhere('bank_id', null);
+            })
+            ->where(function($q) use ($PTIOrganization) {
+                $q->where('organization_receiver_id', $PTIOrganization->id);
+                $q->orWhere('organization_sender_id', $PTIOrganization->id);
+            })
+            ->sum('amount');
+
+        return view('companies.show', compact('company', 'balances', 'date', 'credits', 'totalCreditAmount', 'totalDebtDTAmount', 'totalDebtPTIAmount'));
     }
 
     public function edit(Company $company): View
