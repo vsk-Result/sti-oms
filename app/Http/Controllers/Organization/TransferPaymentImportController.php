@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Organization;
 use App\Helpers\Sanitizer;
 use App\Http\Controllers\Controller;
 use App\Imports\Organization\PaymentTransferImport;
+use App\Models\Debt\Debt;
 use App\Models\Organization;
 use App\Services\OrganizationService;
 use Illuminate\Http\RedirectResponse;
@@ -29,8 +30,16 @@ class TransferPaymentImportController extends Controller
         foreach ($importData['Организации'] as $index => $row) {
             if ($index === 0) continue;
 
-            $organization = Organization::find($row[0]);
             $newOrganizaition = Organization::where('name', $row[2])->first();
+
+            Debt::where('organization_id', $row[0])->update([
+                'organization_id' => $newOrganizaition->id
+            ]);
+
+            continue;
+
+            $organization = Organization::find($row[0]);
+
 
             if (! $organization || ! $newOrganizaition) {
                 continue;
@@ -42,6 +51,10 @@ class TransferPaymentImportController extends Controller
 
             $organization->paymentsReceive()->update([
                 'organization_receiver_id' => $newOrganizaition->id
+            ]);
+
+            $organization->debts()->update([
+                'organization_id' => $newOrganizaition->id
             ]);
 
             $this->organizationService->destroyOrganization($organization);
