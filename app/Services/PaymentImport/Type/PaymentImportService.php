@@ -64,6 +64,8 @@ class PaymentImportService
         $this->paymentService->loadCategoriesList();
         $processInfo = $this->processInfoFromImportData($importData);
 
+        $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
+
         foreach ($processInfo['payments'] as $payment) {
 
             if (isset($payment['company_id'])) {
@@ -113,18 +115,8 @@ class PaymentImportService
                     $payment['object'] = str_replace(',', '.', $payment['object']);
                 }
 
-                if ($payment['object'] == '27' || $payment['object'] == '27.1' || $payment['object'] == '27.7') {
-                    $code = '27.1';
-                } elseif ($payment['object'] == '27.2') {
-                    $code = '27.2';
-                } elseif ($payment['object'] == '27.3') {
-                    $code = '27.3';
-                } elseif ($payment['object'] == '27.4') {
-                    $code = '27.4';
-                } elseif ($payment['object'] == '27.8') {
-                    $code = '27.8';
-                } elseif ($payment['object'] == '28') {
-                    $code = '28';
+                if (isset($codesWithoutWorktype[$payment['object']])) {
+                    $code = $codesWithoutWorktype[$payment['object']];
                 } else {
                     $code = $payment['object'];
 

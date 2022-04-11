@@ -34,7 +34,8 @@ class  BObject extends Model implements Audit
         'status_id',
         'responsible_name',
         'responsible_email',
-        'responsible_phone'
+        'responsible_phone',
+        'is_without_worktype'
     ];
 
     public function imports(): HasMany
@@ -79,7 +80,7 @@ class  BObject extends Model implements Audit
         $objects = static::orderBy('code')->get();
 
         foreach ($objects as $object) {
-            if (in_array($object->code, ['27.1', '27.2', '27.3', '27.4', '27.5', '27.6', '27.7', '27.8', '28'])) {
+            if ($object->isWithoutWorktype()) {
                 $result[$object->id . '::' . null] = $object->code;
             } else {
                 foreach ($workTypes as $workType) {
@@ -200,5 +201,27 @@ class  BObject extends Model implements Audit
 //        }
 
         return 0;
+    }
+
+    public function isWithoutWorktype(): bool
+    {
+        return $this->is_without_worktype;
+    }
+
+    public static function getCodesWithoutWorktype(): array
+    {
+        return [
+            '27' => '27.1',
+            '27.1' => '27.1',
+            '27.7' => '27.1',
+            '27.2' => '27.2',
+            '27.3' => '27.3',
+            '27.4' => '27.4',
+            '27.5' => '27.1',
+            '27.6' => '27.1',
+            '27.8' => '27.8',
+            '28' => '28',
+            '6' => '6',
+        ];
     }
 }

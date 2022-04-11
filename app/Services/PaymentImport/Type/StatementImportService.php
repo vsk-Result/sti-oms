@@ -63,6 +63,8 @@ class StatementImportService
         $this->paymentService->loadCategoriesList();
         $processInfo = $this->processInfoFromStatementData($statementData);
 
+        $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
+
         foreach ($processInfo['payments'] as $payment) {
             if (str_contains($payment['organization_name'], 'НДС полученный')) {
                 $payment['organization_name'] = 'Филиал "Центральный" Банка ВТБ (ПАО)';
@@ -107,18 +109,8 @@ class StatementImportService
                     $payment['object'] = str_replace(',', '.', $payment['object']);
                 }
 
-                if ($payment['object'] == '27' || $payment['object'] == '27.1' || $payment['object'] == '27.7' || $payment['object'] == '27.6' || $payment['object'] == '27.5') {
-                    $code = '27.1';
-                } elseif ($payment['object'] == '27.2') {
-                    $code = '27.2';
-                } elseif ($payment['object'] == '27.3') {
-                    $code = '27.3';
-                } elseif ($payment['object'] == '27.4') {
-                    $code = '27.4';
-                } elseif ($payment['object'] == '27.8') {
-                    $code = '27.8';
-                } elseif ($payment['object'] == '28') {
-                    $code = '28';
+                if (isset($codesWithoutWorktype[$payment['object']])) {
+                    $code = $codesWithoutWorktype[$payment['object']];
                 } else {
                     $code = $payment['object'];
 

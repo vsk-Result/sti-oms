@@ -290,22 +290,13 @@ class PaymentService
         $organizationReceiverId = Organization::where('name', 'ФИЛИАЛ № 7701 БАНКА ВТБ (ПАО) Г. МОСКВА')->first()->id;
 
         $payments = [];
+        $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
         foreach ($amountGroupedByObjectCode as $oCode => $amount) {
 
             $worktypeCode = null;
 
-            if ($oCode == '27' || $oCode == '27.1' || $oCode == '27.7') {
-                $code = '27.1';
-            } elseif ($oCode == '27.2') {
-                $code = '27.2';
-            } elseif ($oCode == '27.3') {
-                $code = '27.3';
-            } elseif ($oCode == '27.4') {
-                $code = '27.4';
-            } elseif ($oCode == '27.8') {
-                $code = '27.8';
-            } elseif ($oCode == '28') {
-                $code = '28';
+            if (isset($codesWithoutWorktype[$oCode])) {
+                $code = $codesWithoutWorktype[$oCode];
             } else {
                 $code = $oCode;
                 $code = substr($code, 0, strpos($code, '.'));
@@ -461,19 +452,9 @@ class PaymentService
             } else if ($requestData['object_code'] === 'Общее') {
                 $requestData['type_id'] = Payment::TYPE_GENERAL;
             } else if (! empty($requestData['object_code'])) {
-
-                if ($requestData['object_code'] == '27' || $requestData['object_code'] == '27.1' || $requestData['object_code'] == '27.7') {
-                    $code = '27.1';
-                } elseif ($requestData['object_code'] == '27.2') {
-                    $code = '27.2';
-                } elseif ($requestData['object_code'] == '27.3') {
-                    $code = '27.3';
-                } elseif ($requestData['object_code'] == '27.4') {
-                    $code = '27.4';
-                } elseif ($requestData['object_code'] == '27.8') {
-                    $code = '27.8';
-                } elseif ($requestData['object_code'] == '28') {
-                    $code = '28';
+                $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
+                if (isset($codesWithoutWorktype[$requestData['object_code']])) {
+                    $code = $codesWithoutWorktype[$requestData['object_code']];
                 } else {
                     $code = $requestData['object_code'];
 

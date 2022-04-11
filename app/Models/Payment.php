@@ -124,10 +124,7 @@ class Payment extends Model implements Audit
     public function getObjectId(): string
     {
         if ($this->type_id === static::TYPE_OBJECT) {
-            if (in_array($this->object->code, ['27.1', '27.2', '27.3', '27.4', '27.5', '27.6', '27.7', '27.8', '28'])) {
-                return $this->object_id . '::' . null;
-            }
-            return "$this->object_id::$this->object_worktype_id";
+            return $this->object_id . '::' . ($this->object->isWithoutWorktype() ? null : $this->object_worktype_id);
         }
 
         return $this->type_id;
@@ -137,10 +134,9 @@ class Payment extends Model implements Audit
     {
         if ($this->type_id === static::TYPE_OBJECT) {
             if (! is_null($this->object_worktype_id)) {
-                if (in_array($this->object->code, ['27.1', '27.2', '27.3', '27.4', '27.5', '27.6', '27.7', '27.8', '28'])) {
-                    return $this->object->code;
-                }
-                return $this->object->code . '.' . $this->object_worktype_id;
+                return $this->object->isWithoutWorktype()
+                    ? $this->object->code
+                    : $this->object->code . '.' . $this->object_worktype_id;
             }
 
             return $this->object->code;

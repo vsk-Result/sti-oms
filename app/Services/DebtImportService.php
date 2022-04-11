@@ -164,6 +164,8 @@ class DebtImportService
             'kpp' => null
         ]);
 
+        $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
+
         foreach ($importData as $row) {
             $value = $row[0];
             $amount = $row[6];
@@ -188,18 +190,8 @@ class DebtImportService
 
                 $worktype = null;
 
-                if ($code == '27' || $code == '27.1' || $code == '27.7') {
-                    $code = '27.1';
-                } elseif ($code == '27.2') {
-                    $code = '27.2';
-                } elseif ($code == '27.3') {
-                    $code = '27.3';
-                } elseif ($code == '27.4') {
-                    $code = '27.4';
-                } elseif ($code == '27.8') {
-                    $code = '27.8';
-                } elseif ($code == '28') {
-                    $code = '28';
+                if (isset($codesWithoutWorktype[$code])) {
+                    $code = $codesWithoutWorktype[$code];
                 } else {
                     $oCode = $code;
 
@@ -268,7 +260,7 @@ class DebtImportService
     {
         foreach ($organizations as $organizationName => $objectCodes) {
 
-            if ($organizationName === 'ДТ Термо') {
+            if (trim($organizationName) === 'ДТ Термо') {
                 continue;
             }
 

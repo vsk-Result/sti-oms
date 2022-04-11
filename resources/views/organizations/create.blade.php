@@ -18,7 +18,7 @@
                         <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
                             <div class="row mb-5">
                                 <div class="col-md-12 fv-row">
-                                    <div class="mb-10 fv-row" data-kt-password-meter="true">
+                                    <div class="mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Связать с компанией</label>
                                             <div class="position-relative mb-3">
@@ -32,7 +32,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-10 fv-row" data-kt-password-meter="true">
+                                    <div class="mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Название</label>
                                             <div class="position-relative mb-3">

@@ -63,6 +63,8 @@ class CRMCostClosureImportService
             'kpp' => null
         ]);
 
+        $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
+
         foreach ($items as $item) {
 
             if ($item->object || $item->type_id === 1) {
@@ -73,18 +75,8 @@ class CRMCostClosureImportService
                 if ($item->type_id === 1 && ! $item->object) {
                     $typeId = Payment::TYPE_TRANSFER;
                 } else {
-                    if ($item->object->code == '27' || $item->object->code == '27.1' || $item->object->code == '27.7') {
-                        $objectCode = '27.1';
-                    } elseif ($item->object->code == '27.2') {
-                        $objectCode = '27.2';
-                    } elseif ($item->object->code == '27.3') {
-                        $objectCode = '27.3';
-                    } elseif ($item->object->code == '27.4') {
-                        $objectCode = '27.4';
-                    } elseif ($item->object->code == '27.8') {
-                        $objectCode = '27.8';
-                    } elseif ($item->object->code == '28') {
-                        $objectCode = '28';
+                    if (isset($codesWithoutWorktype[$item->object->code])) {
+                        $objectCode = $codesWithoutWorktype[$item->object->code];
                     } else {
                         $objectCode = $item->object->code;
 

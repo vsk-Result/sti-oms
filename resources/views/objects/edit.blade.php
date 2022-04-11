@@ -17,7 +17,7 @@
                         @csrf
                         <div class="row mb-5">
                             <div class="col-md-12 fv-row">
-                                <div class="mb-10 fv-row" data-kt-password-meter="true">
+                                <div class="mb-7 fv-row">
                                     <div class="mb-1">
                                         <label class="form-label fw-bolder text-dark fs-6">Код</label>
                                         <div class="position-relative mb-3">
@@ -38,7 +38,12 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-10 fv-row" data-kt-password-meter="true">
+                                <div class="form-check form-check-custom form-check-solid mb-6 fw-bold fs-6">
+                                    <input name="is_without_worktype" class="form-check-input" type="checkbox" value="" id="flexCheckChecked" {{ $object->is_without_worktype ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="flexCheckChecked">Без вида работ</label>
+                                </div>
+
+                                <div class="mb-10 fv-row">
                                     <div class="mb-1">
                                         <label class="form-label fw-bolder text-dark fs-6">Название</label>
                                         <div class="position-relative mb-3">
