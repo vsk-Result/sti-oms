@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Debt\Debt;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,6 +34,16 @@ class Organization extends Model
     public function paymentsReceive(): HasMany
     {
         return $this->hasMany(Payment::class, 'organization_receiver_id');
+    }
+
+    public function debts(): HasMany
+    {
+        return $this->hasMany(Debt::class, 'organization_id');
+    }
+
+    public function bankGuarantees(): HasMany
+    {
+        return $this->hasMany(BankGuarantee::class, 'organization_id');
     }
 
     public static function getNDSStatuses(): array

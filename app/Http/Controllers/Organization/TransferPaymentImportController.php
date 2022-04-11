@@ -49,6 +49,10 @@ class TransferPaymentImportController extends Controller
                 'organization_id' => $newOrganizaition->id
             ]);
 
+            $organization->bankGuarantees()->update([
+                'organization_id' => $newOrganizaition->id
+            ]);
+
             $this->organizationService->destroyOrganization($organization);
         }
 
