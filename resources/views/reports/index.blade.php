@@ -279,6 +279,32 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-4">
+                        <div class="card mb-5 mb-xl-8">
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1">Загрузка переноса оплат организаций</span>
+                                </h3>
+                            </div>
+                            <div class="card-body py-3">
+                                <form class="form" action="{{ route('organizations.transfer_payments.import.store') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+
+                                    <div class="col-md-12 fv-row mb-5">
+                                        <label class="required fs-5 fw-bold mb-2">Файл для загрузки</label>
+                                        <input type="file" class="form-control form-control-solid" placeholder="" name="file" />
+                                    </div>
+
+                                    <div class="d-flex flex-center py-3">
+                                        <button type="submit" class="btn btn-primary me-3">
+                                            <span class="indicator-label">Загрузить</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 @endif
             </div>
         </div>

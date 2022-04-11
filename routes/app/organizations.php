@@ -2,6 +2,11 @@
 
 use App\Http\Controllers\Organization\OrganizationController;
 use App\Http\Controllers\Organization\TransferPaymentController;
+use App\Http\Controllers\Organization\TransferPaymentImportController;
+
+// Импорт переноса оплат
+
+Route::post('organizations/transfer-payments/import', [TransferPaymentImportController::class, 'store'])->name('organizations.transfer_payments.import.store')->middleware('can:edit organizations');
 
 // Организации
 
