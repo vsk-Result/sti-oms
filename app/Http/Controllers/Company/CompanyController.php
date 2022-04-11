@@ -77,6 +77,7 @@ class CompanyController extends Controller
         $totalDebtDTAmount = - Payment::where('date', '>=', '2020-12-17')
             ->where('date', '<=', $date)
             ->where('type_id', Payment::TYPE_TRANSFER)
+            ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
             ->where(function($q) use ($DTOrganization) {
                 $q->where('organization_receiver_id', $DTOrganization->id);
                 $q->orWhere('organization_sender_id', $DTOrganization->id);
@@ -86,6 +87,7 @@ class CompanyController extends Controller
         $totalDebtPTIAmount = - Payment::where('date', '>=', '2021-02-12')
             ->where('date', '<=', $date)
             ->where('type_id', Payment::TYPE_TRANSFER)
+            ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
             ->where('description', '!=', 'PATRIOT')
             ->where(function($q) {
                 $q->where('bank_id', 1);
