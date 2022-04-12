@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreOrUpdateCompanyRequest;
 use App\Models\Bank;
+use App\Models\BankGuarantee;
 use App\Models\Company;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Services\CompanyService;
+use App\Services\CurrencyExchangeRateService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,10 +21,12 @@ use Illuminate\View\View;
 class CompanyController extends Controller
 {
     private CompanyService $companyService;
+    private CurrencyExchangeRateService $rateService;
 
-    public function __construct(CompanyService $companyService)
+    public function __construct(CompanyService $companyService, CurrencyExchangeRateService $rateService)
     {
         $this->companyService = $companyService;
+        $this->rateService = $rateService;
     }
 
     public function index(): View
@@ -74,7 +78,7 @@ class CompanyController extends Controller
         $DTOrganization = Organization::where('name', 'ООО "ДТ ТЕРМО ГРУПП"')->first();
         $PTIOrganization = Organization::where('name', 'ООО "ПРОМТЕХИНЖИНИРИНГ"')->first();
 
-        $totalDebtDTAmount = - Payment::where('date', '>=', '2020-12-17')
+        $totalLoanDTAmount = - Payment::where('date', '>=', '2020-12-17')
             ->where('date', '<=', $date)
             ->where('type_id', Payment::TYPE_TRANSFER)
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
@@ -84,7 +88,7 @@ class CompanyController extends Controller
             })
             ->sum('amount');
 
-        $totalDebtPTIAmount = - Payment::where('date', '>=', '2021-02-12')
+        $totalLoanPTIAmount = - Payment::where('date', '>=', '2021-02-12')
             ->where('date', '<=', $date)
             ->where('type_id', Payment::TYPE_TRANSFER)
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
@@ -99,7 +103,23 @@ class CompanyController extends Controller
             })
             ->sum('amount');
 
-        return view('companies.show', compact('company', 'balances', 'date', 'credits', 'totalCreditAmount', 'totalDebtDTAmount', 'totalDebtPTIAmount'));
+        $loans = [
+            'ООО "ДТ ТЕРМО ГРУПП"' => $totalLoanDTAmount,
+            'ООО "ПРОМТЕХИНЖИНИРИНГ"' => $totalLoanPTIAmount,
+            'ООО "Мечтариум"' => 28585073 - Payment::where('description', 'LIKE', '%по Делу А40-93849/202%')->sum('amount'),
+            'ООО "АМТРЕЙД ИНЖЕНЕРИНГ"' => 8146061,
+            'Локальные займы' => 16000000,
+            'Кузнецов Г.Б. займ' => 4000000 - 1820000 - Payment::where('description', 'LIKE', '%ПО ДОГОВОРУ ЗАЙМА №07/07- 2018/3М%')->sum('amount'),
+            'Мавибони (finansirovanie istoka)' => 79690459,
+        ];
+
+        $deposites = [
+            'RUB' => BankGuarantee::where('currency', 'RUB')->sum('amount_deposit'),
+            'EUR' => BankGuarantee::where('currency', 'EUR')->sum('amount_deposit'),
+        ];
+        $depositesAmount = $deposites['RUB'] + $this->rateService->getExchangeRate($date, 'EUR')->rate * $deposites['EUR'];
+
+        return view('companies.show', compact('company', 'balances', 'date', 'credits', 'totalCreditAmount', 'loans', 'deposites', 'depositesAmount'));
     }
 
     public function edit(Company $company): View
