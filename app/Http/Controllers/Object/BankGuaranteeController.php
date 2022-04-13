@@ -23,10 +23,11 @@ class BankGuaranteeController extends Controller
     {
         $requestData = array_merge(['object_id' => [$object->id]], $request->toArray());
 
+        $total = [];
         $objects = BObject::orderBy('code')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
-        $bankGuarantees = $this->guaranteeService->filterBankGuarantee($requestData);
+        $bankGuarantees = $this->guaranteeService->filterBankGuarantee($requestData, $total);
 
-        return view('objects.tabs.bank_guarantees', compact('object', 'bankGuarantees', 'objects', 'contracts'));
+        return view('objects.tabs.bank_guarantees', compact('object', 'bankGuarantees', 'objects', 'contracts', 'total'));
     }
 }

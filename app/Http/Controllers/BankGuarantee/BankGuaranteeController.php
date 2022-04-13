@@ -28,10 +28,11 @@ class BankGuaranteeController extends Controller
 
     public function index(Request $request): View
     {
+        $total = [];
         $objects = BObject::orderBy('code')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
-        $bankGuarantees = $this->guaranteeService->filterBankGuarantee($request->toArray());
-        return view('bank-guarantees.index', compact('bankGuarantees', 'contracts', 'objects'));
+        $bankGuarantees = $this->guaranteeService->filterBankGuarantee($request->toArray(), $total);
+        return view('bank-guarantees.index', compact('bankGuarantees', 'contracts', 'objects', 'total'));
     }
 
     public function create(Request $request): View

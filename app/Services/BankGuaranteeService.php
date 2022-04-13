@@ -17,7 +17,7 @@ class BankGuaranteeService
         $this->sanitizer = $sanitizer;
     }
 
-    public function filterBankGuarantee(array $requestData): LengthAwarePaginator
+    public function filterBankGuarantee(array $requestData, array &$total): LengthAwarePaginator
     {
         $query = BankGuarantee::query();
 
@@ -46,6 +46,20 @@ class BankGuaranteeService
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+        }
+
+        $currencies = ['RUB', 'EUR'];
+        foreach ($currencies as $currency) {
+            $total['amount'][$currency] = 0;
+            $total['amount_deposit'][$currency] = 0;
+            $total['amount_commission'][$currency] = 0;
+            $total['amount_acts_left_paid'][$currency] = 0;
+            foreach ((clone $query)->where('currency', $currency)->get() as $guarantee) {
+                $total['amount'][$currency] += $guarantee->amount;
+                $total['amount_deposit'][$currency] += $guarantee->amount_deposit;
+                $total['amount_commission'][$currency] += $guarantee->commission;
+                $total['amount_acts_left_paid'][$currency] += $guarantee->getAvansesLeftAmount();
+            }
         }
 
         $query->with('company', 'object', 'contract', 'contract.acts', 'contract.avansesReceived', 'organization');
