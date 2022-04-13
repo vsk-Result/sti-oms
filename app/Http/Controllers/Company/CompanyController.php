@@ -104,12 +104,14 @@ class CompanyController extends Controller
             ->sum('amount');
 
         $loans = [
+            'ПАО "Промсвязьбанк"' => -49990000,
+            'Завидово' => -30000000,
             'ООО "ДТ ТЕРМО ГРУПП"' => $totalLoanDTAmount,
             'ООО "ПРОМТЕХИНЖИНИРИНГ"' => $totalLoanPTIAmount,
             'ООО "Мечтариум"' => 28585073 - Payment::where('description', 'LIKE', '%по Делу А40-93849/202%')->sum('amount'),
             'ООО "АМТРЕЙД ИНЖЕНЕРИНГ"' => 8146061,
             'Локальные займы' => 16000000,
-            'Кузнецов Г.Б. займ' => 4000000 - 1820000 - Payment::where('description', 'LIKE', '%ПО ДОГОВОРУ ЗАЙМА №07/07- 2018/3М%')->sum('amount'),
+            'Кузнецов Г.Б.' => 114110,
             'Мавибони (finansirovanie istoka)' => 79690459,
         ];
 

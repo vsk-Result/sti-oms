@@ -36,7 +36,7 @@ class ImportController extends Controller
                 'company_id' => 1,
                 'bank_id' => null,
                 'object_id' => BObject::where('code', $guaranteeRow[0])->first()->id ?? null,
-                'contract_id' => Contract::where('name', $guaranteeRow[1])->first()->id ?? null,
+                'contract_id' => Contract::where('name', $guaranteeRow[1])->where('currency', $guaranteeRow[6])->first()->id ?? null,
                 'organization_id' => Organization::where('name', $guaranteeRow[2])->first()->id ?? null,
                 'number' => $this->sanitizer->set($guaranteeRow[3])->get(),
                 'start_date' => $guaranteeRow[4] === null ? null : Carbon::parse(Date::excelToDateTimeObject($guaranteeRow[4]))->format('Y-m-d'),

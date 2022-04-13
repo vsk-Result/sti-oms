@@ -28,6 +28,31 @@
             <div class="card card-xxl-stretch mb-5 mb-xxl-10">
                 <div class="card-body p-9">
 
+                    <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format(array_sum($balances), 'RUB') }}</div>
+
+                    <div class="d-flex align-items-center fs-5 fw-bold text-gray-400 mb-7">
+                        <span class="d-flex">Баланс на {{ $date->format('d.m.Y') }}</span>
+                    </div>
+
+                    @foreach($balances as $bankName => $balance)
+                        <div class="fs-6 d-flex justify-content-between my-4">
+                            <div class="fw-bold">{{ $bankName }}</div>
+
+                            <div class="d-flex fw-bolder">
+                                {{ \App\Models\CurrencyExchangeRate::format($balance, 'RUB') }}
+                            </div>
+                        </div>
+
+                        @if (! $loop->last)
+                            <div class="separator separator-dashed"></div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-9">
+
                     <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($depositesAmount, 'RUB') }}</div>
 
                     <div class="d-flex align-items-center fs-5 fw-bold text-gray-400 mb-7">
@@ -103,38 +128,7 @@
                     @endforeach
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-lg-6 col-md-6 col-xxl-4 col-xxl-3">
-            <div class="card">
-                <div class="card-body p-9">
-
-                    <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format(array_sum($balances), 'RUB') }}</div>
-
-                    <div class="d-flex align-items-center fs-5 fw-bold text-gray-400 mb-7">
-                        <span class="d-flex">Баланс на {{ $date->format('d.m.Y') }}</span>
-                    </div>
-
-                    @foreach($balances as $bankName => $balance)
-                        <div class="fs-6 d-flex justify-content-between my-4">
-                            <div class="fw-bold">{{ $bankName }}</div>
-
-                            <div class="d-flex fw-bolder">
-                                {{ \App\Models\CurrencyExchangeRate::format($balance, 'RUB') }}
-                            </div>
-                        </div>
-
-                        @if (! $loop->last)
-                            <div class="separator separator-dashed"></div>
-                        @endif
-                    @endforeach
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6 col-md-6 col-xxl-4 col-xxl-3">
             <div class="card card-xxl-stretch mb-5 mb-xxl-10">
                 <div class="card-body p-9">
 

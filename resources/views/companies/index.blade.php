@@ -40,7 +40,15 @@
                     <tbody class="text-gray-600 fw-bold">
                         @foreach($companies as $company)
                             <tr>
-                                <td>{{ $company->name . " ($company->short_name)" }}</td>
+                                <td>
+                                    @if(auth()->user()->can('show companies'))
+                                        <div class="menu-item px-3">
+                                            <a href="{{ route('companies.show', $company) }}" class="menu-link px-3">{{ $company->name . " ($company->short_name)" }}</a>
+                                        </div>
+                                    @else
+                                        {{ $company->name . " ($company->short_name)" }}
+                                    @endif
+                                </td>
                                 <td>{{ $company->inn }}</td>
                                 <td>@include('partials.status', ['status' => $company->getStatus()])</td>
                                 <td class="text-end">
