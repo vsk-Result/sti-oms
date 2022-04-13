@@ -51,7 +51,6 @@ class ContractService
             $total['avanses_acts_paid_amount'][$currency] = 0;
             $total['avanses_acts_left_paid_amount'][$currency] = 0;
             $total['avanses_acts_deposites_amount'][$currency] = 0;
-            $total['avanses_non_closes_amount'][$currency] = 0;
 
             foreach ((clone $contractQuery)->where('object_id', '!=', 16)->where('currency', $currency)->get() as $contract) {
                 $total['amount'][$currency] += $contract->getAmount(true, $currency);
@@ -60,7 +59,6 @@ class ContractService
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount(true, $currency);
                 $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount(true, $currency);
                 $total['avanses_acts_deposites_amount'][$currency] += $contract->getActsDepositesAmount(true, $currency);
-                $total['avanses_non_closes_amount'][$currency] += $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_deposites_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency];
             }
 
             foreach ((clone $contractQuery)->where('object_id', 16)->get() as $contract) {
@@ -70,9 +68,9 @@ class ContractService
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount(true, $currency);
                 $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount(true, $currency);
                 $total['avanses_acts_deposites_amount'][$currency] += $contract->getActsDepositesAmount(true, $currency);
-                $total['avanses_non_closes_amount'][$currency] += $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_deposites_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency];
             }
 
+            $total['avanses_non_closes_amount'][$currency] = $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_deposites_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency];
             $total['avanses_non_closes_amount'][$currency] = abs($total['avanses_non_closes_amount'][$currency]);
         }
 
