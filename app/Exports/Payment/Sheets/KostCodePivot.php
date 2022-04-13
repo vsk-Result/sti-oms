@@ -63,7 +63,7 @@ class KostCodePivot implements
 
             $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
-            $sheet->getRowDimension($row)->setRowHeight(20);
+            $sheet->getRowDimension($row)->setRowHeight(30);
             $row++;
         }
 
