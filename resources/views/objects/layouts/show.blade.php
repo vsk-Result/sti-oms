@@ -15,37 +15,27 @@
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/pivot') ? 'active' : '' }}" href="{{ route('objects.pivot.index', $object) }}">Сводная информация</a>--}}
 {{--                        </li>--}}
-                        @can('index payments')
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/payments') ? 'active' : '' }}" href="{{ route('objects.payments.index', $object) }}">Оплаты</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/cash-payments') ? 'active' : '' }}" href="{{ route('objects.cash_payments.index', $object) }}">Касса</a>
                             </li>
-                        @endcan
-                        @can('index contracts')
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/contracts') ? 'active' : '' }}" href="{{ route('objects.contracts.index', $object) }}">Договора</a>
                             </li>
-                        @endcan
-                        @can('index acts')
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/acts') ? 'active' : '' }}" href="{{ route('objects.acts.index', $object) }}">Акты</a>
                             </li>
-                        @endcan
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>--}}
 {{--                        </li>--}}
-                        @can('index debts')
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/debts') ? 'active' : '' }}" href="{{ route('objects.debts.index', $object) }}">Долги</a>
                             </li>
-                        @endcan
-                        @can('index bank-guarantees')
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/bank-guarantees') ? 'active' : '' }}" href="{{ route('objects.bank_guarantees.index', $object) }}">БГ</a>
                             </li>
-                        @endcan
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/files') ? 'active' : '' }}" href="{{ route('objects.files.index', $object) }}">Файлы</a>--}}
 {{--                        </li>--}}
