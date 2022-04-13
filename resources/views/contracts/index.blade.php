@@ -65,12 +65,20 @@
                         </div>
                     </div>
                     <div>
-                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex flex-column align-items-left">
                                 <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['RUB'], 'RUB') }}</div>
                                 <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['EUR'], 'EUR') }}</div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Не закрытая сумма договоров</div>
+                        </div>
+
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_notwork_left_amount']['RUB'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_notwork_left_amount']['EUR'], 'EUR') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Остаток неотработ. аванса</div>
                         </div>
                     </div>
                 </div>
