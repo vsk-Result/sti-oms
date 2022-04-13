@@ -3,6 +3,7 @@
 namespace App\Exports\Payment\Sheets;
 
 use App\Models\KostCode;
+use App\Models\Object\BObject;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -35,16 +36,16 @@ class KostCodePivot implements
     {
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Объект');
-        $sheet->setCellValue('B1', 'Статья');
+        $sheet->setCellValue('A1', 'Статья');
+        $sheet->setCellValue('B1', 'Объект');
         $sheet->setCellValue('C1', 'Приходы');
         $sheet->setCellValue('D1', 'Расходы');
         $sheet->setCellValue('E1', 'Общая сумма');
 
         $sheet->getRowDimension(1)->setRowHeight(30);
 
-        $sheet->getColumnDimension('A')->setWidth(15);
-        $sheet->getColumnDimension('B')->setWidth(65);
+        $sheet->getColumnDimension('A')->setWidth(65);
+        $sheet->getColumnDimension('B')->setWidth(15);
         $sheet->getColumnDimension('C')->setWidth(22);
         $sheet->getColumnDimension('D')->setWidth(22);
         $sheet->getColumnDimension('E')->setWidth(22);
@@ -55,33 +56,38 @@ class KostCodePivot implements
         $codes = KostCode::getCodes();
         $groupedByCodePayments = (clone $this->payments)->get()->sortBy('code')->groupBy('code');
 
-        foreach ($groupedByCodePayments as $code => $payments) {
-            $total = $payments->sum('amount');
+        foreach ($groupedByCodePayments as $code => $codePayments) {
+            foreach ($codePayments->groupBy('object_id') as $objectId => $objectPayments) {
+                $object = BObject::find($objectId);
 
-            $sheet->setCellValue('A' . $row, $codes[$code] ?? $code);
-            $sheet->setCellValue('B' . $row, $payments->where('amount', '>=', 0)->sum('amount'));
-            $sheet->setCellValue('C' . $row, $payments->where('amount', '<', 0)->sum('amount'));
-            $sheet->setCellValue('D' . $row, $total);
+                $total = $objectPayments->sum('amount');
 
-            $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                $sheet->setCellValue('A' . $row, $codes[$code] ?? $code);
+                $sheet->setCellValue('B' . $row, $object->code ?? '');
+                $sheet->setCellValue('C' . $row, $objectPayments->where('amount', '>=', 0)->sum('amount'));
+                $sheet->setCellValue('D' . $row, $objectPayments->where('amount', '<', 0)->sum('amount'));
+                $sheet->setCellValue('E' . $row, $total);
 
-            $sheet->getRowDimension($row)->setRowHeight(30);
-            $row++;
+                $sheet->getStyle('E' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+                $sheet->getRowDimension($row)->setRowHeight(30);
+                $row++;
+            }
         }
 
         $row--;
 
-        $sheet->getStyle('B2:B' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
-        $sheet->getStyle('C2:C' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+        $sheet->getStyle('C2:C' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
+        $sheet->getStyle('D2:D' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
 
-        $sheet->getStyle('A1:D' . $row)->applyFromArray([
+        $sheet->getStyle('A1:E' . $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
         $sheet->getStyle('A1:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('B1:D' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('B1:E' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
 
-        $sheet->getStyle('B2:D' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('C2:E' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
     }
 }
