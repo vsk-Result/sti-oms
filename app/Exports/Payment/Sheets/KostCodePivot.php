@@ -35,19 +35,21 @@ class KostCodePivot implements
     {
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Статья');
-        $sheet->setCellValue('B1', 'Приходы');
-        $sheet->setCellValue('C1', 'Расходы');
-        $sheet->setCellValue('D1', 'Общая сумма');
+        $sheet->setCellValue('A1', 'Объект');
+        $sheet->setCellValue('B1', 'Статья');
+        $sheet->setCellValue('C1', 'Приходы');
+        $sheet->setCellValue('D1', 'Расходы');
+        $sheet->setCellValue('E1', 'Общая сумма');
 
         $sheet->getRowDimension(1)->setRowHeight(30);
 
-        $sheet->getColumnDimension('A')->setWidth(30);
-        $sheet->getColumnDimension('B')->setWidth(22);
+        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(65);
         $sheet->getColumnDimension('C')->setWidth(22);
         $sheet->getColumnDimension('D')->setWidth(22);
+        $sheet->getColumnDimension('E')->setWidth(22);
 
-        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
 
         $row = 2;
         $codes = KostCode::getCodes();

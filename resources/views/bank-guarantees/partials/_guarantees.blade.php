@@ -33,7 +33,7 @@
                         <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_acts_left_paid']['RUB'], 'RUB') }}</div>
                         <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_acts_left_paid']['EUR'], 'EUR') }}</div>
                     </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма неотр. аванса</div>
+                    <div class="fw-bold fs-6 text-gray-400">Остаток неотр. аванса</div>
                 </div>
             </div>
         </div>

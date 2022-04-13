@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Object;
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use App\Models\Company;
+use App\Models\KostCode;
 use App\Models\Object\BObject;
 use App\Models\Object\WorkType;
 use App\Models\Organization;
@@ -32,6 +33,7 @@ class PaymentController extends Controller
         $importTypes = PaymentImport::getTypes();
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
+        $codes = KostCode::getCodes();
 
         $totalInfo = [];
         $requestData = array_merge(['object_id' => [$object->id]], $request->toArray());
@@ -53,7 +55,7 @@ class PaymentController extends Controller
             'objects.tabs.payments',
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'activeOrganizations',
-                'categories', 'importTypes', 'banks', 'totalInfo', 'object', 'paymentTypes'
+                'categories', 'importTypes', 'banks', 'totalInfo', 'object', 'paymentTypes', 'codes'
             )
         );
     }
