@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Object;
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use App\Models\Company;
+use App\Models\KostCode;
 use App\Models\Object\BObject;
 use App\Models\Object\WorkType;
 use App\Models\Organization;
@@ -69,6 +70,7 @@ class CashPaymentController extends Controller
         $importTypes = PaymentImport::getTypes();
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
+        $codes = KostCode::getCodes();
 
         $activeOrganizations = [];
         if (! empty($request->get('organization_id'))) {
@@ -105,7 +107,7 @@ class CashPaymentController extends Controller
             'objects.tabs.cash',
             compact(
                 'object', 'years', 'months', 'companies', 'objects',
-                'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations', 'pType'
+                'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations', 'pType', 'codes'
             )
         );
     }
