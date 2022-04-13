@@ -35,6 +35,10 @@ class BankGuaranteeService
             $query->where('number', 'LIKE', $requestData['number']);
         }
 
+        if (! empty($requestData['currency'])) {
+            $query->whereIn('currency', $requestData['currency']);
+        }
+
         if (! empty($requestData['contract_id'])) {
             $query->whereIn('contract_id', $requestData['contract_id']);
         }
