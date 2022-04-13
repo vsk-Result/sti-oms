@@ -132,7 +132,7 @@ class PaymentService
         }
 
         if (! empty($requestData['code'])) {
-            $paymentQuery->where('code', $requestData['code']);
+            $paymentQuery->whereIn('code', $requestData['code']);
         }
 
         if (! empty($requestData['parameter_font_color'])) {

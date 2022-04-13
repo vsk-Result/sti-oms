@@ -98,8 +98,18 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Кост код</label>
-                                <input name="code" class="form-control form-control-solid" value="{{ request()->input('code', '') }}" />
+                                <label class="form-label">Статья затрат</label>
+                                <select
+                                    name="code[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                    multiple
+                                >
+                                    @foreach($codes as $code => $codeName)
+                                        <option value="{{ $code }}" {{ in_array($code, request()->input('code', []), true) ? 'selected' : '' }}>{{ $codeName }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-4">

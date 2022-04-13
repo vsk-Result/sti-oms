@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Payment\StorePaymentRequest;
 use App\Models\Bank;
 use App\Models\Company;
+use App\Models\KostCode;
 use App\Models\Object\BObject;
 use App\Models\Object\WorkType;
 use App\Models\Organization;
@@ -36,6 +37,7 @@ class PaymentController extends Controller
         $importTypes = PaymentImport::getTypes();
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
+        $codes = KostCode::getCodes();
 
         $totalInfo = [];
         $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
@@ -49,7 +51,7 @@ class PaymentController extends Controller
             'payments.index',
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'categories',
-                'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes'
+                'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes', 'codes'
             )
         );
     }

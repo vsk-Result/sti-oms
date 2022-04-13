@@ -2,6 +2,7 @@
 
 namespace App\Exports\Payment;
 
+use App\Exports\Payment\Sheets\KostCodePivot;
 use App\Exports\Payment\Sheets\PaymentSheet;
 use App\Exports\Payment\Sheets\PivotSheet;
 use App\Models\Object\BObject;
@@ -28,7 +29,8 @@ class Export implements WithMultipleSheets
 
         return [
             new PivotSheet('Сводная', $this->payments, $object),
-            new PaymentSheet('Таблица оплат', $this->payments, $this->payments->count())
+            new PaymentSheet('Таблица оплат', $this->payments, $this->payments->count()),
+            new KostCodePivot('Сводная по статьям затрат', $this->payments)
         ];
     }
 }
