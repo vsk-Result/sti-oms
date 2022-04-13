@@ -62,7 +62,7 @@
                     </td>
                     <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}</td>
                     <td>
-                        <a class="show-link" href="{{ route('payments.index') }}?description={{ substr($guarantee->number, strpos($guarantee->number, '/') + 1) }}">
+                        <a target="_blank" class="show-link" href="{{ route('payments.index') }}?description={{ substr($guarantee->number, strpos($guarantee->number, '/') + 1) }}">
                             {{ \App\Models\CurrencyExchangeRate::format($guarantee->commission, 'RUB') }}
                         </a>
                     </td>
