@@ -86,6 +86,14 @@
                 </div>
             @endcan
 
+            @can('index loans')
+                <div class="menu-item">
+                    <a href="{{ route('loans.index') }}" class="menu-link {{ request()->is('loans*') ? 'active' : '' }}">
+                        <span class="menu-title">Займы / Кредиты</span>
+                    </a>
+                </div>
+            @endcan
+
             @can('index companies')
                 <div class="menu-item">
                     <a href="{{ route('companies.index') }}" class="menu-link {{ request()->is('companies*') ? 'active' : '' }}">

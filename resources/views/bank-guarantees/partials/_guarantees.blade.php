@@ -138,7 +138,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10">
+                    <td colspan="11">
                         <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                             Банковские гарантии отсутствуют
                         </p>
