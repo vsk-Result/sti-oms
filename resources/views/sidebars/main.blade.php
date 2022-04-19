@@ -70,6 +70,14 @@
                 </div>
             @endcan
 
+            @can('index debts')
+                <div class="menu-item">
+                    <a href="{{ route('debts.index') }}" class="menu-link {{ request()->is('debts*') ? 'active' : '' }}">
+                        <span class="menu-title">Долги</span>
+                    </a>
+                </div>
+            @endcan
+
             @can('index acts')
                 <div class="menu-item">
                     <a href="{{ route('acts.index') }}" class="menu-link {{ request()->is('acts*') ? 'active' : '' }}">

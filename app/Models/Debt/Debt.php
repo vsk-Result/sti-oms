@@ -20,12 +20,13 @@ class Debt extends Model
 
     protected $fillable = [
         'import_id', 'type_id', 'company_id', 'object_id', 'object_worktype_id', 'organization_id',
-        'created_by_user_id', 'updated_by_user_id', 'date', 'amount', 'amount_without_nds', 'status_id'
+        'created_by_user_id', 'updated_by_user_id', 'date', 'amount', 'amount_without_nds', 'status_id',
+        'category', 'code', 'invoice_number', 'order_author', 'description', 'comment', 'invoice_payment_due_date',
+        'invoice_amount'
     ];
 
     const TYPE_CONTRACTOR = 0;
     const TYPE_PROVIDER = 1;
-    const TYPE_CLIENT = 2;
 
     public function import(): BelongsTo
     {
@@ -52,6 +53,11 @@ class Debt extends Model
         return Carbon::parse($this->date)->format($format);
     }
 
+    public function getDueDateFormatted(string $format = 'd/m/Y'): string
+    {
+        return Carbon::parse($this->invoice_payment_due_date)->format($format);
+    }
+
     public function getAmount(): string
     {
         return number_format($this->amount, 2, '.', ' ');
@@ -67,17 +73,27 @@ class Debt extends Model
         return [
             self::TYPE_CONTRACTOR => 'Подрядчик',
             self::TYPE_PROVIDER => 'Поставщик',
-            self::TYPE_CLIENT => 'Заказчик'
         ];
+    }
+
+    public function getType()
+    {
+        return self::getTypes()[$this->type_id];
     }
 
     public function getObjectId(): string
     {
-        return "$this->object_id::$this->object_worktype_id";
+        return $this->object_id . '::' . ($this->object->isWithoutWorktype() ? null : $this->object_worktype_id);
     }
 
     public function getObject(): string
     {
-        return "{$this->object->code}.{$this->object_worktype_id}";
+        if (! is_null($this->object_worktype_id)) {
+            return $this->object->isWithoutWorktype()
+                ? $this->object->code
+                : $this->object->code . '.' . $this->object_worktype_id;
+        }
+
+        return $this->object->code;
     }
 }

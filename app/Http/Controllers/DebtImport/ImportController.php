@@ -4,19 +4,25 @@ namespace App\Http\Controllers\DebtImport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\Object\BObject;
 use App\Services\DebtImportService;
+use App\Services\DebtService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\DebtImport\StoreDebtImportRequest;
+use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
     private DebtImportService $importService;
+    private DebtService $debtService;
 
-    public function __construct(DebtImportService $importService)
+    public function __construct(DebtImportService $importService, DebtService $debtService)
     {
         $this->importService = $importService;
+        $this->debtService = $debtService;
     }
 
     public function index(): View
@@ -35,18 +41,6 @@ class ImportController extends Controller
     {
         $this->importService->createImport($request->toArray());
         return redirect()->route('debt_imports.index');
-    }
-
-    public function show(DebtImport $import): View
-    {
-        $import->load([
-            'debts' => function($query) {
-                $query->orderByDesc('amount');
-            },
-            'debts.organization',
-            'debts.object',
-        ]);
-        return view('debt-imports.show', compact('import'));
     }
 
     public function destroy(DebtImport $import): RedirectResponse

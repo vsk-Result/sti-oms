@@ -7,7 +7,9 @@ use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
 use App\Models\Status;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class DebtImportService
 {
@@ -25,6 +27,7 @@ class DebtImportService
         'Ритц' => '342',
         'Патриот' => '349',
         'Патриот ' => '349',
+        'Париот' => '349',
         'Башня Эволюция' => '268',
         'Скандинавский' => '335',
         'Мост' => '317',
@@ -56,6 +59,7 @@ class DebtImportService
         'Мост ' => '317',
         'Мос' => '317',
         'Завидово' => '358',
+        'ДТ-Термо' => '27.1',
     ];
 
     public function __construct(
@@ -75,7 +79,7 @@ class DebtImportService
         $importData = Excel::toArray(new Import(), $requestData['file']);
 
         if (isset($importData['Для фин отчёта'])) {
-            $this->createSupplyImport($importData['Для фин отчёта'], $requestData);
+            $this->createSupplyImport($importData, $requestData);
         } elseif (isset($importData['ДТТЕРМО'])) {
             $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
         }
@@ -84,54 +88,13 @@ class DebtImportService
     public function destroyImport(DebtImport $import): DebtImport
     {
         $import->delete();
-
-        foreach ($import->debts as $debt) {
-            $this->debtService->destroyDebt($debt);
-        }
+        $import->debts->delete();
 
         return $import;
     }
 
     private function createSupplyImport(array $importData, array $requestData): void
     {
-        unset($importData[0], $importData[1], $importData[2]);
-
-        $availableWorktypes = [null, '0', '1', '2', '3', '4', '5', '6', '7', '8'];
-
-        $isContractor = true;
-        $providerIndex = null;
-        $contractorIndex = 0;
-        $providersWorktypes = [];
-        $contractorsWorktypes = [];
-
-        foreach ($importData[3] as $index => $possibleWorktype) {
-            if ($possibleWorktype === 'Общий итог') {
-                if (! $isContractor) {
-                    break;
-                }
-                $isContractor = false;
-                $providerIndex = $index + 3;
-            } else if (in_array($possibleWorktype, $availableWorktypes)) {
-                if ($possibleWorktype === '!') {
-                    $possibleWorktype = 1;
-                }
-                $possibleWorktype = (int) $possibleWorktype;
-                if ($possibleWorktype === 0) {
-                    $possibleWorktype = 1;
-                }
-                if ($isContractor) {
-                    $contractorsWorktypes[$index] = $possibleWorktype;
-                } else {
-                    $providersWorktypes[$index] = $possibleWorktype;
-                }
-            }
-        }
-
-        unset($importData[3]);
-
-        $providers = $this->getOrganizationsFromImportData($importData, $providerIndex, $providersWorktypes);
-        $contractors = $this->getOrganizationsFromImportData($importData, $contractorIndex, $contractorsWorktypes);
-
         $import = DebtImport::create([
             'type_id' => DebtImport::TYPE_SUPPLY,
             'company_id' => $requestData['company_id'],
@@ -140,8 +103,149 @@ class DebtImportService
             'status_id' => Status::STATUS_ACTIVE
         ]);
 
-        $this->createDebts($import, $providers, Debt::TYPE_PROVIDER);
-        $this->createDebts($import, $contractors, Debt::TYPE_CONTRACTOR);
+        $providers = $importData['МАТЕРИАЛЫ'];
+        $contractors = $importData['ПОДРЯДЧИКИ'];
+
+        // МАТЕРИАЛЫ
+        unset($providers[0], $providers[1], $providers[2]);
+
+        foreach ($providers as $row) {
+            if (is_null($row[1]) && is_null($row[2])) {
+                break;
+            }
+
+            $organizationName = trim($row[3]);
+            $objectName = trim($row[10]);
+
+            if ($organizationName === 'ДТ Термо') {
+                continue;
+            }
+
+            $organization = $this->organizationService->getOrCreateOrganization([
+                'inn' => null,
+                'name' => $organizationName,
+                'company_id' => null,
+                'kpp' => null
+            ]);
+
+            $object = BObject::where('code', $this->objects[$objectName])->first();
+            if (! $object) {
+                $code = str_replace(',', '.', $row[8]);
+                $code = substr($code, 0, strpos($code, '.'));
+                $object = $this->objectService->createObject([
+                    'code' => $code,
+                    'name' => $objectName,
+                    'address' => null,
+                    'responsible_name' => null,
+                    'responsible_email' => null,
+                    'responsible_phone' => null,
+                    'photo' => null,
+                ]);
+            }
+
+            $dueDate = null;
+            $comment = trim($row[14]);
+            if (is_numeric($row[13])) {
+                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[13]))->format('Y-m-d');
+            } else {
+                if (! empty($row[13])) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[13];
+                }
+            }
+            $this->debtService->createDebt([
+                'import_id' => $import->id,
+                'type_id' => Debt::TYPE_PROVIDER,
+                'company_id' => $import->company_id,
+                'object_id' => $object->id,
+                'object_worktype_id' => $row[15],
+                'organization_id' => $organization->id,
+                'date' => $import->date,
+                'amount' => -$row[12],
+                'amount_without_nds' => -($row[12] - ($row[12] / 6)),
+                'status_id' => Status::STATUS_ACTIVE,
+                'category' => trim($row[2]),
+                'code' => trim($row[9]),
+                'invoice_number' => trim($row[5]) . ' от ' . Carbon::parse(Date::excelToDateTimeObject($row[6]))->format('d/m/Y'),
+                'order_author' => trim($row[1]),
+                'description' => trim($row[4]),
+                'comment' => $comment,
+                'invoice_payment_due_date' => $dueDate,
+                'invoice_amount' => $row[7] ?? 0
+            ]);
+        }
+
+        // ПОДРЯДЧИКИ
+        unset($contractors[0], $contractors[1], $contractors[2]);
+
+        foreach ($contractors as $row) {
+            if (is_null($row[1]) && is_null($row[2])) {
+                break;
+            }
+
+            $organizationName = trim($row[3]);
+            $objectName = trim($row[10]);
+
+            if ($organizationName === 'ДТ Термо' || empty($row[12])) {
+                continue;
+            }
+
+            $organization = $this->organizationService->getOrCreateOrganization([
+                'inn' => null,
+                'name' => $organizationName,
+                'company_id' => null,
+                'kpp' => null
+            ]);
+
+            $object = BObject::where('code', $this->objects[$objectName])->first();
+            if (! $object) {
+                $code = str_replace(',', '.', $row[8]);
+                $code = substr($code, 0, strpos($code, '.'));
+                $object = $this->objectService->createObject([
+                    'code' => $code,
+                    'name' => $objectName,
+                    'address' => null,
+                    'responsible_name' => null,
+                    'responsible_email' => null,
+                    'responsible_phone' => null,
+                    'photo' => null,
+                ]);
+            }
+
+            $dueDate = null;
+            $comment = trim($row[16]);
+            if (is_numeric($row[13])) {
+                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[13]))->format('Y-m-d');
+            } else {
+                if (! empty($row[13])) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[13];
+                }
+            }
+
+            if (! empty($row[15])) {
+                $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[15];
+            }
+
+            $this->debtService->createDebt([
+                'import_id' => $import->id,
+                'type_id' => Debt::TYPE_CONTRACTOR,
+                'company_id' => $import->company_id,
+                'object_id' => $object->id,
+                'object_worktype_id' => $row[17],
+                'organization_id' => $organization->id,
+                'date' => $import->date,
+                'amount' => -$row[12],
+                'amount_without_nds' => -($row[12] - ($row[12] / 6)),
+                'status_id' => Status::STATUS_ACTIVE,
+                'category' => trim($row[14]),
+                'code' => trim($row[9]),
+                'invoice_number' => trim($row[5]) . ' от ' . Carbon::parse(Date::excelToDateTimeObject($row[6]))->format('d/m/Y'),
+                'order_author' => trim($row[1]),
+                'description' => trim($row[4]),
+                'comment' =>  $comment,
+                'invoice_payment_due_date' => $dueDate,
+                'invoice_amount' => $row[7] ?? 0
+            ]);
+        }
     }
 
     private function createDTTermoImport(array $importData, array $requestData): void
@@ -159,7 +263,7 @@ class DebtImportService
 
         $organization = $this->organizationService->getOrCreateOrganization([
             'inn' => null,
-            'name' => 'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ДТ ТЕРМО ГРУПП"',
+            'name' => 'ООО "ДТ ТЕРМО ГРУПП"',
             'company_id' => null,
             'kpp' => null
         ]);
@@ -179,6 +283,7 @@ class DebtImportService
                 && strpos($value, 'Договор') === false
                 && $amount !== null
                 && $amount !== 0
+                && $amount !== ''
             ) {
                 $code = substr($value, 0, strpos($value, '/'));
                 $code = str_replace(' ', '', $code);
@@ -226,83 +331,6 @@ class DebtImportService
                     'amount_without_nds' => -($amount - ($amount / 6)),
                     'status_id' => Status::STATUS_ACTIVE,
                 ]);
-            }
-        }
-    }
-
-    private function getOrganizationsFromImportData(array $importData, int $organizationIndex, array $worktypes): array
-    {
-        $organizations = [];
-        $currentObject = null;
-        foreach ($importData as $data) {
-            $value = $data[$organizationIndex];
-
-            if (in_array($value, ['', '(пусто)', 'Общий итог'])) {
-                continue;
-            }
-
-            if (array_key_exists($value, $this->objects)) {
-                $currentObject = $this->objects[$value];
-            } else {
-                foreach ($worktypes as $index => $worktype) {
-                    if (! isset($organizations[$value][$currentObject][$worktype])) {
-                        $organizations[$value][$currentObject][$worktype] = 0;
-                    }
-                    $organizations[$value][$currentObject][$worktype] += $data[$index];
-                }
-            }
-        }
-
-        return $organizations;
-    }
-
-    private function createDebts(DebtImport $import, array $organizations, int $typeId): void
-    {
-        foreach ($organizations as $organizationName => $objectCodes) {
-
-            if (trim($organizationName) === 'ДТ Термо') {
-                continue;
-            }
-
-            $organization = $this->organizationService->getOrCreateOrganization([
-                'inn' => null,
-                'name' => $organizationName,
-                'company_id' => null,
-                'kpp' => null
-            ]);
-
-            foreach ($objectCodes as $code => $worktypes) {
-
-                $object = BObject::where('code', $code)->first();
-                if (! $object) {
-                    $object = $this->objectService->createObject([
-                        'code' => $code,
-                        'name' => 'Без названия',
-                        'address' => null,
-                        'responsible_name' => null,
-                        'responsible_email' => null,
-                        'responsible_phone' => null,
-                        'photo' => null,
-                    ]);
-                }
-
-                foreach ($worktypes as $worktype => $amount) {
-                    if ($amount === 0) {
-                        continue;
-                    }
-                    $this->debtService->createDebt([
-                        'import_id' => $import->id,
-                        'type_id' => $typeId,
-                        'company_id' => $import->company_id,
-                        'object_id' => $object->id,
-                        'object_worktype_id' => $worktype,
-                        'organization_id' => $organization->id,
-                        'date' => $import->date,
-                        'amount' => -$amount,
-                        'amount_without_nds' => -($amount - ($amount / 6)),
-                        'status_id' => Status::STATUS_ACTIVE,
-                    ]);
-                }
             }
         }
     }

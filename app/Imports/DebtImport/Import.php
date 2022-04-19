@@ -11,6 +11,8 @@ class Import implements WithMultipleSheets, SkipsUnknownSheets
     public function sheets(): array
     {
         return [
+            'МАТЕРИАЛЫ' => new SheetForArray(),
+            'ПОДРЯДЧИКИ' => new SheetForArray(),
             'Для фин отчёта' => new SheetForArray(),
             'ДТТЕРМО' => new SheetForArray()
         ];
