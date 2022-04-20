@@ -95,7 +95,6 @@ class CompanyController extends Controller
             ->where('description', '!=', 'PATRIOT')
             ->where(function($q) {
                 $q->where('bank_id', 1);
-                $q->orWhere('bank_id', 3);
                 $q->orWhere('bank_id', null);
             })
             ->where(function($q) use ($PTIOrganization) {
