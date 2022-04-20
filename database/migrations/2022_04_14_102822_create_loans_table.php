@@ -39,7 +39,7 @@ class CreateLoansTable extends Migration
             $table->decimal('percent', 7, 4)->default(0);
             $table->decimal('amount', 19, 4)->default(0);
             $table->unsignedTinyInteger('status_id')->default(0);
-            $table->string('description', 200)->nullable();
+            $table->string('description', 1000)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
