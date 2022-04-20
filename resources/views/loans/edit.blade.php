@@ -88,7 +88,7 @@
                                                 <select name="organization_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     <option value="" {{ is_null($loan->organization_id) ? 'selected' : '' }}>Не указана</option>
                                                     @foreach($organizations as $organization)
-                                                        <option value="{{ $organization->id }}" {{ $loan->organization_id === $organization->id ? 'selected' : '' }}>{{ $organization->id }}</option>
+                                                        <option value="{{ $organization->id }}" {{ $loan->organization_id === $organization->id ? 'selected' : '' }}>{{ $organization->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

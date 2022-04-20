@@ -88,7 +88,7 @@
                                                 <select name="organization_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     <option value="">Не указана</option>
                                                     @foreach($organizations as $organization)
-                                                        <option value="{{ $organization->id }}">{{ $organization->id }}</option>
+                                                        <option value="{{ $organization->id }}">{{ $organization->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

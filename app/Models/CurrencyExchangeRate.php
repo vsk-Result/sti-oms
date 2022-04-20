@@ -12,9 +12,9 @@ class CurrencyExchangeRate extends Model
 
     public $timestamps = false;
 
-    public static function format(string $amount, string $currency): string
+    public static function format(string $amount, string $currency, int $decimals = 0): string
     {
-        $amount = number_format($amount, 0, '.', ' ');
+        $amount = number_format($amount, $decimals, '.', ' ');
         return match ($currency) {
             'EUR' => $amount . ' €',
             'USD' => '$' . $amount,
