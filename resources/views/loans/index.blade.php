@@ -81,7 +81,7 @@
                             <td>{{ $loan->getStartDateFormatted() }}</td>
                             <td>{{ $loan->getEndDateFormatted() }}</td>
                             <td>{{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}</td>
-                            <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 2) }}</td>
+                            <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 1) }}</td>
                             <td>{{ $loan->description }}</td>
                             <td class="text-end">
                                 <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
