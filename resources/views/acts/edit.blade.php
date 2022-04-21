@@ -19,6 +19,27 @@
                         <input type="hidden" name="return_url" value="{{ url()->previous() }}">
 
                         <div class="row mb-5">
+                            <div class="col-md-12">
+                                <div class="mb-1">
+                                    <label class="form-label fw-bolder text-dark fs-6">Номер</label>
+                                    <div class="position-relative mb-3">
+                                        <input
+                                            class="form-control form-control-lg form-control-solid {{ $errors->has('number') ? 'is-invalid' : '' }}"
+                                            type="text"
+                                            name="number"
+                                            value="{{ old('number', $act->number) }}"
+                                        />
+                                    </div>
+                                    @if ($errors->has('number'))
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <div>{{ implode(' ', $errors->get('number')) }}</div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-5">
                             <div class="col-md-12 fv-row">
 
                                 <div class="row">

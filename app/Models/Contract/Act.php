@@ -24,7 +24,7 @@ class Act extends Model implements Audit
     protected $fillable = [
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
         'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id',
-        'currency', 'currency_rate'
+        'currency', 'currency_rate', 'number'
     ];
 
     public function contract(): BelongsTo
