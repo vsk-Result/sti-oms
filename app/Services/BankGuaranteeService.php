@@ -67,7 +67,7 @@ class BankGuaranteeService
         }
 
         $query->with('company', 'object', 'contract', 'contract.acts', 'contract.avansesReceived', 'organization');
-        $query->orderByDesc('amount');
+        $query->orderByDesc('object_id');
 
         return $query->paginate($perPage)->withQueryString();
     }

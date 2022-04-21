@@ -104,26 +104,31 @@ class CompanyController extends Controller
             })
             ->sum('amount');
 
+        $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate;
+
         $loans = [
+            'ООО "Велесстрой"' => -277000000,
             'ПАО "Промсвязьбанк"' => -49990000,
             'Завидово займ 1' => -30000000,
             'Завидово займ 2' => -5000000,
+            'Белензия (1 243 164 €)' => -1243164 * $rate,
             'ООО "ДТ ТЕРМО ГРУПП"' => $totalLoanDTAmount,
             'ООО "ПРОМТЕХИНЖИНИРИНГ"' => $totalLoanPTIAmount,
             'ООО "Мечтариум"' => 28585073 - Payment::where('description', 'LIKE', '%по Делу А40-93849/202%')->sum('amount'),
             'ООО "АМТРЕЙД ИНЖЕНЕРИНГ"' => 8146061,
-            'Локальные займы' => 16000000,
+            'Локальные займы' => 3000000,
+            'Белензия (389 523 €)' => 389523 * $rate,
             'Кузнецов Г.Б.' => 114110,
-            'Мавибони (finansirovanie istoka)' => 79690459,
         ];
 
         $deposites = [
             'RUB' => BankGuarantee::where('currency', 'RUB')->sum('amount_deposit'),
             'EUR' => BankGuarantee::where('currency', 'EUR')->sum('amount_deposit'),
         ];
-        $depositesAmount = $deposites['RUB'] + $this->rateService->getExchangeRate($date, 'EUR')->rate * $deposites['EUR'];
 
-        return view('companies.show', compact('company', 'balances', 'date', 'credits', 'totalCreditAmount', 'loans', 'deposites', 'depositesAmount'));
+        $depositesAmount = $deposites['RUB'] + $rate * $deposites['EUR'];
+
+        return view('companies.show', compact('rate', 'company', 'balances', 'date', 'credits', 'totalCreditAmount', 'loans', 'deposites', 'depositesAmount'));
     }
 
     public function edit(Company $company): View
