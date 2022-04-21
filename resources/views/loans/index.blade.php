@@ -58,14 +58,14 @@
                     <thead>
                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                         <th class="min-w-75px">Тип</th>
-                        <th class="min-w-125px">Компания</th>
-                        <th class="min-w-125px">Банк</th>
+                        <th class="min-w-75px">Компания</th>
+                        <th class="min-w-100px">Банк</th>
                         <th class="min-w-125px">Организация</th>
                         <th class="min-w-150px">Номер</th>
                         <th class="min-w-125px">Дата зачисления</th>
                         <th class="min-w-125px">Дата окончания</th>
                         <th class="min-w-125px">Сумма</th>
-                        <th class="min-w-125px">Проценты</th>
+                        <th class="min-w-100px">Проценты</th>
                         <th class="min-w-125px">Описание</th>
                         <th class="min-w-125px">Действия</th>
                     </tr>
@@ -80,8 +80,8 @@
                             <td>{{ $loan->name }}</td>
                             <td>{{ $loan->getStartDateFormatted() }}</td>
                             <td>{{ $loan->getEndDateFormatted() }}</td>
-                            <td>{{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}</td>
-                            <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 1) }}</td>
+                            <td class="{{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}</td>
+                            <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 2) }}</td>
                             <td>{{ $loan->description }}</td>
                             <td class="text-end">
                                 <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия

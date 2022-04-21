@@ -71,11 +71,11 @@
                     <th class="min-w-150px">Договор</th>
                     <th class="min-w-150px">Номер</th>
                     <th class="min-w-250px">Организация</th>
-                    <th class="min-w-125px">Срок действия БГ</th>
+                    <th class="min-w-125px">Дата окончания БГ</th>
                     <th class="min-w-125px">Сумма БГ</th>
                     <th class="min-w-125px">Комиссия БГ</th>
                     <th class="min-w-125px">Остаток неотр. аванса</th>
-                    <th class="min-w-125px">Срок действия депозита</th>
+                    <th class="min-w-125px">Дата окончания депозита</th>
                     <th class="min-w-125px">Сумма депозита</th>
                     <th class="min-w-125px">Действия</th>
                 </tr>
@@ -94,7 +94,7 @@
                     <td>{{ $guarantee->number }}</td>
                     <td>{{ $guarantee->organization->name }}</td>
                     <td>
-                        {{ $guarantee->getStartDateFormatted() }} - {{ $guarantee->getEndDateFormatted() }}
+                        {{ $guarantee->getEndDateFormatted() }}
                     </td>
                     <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}</td>
                     <td>
@@ -103,7 +103,7 @@
                         </a>
                     </td>
                     <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->getAvansesLeftAmount(), $guarantee->currency) }}</td>
-                    <td>{{ $guarantee->getStartDateDepositFormatted() }} - {{ $guarantee->getEndDateDepositFormatted() }}</td>
+                    <td>{{ $guarantee->getEndDateDepositFormatted() }}</td>
                     <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount_deposit, $guarantee->currency) }}</td>
                     <td class="text-end">
                         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия

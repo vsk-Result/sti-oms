@@ -61,7 +61,7 @@ class BankGuaranteeService
             foreach ((clone $query)->where('currency', $currency)->get() as $guarantee) {
                 $total['amount'][$currency] += $guarantee->amount;
                 $total['amount_deposit'][$currency] += $guarantee->amount_deposit;
-                $total['amount_commission'][$currency] += $guarantee->commission;
+                $total['amount_commission']['RUB'] += $guarantee->commission;
                 $total['amount_acts_left_paid'][$currency] += $guarantee->getAvansesLeftAmount();
             }
         }
