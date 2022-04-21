@@ -17,17 +17,21 @@
             </div>
 
             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
-                <div class="d-flex align-items-center">
-                    <div class="fs-4 fw-bolder text-danger">{{ number_format($totalInfo['amount_pay'], 2, '.', ' ') }}</div>
-                </div>
-                <div class="fw-bold fs-6 text-gray-400">Расходы</div>
+                <a href="javascript::void(0);" class="amount-expression-quick" data-operator="<" data-operator-force>
+                    <div class="d-flex align-items-center">
+                        <div class="fs-4 fw-bolder text-danger">{{ number_format($totalInfo['amount_pay'], 2, '.', ' ') }}</div>
+                    </div>
+                    <div class="fw-bold fs-6 text-gray-400">Расходы</div>
+                </a>
             </div>
 
             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
-                <div class="d-flex align-items-center">
-                    <div class="fs-4 fw-bolder text-success">{{ number_format($totalInfo['amount_receive'], 2, '.', ' ') }}</div>
-                </div>
-                <div class="fw-bold fs-6 text-gray-400">Приходы</div>
+                <a href="javascript::void(0);" class="amount-expression-quick" data-operator=">" data-operator-force>
+                    <div class="d-flex align-items-center">
+                        <div class="fs-4 fw-bolder text-success">{{ number_format($totalInfo['amount_receive'], 2, '.', ' ') }}</div>
+                    </div>
+                    <div class="fw-bold fs-6 text-gray-400">Приходы</div>
+                </a>
             </div>
 
             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">

@@ -152,6 +152,10 @@
         $('.amount-expression-quick').on('click', function() {
             $('select[name=amount_expression_operator]').val($(this).data('operator')).trigger('change');
             $('input[name=amount_expression]').val(0);
+
+            if ($(this).is('[data-operator-force]')) {
+                $('#filter-payment-submit').trigger('click');
+            }
         });
 
         function loadMonths() {
