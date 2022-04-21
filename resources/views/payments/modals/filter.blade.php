@@ -61,7 +61,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Условие для суммы</label>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-8">
                                             @php
                                                 $expressionOperators = [
                                                     '<=' => 'Меньше или равно',
@@ -85,13 +85,30 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <input
                                                 name="amount_expression"
                                                 class="form-control form-control-solid"
                                                 value="{{ request()->input('amount_expression', '') }}"
                                                 autocomplete="off"
                                             />
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="mt-3">
+                                                <span
+                                                    class="amount-expression-quick badge badge-light cursor-pointer bg-hover-secondary"
+                                                    data-operator=">"
+                                                >
+                                                    только приходы
+                                                </span>
+                                                <span
+                                                    class="amount-expression-quick badge badge-light cursor-pointer bg-hover-secondary"
+                                                    data-operator="<"
+                                                >
+                                                    только расходы
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -149,6 +149,11 @@
             loadPayments();
         });
 
+        $('.amount-expression-quick').on('click', function() {
+            $('select[name=amount_expression_operator]').val($(this).data('operator')).trigger('change');
+            $('input[name=amount_expression]').val(0);
+        });
+
         function loadMonths() {
             const url = $cashPaymentContainer.data('index-payments-url') + '?get_type=years';
             const year = $('.cash-year.active').data('year');
@@ -175,7 +180,7 @@
                     });
 
                     if ($('.cash-month.active').length === 0) {
-                        $('.cash-month').not('.disabled').first().trigger('click');
+                        $('.cash-month').not('.disabled').last().trigger('click');
                     }
                 }
             );
