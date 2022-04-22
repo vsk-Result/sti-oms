@@ -89,7 +89,7 @@ class DebtImportService
     public function destroyImport(DebtImport $import): DebtImport
     {
         $import->delete();
-        $import->debts->delete();
+        $import->debts()->delete();
 
         return $import;
     }
