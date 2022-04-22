@@ -3,7 +3,6 @@
 namespace App\Models\Contract;
 
 use App\Models\Company;
-use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;

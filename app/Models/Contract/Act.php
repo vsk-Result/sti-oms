@@ -3,7 +3,6 @@
 namespace App\Models\Contract;
 
 use App\Models\Company;
-use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
@@ -14,10 +13,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Act extends Model implements Audit
+class Act extends Model implements Audit, HasMedia
 {
-    use SoftDeletes, HasUser, HasStatus, Auditable;
+    use SoftDeletes, HasUser, HasStatus, Auditable, InteractsWithMedia;
 
     protected $table = 'acts';
 

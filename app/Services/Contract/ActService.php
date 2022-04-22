@@ -106,6 +106,12 @@ class ActService
                 }
             }
         }
+
+        if (! empty($requestData['files'])) {
+            foreach ($requestData['files'] as $file) {
+                $act->addMedia($file)->toMediaCollection();
+            }
+        }
     }
 
     public function updateAct(Act $act, array $requestData): void
@@ -177,6 +183,12 @@ class ActService
                             : $act->currency_rate,
                     ]);
                 }
+            }
+        }
+
+        if (! empty($requestData['files'])) {
+            foreach ($requestData['files'] as $file) {
+                $act->addMedia($file)->toMediaCollection();
             }
         }
     }

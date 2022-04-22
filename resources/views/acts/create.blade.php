@@ -168,6 +168,32 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Файлы</label>
+                                            <input
+                                                type="file"
+                                                multiple
+                                                class="form-control form-control-solid {{ $errors->has('files.*') ? 'is-invalid' : '' }}"
+                                                placeholder=""
+                                                name="files[]"
+                                                accept=".jpg, .jpeg, .png, .pdf, .doc, .docx"
+                                            />
+                                            <div class="form-text">Доступные форматы:
+                                                <code>jpg, jpeg, png, pdf, doc, docx</code>
+                                            </div>
+                                            @if ($errors->has('files.*'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    @foreach($errors->get('files.*') as $message)
+                                                        <div>{{ implode(' ', $message) }}</div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
