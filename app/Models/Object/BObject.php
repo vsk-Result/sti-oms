@@ -129,12 +129,14 @@ class  BObject extends Model implements Audit
             $result = [];
 
             foreach ($debts as $debt) {
-                if (! isset($result[$debt->organization_id])) {
-                    $result[$debt->organization_id]['name'] = $debt->organization->name;
-                    $result[$debt->organization_id]['amount'] = 0;
+                $id = $debt->organization_id . '::' . $debt->organization->name;
+                if (! isset($result[$id])) {
+                    $result[$id] = 0;
                 }
-                $result[$debt->organization_id]['amount'] += $debt->amount;
+                $result[$id] += $debt->amount;
             }
+
+            asort($result);
         }
 
 
@@ -167,12 +169,14 @@ class  BObject extends Model implements Audit
             $result = [];
 
             foreach ($debts as $debt) {
-                if (! isset($result[$debt->organization_id])) {
-                    $result[$debt->organization_id]['name'] = $debt->organization->name;
-                    $result[$debt->organization_id]['amount'] = 0;
+                $id = $debt->organization_id . '::' . $debt->organization->name;
+                if (! isset($result[$id])) {
+                    $result[$id] = 0;
                 }
-                $result[$debt->organization_id]['amount'] += $debt->amount;
+                $result[$id] += $debt->amount;
             }
+
+            asort($result);
         }
 
         return $result;
@@ -180,22 +184,12 @@ class  BObject extends Model implements Audit
 
     public function getContractorDebtsAmount(): float
     {
-        $amount = 0;
-        $debts = $this->getContractorDebts();
-        foreach ($debts as $organization) {
-            $amount += $organization['amount'];
-        }
-        return $amount;
+        return array_sum($this->getContractorDebts());
     }
 
     public function getProviderDebtsAmount(): float
     {
-        $amount = 0;
-        $debts = $this->getProviderDebts();
-        foreach ($debts as $organization) {
-            $amount += $organization['amount'];
-        }
-        return $amount;
+        return array_sum($this->getProviderDebts());
     }
 
     public function getEmployeesCount(): int

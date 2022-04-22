@@ -209,12 +209,12 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($object->getContractorDebts() as $organizationId => $organization)
+                                @forelse($object->getContractorDebts() as $organization => $amount)
                                     <tr>
-                                        <td>{{ $organization['name'] }}</td>
+                                        <td>{{ substr($organization, strpos($organization, '::') + 2) }}</td>
                                         <td class="text-danger">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
-                                                {{ number_format($organization['amount'], 2, ',', ' ') }}
+                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ substr($organization, 0, strpos($organization, '::')) }}">
+                                                {{ number_format($amount, 2, ',', ' ') }}
                                             </a>
                                         </td>
                                     </tr>
@@ -439,12 +439,12 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                            @forelse($object->getProviderDebts() as $organizationId => $organization)
+                            @forelse($object->getProviderDebts() as $organization => $amount)
                                 <tr>
-                                    <td>{{ $organization['name'] }}</td>
+                                    <td>{{ substr($organization, strpos($organization, '::') + 2) }}</td>
                                     <td class="text-danger">
-                                        <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
-                                            {{ number_format($organization['amount'], 2, ',', ' ') }}
+                                        <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ substr($organization, 0, strpos($organization, '::')) }}">
+                                            {{ number_format($amount, 2, ',', ' ') }}
                                         </a>
                                     </td>
                                 </tr>
