@@ -35,6 +35,9 @@
                     </div>
 
                     @foreach($balances as $bankName => $balance)
+                        @if ($bankName === 'ПАО "Росбанк"')
+                            @continue
+                        @endif
                         <div class="fs-6 d-flex justify-content-between my-4">
                             <div class="fw-bold">{{ $bankName }}</div>
 
