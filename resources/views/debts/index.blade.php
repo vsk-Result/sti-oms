@@ -64,10 +64,14 @@
                         @forelse($debts as $debt)
                             <tr>
                                 <td class="ps-4">
-                                    @if(auth()->user()->can('show objects'))
-                                        <a href="{{ route('objects.show', $debt->object) }}" class="show-link">{{ $debt->getObject() }}</a>
+                                    @if ($debt->object)
+                                        @if(auth()->user()->can('show objects'))
+                                            <a href="{{ route('objects.show', $debt->object) }}" class="show-link">{{ $debt->getObject() }}</a>
+                                        @else
+                                            {{ $debt->getObject() }}
+                                        @endif
                                     @else
-                                        {{ $debt->getObject() }}
+                                        {{ $debt->object_id . ' не сущ.' }}
                                     @endif
                                 </td>
                                 <td>{{ $debt->getType() }}</td>
