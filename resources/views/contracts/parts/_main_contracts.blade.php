@@ -113,23 +113,23 @@
     </div>
     <div class="card-body py-3">
         <div class="table-responsive">
-            <table class="table table-hover align-middle table-row-dashed fs-6">
+            <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
-                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                    <th class="min-w-100px ps-4">Объект</th>
-                    <th class="min-w-250px">Номер</th>
+                <tr class="text-start text-muted fw-bolder fs-8 text-uppercase gs-0">
+                    <th class="min-w-75px ps-4">Объект</th>
+                    <th class="min-w-200px">Номер</th>
                     <th class="min-w-100px"></th>
-                    <th class="min-w-130px">Сумма</th>
-                    <th class="min-w-130px">Сумма аванса</th>
-                    <th class="min-w-130px">Сумма получ. аванса</th>
-                    <th class="min-w-130px">Сумма аванса к получению</th>
-                    <th class="min-w-130px">Выполнено по актам</th>
-                    <th class="min-w-130px">Аванс удержан по актам</th>
-                    <th class="min-w-130px">Депозит удержан по актам</th>
-                    <th class="min-w-130px">К оплате по актам</th>
-                    <th class="min-w-130px">Оплачено по актам</th>
-                    <th class="min-w-130px">Сумма неоплаченных работ по актам</th>
-                    <th class="min-w-150px rounded-end pe-4">Действия</th>
+                    <th class="min-w-125px">Сумма</th>
+                    <th class="min-w-125px">Сумма аванса</th>
+                    <th class="min-w-125px">Сумма получ. аванса</th>
+                    <th class="min-w-125px">Сумма аванса к получению</th>
+                    <th class="min-w-125px">Выполнено по актам</th>
+                    <th class="min-w-125px">Аванс удержан по актам</th>
+                    <th class="min-w-125px">Депозит удержан по актам</th>
+                    <th class="min-w-125px">К оплате по актам</th>
+                    <th class="min-w-125px">Оплачено по актам</th>
+                    <th class="min-w-125px">Сумма неоплаченных работ по актам</th>
+                    <th class="min-w-125px rounded-end pe-4">Действия</th>
                 </tr>
                 </thead>
                 <tbody class="text-gray-600 fw-bold">
