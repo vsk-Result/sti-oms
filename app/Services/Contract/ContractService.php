@@ -74,7 +74,7 @@ class ContractService
             }
 
             $total['avanses_notwork_left_amount'][$currency] = $total['avanses_received_amount'][$currency] - $total['avanses_acts_avanses_amount'][$currency];
-            $total['avanses_non_closes_amount'][$currency] = $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_deposites_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency];
+            $total['avanses_non_closes_amount'][$currency] = $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency];
             $total['avanses_non_closes_amount'][$currency] = abs($total['avanses_non_closes_amount'][$currency]);
         }
 

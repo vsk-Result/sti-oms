@@ -60,7 +60,7 @@
                         <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['RUB'], 'RUB') }}</div>
                         <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['EUR'], 'EUR') }}</div>
                     </div>
-                    <div class="fw-bold fs-6 text-gray-400">Не закрытая сумма договоров</div>
+                    <div class="fw-bold fs-7 text-gray-400">Остаток денег к получ. с учётом ГУ</div>
                 </div>
 
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
