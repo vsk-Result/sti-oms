@@ -55,7 +55,13 @@
                 </div>
             </div>
             <div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                <div
+                    class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4"
+                    data-bs-toggle="tooltip"
+                    data-bs-custom-class="tooltip-dark"
+                    data-bs-placement="right"
+                    title="Сумма договоров - сумма полученных авансов - сумма оплаченных актов - долг подписанных актов"
+                >
                     <div class="d-flex flex-column align-items-left">
                         <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['RUB'], 'RUB') }}</div>
                         <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['EUR'], 'EUR') }}</div>
