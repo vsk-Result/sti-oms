@@ -73,7 +73,7 @@
                                 <td>{{ $debt->getType() }}</td>
                                 <td>{{ $debt->category }}</td>
                                 <td>{{ $debt->order_author }}</td>
-                                <td>{{ $debt->organization->name }}</td>
+                                <td>{{ $debt->organization?->name }}</td>
                                 <td>{{ $debt->description }}</td>
                                 <td>{{ $debt->invoice_number }}</td>
                                 <td>{{ \App\Models\CurrencyExchangeRate::format($debt->invoice_amount, 'RUB') }}</td>
