@@ -53,7 +53,7 @@
                 @can('edit objects')
                     <a href="{{ route('objects.edit', $object) }}" class="btn btn-light btn-active-light-primary btn-sm me-3">Изменить</a>
                 @endcan
-                <a href="{{ route('objects.payments.index', $object) }}" class="btn btn-primary btn-active-light-primary btn-sm">Оплаты</a>
+                <a href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}" class="btn btn-primary btn-active-light-primary btn-sm">Оплаты</a>
             </div>
         </div>
 
@@ -76,7 +76,7 @@
                     @endphp
 
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                        <a href="{{ route('objects.payments.index', $object) }}">
+                        <a href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                             <div class="d-flex align-items-center">
                                 <div class="fs-4 fw-bolder {{ $object->total_balance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($object->total_balance, 2, '.', ' ') }}</div>
                             </div>
@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                        <a href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=1">
+                        <a href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=1&object_id%5B%5D={{ $object->id }}">
                             <div class="d-flex align-items-center">
                                 <div class="fs-4 fw-bolder {{ $oneBalance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($oneBalance, 2, '.', ' ') }}</div>
                             </div>
@@ -114,7 +114,7 @@
                     </div>
 
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                        <a href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
+                        <a href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4&object_id%5B%5D={{ $object->id }}">
                             <div class="d-flex align-items-center">
                                 <div class="fs-4 fw-bolder {{ $twoFourBalance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($twoFourBalance, 2, '.', ' ') }}</div>
                             </div>
@@ -131,7 +131,7 @@
                     </div>
                 @else
                     <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                        <a href="{{ route('objects.payments.index', $object) }}">
+                        <a href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                             <div class="d-flex align-items-center">
                                 <div class="fs-4 fw-bolder {{ $object->total_balance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($object->total_balance, 2, '.', ' ') }}</div>
                             </div>
@@ -151,7 +151,7 @@
                 @endif
 
                 <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression_operator=<&amount_expression=0">
+                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression_operator=<&amount_expression=0&object_id%5B%5D={{ $object->id }}">
                         <div class="d-flex align-items-center">
                             <div class="fs-4 fw-bolder text-danger">{{ number_format($object->total_pay, 2, '.', ' ') }}</div>
                         </div>
@@ -167,7 +167,7 @@
                     </button>
                 </div>
                 <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
-                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression_operator=>%3D&amount_expression=0">
+                    <a href="{{ route('objects.payments.index', $object) }}?amount_expression_operator=>%3D&amount_expression=0&object_id%5B%5D={{ $object->id }}">
                         <div class="d-flex align-items-center">
                             <div class="fs-4 fw-bolder text-success">{{ number_format($object->total_receive, 2, '.', ' ') }}</div>
                         </div>
