@@ -168,7 +168,7 @@ class PaymentService
                 ->orderByDesc('id');
         }
 
-        $paymentQuery->with('company', 'import', 'createdBy', 'object');
+        $paymentQuery->with('company', 'import', 'createdBy', 'object', 'audits', 'organizationSender', 'organizationReceiver');
 
         if ($needPaginate) {
             $perPage = 30;
