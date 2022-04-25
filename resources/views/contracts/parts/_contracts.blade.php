@@ -15,6 +15,7 @@
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsNeedPaidAmount($currency), $currency) }}</td>
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsPaidAmount($currency), $currency) }}</td>
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsLeftPaidAmount($currency), $currency) }}</td>
+    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAvansesReceivedAmount($currency) - $mainContract->getActsAvasesAmount($currency), $currency) }}</td>
     <td>
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
             <span class="svg-icon svg-icon-5 m-0">
@@ -63,6 +64,7 @@
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency) }}</td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency) }}</td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency) }}</td>
+        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency) - $contract->getActsAvasesAmount($currency), $currency) }}</td>
         <td>
             <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                 <span class="svg-icon svg-icon-5 m-0">

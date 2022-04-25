@@ -135,6 +135,7 @@
                     <th class="min-w-125px">К оплате по актам</th>
                     <th class="min-w-125px">Оплачено по актам</th>
                     <th class="min-w-125px">Сумма неоплаченных работ по актам</th>
+                    <th class="min-w-125px">Остаток неотработанного аванса</th>
                     <th class="min-w-125px rounded-end pe-4">Действия</th>
                 </tr>
                 </thead>
@@ -241,6 +242,12 @@
                             @endforeach
                         </td>
                         <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency) - $contract->getActsAvasesAmount($currency), $currency) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td>
                             <a href="#" class="btn-menu btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                 <span class="svg-icon svg-icon-5 m-0">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -273,7 +280,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="13">
+                        <td colspan="14">
                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                 Договора отсутствуют
                             </p>
