@@ -29,19 +29,27 @@ class TransferPaymentController extends Controller
 
     public function store(Organization $organization, Request $request): RedirectResponse
     {
-        foreach ($organization->paymentsSend as $payment) {
-            $this->paymentService->updatePayment(
-                $payment,
-                ['organization_sender_id' => $request->input('organization_id')]
-            );
-        }
+        $newOrganizationId = $request->input('organization_id');
 
-        foreach ($organization->paymentsReceive as $payment) {
-            $this->paymentService->updatePayment(
-                $payment,
-                ['organization_receiver_id' => $request->input('organization_id')]
-            );
-        }
+        $organization->paymentsSend()->update([
+            'organization_sender_id' => $newOrganizationId
+        ]);
+
+        $organization->paymentsReceive()->update([
+            'organization_receiver_id' => $newOrganizationId
+        ]);
+
+        $organization->debts()->update([
+            'organization_id' => $newOrganizationId
+        ]);
+
+        $organization->loans()->update([
+            'organization_id' => $newOrganizationId
+        ]);
+
+        $organization->bankGuarantees()->update([
+            'organization_id' => $newOrganizationId
+        ]);
 
         $this->organizationService->destroyOrganization($organization);
 

@@ -41,6 +41,11 @@ class Organization extends Model
         return $this->hasMany(Debt::class, 'organization_id');
     }
 
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'organization_id');
+    }
+
     public function bankGuarantees(): HasMany
     {
         return $this->hasMany(BankGuarantee::class, 'organization_id');

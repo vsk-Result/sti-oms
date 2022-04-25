@@ -30,8 +30,8 @@ class TransferPaymentImportController extends Controller
         foreach ($importData['Организации'] as $index => $row) {
             if ($index === 0) continue;
 
-            $organization = Organization::find($row[0]);
-            $newOrganizaition = Organization::where('name', $row[2])->first();
+            $organization = Organization::where('name', $row[0])->first();
+            $newOrganizaition = Organization::where('name', $row[1])->first();
 
             if (! $organization || ! $newOrganizaition) {
                 continue;
@@ -46,6 +46,10 @@ class TransferPaymentImportController extends Controller
             ]);
 
             $organization->debts()->update([
+                'organization_id' => $newOrganizaition->id
+            ]);
+
+            $organization->loans()->update([
                 'organization_id' => $newOrganizaition->id
             ]);
 
