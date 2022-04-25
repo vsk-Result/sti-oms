@@ -142,6 +142,7 @@
                 @forelse($contracts as $contract)
                     @php
                         $childrenCount = $contract->children->count();
+                        $showCurrencies = ['RUB' => 'RUB'];
                     @endphp
                     <tr>
                         <td class="ps-4">
@@ -155,8 +156,12 @@
                             {{ $contract->getName() }}
                         </td>
                         <td>
-                            @foreach($contract->getAmount(false) as $currency => $amount)
-                                @if ($childrenCount > 0 && $amount !== 0)
+                            @foreach(['RUB', 'EUR'] as $currency)
+                                @php
+                                    $amount = $contract->getAmount($currency);
+                                @endphp
+
+                                @if ($childrenCount > 0 && $amount != 0)
                                     <a
                                         href="#"
                                         class="btn btn-outline btn-outline-dashed btn-outline-default me-2 mb-2 show-subcontracts"
@@ -168,76 +173,80 @@
                                         {{ $currency }}
                                     </a>
                                     <br>
+
+                                    @php
+                                        $showCurrencies[$currency] = $currency;
+                                    @endphp
                                 @endif
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getAvansesAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getAvansesReceivedAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getAvansesLeftAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getActsAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getActsAvasesAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getActsDepositesAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getActsNeedPaidAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getActsPaidAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
-                            @foreach($contract->getActsLeftPaidAmount(false) as $currency => $amount)
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, $currency) }}
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             <a href="#" class="btn-menu btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                 <span class="svg-icon svg-icon-5 m-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                    <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                                                </svg>
-                                            </span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                                    </svg>
+                                </span>
                             </a>
                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                 @can('edit contracts')
