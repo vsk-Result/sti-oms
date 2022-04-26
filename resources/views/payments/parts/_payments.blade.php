@@ -87,7 +87,7 @@
     </div>
     <div class="card-body py-3">
         <div class="table-responsive">
-            <table class="table table-hover align-middle table-row-dashed fs-6">
+            <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                     <th data-sort-by="date" class="sortable-row min-w-125px">Дата</th>
