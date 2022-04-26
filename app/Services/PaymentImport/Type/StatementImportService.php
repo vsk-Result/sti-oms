@@ -200,6 +200,30 @@ class StatementImportService
         $returnData['incoming_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][0]);
         $returnData['outgoing_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][1]);
 
+        $additionInfo = [];
+        if (isset($statementData[1]) && count($statementData[1]) > 1) {
+            foreach ($statementData[1] as $rowNum => $rowData) {
+                if ($rowNum === 0 || empty($rowData[2])) {
+                    continue;
+                }
+
+                $description = $this->cleanValue($rowData[0]);
+                $description = str_replace(' ', '', $description);
+                $comment = $this->cleanValue($rowData[2]);
+                $comment = str_replace(' ', '', $comment);
+
+                $additionInfo[$description]['object'] = $comment;
+                $additionInfo[$description]['code'] = '';
+
+                if (str_contains($comment, '/')) {
+                    $additionInfo[$description]['object'] = substr($comment, 0 , strpos($comment, '/'));
+                    $additionInfo[$description]['code'] = substr($comment, strpos($comment, '/') + 1);
+                }
+            }
+        }
+
+        $isNotEmptyAdditionInfo = count($additionInfo) > 0;
+
         foreach ($importData as $rowNum => $rowData) {
 
             if ($rowNum < 5) {
@@ -221,9 +245,24 @@ class StatementImportService
                 $receiveAmount = $amount;
             }
 
+            $object = $rowData[0];
+            $code = $rowData[1];
+
+            if ($isNotEmptyAdditionInfo) {
+                $cleanDescription = str_replace(' ', '', $description);
+                if (array_key_exists($cleanDescription, $additionInfo)) {
+                    if (empty($object)) {
+                        $object = $additionInfo[$cleanDescription]['object'];
+                    }
+                    if (empty($code)) {
+                        $code = $additionInfo[$cleanDescription]['code'];
+                    }
+                }
+            }
+
             $returnData['payments'][] = [
-                'object' => $rowData[0],
-                'code' => $rowData[1],
+                'object' => $object,
+                'code' => $code,
                 'date' => Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d'),
                 'pay_amount' => $payAmount,
                 'receive_amount' => $receiveAmount,
