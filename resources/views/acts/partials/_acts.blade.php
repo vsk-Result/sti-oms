@@ -1,59 +1,6 @@
 <div class="card mb-5 mb-xl-8">
     <div class="card-header border-0 pt-6">
         <div class="card-title">
-            <div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма выполнения</div>
-                </div>
-
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма удержанного аванса</div>
-                </div>
-            </div>
-
-            <div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма удержанного депозита</div>
-                </div>
-
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма к оплате</div>
-                </div>
-            </div>
-
-            <div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма оплачено</div>
-                </div>
-
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма неоплаченных работ</div>
-                </div>
-            </div>
         </div>
 
         <div class="card-toolbar">
@@ -84,7 +31,7 @@
     </div>
     <div class="card-body py-3">
         <div class="table-responsive">
-            <table class="table table-hover align-middle table-row-dashed fs-6">
+            <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                     <th class="min-w-100px ps-4">Объект</th>
@@ -98,6 +45,40 @@
                     <th class="min-w-150px">Оплачено</th>
                     <th class="min-w-150px">Сумма неоплаченных работ</th>
                     <th class="min-w-150px">Действие</th>
+                </tr>
+                <tr class="fw-bolder" style="background-color: #f7f7f7;">
+                    <th colspan="4" class="ps-4" style="vertical-align: middle;">Итого</th>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
+                        <br>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}
+                    </th>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['RUB'], 'RUB') }}
+                        <br>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}
+                    </th>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['RUB'], 'RUB') }}
+                        <br>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['EUR'], 'EUR') }}
+                    </th>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['RUB'], 'RUB') }}
+                        <br>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['EUR'], 'EUR') }}
+                    </th>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['RUB'], 'RUB') }}
+                        <br>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['EUR'], 'EUR') }}
+                    </th>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['RUB'], 'RUB') }}
+                        <br>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['EUR'], 'EUR') }}
+                    </th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody class="text-gray-600 fw-bold">
