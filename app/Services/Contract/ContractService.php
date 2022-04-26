@@ -48,6 +48,7 @@ class ContractService
             $total['amount'][$currency] = 0;
             $total['avanses_received_amount'][$currency] = 0;
             $total['avanses_left_amount'][$currency] = 0;
+            $total['acts_amount'][$currency] = 0;
             $total['avanses_acts_paid_amount'][$currency] = 0;
             $total['avanses_acts_left_paid_amount'][$currency] = 0;
             $total['avanses_acts_deposites_amount'][$currency] = 0;
@@ -57,6 +58,7 @@ class ContractService
                 $total['amount'][$currency] += $contract->getAmount($currency);
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
                 $total['avanses_left_amount'][$currency] += $contract->getAvansesLeftAmount($currency);
+                $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount($currency);
                 $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount($currency);
                 $total['avanses_acts_deposites_amount'][$currency] += $contract->getActsDepositesAmount($currency);
@@ -67,6 +69,7 @@ class ContractService
                 $total['amount'][$currency] += $contract->getAmount($currency);
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
                 $total['avanses_left_amount'][$currency] += $contract->getAvansesLeftAmount($currency);
+                $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount($currency);
                 $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount($currency);
                 $total['avanses_acts_deposites_amount'][$currency] += $contract->getActsDepositesAmount($currency);
