@@ -203,13 +203,13 @@ class StatementImportService
         $additionInfo = [];
         if (isset($statementData[1]) && count($statementData[1]) > 1) {
             foreach ($statementData[1] as $rowNum => $rowData) {
-                if ($rowNum === 0 || empty($rowData[2])) {
+                if ($rowNum === 0 || empty($rowData[1])) {
                     continue;
                 }
 
                 $description = $this->cleanValue($rowData[0]);
                 $description = str_replace(' ', '', $description);
-                $comment = $this->cleanValue($rowData[2]);
+                $comment = $this->cleanValue($rowData[1]);
                 $comment = str_replace(' ', '', $comment);
 
                 $additionInfo[$description]['object'] = $comment;
