@@ -93,6 +93,7 @@ class CompanyController extends Controller
             ->where('type_id', Payment::TYPE_TRANSFER)
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
             ->where('description', '!=', 'PATRIOT')
+            ->where('description', 'NOT LIKE', '%Оплата процентов%')
             ->where(function($q) {
                 $q->where('bank_id', 1);
                 $q->orWhere('bank_id', 3);
