@@ -4,29 +4,19 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreOrUpdateCompanyRequest;
-use App\Models\Bank;
-use App\Models\BankGuarantee;
 use App\Models\Company;
-use App\Models\Organization;
-use App\Models\Payment;
-use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Services\CompanyService;
-use App\Services\CurrencyExchangeRateService;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CompanyController extends Controller
 {
     private CompanyService $companyService;
-    private CurrencyExchangeRateService $rateService;
 
-    public function __construct(CompanyService $companyService, CurrencyExchangeRateService $rateService)
+    public function __construct(CompanyService $companyService)
     {
         $this->companyService = $companyService;
-        $this->rateService = $rateService;
     }
 
     public function index(): View
