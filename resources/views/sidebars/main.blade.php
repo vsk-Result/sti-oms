@@ -40,6 +40,14 @@
                 </div>
             </div>
 
+            @can('index finance-report')
+                <div class="menu-item">
+                    <a href="{{ route('finance_report.index') }}" class="menu-link {{ request()->is('finance-report*') ? 'active' : '' }}">
+                        <span class="menu-title">Финансовый отчет</span>
+                    </a>
+                </div>
+            @endcan
+
             @can('index objects')
                 <div class="menu-item">
                     <a href="{{ route('objects.index') }}" class="menu-link {{ request()->is('objects*') ? 'active' : '' }}">
