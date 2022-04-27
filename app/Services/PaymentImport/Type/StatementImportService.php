@@ -7,6 +7,7 @@ use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
+use App\Services\CurrencyExchangeRateService;
 use App\Services\ObjectService;
 use App\Services\OrganizationService;
 use App\Services\PaymentService;
@@ -22,17 +23,20 @@ class StatementImportService
     private OrganizationService $organizationService;
     private UploadService $uploadService;
     private ObjectService $objectService;
+    private CurrencyExchangeRateService $rateService;
 
     public function __construct(
         PaymentService $paymentService,
         UploadService $uploadService,
         OrganizationService $organizationService,
         ObjectService $objectService,
+        CurrencyExchangeRateService $rateService
     ) {
         $this->paymentService = $paymentService;
         $this->uploadService = $uploadService;
         $this->organizationService = $organizationService;
         $this->objectService = $objectService;
+        $this->rateService = $rateService;
     }
 
     public function createImport(array $requestData): null|PaymentImport
@@ -260,10 +264,20 @@ class StatementImportService
                 }
             }
 
+            $date = Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d');
+
+            if (isset($rowData[6]) && $rowData[6] !== 'RUB') {
+                $rate = $this->rateService->getExchangeRate($date, $rowData[6])->rate;
+
+                $payAmount *= $rate;
+                $receiveAmount *= $rate;
+                $description .= ' (' . $amount . ' ' . $rowData[6] . ')';
+            }
+
             $returnData['payments'][] = [
                 'object' => $object,
                 'code' => $code,
-                'date' => Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d'),
+                'date' => $date,
                 'pay_amount' => $payAmount,
                 'receive_amount' => $receiveAmount,
                 'organization_name' => $this->cleanValue($rowData[3]),
