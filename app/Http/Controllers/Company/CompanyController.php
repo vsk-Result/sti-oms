@@ -90,6 +90,7 @@ class CompanyController extends Controller
 
         $totalLoanPTIAmount = - Payment::where('date', '>=', '2021-02-12')
             ->where('date', '<=', $date)
+            ->where('company_id', 1)
             ->where('type_id', Payment::TYPE_TRANSFER)
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
             ->where('description', '!=', 'PATRIOT')
