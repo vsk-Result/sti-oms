@@ -15,13 +15,7 @@ Breadcrumbs::for('companies.create', function (BreadcrumbTrail $trail) {
     $trail->push('Новая компания');
 });
 
-Breadcrumbs::for('companies.show', function (BreadcrumbTrail $trail, Company $company) {
-    $route = auth()->user()->can('show companies') ? route('companies.show', $company) : null;
-    $trail->parent('companies.index');
-    $trail->push($company->name, $route);
-});
-
 Breadcrumbs::for('companies.edit', function (BreadcrumbTrail $trail, Company $company) {
-    $trail->parent('companies.show', $company);
+    $trail->parent('companies.index');
     $trail->push('Изменение компании');
 });
