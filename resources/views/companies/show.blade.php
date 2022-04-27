@@ -42,6 +42,11 @@
                             <div class="fw-bold">{{ $bankName }}</div>
 
                             <div class="d-flex fw-bolder">
+                                @if ($bankName === 'ПАО "МКБ"')
+                                    @php
+                                        $balance = 2000;
+                                    @endphp
+                                @endif
                                 {{ \App\Models\CurrencyExchangeRate::format($balance, 'RUB') }}
                             </div>
                         </div>

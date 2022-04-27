@@ -14,6 +14,13 @@
 
 @push('scripts')
     <script>
+        // $("#tr-1").scroll(function() {
+        //     $("#tr-2").scrollLeft($("#tr-1").scrollLeft());
+        // });
+        // $("#tr-2").scroll(function() {
+        //     $("#tr-1").scrollLeft($("#tr-2").scrollLeft());
+        // });
+
         $('.show-subcontracts').on('click', function(e) {
             e.preventDefault();
 
