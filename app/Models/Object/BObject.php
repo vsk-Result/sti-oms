@@ -112,6 +112,7 @@ class  BObject extends Model implements Audit
             ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
             ->where('type_id', Debt::TYPE_CONTRACTOR)
             ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
+            ->with('organization')
             ->orderBy('amount')
             ->get();
 
@@ -152,6 +153,7 @@ class  BObject extends Model implements Audit
             ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
             ->where('type_id', Debt::TYPE_PROVIDER)
             ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
+            ->with('organization')
             ->orderBy('amount')
             ->get();
 
