@@ -42,7 +42,7 @@
                 @endcan
 
                 @can('create acts')
-                    <a href="{{ route('acts.create') }}{{ isset($object) ? ('?current_object_id=' . $object->id) : '' }}" class="btn btn-light-primary ms-4">
+                    <a href="{{ route('acts.create') }}{{ isset($object) ? ('?current_object_id=' . $object->id) : '' }}" class="btn btn-light-primary ms-4 me-3">
                         <span class="svg-icon svg-icon-3">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
@@ -53,6 +53,28 @@
                         Новый акт
                     </a>
                 @endcan
+
+                <button type="button"
+                        class="btn btn-bg-light btn-color-info me-2"
+                        data-kt-menu-trigger="click"
+                        data-kt-menu-placement="bottom-start"
+                >
+                    <span class="svg-icon svg-icon-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path opacity="0.3" d="M11 11H13C13.6 11 14 11.4 14 12V21H10V12C10 11.4 10.4 11 11 11ZM16 3V21H20V3C20 2.4 19.6 2 19 2H17C16.4 2 16 2.4 16 3Z" fill="black"></path>
+                            <path d="M21 20H8V16C8 15.4 7.6 15 7 15H5C4.4 15 4 15.4 4 16V20H3C2.4 20 2 20.4 2 21C2 21.6 2.4 22 3 22H21C21.6 22 22 21.6 22 21C22 20.4 21.6 20 21 20Z" fill="black"></path>
+                        </svg>
+                    </span>
+                    Отчеты
+                </button>
+
+                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#lineChartPaymentActModal">
+                            График выполнения
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

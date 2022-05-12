@@ -59,6 +59,8 @@ class ActService
             }
         }
 
+        $total['ids'] = (clone $actQuery)->pluck('id')->toArray();
+
         return $actQuery->paginate($perPage)->withQueryString();
     }
 
