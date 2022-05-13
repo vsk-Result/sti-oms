@@ -17,7 +17,7 @@
                 <div class="d-flex fw-bolder">
                     @if ($bankName === 'ПАО "МКБ"')
                         @php
-                            $balance = 2000;
+                            $balance = 11000;
                         @endphp
                     @endif
                     {{ \App\Models\CurrencyExchangeRate::format($balance, 'RUB') }}
