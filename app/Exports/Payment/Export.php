@@ -30,7 +30,7 @@ class Export implements WithMultipleSheets
         return [
             new PivotSheet('Сводная', (clone $this->payments), $object),
             new PaymentSheet('Таблица оплат', (clone $this->payments), $this->payments->count()),
-            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments))
+//            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments))
         ];
     }
 }
