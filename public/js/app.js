@@ -173,12 +173,261 @@ const mainApp = function() {
         });
     }
 
+    const initActsPaymentsLineChart = function() {
+        const $modal = $('#lineChartPaymentActModal');
+
+        if ($modal.length === 0) {
+            return false;
+        }
+
+        const labelColor = KTUtil.getCssVariableValue('--bs-gray-500');
+        const borderColor = KTUtil.getCssVariableValue('--bs-gray-200');
+        const baseColor = KTUtil.getCssVariableValue('--bs-info');
+        const lightColor = KTUtil.getCssVariableValue('--bs-light-info');
+
+        const optionsRUB = {
+            series: [{
+                name: "Оплачено",
+                data: $modal.data('rub-chart-amounts')
+            }],
+            chart: {
+                fontFamily: 'inherit',
+                type: 'line',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {},
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                show: true,
+                width: 3,
+                colors: [baseColor]
+            },
+            xaxis: {
+                categories: $modal.data('rub-chart-months'),
+                axisBorder: {
+                    show: false,
+                },
+                axisTicks: {
+                    show: false
+                },
+                labels: {
+                    style: {
+                        colors: labelColor,
+                        fontSize: '12px'
+                    }
+                },
+                crosshairs: {
+                    position: 'front',
+                    stroke: {
+                        color: baseColor,
+                        width: 1,
+                        dashArray: 3
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    formatter: undefined,
+                    offsetY: 0,
+                    style: {
+                        fontSize: '12px'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: labelColor,
+                        fontSize: '12px'
+                    },
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('ru-RU', {maximumFractionDigits: 0}).format(val)
+                    }
+                }
+            },
+            states: {
+                normal: {
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                },
+                hover: {
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                },
+                active: {
+                    allowMultipleDataPointsSelection: false,
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                }
+            },
+            tooltip: {
+                style: {
+                    fontSize: '12px'
+                },
+                y: {
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('ru-RU', {maximumFractionDigits: 0}).format(val)
+                    }
+                }
+            },
+            colors: [lightColor],
+            grid: {
+                borderColor: borderColor,
+                strokeDashArray: 4,
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            markers: {
+                strokeColor: baseColor,
+                strokeWidth: 3
+            }
+        };
+        const optionsEUR = {
+            series: [{
+                name: "Оплачено",
+                data: $modal.data('eur-chart-amounts')
+            }],
+            chart: {
+                fontFamily: 'inherit',
+                type: 'line',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {},
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                show: true,
+                width: 3,
+                colors: [baseColor]
+            },
+            xaxis: {
+                categories: $modal.data('eur-chart-months'),
+                axisBorder: {
+                    show: false,
+                },
+                axisTicks: {
+                    show: false
+                },
+                labels: {
+                    style: {
+                        colors: labelColor,
+                        fontSize: '12px'
+                    }
+                },
+                crosshairs: {
+                    position: 'front',
+                    stroke: {
+                        color: baseColor,
+                        width: 1,
+                        dashArray: 3
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    formatter: undefined,
+                    offsetY: 0,
+                    style: {
+                        fontSize: '12px'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: labelColor,
+                        fontSize: '12px'
+                    },
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('ru-RU', {maximumFractionDigits: 0}).format(val)
+                    }
+                }
+            },
+            states: {
+                normal: {
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                },
+                hover: {
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                },
+                active: {
+                    allowMultipleDataPointsSelection: false,
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                }
+            },
+            tooltip: {
+                style: {
+                    fontSize: '12px'
+                },
+                y: {
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('ru-RU', {maximumFractionDigits: 0}).format(val)
+                    }
+                }
+            },
+            colors: [lightColor],
+            grid: {
+                borderColor: borderColor,
+                strokeDashArray: 4,
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            markers: {
+                strokeColor: baseColor,
+                strokeWidth: 3
+            }
+        };
+
+        let chart = new ApexCharts(document.querySelector("#lineChartPaymentActRUB"), optionsRUB);
+        chart.render();
+
+        chart = new ApexCharts(document.querySelector("#lineChartPaymentActEUR"), optionsEUR);
+        chart.render();
+    }
+
     return {
         init: function () {
             initAjaxSetup();
             initSetToastrOptions();
             initFavouriteLinksCreateHandler();
             initDateRangePicker();
+            initActsPaymentsLineChart();
 
             if ($('#show-date-and-time').length > 0) {
                 setInterval(initShowDateAndTime, 500);

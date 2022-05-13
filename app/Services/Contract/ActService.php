@@ -8,6 +8,7 @@ use App\Models\Contract\ActPayment;
 use App\Models\Contract\Contract;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
+use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ActService
@@ -199,5 +200,41 @@ class ActService
     {
         $act->payments()->delete();
         $act->delete();
+    }
+
+    public function prepareInfoForActsPaymentsLineChart(array $actIds): array
+    {
+        $info = [];
+
+        $actsMonths = [];
+        foreach (ActPayment::whereIn('act_id', $actIds)->orderBy('date')->get() as $payment) {
+            if (empty($payment->date)) {
+                continue;
+            }
+
+            $month = Carbon::parse($payment->date)->format('F Y');
+
+            if (! isset($actsMonths[$month][$payment->currency])) {
+                $actsMonths[$month][$payment->currency] = 0;
+            }
+
+            $actsMonths[$month][$payment->currency] += $payment->amount;
+        }
+
+        foreach ($actsMonths as $month => $currencies) {
+            $amount = $currencies['RUB'] ?? 0;
+            if ($amount !== 0) {
+                $info['rub_months'][] = $month;
+                $info['rub_amounts'][] = $amount;
+            }
+
+            $amount = $currencies['EUR'] ?? 0;
+            if ($amount !== 0) {
+                $info['eur_months'][] = $month;
+                $info['eur_amounts'][] = $amount;
+            }
+        }
+
+        return $info;
     }
 }
