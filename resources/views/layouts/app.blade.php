@@ -7,6 +7,11 @@
 
     <title>{{ config('app.name', 'Система управления объектами') }}</title>
 
+    <link rel="icon" href="https://st-ing.com/wp-content/uploads/2020/05/cropped-STI_logo_2020_512x512-32x32.png" sizes="32x32" />
+    <link rel="icon" href="https://st-ing.com/wp-content/uploads/2020/05/cropped-STI_logo_2020_512x512-192x192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="https://st-ing.com/wp-content/uploads/2020/05/cropped-STI_logo_2020_512x512-180x180.png" />
+    <meta name="msapplication-TileImage" content="https://st-ing.com/wp-content/uploads/2020/05/cropped-STI_logo_2020_512x512-270x270.png" />
+
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/plugins.bundle.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.bundle.css') }}">
