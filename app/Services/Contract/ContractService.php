@@ -81,9 +81,12 @@ class ContractService
             $total['avanses_non_closes_amount'][$currency] = abs($total['avanses_non_closes_amount'][$currency]);
         }
 
-        $total['ids'] = (clone $contractQuery)->pluck('id')->toArray();
+        $total['act_ids'] = [];
         foreach ((clone $contractQuery)->with('children')->get() as $contract) {
-            $total['ids'] = array_merge($total['ids'], $contract->children->pluck('id')->toArray());
+            $total['act_ids'] = array_merge($total['act_ids'], $contract->acts->pluck('id')->toArray());
+            foreach ($contract->children as $chContract) {
+                $total['act_ids'] = array_merge($total['act_ids'], $chContract->acts->pluck('id')->toArray());
+            }
         }
 
         return $contractQuery->paginate($perPage)->withQueryString();
