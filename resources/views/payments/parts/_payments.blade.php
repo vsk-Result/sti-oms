@@ -99,7 +99,9 @@
                     <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
                     <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
                     <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
-                    <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
+                    @if (! auth()->user()->hasRole('object-leader'))
+                        <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
+                    @endif
                 </tr>
                 </thead>
                 <tbody class="text-gray-600 fw-bold">
@@ -145,7 +147,8 @@
                             <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
                         </td>
                         <td>{{ $payment->category }}</td>
-                        <td class="text-end text-dark fw-bolder">
+                        @if (! auth()->user()->hasRole('object-leader'))
+                            <td class="text-end text-dark fw-bolder">
                             <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                 <span class="svg-icon svg-icon-5 m-0">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -226,6 +229,7 @@
                                 @endcan
                             </div>
                         </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
