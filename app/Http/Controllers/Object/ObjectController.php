@@ -73,7 +73,7 @@ class ObjectController extends Controller
 
     public function show(BObject $object): RedirectResponse
     {
-        return redirect()->route('objects.payments.index', compact('object'));
+        return redirect('/objects/' . $object->id . '/payments?object_id%5B%5D=' . $object->id);
     }
 
     public function edit(BObject $object): View

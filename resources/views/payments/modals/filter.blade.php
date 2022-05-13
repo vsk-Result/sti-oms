@@ -301,7 +301,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light float-left" data-bs-dismiss="modal">Закрыть</button>
-                    <a href="{{ request()->url() }}" class="btn btn-light">Сбросить</a>
+                    <a href="{{ isset($object) ? (request()->url() . '?object_id%5B%5D=' . $object->id) : request()->url() }}" class="btn btn-light">Сбросить</a>
                     <button id="filter-payment-submit" type="submit" class="btn btn-primary">Применить</button>
                 </div>
             </form>

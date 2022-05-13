@@ -53,7 +53,6 @@
                 @can('edit objects')
                     <a href="{{ route('objects.edit', $object) }}" class="btn btn-light btn-active-light-primary btn-sm me-3">Изменить</a>
                 @endcan
-                <a href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}" class="btn btn-primary btn-active-light-primary btn-sm">Оплаты</a>
             </div>
         </div>
 

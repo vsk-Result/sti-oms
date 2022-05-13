@@ -20,7 +20,6 @@ class Export implements WithMultipleSheets
 
     public function sheets(): array
     {
-
         $object = null;
         $objectIds = (clone $this->payments)->pluck('object_id')->unique('object_id');
         if (count($objectIds) === 1) {
@@ -30,7 +29,7 @@ class Export implements WithMultipleSheets
         return [
             new PivotSheet('Сводная', (clone $this->payments), $object),
             new PaymentSheet('Таблица оплат', (clone $this->payments), $this->payments->count()),
-//            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments))
+            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments))
         ];
     }
 }
