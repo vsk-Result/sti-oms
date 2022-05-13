@@ -156,6 +156,9 @@ class DebtImportService
                     $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[13];
                 }
             }
+
+            $invoiceDate = is_string($row[6]) ? $row[6] : Carbon::parse(Date::excelToDateTimeObject($row[6]))->format('d/m/Y');
+
             $this->debtService->createDebt([
                 'import_id' => $import->id,
                 'type_id' => Debt::TYPE_PROVIDER,
@@ -169,7 +172,7 @@ class DebtImportService
                 'status_id' => Status::STATUS_ACTIVE,
                 'category' => trim($row[2]),
                 'code' => trim($row[9]),
-                'invoice_number' => trim($row[5]) . ' от ' . Carbon::parse(Date::excelToDateTimeObject($row[6]))->format('d/m/Y'),
+                'invoice_number' => trim($row[5]) . ' от ' . $invoiceDate,
                 'order_author' => trim($row[1]),
                 'description' => trim($row[4]),
                 'comment' => $comment,
