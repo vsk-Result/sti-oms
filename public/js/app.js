@@ -187,7 +187,7 @@ const mainApp = function() {
 
         const optionsRUB = {
             series: [{
-                name: "Оплачено",
+                name: "Выполнено",
                 data: $modal.data('rub-chart-amounts')
             }],
             chart: {
@@ -301,7 +301,7 @@ const mainApp = function() {
         };
         const optionsEUR = {
             series: [{
-                name: "Оплачено",
+                name: "Выполнено",
                 data: $modal.data('eur-chart-amounts')
             }],
             chart: {

@@ -207,18 +207,14 @@ class ActService
         $info = [];
 
         $actsMonths = [];
-        foreach (ActPayment::whereIn('act_id', $actIds)->orderBy('date')->get() as $payment) {
-            if (empty($payment->date)) {
-                continue;
+        foreach (Act::whereIn('id', $actIds)->orderBy('date')->get() as $act) {
+            $month = Carbon::parse($act->date)->format('F Y');
+
+            if (! isset($actsMonths[$month][$act->currency])) {
+                $actsMonths[$month][$act->currency] = 0;
             }
 
-            $month = Carbon::parse($payment->date)->format('F Y');
-
-            if (! isset($actsMonths[$month][$payment->currency])) {
-                $actsMonths[$month][$payment->currency] = 0;
-            }
-
-            $actsMonths[$month][$payment->currency] += $payment->amount;
+            $actsMonths[$month][$act->currency] += $act->amount;
         }
 
         foreach ($actsMonths as $month => $currencies) {
