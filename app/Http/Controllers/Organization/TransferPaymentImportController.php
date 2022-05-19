@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Organization;
 use App\Helpers\Sanitizer;
 use App\Http\Controllers\Controller;
 use App\Imports\Organization\PaymentTransferImport;
-use App\Models\Debt\Debt;
 use App\Models\Organization;
 use App\Services\OrganizationService;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +27,7 @@ class TransferPaymentImportController extends Controller
         $requestData = $request->toArray();
         $importData = Excel::toArray(new PaymentTransferImport(), $requestData['file']);
         foreach ($importData['Организации'] as $index => $row) {
+
             if ($index === 0) continue;
 
             $organization = Organization::where('name', $row[0])->first();

@@ -21,7 +21,7 @@ class ObjectService
     {
         $object = BObject::create([
             'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
-            'is_without_worktype' => isset($requestData['name']),
+            'is_without_worktype' => false,
             'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
             'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
             'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),
@@ -48,7 +48,7 @@ class ObjectService
 
         $object->update([
             'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
-            'is_without_worktype' => isset($requestData['name']),
+            'is_without_worktype' => false,
             'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
             'address' => $this->sanitizer->set($requestData['address'])->upperCaseFirstWord()->get(),
             'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),
