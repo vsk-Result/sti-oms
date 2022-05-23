@@ -28,7 +28,7 @@ class CreatePaymentsTable extends Migration
             $table->unsignedTinyInteger('payment_type_id');
             $table->string('category', 20)->nullable();
             $table->string('code', 6)->nullable();
-            $table->string('description', 1000)->nullable();
+            $table->string('description', 1500)->nullable();
             $table->date('date');
             $table->decimal('amount', 19, 4)->default(0);
             $table->decimal('amount_without_nds', 19, 4)->default(0);
