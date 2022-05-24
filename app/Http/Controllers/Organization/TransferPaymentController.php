@@ -51,6 +51,10 @@ class TransferPaymentController extends Controller
             'organization_id' => $newOrganizationId
         ]);
 
+        $organization->objects()->update([
+            'customer_id' => $newOrganizationId
+        ]);
+
         $this->organizationService->destroyOrganization($organization);
 
         return redirect()->route('organizations.index');

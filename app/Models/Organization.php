@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\Debt\Debt;
+use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -49,6 +51,11 @@ class Organization extends Model
     public function bankGuarantees(): HasMany
     {
         return $this->hasMany(BankGuarantee::class, 'organization_id');
+    }
+
+    public function objects(): BelongsToMany
+    {
+        return $this->belongsToMany(BObject::class, 'object_customer', 'object_id', 'customer_id');
     }
 
     public static function getNDSStatuses(): array

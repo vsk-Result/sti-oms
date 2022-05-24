@@ -57,6 +57,10 @@ class TransferPaymentImportController extends Controller
                 'organization_id' => $newOrganizaition->id
             ]);
 
+            $organization->objects()->update([
+                'customer_id' => $newOrganizaition->id
+            ]);
+
             $this->organizationService->destroyOrganization($organization);
         }
 
