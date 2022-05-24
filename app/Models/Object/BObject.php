@@ -35,7 +35,8 @@ class  BObject extends Model implements Audit
         'responsible_name',
         'responsible_email',
         'responsible_phone',
-        'is_without_worktype'
+        'is_without_worktype',
+        'closing_date'
     ];
 
     public function imports(): HasMany
@@ -51,6 +52,11 @@ class  BObject extends Model implements Audit
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'object_user', 'user_id', 'object_id');
+    }
+
+    public function customers(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class, 'object_customer', 'customer_id', 'object_id');
     }
 
     public function bankGuarantees(): HasMany

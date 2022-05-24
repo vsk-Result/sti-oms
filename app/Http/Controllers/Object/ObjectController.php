@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Object\StoreObjectRequest;
 use App\Http\Requests\Object\UpdateObjectRequest;
 use App\Models\Object\BObject;
+use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Status;
 use App\Services\ObjectService;
@@ -62,7 +63,8 @@ class ObjectController extends Controller
 
     public function create(): View
     {
-        return view('objects.create');
+        $organizations = Organization::orderBy('name')->get();
+        return view('objects.create', compact('organizations'));
     }
 
     public function store(StoreObjectRequest $request): RedirectResponse
@@ -79,7 +81,9 @@ class ObjectController extends Controller
     public function edit(BObject $object): View
     {
         $statuses = Status::getStatuses();
-        return view('objects.edit', compact('object', 'statuses'));
+        $organizations = Organization::orderBy('name')->get();
+        $object->load('customers');
+        return view('objects.edit', compact('object', 'statuses', 'organizations'));
     }
 
     public function update(BObject $object, UpdateObjectRequest $request): RedirectResponse

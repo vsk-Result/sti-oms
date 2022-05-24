@@ -124,6 +124,31 @@
                                 </div>
 
                                 <div class="fv-row mb-10">
+                                    <label class="form-label fw-bolder text-dark fs-6">Дата закрытия</label>
+                                    <input
+                                        class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('closing_date') ? 'is-invalid' : '' }}"
+                                        type="text"
+                                        value="{{ old('closing_date', $object->closing_date) }}"
+                                        name="closing_date"
+                                        readonly
+                                    />
+                                    @if ($errors->has('closing_date'))
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <div>{{ implode(' ', $errors->get('closing_date')) }}</div>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="fv-row mb-10">
+                                    <label class="form-label fw-bolder text-dark fs-6">Заказчики</label>
+                                    <select name="customer_id[]" class="form-select form-select-solid" data-control="select2" multiple>
+                                        @foreach($organizations as $organization)
+                                            <option value="{{ $organization->id }}" {{ $object->customers->where('id', $organization->id)->first() ? 'selected' : '' }}>{{ $organization->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="fv-row mb-10">
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">Фотография</label>
                                     <div class="col-lg-8">
                                         <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url({{ asset('images/blanks/object_photo_blank.jpg') }})">

@@ -31,6 +31,7 @@ class StoreObjectRequest extends FormRequest
             'responsible_email' => 'nullable|string|max:50',
             'responsible_phone' => 'nullable|string|max:50',
             'photo' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
+            'closing_date' => 'nullable|date_format:Y-m-d',
         ];
     }
 }

@@ -27,11 +27,14 @@ class ObjectService
             'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),
             'responsible_email' => $this->sanitizer->set($requestData['responsible_email'])->toEmail()->get(),
             'responsible_phone' => $this->sanitizer->set($requestData['responsible_phone'])->toPhone()->get(),
+            'closing_date' => $requestData['closing_date'] ?? null,
             'photo' => empty($requestData['photo'])
                 ? null
                 : $this->uploadService->uploadFile('objects/photo', $requestData['photo']),
             'status_id' => Status::STATUS_ACTIVE
         ]);
+
+        $object->customers()->sync($requestData['customer_id'] ?? []);
 
         return $object;
     }
@@ -55,7 +58,10 @@ class ObjectService
             'responsible_email' => $this->sanitizer->set($requestData['responsible_email'])->toEmail()->get(),
             'responsible_phone' => $this->sanitizer->set($requestData['responsible_phone'])->toPhone()->get(),
             'photo' => $photo,
+            'closing_date' => array_key_exists('closing_date', $requestData) ? $requestData['closing_date'] : $object->closing_date,
             'status_id' => $requestData['status_id']
         ]);
+
+        $object->customers()->sync($requestData['customer_id'] ?? []);
     }
 }
