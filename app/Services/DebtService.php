@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Debt\Debt;
+use App\Models\Debt\DebtImport;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class DebtService
@@ -13,6 +14,10 @@ class DebtService
 
         if (! empty($requestData['import_id'])) {
             $query->whereIn('import_id', $requestData['import_id']);
+        } else {
+            $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
+            $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+            $query->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id]);
         }
 
         if (! empty($requestData['type_id'])) {

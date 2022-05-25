@@ -131,7 +131,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label class="form-label">Компания</label>
+                                <label class="form-label">Плательщик</label>
                                 <select
                                     name="company_id[]"
                                     class="form-select form-select-solid"
