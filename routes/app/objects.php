@@ -6,6 +6,7 @@ use App\Http\Controllers\Object\ContractController;
 use App\Http\Controllers\Object\ActController;
 use App\Http\Controllers\Object\GuaranteeController;
 use App\Http\Controllers\Object\DebtController;
+use App\Http\Controllers\Object\DebtExportController;
 use App\Http\Controllers\Object\PaymentController;
 use App\Http\Controllers\Object\CashPaymentController;
 use App\Http\Controllers\Object\FileController;
@@ -45,6 +46,7 @@ Route::get('objects/{object}/guarantees', [GuaranteeController::class, 'index'])
 // Долги
 
 Route::get('objects/{object}/debts', [DebtController::class, 'index'])->name('objects.debts.index');
+Route::post('objects/{object}/debts/export', [DebtExportController::class, 'store'])->name('objects.debts.exports.store');
 
 // Оплаты (безнал)
 
