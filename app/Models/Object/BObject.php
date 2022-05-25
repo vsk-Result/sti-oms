@@ -240,4 +240,15 @@ class  BObject extends Model implements Audit
             '6' => '6',
         ];
     }
+
+    public function getComingAmountByPeriodFromCustomers(string $startDate, string $endDate): float
+    {
+        return $this
+            ->payments
+            ->whereIn('organization_sender_id', $this->customers->pluck('id')->toArray())
+            ->whereBetween('date', [$startDate, $endDate])
+            ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+            ->where('amount', '>=', 0)
+            ->sum('amount');
+    }
 }

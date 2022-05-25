@@ -48,6 +48,14 @@
                 </div>
             @endcan
 
+            @can('index general-costs')
+                <div class="menu-item">
+                    <a href="{{ route('general_costs.index') }}" class="menu-link {{ request()->is('general-costs*') ? 'active' : '' }}">
+                        <span class="menu-title">Распределение общих затрат</span>
+                    </a>
+                </div>
+            @endcan
+
             @can('index objects')
                 <div class="menu-item">
                     <a href="{{ route('objects.index') }}" class="menu-link {{ request()->is('objects*') ? 'active' : '' }}">
