@@ -6,6 +6,7 @@ use App\Helpers\Sanitizer;
 use App\Models\BankGuarantee;
 use App\Models\Status;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class BankGuaranteeService
@@ -17,7 +18,7 @@ class BankGuaranteeService
         $this->sanitizer = $sanitizer;
     }
 
-    public function filterBankGuarantee(array $requestData, array &$total): LengthAwarePaginator
+    public function filterBankGuarantee(array $requestData, array &$total = [], bool $needPaginate = true): LengthAwarePaginator|Collection
     {
         $query = BankGuarantee::query();
 
@@ -69,7 +70,7 @@ class BankGuaranteeService
         $query->with('company', 'object', 'contract', 'contract.acts', 'contract.avansesReceived', 'organization');
         $query->orderByDesc('object_id');
 
-        return $query->paginate($perPage)->withQueryString();
+        return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
 
     public function createBankGuarantee(array $requestData): void

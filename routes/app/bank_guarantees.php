@@ -2,6 +2,11 @@
 
 use App\Http\Controllers\BankGuarantee\BankGuaranteeController;
 use App\Http\Controllers\BankGuarantee\ImportController;
+use App\Http\Controllers\BankGuarantee\ExportController;
+
+// Экспорт банковских гарантий и депозитов
+
+Route::post('bank-guarantees/export', [ExportController::class, 'store'])->name('bank_guarantees.exports.store');
 
 // Загрузка договоров
 
