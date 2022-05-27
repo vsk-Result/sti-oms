@@ -121,7 +121,11 @@ class DebtImportService
             $organizationName = trim($row[3]);
             $objectName = trim($row[10]);
 
-            if (in_array($organizationName, ['ДТ Термо', 'ГЭС-2 займ', 'займ'])) {
+            if ($organizationName === 'ДТ Термо') {
+                continue;
+            }
+
+            if (in_array($objectName, ['ГЭС-2 займ', 'займ'])) {
                 continue;
             }
 
@@ -192,7 +196,11 @@ class DebtImportService
             $organizationName = trim($row[3]);
             $objectName = trim($row[10]);
 
-            if (in_array($organizationName, ['ДТ Термо', 'ГЭС-2 займ', 'займ']) || empty($row[12])) {
+            if ($organizationName === 'ДТ Термо' || empty($row[12])) {
+                continue;
+            }
+
+            if (in_array($objectName, ['ГЭС-2 займ', 'займ'])) {
                 continue;
             }
 
