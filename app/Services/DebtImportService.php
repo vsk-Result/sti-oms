@@ -20,7 +20,6 @@ class DebtImportService
 
     private array $objects = [
         'ГЭС-2' => '288',
-        'ГЭС-2 займ' => '288',
         'Бродский' => '338',
         'Октафарма' => '346',
         'Новороссийск' => '354',
@@ -46,6 +45,7 @@ class DebtImportService
         'Погодинская' => '327',
         'ЦМТ' => '322',
         'Москва  ' => '27.1',
+        'Склад СТИ' => '27.1',
         'Москва (Склад)' => '27.1',
         'Бамбилэнд' => '279',
         'Бамиленд' => '279',
@@ -121,7 +121,7 @@ class DebtImportService
             $organizationName = trim($row[3]);
             $objectName = trim($row[10]);
 
-            if ($organizationName === 'ДТ Термо') {
+            if (in_array($organizationName, ['ДТ Термо', 'ГЭС-2 займ', 'займ'])) {
                 continue;
             }
 
@@ -192,7 +192,7 @@ class DebtImportService
             $organizationName = trim($row[3]);
             $objectName = trim($row[10]);
 
-            if ($organizationName === 'ДТ Термо' || empty($row[12])) {
+            if (in_array($organizationName, ['ДТ Термо', 'ГЭС-2 займ', 'займ']) || empty($row[12])) {
                 continue;
             }
 
