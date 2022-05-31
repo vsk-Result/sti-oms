@@ -110,7 +110,7 @@
                     </td>
                     <td>{{ $guarantee->contract?->getName() }}</td>
                     <td>{{ $guarantee->number }}</td>
-                    <td>{{ $guarantee->organization->name }}</td>
+                    <td>{{ $guarantee->organization?->name }}</td>
                     <td>
                         {{ $guarantee->getEndDateFormatted() }}
                     </td>
