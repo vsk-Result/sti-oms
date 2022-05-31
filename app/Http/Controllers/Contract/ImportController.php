@@ -65,7 +65,7 @@ class ImportController extends Controller
                     'company_id' => 1,
                     'object_id' => BObject::where('code', $row[0])->first()->id,
                     'name' => $contractName,
-                    'description' => null,
+                    'description' => $row[18],
                     'start_date' => null,
                     'end_date' => null,
                     'amount' => empty($row[3]) ? 0 : $row[3],
