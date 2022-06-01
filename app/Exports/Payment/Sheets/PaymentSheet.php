@@ -59,6 +59,7 @@ class PaymentSheet implements
             'Информация',
             'Категория',
             'Компания',
+            'Банк',
             'ID оплаты в STI OMS',
         ];
     }
@@ -82,6 +83,7 @@ class PaymentSheet implements
             $row->description,
             $row->category,
             $row->company->name ?? '',
+            $row->getBankName(),
             $row->id,
         ];
     }
@@ -97,13 +99,13 @@ class PaymentSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $sheet->getStyle('A1:L' . ($this->paymentCount + 1))->applyFromArray([
+        $sheet->getStyle('A1:M' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
-        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
 
-        $sheet->setAutoFilter('A1:L' . ($this->paymentCount + 1));
+        $sheet->setAutoFilter('A1:M' . ($this->paymentCount + 1));
     }
 
     public function columnWidths(): array
