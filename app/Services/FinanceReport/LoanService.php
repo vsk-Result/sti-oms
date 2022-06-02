@@ -25,7 +25,6 @@ class LoanService
         $totalLoanDTAmount = -Payment::where('date', '>=', '2020-12-17')
             ->where('date', '<=', $date)
             ->where('type_id', Payment::TYPE_TRANSFER)
-            ->where('bank_id', '!=', 6)
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
             ->where(function ($q) use ($DTOrganization) {
                 $q->where('organization_receiver_id', $DTOrganization->id);
