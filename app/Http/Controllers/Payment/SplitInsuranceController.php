@@ -110,11 +110,7 @@ class SplitInsuranceController extends Controller
             $requestData['object_id'] = $object->id;
             $requestData['object_worktype_id'] = 1;
             $requestData['amount'] = -$amount;
-
-            $nds = $this->paymentService->checkNeedNDS($requestData['description'], null) ? round($amount / 6, 2) : 0;
-            $amountWithoutNds = $amount - $nds;
-
-            $requestData['amount_without_nds'] = -$amountWithoutNds;
+            $requestData['amount_without_nds'] = -$amount;
             $this->paymentService->createPayment($requestData);
         }
 
