@@ -148,6 +148,12 @@ class SplitResidenceController extends Controller
 
                 $requestData['object_id'] = $object->id;
                 $requestData['amount'] = -$amount;
+
+                $nds = $this->paymentService->checkNeedNDS($requestData['description'], null) ? round($amount / 6, 2) : 0;
+                $amountWithoutNds = $amount - $nds;
+
+                $requestData['amount_without_nds'] = -$amountWithoutNds;
+
                 $this->paymentService->createPayment($requestData);
             }
         }
