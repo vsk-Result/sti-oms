@@ -32,7 +32,8 @@ class SplitResidenceController extends Controller
         }
 
         $paymentsForSplit = Payment::where('object_id', $object->id)
-            ->where('description', 'LIKE', '%проживание по договору К-003 от 30.10.17 за ' . mb_strtolower($month, 'UTF-8') . '%')
+            ->where('description', 'LIKE', '%Дог К 003 от 30.10.2017 за ' . mb_strtolower($month, 'UTF-8') . '%')
+//            ->where('description', 'LIKE', '%проживание по договору К-003 от 30.10.17 за ' . mb_strtolower($month, 'UTF-8') . '%')
             ->orderBy('amount')
             ->get();
 
