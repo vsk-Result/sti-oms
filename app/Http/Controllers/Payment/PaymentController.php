@@ -3,17 +3,15 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Payment\StorePaymentRequest;
 use App\Models\Bank;
 use App\Models\Company;
 use App\Models\KostCode;
 use App\Models\Object\BObject;
-use App\Models\Object\GeneralCost;
+use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Services\PaymentService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,7 +30,7 @@ class PaymentController extends Controller
     {
         $companies = Company::orderBy('name')->get();
         $objects = BObject::orderBy('code')->get();
-        $worktypes = GeneralCost::getWorkTypes();
+        $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
         $importTypes = PaymentImport::getTypes();
         $paymentTypes = Payment::getPaymentTypes();

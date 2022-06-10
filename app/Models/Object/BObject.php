@@ -86,7 +86,7 @@ class  BObject extends Model implements Audit
     public static function getObjectsList(): array
     {
         $result = [];
-        $workTypes = GeneralCost::getWorkTypes();
+        $workTypes = WorkType::getWorkTypes();
         $objects = static::orderBy('code')->get();
 
         foreach ($objects as $object) {

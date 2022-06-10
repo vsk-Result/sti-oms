@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
-use App\Models\Object\GeneralCost;
+use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Services\DebtService;
 use Illuminate\Contracts\View\View;
@@ -26,7 +26,7 @@ class DebtController extends Controller
         $total = [];
         $types = Debt::getTypes();
         $objects = BObject::orderBy('code')->get();
-        $workTypes = GeneralCost::getWorkTypes();
+        $workTypes = WorkType::getWorkTypes();
         $organizations = Organization::orderBy('name')->get();
         $categories = ['Аванс', 'Акт', 'Материалы', 'Транспорт'];
         $debts = $this->debtService->filterDebts($request->toArray(), $total);

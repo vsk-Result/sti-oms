@@ -7,7 +7,7 @@ use App\Models\Bank;
 use App\Models\Company;
 use App\Models\KostCode;
 use App\Models\Object\BObject;
-use App\Models\Object\GeneralCost;
+use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
@@ -65,7 +65,7 @@ class CashPaymentController extends Controller
 
         $companies = Company::orderBy('name')->get();
         $objects = BObject::orderBy('code')->get();
-        $worktypes = GeneralCost::getWorkTypes();
+        $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
         $importTypes = PaymentImport::getTypes();
         $paymentTypes = Payment::getPaymentTypes();
