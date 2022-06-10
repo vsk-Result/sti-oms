@@ -63,7 +63,12 @@
         $total[$object->code]['payment_total_pay'] = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');
         $total[$object->code]['payment_total_receive'] = (clone $paymentQuery)->where('object_id', $object->id)->sum('amount') - $total[$object->code]['payment_total_pay'];
         $total[$object->code]['payment_total_balance'] = $total[$object->code]['payment_total_pay'] + $total[$object->code]['payment_total_receive'];
-        $total[$object->code]['general_costs_amount'] = $object->generalCosts()->first()->amount ?? 0;
+        if ($object->code == 288) {
+            $total[$object->code]['general_costs_amount_1'] = $object->generalCosts()->where('is_pinned', false)->sum('amount');
+            $total[$object->code]['general_costs_amount_24'] = $object->generalCosts()->where('is_pinned', true)->sum('amount');
+        }
+
+        $total[$object->code]['general_costs_amount'] = $object->generalCosts()->sum('amount');
         // $total[$object->code]['general_costs_with_balance_amount'] = $total[$object->code]['payment_total_balance'] +  $total[$object->code]['general_costs_amount'];
 
 
@@ -161,6 +166,10 @@
                     <tr>
                         <td>{{ $info }}</td>
                         <td class="fw-bolder">
+                            @if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24')
+                                @continue
+                            @endif
+
                             @if(in_array($field, ['payment_total_balance', 'general_costs_amount']))
                                 <span class="{{ $summary[$field]['RUB'] < 0 ? 'text-danger' : 'text-success' }}">
                                     {{ \App\Models\CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB') }}
@@ -181,10 +190,34 @@
                         </td>
                         @foreach($objects as $object)
                             <td>
-                                @if(in_array($field, ['payment_total_balance', 'general_costs_amount']))
-                                    <span class="{{ $total[$object->code][$field] < 0 ? 'text-danger' : 'text-success' }}">
-                                        {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field], 'RUB') }}
-                                    </span>
+                                @if(in_array($field, ['payment_total_balance', 'general_costs_amount', 'general_costs_amount_1', 'general_costs_amount_24']))
+                                    @if ($object->code == 288)
+                                        @if ($field === 'general_costs_amount')
+                                            1: <span class="{{ $total[$object->code]['general_costs_amount_1'] < 0 ? 'text-danger' : 'text-success' }}">
+                                                {{ \App\Models\CurrencyExchangeRate::format($total[$object->code]['general_costs_amount_1'], 'RUB') }}
+                                            </span>
+                                            <br />
+                                            2+4: <span class="{{ $total[$object->code]['general_costs_amount_24'] < 0 ? 'text-danger' : 'text-success' }}">
+                                                {{ \App\Models\CurrencyExchangeRate::format($total[$object->code]['general_costs_amount_24'], 'RUB') }}
+                                            </span>
+                                            @continue
+                                        @endif
+                                        @if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24')
+                                            @continue
+                                        @else
+                                            <span class="{{ $total[$object->code][$field] < 0 ? 'text-danger' : 'text-success' }}">
+                                                {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field], 'RUB') }}
+                                            </span>
+                                        @endif
+                                    @else
+                                        @if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24')
+                                            @continue
+                                        @endif
+
+                                        <span class="{{ $total[$object->code][$field] < 0 ? 'text-danger' : 'text-success' }}">
+                                            {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field], 'RUB') }}
+                                        </span>
+                                    @endif
                                 @elseif($field === 'contractor' || $field === 'provider')
                                     <span class="text-danger">
                                         {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field]['RUB'], 'RUB', 0, true) }}
