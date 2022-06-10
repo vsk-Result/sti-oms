@@ -68,7 +68,7 @@ class ObjectService
         $object->customers()->sync($requestData['customer_id'] ?? []);
     }
 
-    public static function getGeneralCostsByPeriod(string $startDate, string $endDate): array
+    public static function getGeneralCostsByPeriod(string $startDate, string $endDate, int $bonus = 0): array
     {
         $objects = BObject::with(['customers', 'payments' => function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
@@ -120,11 +120,14 @@ class ObjectService
         $object27_1 = BObject::where('code', '27.1')->first();
         $object27_8 = BObject::where('code', '27.8')->first();
 
+        $bonus = $bonus / count($periods);
+
         $result = [];
         foreach ($periods as $startDate => $endDate) {
             $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])->where('type_id', Payment::TYPE_GENERAL)->sum('amount');
             $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_1->id)->sum('amount');
             $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
+            $generalTotalAmount += $bonus;
 
             $sumCumings = 0;
             $cumings = [];

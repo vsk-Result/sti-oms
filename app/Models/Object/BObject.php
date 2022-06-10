@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Collection;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
 
@@ -42,6 +41,11 @@ class  BObject extends Model implements Audit
     public function imports(): HasMany
     {
         return $this->hasMany(PaymentImport::class, 'object_id');
+    }
+
+    public function generalCosts(): HasMany
+    {
+        return $this->hasMany(GeneralCost::class, 'object_id');
     }
 
     public function payments(): HasMany
@@ -82,7 +86,7 @@ class  BObject extends Model implements Audit
     public static function getObjectsList(): array
     {
         $result = [];
-        $workTypes = WorkType::getWorkTypes();
+        $workTypes = GeneralCost::getWorkTypes();
         $objects = static::orderBy('code')->get();
 
         foreach ($objects as $object) {

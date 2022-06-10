@@ -7,6 +7,14 @@
             'RUB' => 0,
             'EUR' => 0,
         ],
+        'general_costs_amount' => [
+            'RUB' => 0,
+            'EUR' => 0,
+        ],
+        'general_costs_with_balance_amount' => [
+            'RUB' => 0,
+            'EUR' => 0,
+        ],
         'contract_total_amount' => [
             'RUB' => 0,
             'EUR' => 0,
@@ -49,14 +57,19 @@
         ],
     ];
     $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
-    $objects = \App\Models\Object\BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '357', '358'])->get();
+    $objects = \App\Models\Object\BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '357', '358', '359'])->get();
 
     foreach ($objects as $object) {
         $total[$object->code]['payment_total_pay'] = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');
         $total[$object->code]['payment_total_receive'] = (clone $paymentQuery)->where('object_id', $object->id)->sum('amount') - $total[$object->code]['payment_total_pay'];
         $total[$object->code]['payment_total_balance'] = $total[$object->code]['payment_total_pay'] + $total[$object->code]['payment_total_receive'];
+        $total[$object->code]['general_costs_amount'] = $object->generalCosts()->first()->amount ?? 0;
+        // $total[$object->code]['general_costs_with_balance_amount'] = $total[$object->code]['payment_total_balance'] +  $total[$object->code]['general_costs_amount'];
+
 
         $summary['payment_total_balance']['RUB'] += $total[$object->code]['payment_total_balance'];
+        $summary['general_costs_amount']['RUB'] += $total[$object->code]['general_costs_amount'];
+        // $summary['general_costs_with_balance_amount']['RUB'] += $total[$object->code]['general_costs_with_balance_amount'];
 
         $totalInfo = [];
         $contracts = $contractService->filterContracts(['object_id' => [$object->id]], $totalInfo);
@@ -109,6 +122,7 @@
 
     $infos = [
         'Текущий баланс' => 'payment_total_balance',
+        'Общие затраты' => 'general_costs_amount',
         'Общая сумма договоров' => 'contract_total_amount',
         'Остаток денег к получ. с учётом ГУ' => 'contract_avanses_non_closes_amount',
         'Сумма аванса к получению' => 'contract_avanses_left_amount',
@@ -147,7 +161,7 @@
                     <tr>
                         <td>{{ $info }}</td>
                         <td class="fw-bolder">
-                            @if($field === 'payment_total_balance')
+                            @if(in_array($field, ['payment_total_balance', 'general_costs_amount']))
                                 <span class="{{ $summary[$field]['RUB'] < 0 ? 'text-danger' : 'text-success' }}">
                                     {{ \App\Models\CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB') }}
                                 </span>
@@ -167,7 +181,7 @@
                         </td>
                         @foreach($objects as $object)
                             <td>
-                                @if($field === 'payment_total_balance')
+                                @if(in_array($field, ['payment_total_balance', 'general_costs_amount']))
                                     <span class="{{ $total[$object->code][$field] < 0 ? 'text-danger' : 'text-success' }}">
                                         {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field], 'RUB') }}
                                     </span>

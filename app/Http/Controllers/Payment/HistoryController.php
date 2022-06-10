@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use App\Models\Company;
 use App\Models\Object\BObject;
-use App\Models\Object\WorkType;
+use App\Models\Object\GeneralCost;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Status;
@@ -38,7 +38,7 @@ class HistoryController extends Controller
         $statuses = Status::getStatuses();
         $types = Payment::getTypes() + [1 => 'Объект'];
         $workTypes = [];
-        foreach (WorkType::getWorkTypes() as $workType) {
+        foreach (GeneralCost::getWorkTypes() as $workType) {
             $workTypes[$workType['id']] = $workType['name'];
         }
         $banks = Bank::getBanks();
