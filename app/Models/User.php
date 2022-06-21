@@ -11,10 +11,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasRoles, HasStatus, SoftDeletes;
+    use Notifiable, HasRoles, HasStatus, SoftDeletes, AuthenticationLoggable;
 
     /**
      * The attributes that are mass assignable.
