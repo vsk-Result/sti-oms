@@ -28,6 +28,9 @@ class OrganizationService
 
     public function createOrganization(array $requestData): Organization
     {
+        if ($requestData['company_id'] === 'null') {
+            $requestData['company_id'] = null;
+        }
         $organization = Organization::create([
             'company_id' => $requestData['company_id'],
             'name' => $this->sanitizer->set($requestData['name'])->get(),
@@ -42,6 +45,9 @@ class OrganizationService
 
     public function updateOrganization(Organization $organization, array $requestData): Organization
     {
+        if ($requestData['company_id'] === 'null') {
+            $requestData['company_id'] = null;
+        }
         $organization->update([
             'company_id' => $requestData['company_id'],
             'name' => $this->sanitizer->set($requestData['name'])->get(),

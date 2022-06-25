@@ -159,7 +159,9 @@ class PaymentService
             } elseif ($requestData['sort_by'] == 'organization_id') {
                 $paymentQuery->orderBy(Organization::select('name')->whereColumn('organizations.id', 'payments.organization_receiver_id')->orWhereColumn('organizations.id', 'payments.organization_sender_id'), $requestData['sort_direction'] ?? 'asc');
             } elseif ($requestData['sort_by'] == 'object_id') {
+                $paymentQuery->orderBy('type_id', $requestData['sort_direction'] ?? 'asc');
                 $paymentQuery->orderBy(BObject::select('code')->whereColumn('objects.id', 'payments.object_id'), $requestData['sort_direction'] ?? 'asc');
+                $paymentQuery->orderBy('object_worktype_id', $requestData['sort_direction'] ?? 'asc');
             } else {
                 $paymentQuery->orderBy($requestData['sort_by'], $requestData['sort_direction'] ?? 'asc');
             }
