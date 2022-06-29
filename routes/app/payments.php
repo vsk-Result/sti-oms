@@ -8,6 +8,11 @@ use App\Http\Controllers\Payment\SplitNDFLController;
 use App\Http\Controllers\Payment\ExportController;
 use App\Http\Controllers\Payment\CopyController;
 use App\Http\Controllers\Payment\HistoryController;
+use App\Http\Controllers\Payment\ClearController;
+
+// Очистка ПТИ пустых оплат
+
+Route::post('payments/clear', [ClearController::class, 'store'])->name('payments.clear.store');
 
 // Разбивка оплат
 

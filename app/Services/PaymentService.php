@@ -543,4 +543,25 @@ class PaymentService
             ? $this->checkHasNDSFromDescription($description)
             : $organization->isNDSAlways();
     }
+
+    public function clearPayments(): void
+    {
+        $PTICompany = Company::where('name', 'ООО "ПРОМТЕХИНЖИНИРИНГ"')->first();
+
+        if (! $PTICompany) {
+            return;
+        }
+
+        $imports = PaymentImport::where('company_id', $PTICompany->id)
+            ->where('date', '<', Carbon::now()->subWeek()->format('Y-m-d'))
+            ->where('status_id', Status::STATUS_BLOCKED)
+            ->where('type_id', PaymentImport::TYPE_STATEMENT)
+            ->orderByDesc('date')
+            ->get();
+
+        foreach ($imports as $import) {
+            $import->payments()->whereNull('object_id')->delete();
+            $import->reCalculateAmountsAndCounts();
+        }
+    }
 }
