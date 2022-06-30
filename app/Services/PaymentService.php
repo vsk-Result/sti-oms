@@ -562,6 +562,10 @@ class PaymentService
         foreach ($imports as $import) {
             $import->payments()->whereNull('object_id')->delete();
             $import->reCalculateAmountsAndCounts();
+
+            if ($import->payments_count === 0) {
+                $import->delete();
+            }
         }
     }
 }
