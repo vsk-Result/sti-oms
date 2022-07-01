@@ -29,6 +29,15 @@
                                     class="form-control form-control-solid date-range-picker"
                                     value="{{ request()->input('period', '') }}"
                                     autocomplete="off"/>
+
+                                <div class="mt-3">
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2017</span>
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2018</span>
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2019</span>
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2020</span>
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2021</span>
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2022</span>
+                                </div>
                             </div>
 
                             <div class="form-group mb-3">

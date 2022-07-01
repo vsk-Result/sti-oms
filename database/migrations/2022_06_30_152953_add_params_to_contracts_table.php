@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddDescriptionToContractAvansesReceivedTable extends Migration
+class AddParamsToContractsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddDescriptionToContractAvansesReceivedTable extends Migration
      */
     public function up()
     {
-        Schema::table('contract_avanses_received', function (Blueprint $table) {
-            $table->string('description', 500)->nullable();
+        Schema::table('contracts', function (Blueprint $table) {
+            $table->json('params')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddDescriptionToContractAvansesReceivedTable extends Migration
      */
     public function down()
     {
-        Schema::table('contract_avanses_received', function (Blueprint $table) {
-            $table->dropColumn('description');
+        Schema::table('contracts', function (Blueprint $table) {
+            $table->dropColumn('params');
         });
     }
 }

@@ -108,9 +108,9 @@
                         {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}
                     </th>
                     <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['RUB'] + $total['avanses_left_amount']['RUB'], 'RUB') }}
+                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['RUB'], 'RUB') }}
                         <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['EUR'] + $total['avanses_left_amount']['EUR'], 'EUR') }}
+                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['RUB'], 'RUB') }}

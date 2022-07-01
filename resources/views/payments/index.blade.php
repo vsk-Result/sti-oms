@@ -170,6 +170,11 @@
                 $('#filter-payment-submit').trigger('click');
             }
         });
+
+        $('.period-quick').on('click', function() {
+            const year = $(this).text();
+            $('input[name=period]').val('01.01.' + year + ' - 31.12.' + year);
+        });
     </script>
 @endpush
 

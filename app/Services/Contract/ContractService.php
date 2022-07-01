@@ -46,6 +46,7 @@ class ContractService
         $currencies = ['RUB', 'EUR'];
         foreach ($currencies as $currency) {
             $total['amount'][$currency] = 0;
+            $total['avanses_amount'][$currency] = 0;
             $total['avanses_received_amount'][$currency] = 0;
             $total['avanses_left_amount'][$currency] = 0;
             $total['acts_amount'][$currency] = 0;
@@ -56,6 +57,7 @@ class ContractService
 
             foreach ((clone $contractQuery)->where('object_id', '!=', 16)->where('currency', $currency)->get() as $contract) {
                 $total['amount'][$currency] += $contract->getAmount($currency);
+                $total['avanses_amount'][$currency] += $contract->getAvansesAmount($currency);
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
                 $total['avanses_left_amount'][$currency] += $contract->getAvansesLeftAmount($currency);
                 $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
@@ -67,6 +69,7 @@ class ContractService
 
             foreach ((clone $contractQuery)->where('object_id', 16)->get() as $contract) {
                 $total['amount'][$currency] += $contract->getAmount($currency);
+                $total['avanses_amount'][$currency] += $contract->getAvansesAmount($currency);
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
                 $total['avanses_left_amount'][$currency] += $contract->getAvansesLeftAmount($currency);
                 $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
@@ -104,6 +107,7 @@ class ContractService
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
+            'params' => $requestData['params'] ?? null,
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'stage_id' => 0,
             'status_id' => Status::STATUS_ACTIVE,
@@ -168,6 +172,7 @@ class ContractService
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
+            'params' => $requestData['params'] ?? $contract->params,
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'stage_id' => 0,
             'status_id' => $requestData['status_id'],

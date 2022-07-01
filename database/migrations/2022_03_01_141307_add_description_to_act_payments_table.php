@@ -14,7 +14,7 @@ class AddDescriptionToActPaymentsTable extends Migration
     public function up()
     {
         Schema::table('act_payments', function (Blueprint $table) {
-            $table->string('description', 100)->nullable();
+            $table->string('description', 500)->nullable();
         });
     }
 

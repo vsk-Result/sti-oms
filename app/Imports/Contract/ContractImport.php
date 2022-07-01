@@ -12,6 +12,7 @@ class ContractImport implements WithMultipleSheets, SkipsUnknownSheets
     {
         return [
             'Договора' => new SheetForArray(),
+            'СВОДНАЯ ГЭС-2' => new SheetForArray(),
             'Авансы' => new SheetForArray(),
             'Полученные авансы' => new SheetForArray(),
             'Акты' => new SheetForArray(),

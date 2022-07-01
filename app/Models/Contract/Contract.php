@@ -25,7 +25,7 @@ class Contract extends Model implements HasMedia, Audit
     protected $fillable = [
         'parent_id', 'type_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id',
         'name', 'start_date', 'end_date', 'amount', 'amount_type_id', 'description', 'stage_id', 'status_id',
-        'currency', 'currency_rate'
+        'currency', 'currency_rate', 'params'
     ];
 
     const TYPE_MAIN = 0;
@@ -101,6 +101,11 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->amount : 0;
 
         if ($this->isMain()) {
+
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[7])) {
+                return json_decode($this->params)[7] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount = $subContract->isMainAmount()
                     ? $subContract->amount
@@ -114,8 +119,11 @@ class Contract extends Model implements HasMedia, Audit
     public function getAvansesAmount(string $currency = null): string|array
     {
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avanses->sum('amount') : 0;
-
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(8, json_decode($this->params) ?? [])) {
+                return json_decode($this->params)[8] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->avanses->sum('amount');
             }
@@ -129,6 +137,10 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avansesReceived->sum('amount') : 0;
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[9])) {
+                return json_decode($this->params)[9] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->avansesReceived->sum('amount');
             }
@@ -143,6 +155,10 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(8, json_decode($this->params) ?? [])) {
+                return json_decode($this->params)[8] - json_decode($this->params)[9];
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->avanses->sum('amount') - $subContract->avansesReceived->sum('amount');
             }
@@ -157,6 +173,10 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(12, json_decode($this->params) ?? [])) {
+                return json_decode($this->params)[12] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->acts->sum('amount');
             }
@@ -171,6 +191,10 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[13])) {
+                return json_decode($this->params)[13] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->acts->sum('amount_avans');
             }
@@ -185,6 +209,10 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[14])) {
+                return json_decode($this->params)[14] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->acts->sum('amount_deposit');
             }
@@ -199,6 +227,10 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[15])) {
+                return json_decode($this->params)[15] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->acts->sum('amount_need_paid');
             }
@@ -216,6 +248,10 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[16])) {
+                return json_decode($this->params)[16] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 foreach ($subContract->acts as $act) {
                     $amount += $act->payments->sum('amount');
@@ -234,6 +270,10 @@ class Contract extends Model implements HasMedia, Audit
         }
 
         if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[17])) {
+                return json_decode($this->params)[17] ?? 0;
+            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 foreach ($subContract->acts as $act) {
                     $paid += $act->payments->sum('amount');

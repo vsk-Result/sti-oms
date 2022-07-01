@@ -34,139 +34,317 @@ class ImportController extends Controller
     {
         $requestData = $request->toArray();
         $importData = Excel::toArray(new ContractImport(), $requestData['file']);
-        foreach ($importData['Договора'] as $index => $row) {
-            if ($index === 0) continue;
 
-            $contractName = $this->sanitizer->set($row[2])->get();
+        if (isset($importData['Договора'])) {
+            foreach ($importData['Договора'] as $index => $row) {
+                if ($index === 0) continue;
 
-            $contract = Contract::where('name', $contractName)->first();
+                $contractName = $this->sanitizer->set($row[2])->get();
 
-            $needCreate = false;
+                $contract = Contract::where('name', $contractName)->first();
 
-            if (! $contract) {
-                $needCreate = true;
-            } elseif (! empty($row[3])) {
-                $needCreate = true;
-            }
+                $needCreate = false;
 
-            if ($needCreate) {
-                $parent = null;
+                if (! $contract) {
+                    $needCreate = true;
+                } elseif (! empty($row[3])) {
+                    $needCreate = true;
+                }
 
-                if (! empty($row[17])) {
-                    $parentName = $this->sanitizer->set($row[17])->get();
-                    $parent = Contract::where('name', $parentName)->first()->id;
+                if ($needCreate) {
+                    $parent = null;
+
+                    if (! empty($row[17])) {
+                        $parentName = $this->sanitizer->set($row[17])->get();
+                        $parent = Contract::where('name', $parentName)->first()->id;
 //                    $contractName = $this->sanitizer->set($contractName)->replace($parentName, '')->trim()->onlyOneSpace()->get();
-                }
-
-                $contract = Contract::create([
-                    'parent_id' => $parent,
-                    'type_id' => $row[16],
-                    'amount_type_id' => $row[16] === 0 ? Contract::AMOUNT_TYPE_MAIN : Contract::AMOUNT_TYPE_ADDITIONAL,
-                    'company_id' => 1,
-                    'object_id' => BObject::where('code', $row[0])->first()->id,
-                    'name' => $contractName,
-                    'description' => $row[18],
-                    'start_date' => null,
-                    'end_date' => null,
-                    'amount' => empty($row[3]) ? 0 : $row[3],
-                    'stage_id' => 0,
-                    'status_id' => Status::STATUS_ACTIVE,
-                    'currency' => $row[1],
-                    'currency_rate' => 1,
-                ]);
-            }
-
-            if (! empty($row[4])) {
-                ContractAvans::create([
-                    'contract_id' => $contract->id,
-                    'company_id' => $contract->company_id,
-                    'object_id' => $contract->object_id,
-                    'amount' => $row[4],
-                    'status_id' => Status::STATUS_ACTIVE,
-                    'currency' => $contract->currency,
-                    'currency_rate' => $contract->currency_rate,
-                ]);
-            }
-
-            $avanseDate = $row[5];
-            if (! empty($avanseDate) && ! empty($row[6])) {
-                $description = null;
-                $date = null;
-                if (is_numeric($avanseDate)) {
-                    $date = Carbon::parse(Date::excelToDateTimeObject($avanseDate))->format('Y-m-d');
-                } else {
-                    $description = $this->sanitizer->set($avanseDate)->get();
-                }
-
-                ContractReceivedAvans::create([
-                    'contract_id' => $contract->id,
-                    'company_id' => $contract->company_id,
-                    'object_id' => $contract->object_id,
-                    'date' => $date,
-                    'amount' => $row[6],
-                    'description' => $description,
-                    'status_id' => Status::STATUS_ACTIVE,
-                    'currency' => $contract->currency,
-                    'currency_rate' => $contract->currency !== 'RUB' && ! is_null($date)
-                        ? $this->currencyService->parseRateFromCBR($date, $contract->currency) ?? 0
-                        : $contract->currency_rate,
-                ]);
-            }
-
-            if (! empty($row[8]) || ! empty($row[9]) || ! empty($row[10]) || ! empty($row[11]) || ! empty($row[12]) || ! empty($row[13]) || ! empty($row[14]) || ! empty($row[15])) {
-
-                $date = null;
-                if (! empty($row[8])) {
-                    $date = Carbon::parse(Date::excelToDateTimeObject($row[8]))->format('Y-m-d');
-                }
-
-                $act = Act::create([
-                    'contract_id' => $contract->id,
-                    'company_id' => $contract->company_id,
-                    'object_id' => $contract->object_id,
-                    'date' => $date,
-                    'amount' => empty($row[9]) ? 0 : $row[9],
-                    'amount_avans' => empty($row[10]) ? 0 : $row[10],
-                    'amount_deposit' => empty($row[11]) ? 0 : $row[11],
-                    'description' => null,
-                    'status_id' => Status::STATUS_ACTIVE,
-                    'currency' => $contract->currency,
-                    'currency_rate' => $contract->currency_rate,
-                ]);
-
-                $act->update([
-                    'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
-                ]);
-
-                if (! empty($row[14])) {
-                    $description = null;
-                    $date = null;
-                    if (! empty($row[13])) {
-                        if (is_numeric($row[13])) {
-                            $date = Carbon::parse(Date::excelToDateTimeObject($row[13]))->format('Y-m-d');
-                        } else {
-                            $description = $this->sanitizer->set($row[13])->get();
-                        }
                     }
 
-                    ActPayment::create([
+                    $contract = Contract::create([
+                        'parent_id' => $parent,
+                        'type_id' => $row[16],
+                        'amount_type_id' => $row[16] === 0 ? Contract::AMOUNT_TYPE_MAIN : Contract::AMOUNT_TYPE_ADDITIONAL,
+                        'company_id' => 1,
+                        'object_id' => BObject::where('code', $row[0])->first()->id,
+                        'name' => $contractName,
+                        'description' => $row[18],
+                        'start_date' => null,
+                        'end_date' => null,
+                        'amount' => empty($row[3]) ? 0 : $row[3],
+                        'stage_id' => 0,
+                        'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $row[1],
+                        'currency_rate' => 1,
+                    ]);
+                }
+
+                if (! empty($row[4])) {
+                    ContractAvans::create([
                         'contract_id' => $contract->id,
-                        'act_id' => $act->id,
-                        'company_id' => $act->company_id,
-                        'object_id' => $act->object_id,
+                        'company_id' => $contract->company_id,
+                        'object_id' => $contract->object_id,
+                        'amount' => $row[4],
+                        'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $contract->currency,
+                        'currency_rate' => $contract->currency_rate,
+                    ]);
+                }
+
+                $avanseDate = $row[5];
+                if (! empty($avanseDate) && ! empty($row[6])) {
+                    $description = null;
+                    $date = null;
+                    if (is_numeric($avanseDate)) {
+                        $date = Carbon::parse(Date::excelToDateTimeObject($avanseDate))->format('Y-m-d');
+                    } else {
+                        $description = $this->sanitizer->set($avanseDate)->get();
+                    }
+
+                    ContractReceivedAvans::create([
+                        'contract_id' => $contract->id,
+                        'company_id' => $contract->company_id,
+                        'object_id' => $contract->object_id,
                         'date' => $date,
-                        'amount' => $row[14],
+                        'amount' => $row[6],
                         'description' => $description,
                         'status_id' => Status::STATUS_ACTIVE,
-                        'currency' => $act->currency,
+                        'currency' => $contract->currency,
                         'currency_rate' => $contract->currency !== 'RUB' && ! is_null($date)
-                            ? $this->currencyService->parseRateFromCBR($date, $act->currency) ?? 0
-                            : $act->currency_rate,
+                            ? $this->currencyService->parseRateFromCBR($date, $contract->currency) ?? 0
+                            : $contract->currency_rate,
                     ]);
+                }
+
+                if (! empty($row[8]) || ! empty($row[9]) || ! empty($row[10]) || ! empty($row[11]) || ! empty($row[12]) || ! empty($row[13]) || ! empty($row[14]) || ! empty($row[15])) {
+
+                    $date = null;
+                    if (! empty($row[8])) {
+                        $date = Carbon::parse(Date::excelToDateTimeObject($row[8]))->format('Y-m-d');
+                    }
+
+                    $act = Act::create([
+                        'contract_id' => $contract->id,
+                        'company_id' => $contract->company_id,
+                        'object_id' => $contract->object_id,
+                        'date' => $date,
+                        'amount' => empty($row[9]) ? 0 : $row[9],
+                        'amount_avans' => empty($row[10]) ? 0 : $row[10],
+                        'amount_deposit' => empty($row[11]) ? 0 : $row[11],
+                        'description' => null,
+                        'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $contract->currency,
+                        'currency_rate' => $contract->currency_rate,
+                    ]);
+
+                    $act->update([
+                        'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
+                    ]);
+
+                    if (! empty($row[14])) {
+                        $description = null;
+                        $date = null;
+                        if (! empty($row[13])) {
+                            if (is_numeric($row[13])) {
+                                $date = Carbon::parse(Date::excelToDateTimeObject($row[13]))->format('Y-m-d');
+                            } else {
+                                $description = $this->sanitizer->set($row[13])->get();
+                            }
+                        }
+
+                        ActPayment::create([
+                            'contract_id' => $contract->id,
+                            'act_id' => $act->id,
+                            'company_id' => $act->company_id,
+                            'object_id' => $act->object_id,
+                            'date' => $date,
+                            'amount' => $row[14],
+                            'description' => $description,
+                            'status_id' => Status::STATUS_ACTIVE,
+                            'currency' => $act->currency,
+                            'currency_rate' => $contract->currency !== 'RUB' && ! is_null($date)
+                                ? $this->currencyService->parseRateFromCBR($date, $act->currency) ?? 0
+                                : $act->currency_rate,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        if (isset($importData['СВОДНАЯ ГЭС-2'])) {
+
+            $objectId = BObject::where('code', '288')->first()->id;
+            Contract::where('object_id', $objectId)->delete();
+            ContractAvans::where('object_id', $objectId)->delete();
+            ContractReceivedAvans::where('object_id', $objectId)->delete();
+            Act::where('object_id', $objectId)->delete();
+            ActPayment::where('object_id', $objectId)->delete();
+
+            foreach ($importData['СВОДНАЯ ГЭС-2'] as $index => $row) {
+                if ($index < 6 || empty($row[1])) continue;
+
+                $contractName = $this->sanitizer->set($row[1])->get();
+                $contract = Contract::where('name', $contractName)->first();
+
+                $isDS = mb_strpos($row[6], 'ДС') !== false;
+                $isAct = mb_strpos($row[6], 'Акт') !== false;
+                $isTotal = mb_strpos($row[6], 'Итого') !== false;
+
+                if (! $contract) {
+                    $contract = Contract::create([
+                        'parent_id' => null,
+                        'type_id' => Contract::TYPE_MAIN,
+                        'amount_type_id' => Contract::AMOUNT_TYPE_MAIN,
+                        'company_id' => 1,
+                        'object_id' => $objectId,
+                        'name' => $contractName,
+                        'description' => $row[6],
+                        'start_date' => null,
+                        'end_date' => null,
+                        'amount' => empty($row[7]) ? 0 : $this->prepareAmount($row[7]),
+                        'stage_id' => 0,
+                        'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => 'RUB',
+                        'currency_rate' => 1,
+                    ]);
+
+                    if (! empty($row[8])) {
+                        ContractAvans::create([
+                            'contract_id' => $contract->id,
+                            'company_id' => $contract->company_id,
+                            'object_id' => $contract->object_id,
+                            'amount' => $this->prepareAmount($row[8]),
+                            'status_id' => Status::STATUS_ACTIVE,
+                            'currency' => $contract->currency,
+                            'currency_rate' => $contract->currency_rate,
+                        ]);
+                    }
+
+                    if (! empty($row[9])) {
+                        ContractReceivedAvans::create([
+                            'contract_id' => $contract->id,
+                            'company_id' => $contract->company_id,
+                            'object_id' => $contract->object_id,
+                            'date' => null,
+                            'amount' => $this->prepareAmount($row[9]),
+                            'description' => $row[11],
+                            'status_id' => Status::STATUS_ACTIVE,
+                            'currency' => $contract->currency,
+                            'currency_rate' => $contract->currency_rate,
+                        ]);
+                    }
+                } else {
+                    if ($isAct) {
+                        $date = null;
+                        $number = mb_substr($row[6], 0, 30);
+                        if (str_contains($row[6], 'от ')) {
+                            $number = mb_substr($row[6], 0, mb_strpos($row[6], 'от '));
+                            try {
+                                $date = Carbon::parse(mb_substr($row[6], mb_strpos($row[6], 'от ') + 3, 10))->format('Y-m-d');
+                            } catch (\Exception $e) {
+                                try {
+                                    $date = Carbon::parse(mb_substr($row[6], mb_strpos($row[6], 'от ') + 3, 8))->format('Y-m-d');
+                                } catch (\Exception $e) {
+                                    $date = null;
+                                }
+                            }
+                        }
+                        $act = Act::create([
+                            'contract_id' => $contract->id,
+                            'company_id' => $contract->company_id,
+                            'object_id' => $contract->object_id,
+                            'number' => $number,
+                            'date' => $date,
+                            'amount' => empty($row[12]) ? 0 : $this->prepareAmount($row[12]),
+                            'amount_avans' => empty($row[13]) ? 0 : $this->prepareAmount($row[13]),
+                            'amount_deposit' => empty($row[14]) ? 0 : $this->prepareAmount($row[14]),
+                            'description' => null,
+                            'status_id' => Status::STATUS_ACTIVE,
+                            'currency' => $contract->currency,
+                            'currency_rate' => $contract->currency_rate,
+                        ]);
+
+                        $act->update([
+                            'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
+                        ]);
+
+                        if (!empty($row[16])) {
+                            ActPayment::create([
+                                'contract_id' => $contract->id,
+                                'act_id' => $act->id,
+                                'company_id' => $act->company_id,
+                                'object_id' => $act->object_id,
+                                'date' => null,
+                                'amount' => $this->prepareAmount($row[16]),
+                                'description' => $row[18],
+                                'status_id' => Status::STATUS_ACTIVE,
+                                'currency' => $act->currency,
+                                'currency_rate' => $act->currency_rate,
+                            ]);
+                        }
+                    } else if (! $isTotal) {
+                        $parent = $contract;
+                        $contract = Contract::create([
+                            'parent_id' => $parent->id,
+                            'type_id' => Contract::TYPE_ADDITIONAL,
+                            'amount_type_id' => Contract::AMOUNT_TYPE_ADDITIONAL,
+                            'company_id' => 1,
+                            'object_id' => $objectId,
+                            'name' => $row[6],
+                            'description' => null,
+                            'start_date' => null,
+                            'end_date' => null,
+                            'amount' => empty($row[7]) ? 0 : $this->prepareAmount($row[7]),
+                            'stage_id' => 0,
+                            'status_id' => Status::STATUS_ACTIVE,
+                            'currency' => 'RUB',
+                            'currency_rate' => 1,
+                        ]);
+
+                        if (! empty($row[8])) {
+                            ContractAvans::create([
+                                'contract_id' => $contract->id,
+                                'company_id' => $contract->company_id,
+                                'object_id' => $contract->object_id,
+                                'amount' => $this->prepareAmount($row[8]),
+                                'status_id' => Status::STATUS_ACTIVE,
+                                'currency' => $contract->currency,
+                                'currency_rate' => $contract->currency_rate,
+                            ]);
+                        }
+
+                        if (! empty($row[9])) {
+                            ContractReceivedAvans::create([
+                                'contract_id' => $contract->id,
+                                'company_id' => $contract->company_id,
+                                'object_id' => $contract->object_id,
+                                'date' => null,
+                                'amount' => $this->prepareAmount($row[9]),
+                                'description' => $row[11],
+                                'status_id' => Status::STATUS_ACTIVE,
+                                'currency' => $contract->currency,
+                                'currency_rate' => $contract->currency_rate,
+                            ]);
+                        }
+                    } else if ($isTotal) {
+                        $contract->params = json_encode($row);
+                        $contract->update();
+                    }
                 }
             }
         }
 
         return redirect()->back();
+    }
+
+    private function prepareAmount(string|null|float $amount): float
+    {
+        if (is_string($amount)) {
+            $amount = explode("\n", $amount)[0];
+            $amount = str_replace(' ', '', $amount);
+            $amount = str_replace(',', '.', $amount);
+            $amount = (float) $amount;
+        }
+
+        return $amount;
     }
 }
