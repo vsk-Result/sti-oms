@@ -327,6 +327,27 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-5 mb-xl-8">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bolder fs-3 mb-1">Определение НДС у оплат</span>
+                            </h3>
+                        </div>
+                        <div class="card-body py-3">
+                            <form class="form" action="{{ route('payments.nds.store') }}" method="POST">
+                                @csrf
+
+                                <div class="d-flex flex-center py-3">
+                                    <button type="submit" class="btn btn-primary me-3">
+                                        <span class="indicator-label">Определить</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

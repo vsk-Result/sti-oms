@@ -568,4 +568,34 @@ class PaymentService
             }
         }
     }
+
+    public function determiningNDSPayments(): void
+    {
+        $excludePayments = [];
+        Payment::chunk(1000, function($payments) use(&$excludePayments) {
+            foreach ($payments as $payment) {
+                if (in_array($payment->id, $excludePayments)) {
+                    continue;
+                }
+                if ($this->checkHasNDSFromDescription($payment->description)) {
+                    if ($payment->amount < 0) {
+                        $pts = Payment::where('organization_receiver_id', $payment->organization_receiver_id)->get();
+                    } else {
+                        $pts = Payment::where('organization_sender_id', $payment->organization_sender_id)->get();
+                    }
+
+                    foreach ($pts as $p) {
+                        if ($p->amount !== $p->amount_without_nds) {
+                            continue;
+                        }
+                        $nds = round($p->amount / 6, 2);
+                        $p->amount_without_nds = $p->amount - $nds;
+                        $p->update();
+                    }
+
+                    $excludePayments = array_merge($excludePayments, $pts->pluck('id')->toArray());
+                }
+            }
+        });
+    }
 }

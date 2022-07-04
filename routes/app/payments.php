@@ -9,6 +9,11 @@ use App\Http\Controllers\Payment\ExportController;
 use App\Http\Controllers\Payment\CopyController;
 use App\Http\Controllers\Payment\HistoryController;
 use App\Http\Controllers\Payment\ClearController;
+use App\Http\Controllers\Payment\NDSController;
+
+// Определение НДС у оплат
+
+Route::post('payments/nds', [NDSController::class, 'store'])->name('payments.nds.store');
 
 // Очистка ПТИ пустых оплат
 
