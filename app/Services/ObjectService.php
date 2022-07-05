@@ -70,9 +70,87 @@ class ObjectService
 
     public static function getGeneralCostsByPeriod(string $startDate, string $endDate, int $bonus = 0): array
     {
+        if (str_contains($startDate, '2017-')) {
+            return [
+                3 => [
+                    'cuming_amount' => 745126101.73,
+                    'general_amount' => -56201813.5229337
+                ],
+                4 => [
+                    'cuming_amount' => 4054172657,
+                    'general_amount' => -305789658,
+                ],
+                '5|1' => [
+                    'cuming_amount' => 0,
+                    'general_amount' => 0,
+                ],
+                '5|24' => [
+                    'cuming_amount' => 9853343,
+                    'general_amount' => -743197.35220357,
+                ],
+                30 => [
+                    'cuming_amount' => 49520936,
+                    'general_amount' => -3735161,61102303,
+                ],
+                86 => [
+                    'cuming_amount' => 10000000,
+                    'general_amount' => -754259.089735911,
+                ],
+            ];
+        }
+
+        if (str_contains($startDate, '2018-')) {
+            return [
+                3 => [
+                    'cuming_amount' => 118487151.64,
+                    'general_amount' => -9102449.43224355
+                ],
+                4 => [
+                    'cuming_amount' => 7397515613,
+                    'general_amount' => -568293784,
+                ],
+                '5|1' => [
+                    'cuming_amount' => 0,
+                    'general_amount' => 0,
+                ],
+                '5|24' => [
+                    'cuming_amount' => 22477253,
+                    'general_amount' => -1726753.12028663,
+                ],
+                30 => [
+                    'cuming_amount' => 176664776,
+                    'general_amount' => -13571785.3601923,
+                ],
+                86 => [
+                    'cuming_amount' => 29049413,
+                    'general_amount' => -2231641.23036943,
+                ],
+                28 => [
+                    'cuming_amount' => 35743797,
+                    'general_amount' => -2745918.86297857,
+                ],
+                25 => [
+                    'cuming_amount' => 0,
+                    'general_amount' => 0,
+                ],
+                6 => [
+                    'cuming_amount' => 48335681,
+                    'general_amount' => -3713255.70735574,
+                ],
+                39 => [
+                    'cuming_amount' => 83430465,
+                    'general_amount' => -6409315.93223221,
+                ],
+                59 => [
+                    'cuming_amount' => 21148199,
+                    'general_amount' => -1624652.20334943,
+                ],
+            ];
+        }
+
         $objects = BObject::with(['customers', 'payments' => function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
-                ->where('amount', '>=', 0)
+                ->where('amount_without_nds', '>=', 0)
                 ->whereBetween('date', [$startDate, $endDate]);
         }])->get();
 
@@ -82,7 +160,7 @@ class ObjectService
             if (
                 $object->payments
                     ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                    ->sum('amount')
+                    ->sum('amount_without_nds')
                 > 0
             ) {
                 if (! empty($object->closing_date)) {
@@ -124,9 +202,9 @@ class ObjectService
 
         $result = [];
         foreach ($periods as $startDate => $endDate) {
-            $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])->where('type_id', Payment::TYPE_GENERAL)->sum('amount');
-            $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_1->id)->sum('amount');
-            $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
+            $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])->where('type_id', Payment::TYPE_GENERAL)->sum('amount_without_nds');
+            $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_1->id)->sum('amount_without_nds');
+            $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_8->id)->sum('amount_without_nds') * 0.7);
             $generalTotalAmount += $bonus;
 
             $sumCumings = 0;
@@ -138,7 +216,7 @@ class ObjectService
                         ->whereIn('object_worktype_id', [1])
                         ->whereBetween('date', [$startDate, $endDate])
                         ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount');
+                        ->sum('amount_without_nds');
 
                     if ($amount > 0) {
                         $cumings[$object->id.'|1'] = [
@@ -159,7 +237,7 @@ class ObjectService
                         ->whereIn('object_worktype_id', [2, 4])
                         ->whereBetween('date', [$startDate, $endDate])
                         ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount');
+                        ->sum('amount_without_nds');
 
                     if ($amount > 0) {
                         $cumings[$object->id.'|24'] = [
@@ -179,7 +257,7 @@ class ObjectService
                     $amount = $object->payments
                         ->whereBetween('date', [$startDate, $endDate])
                         ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount');
+                        ->sum('amount_without_nds');
 
                     if ($amount > 0) {
                         $cumings[$object->id] = [
