@@ -27,11 +27,11 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle table-row-dashed fs-7">
-                    <thead>
+                    <thead class="text-gray-600">
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="min-w-250px bt bl ps-2">Разбивка общих затрат по годам</th>
 
-                            <th class="min-w-125px bt bl">Итого</th>
+                            <th class="min-w-125px bt bl hl">Итого</th>
                             <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotal, 'RUB') }}</th>
 
                             <th class="min-w-125px bt">2022</th>
@@ -58,7 +58,7 @@
                         <tr>
                             <th class="min-w-250px bl ps-2">Объект</th>
 
-                            <th class="min-w-125px bl text-center">Получено</th>
+                            <th class="min-w-125px bl hl text-center">Получено</th>
                             <th class="min-w-125px br hl text-center">Общие расходы</th>
 
                             <th class="min-w-125px">Получено</th>
@@ -95,7 +95,7 @@
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
-                                    <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @if (isset ($info2022[$object->id.'|1']))
@@ -163,7 +163,7 @@
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral, true, false);
                                     @endphp
 
-                                    <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @if (isset ($info2022[$object->id.'|24']))
@@ -232,7 +232,7 @@
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
-                                    <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @if (isset ($info2022[$object->id]))
@@ -318,6 +318,7 @@
             background-color: #f7f7f7 !important;
             font-weight: bold !important;
             border: 1px dashed #ccc !important;
+            min-width: 150px !important;
         }
 
         .text-right {
