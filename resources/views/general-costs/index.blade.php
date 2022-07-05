@@ -58,8 +58,8 @@
                         <tr>
                             <th class="min-w-250px bl ps-2">Объект</th>
 
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br hl">Общие расходы</th>
+                            <th class="min-w-125px bl text-center">Получено</th>
+                            <th class="min-w-125px br hl text-center">Общие расходы</th>
 
                             <th class="min-w-125px">Получено</th>
                             <th class="min-w-125px br">Общие расходы на объект</th>
