@@ -31,56 +31,56 @@
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="min-w-250px bt bl ps-2">Разбивка общих затрат по годам</th>
 
-                            <th class="min-w-125px bt bl">2017</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($general2017, 'RUB') }}</th>
+                            <th class="min-w-125px bt bl">Итого</th>
+                            <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotal, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt bl">2018</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($general2018, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">2019</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($general2019, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">2020</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($general2020, 'RUB') }}</th>
+                            <th class="min-w-125px bt">2022</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022, 'RUB') }}</th>
 
                             <th class="min-w-125px bt bl">с 01.01.2021 по 02.03.21</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($general2021_1, 'RUB') }}</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2021_1, 'RUB') }}</th>
 
                             <th class="min-w-125px bt bl">с 03.03.2021 по 31.12.21</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($general2021_2, 'RUB') }}</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2021_2, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt bl">2022</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($general2022, 'RUB') }}</th>
+                            <th class="min-w-125px bt bl">2020</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2020, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt bl">Итого</th>
-                            <th class="min-w-125px text-danger bt br">{{ \App\Models\CurrencyExchangeRate::format($generalTotal, 'RUB') }}</th>
+                            <th class="min-w-125px bt bl">2019</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2019, 'RUB') }}</th>
+
+                            <th class="min-w-125px bt bl">2018</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2018, 'RUB') }}</th>
+
+                            <th class="min-w-125px bt bl">2017</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2017, 'RUB') }}</th>
                         </tr>
                         <tr>
                             <th class="min-w-250px bl ps-2">Объект</th>
 
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
                             <th class="min-w-125px bl"></th>
-                            <th class="min-w-125px br"></th>
+                            <th class="min-w-125px br hl"></th>
+
+                            <th class="min-w-125px">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
+
+                            <th class="min-w-125px bl">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
+
+                            <th class="min-w-125px bl">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
+
+                            <th class="min-w-125px bl">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
+
+                            <th class="min-w-125px bl">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
+
+                            <th class="min-w-125px bl">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
+
+                            <th class="min-w-125px bl">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-bold">
@@ -89,129 +89,73 @@
                                 <tr>
                                     <td class="bl ps-2">{{ $object->getName() . ' | 1 (Строительство)' }}</td>
 
-                                    @if (isset ($info2017[$object->id.'|1']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2018[$object->id.'|1']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2019[$object->id.'|1']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2020[$object->id.'|1']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_1[$object->id.'|1']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_2[$object->id.'|1']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022[$object->id.'|1']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
                                     @php
                                         $totalCuming = ($info2017[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2018[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2019[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2020[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2022[$object->id.'|1']['cuming_amount'] ?? 0);
                                         $totalGeneral = ($info2017[$object->id.'|1']['general_amount'] ?? 0) + ($info2018[$object->id.'|1']['general_amount'] ?? 0) + ($info2019[$object->id.'|1']['general_amount'] ?? 0) + ($info2020[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['general_amount'] ?? 0) + ($info2022[$object->id.'|1']['general_amount'] ?? 0);
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
-                                    <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="text-danger bl">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+                                    <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+
+                                    @if (isset ($info2022[$object->id.'|1']))
+                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2021_1[$object->id.'|1']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2021_2[$object->id.'|1']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2020[$object->id.'|1']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2019[$object->id.'|1']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2018[$object->id.'|1']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2017[$object->id.'|1']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
                                 </tr>
                                 <tr>
                                     <td class="bl ps-2">{{ $object->getName() . ' | 2+4 (Инженерия)' }}</td>
-
-                                    @if (isset ($info2017[$object->id.'|24']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2018[$object->id.'|24']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2019[$object->id.'|24']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2020[$object->id.'|24']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_1[$object->id.'|24']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_2[$object->id.'|24']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022[$object->id.'|24']))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
 
                                     @php
                                         $totalCuming = ($info2017[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2018[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2019[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2020[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2021_1[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2021_2[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2022[$object->id.'|24']['cuming_amount'] ?? 0);
@@ -219,68 +163,68 @@
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral, true, false);
                                     @endphp
 
-                                    <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="text-danger bl">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+                                    <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+
+                                    @if (isset ($info2022[$object->id.'|24']))
+                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2021_1[$object->id.'|24']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2021_2[$object->id.'|24']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2020[$object->id.'|24']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2019[$object->id.'|24']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2018[$object->id.'|24']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2017[$object->id.'|24']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
                                 </tr>
                             @else
                                 <tr>
                                     <td class="bl ps-2">{{ $object->getName() }}</td>
-
-                                    @if (isset ($info2017[$object->id]))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2018[$object->id]))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2019[$object->id]))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2020[$object->id]))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_1[$object->id]))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_2[$object->id]))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022[$object->id]))
-                                        <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td class="br">-</td>
-                                    @endif
 
                                     @php
                                         $totalCuming = ($info2017[$object->id]['cuming_amount'] ?? 0) + ($info2018[$object->id]['cuming_amount'] ?? 0) + ($info2019[$object->id]['cuming_amount'] ?? 0) + ($info2020[$object->id]['cuming_amount'] ?? 0) + ($info2021_1[$object->id]['cuming_amount'] ?? 0) + ($info2021_2[$object->id]['cuming_amount'] ?? 0) + ($info2022[$object->id]['cuming_amount'] ?? 0);
@@ -288,8 +232,64 @@
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
-                                    <td class="text-success bl">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="text-danger bl">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+                                    <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+
+                                    @if (isset ($info2022[$object->id]))
+                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2021_1[$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2021_2[$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2020[$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2019[$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2018[$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2017[$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td class="br">-</td>
+                                    @endif
                                 </tr>
                             @endif
                         @endforeach
@@ -312,6 +312,16 @@
 
         .br {
             border-right: 1px solid #eee !important;
+        }
+
+        .hl, .table tbody tr:last-child td.hl {
+            background-color: #f7f7f7 !important;
+            font-weight: bold !important;
+            border: 1px dashed #ccc !important;
+        }
+
+        .text-right {
+            text-align: right !important;
         }
     </style>
 @endpush
