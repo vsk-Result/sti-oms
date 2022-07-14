@@ -86,7 +86,7 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Организация</th>
+                                <th>Контрагент</th>
                                 <th>Сумма</th>
                             </tr>
                             </thead>
@@ -160,7 +160,7 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Организация</th>
+                                <th>Контрагент</th>
                                 <th>Сумма</th>
                             </tr>
                             </thead>
@@ -230,7 +230,7 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Организация</th>
+                                <th>Контрагент</th>
                                 <th>Сумма</th>
                             </tr>
                             </thead>
@@ -316,7 +316,7 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Организация</th>
+                                <th>Контрагент</th>
                                 <th>Сумма</th>
                             </tr>
                             </thead>
@@ -390,7 +390,7 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Организация</th>
+                                <th>Контрагент</th>
                                 <th>Сумма</th>
                             </tr>
                             </thead>
@@ -460,7 +460,7 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Организация</th>
+                                <th>Контрагент</th>
                                 <th>Сумма</th>
                             </tr>
                             </thead>

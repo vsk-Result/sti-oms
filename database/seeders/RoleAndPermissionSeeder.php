@@ -27,7 +27,7 @@ class RoleAndPermissionSeeder extends Seeder
             'Загрузка оплат' => ['payment-imports' => ['index', 'show', 'create', 'edit']],
             'Оплаты' => ['payments' => ['index', 'show', 'create', 'edit']],
             'Компании' => ['companies' => ['index', 'show', 'create', 'edit']],
-            'Организации' => ['organizations' => ['index', 'show', 'create', 'edit']],
+            'Контрагенты' => ['organizations' => ['index', 'show', 'create', 'edit']],
             'Объекты' => ['objects' => ['index', 'show', 'create', 'edit']],
         ];
 

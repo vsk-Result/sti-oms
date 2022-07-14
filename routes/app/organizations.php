@@ -8,7 +8,7 @@ use App\Http\Controllers\Organization\TransferPaymentImportController;
 
 Route::post('organizations/transfer-payments/import', [TransferPaymentImportController::class, 'store'])->name('organizations.transfer_payments.import.store')->middleware('can:edit organizations');
 
-// Организации
+// Контрагенты
 
 Route::get('organizations', [OrganizationController::class, 'index'])->name('organizations.index')->middleware('can:index organizations');
 Route::get('organizations/create', [OrganizationController::class, 'create'])->name('organizations.create')->middleware('can:create organizations');

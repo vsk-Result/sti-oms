@@ -50,7 +50,7 @@
                             <th class="min-w-125px">Тип</th>
                             <th class="min-w-125px">Категория</th>
                             <th class="min-w-125px">Заказ сделал</th>
-                            <th class="min-w-125px">Организация</th>
+                            <th class="min-w-125px">Контрагент</th>
                             <th class="min-w-200px">Описание</th>
                             <th class="min-w-200px">Счет</th>
                             <th class="min-w-125px">Сумма счета</th>

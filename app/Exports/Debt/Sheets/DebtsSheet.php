@@ -42,7 +42,7 @@ class DebtsSheet implements
         $sheet->setCellValue('B1', 'Тип');
         $sheet->setCellValue('C1', 'Категория');
         $sheet->setCellValue('D1', 'Заказ сделал');
-        $sheet->setCellValue('E1', 'Организация');
+        $sheet->setCellValue('E1', 'Контрагент');
         $sheet->setCellValue('F1', 'Описание');
         $sheet->setCellValue('G1', 'Счет');
         $sheet->setCellValue('H1', 'Сумма счета');

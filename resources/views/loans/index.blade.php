@@ -60,7 +60,7 @@
                         <th class="min-w-75px">Тип</th>
                         <th class="min-w-75px">Компания</th>
                         <th class="min-w-100px">Банк</th>
-                        <th class="min-w-125px">Организация</th>
+                        <th class="min-w-125px">Контрагент</th>
                         <th class="min-w-150px">Номер</th>
                         <th class="min-w-125px">Дата зачисления</th>
                         <th class="min-w-125px">Дата окончания</th>

@@ -4,10 +4,41 @@ namespace App\Services;
 
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\Object\BObject;
+use App\Models\Organization;
+use App\Services\Contract\ContractService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class DebtService
 {
+    public function getPivot(): array
+    {
+        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
+        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+
+        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+            ->with('organization', 'object');
+
+        $pivot = [
+            'objects' => BObject::whereIn('id', (clone $debtsQuery)->groupBy('object_id')->pluck('object_id'))->orderByDesc('code')->get(),
+            'organizations' => Organization::whereIn('id', (clone $debtsQuery)->groupBy('organization_id')->pluck('organization_id'))->orderBy('name')->get(),
+            'entries' => [],
+            'total' => []
+        ];
+
+        foreach ($pivot['objects'] as $object) {
+            $pivot['total'][$object->id] = 0;
+        }
+
+        foreach ((clone $debtsQuery)->get()->groupBy('organization_id') as $organizationId => $debtsGrouped) {
+            foreach ($debtsGrouped->groupBy('object_id') as $objectId => $debts) {
+                $pivot['entries'][$organizationId][$objectId] = $debts->sum('amount');
+                $pivot['total'][$objectId] += $pivot['entries'][$organizationId][$objectId];
+            }
+        }
+        return $pivot;
+    }
+
     public function filterDebts(array $requestData, array &$total): LengthAwarePaginator
     {
         $query = Debt::query();

@@ -55,6 +55,10 @@
             'RUB' => 0,
             'EUR' => 0,
         ],
+        'salary_itr' => [
+            'RUB' => 0,
+            'EUR' => 0,
+        ],
     ];
     $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
     $objects = \App\Models\Object\BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '357', '358', '359'])->get();
@@ -121,8 +125,13 @@
 
         $total[$object->code]['contractor']['RUB'] = $object->getContractorDebtsAmount();
         $total[$object->code]['provider']['RUB'] = $object->getProviderDebtsAmount();
+
+        $ITRSalaryObject = \App\Models\CRM\ItrSalary::where('kod', 'LIKE', '%' . $object->code. '%')->get();
+
+        $total[$object->code]['salary_itr']['RUB'] = $ITRSalaryObject->sum('paid') - $ITRSalaryObject->sum('total');
         $summary['contractor']['RUB'] += $total[$object->code]['contractor']['RUB'];
         $summary['provider']['RUB'] += $total[$object->code]['provider']['RUB'];
+        $summary['salary_itr']['RUB'] += $total[$object->code]['salary_itr']['RUB'];
     }
 
     $infos = [
@@ -137,7 +146,8 @@
         'Не закрытый аванс' => 'contract_avanses_notwork_left_amount',
         'Долг гарантийного удержания' => 'contract_avanses_acts_deposites_amount',
         'Долг подрядчикам' => 'contractor',
-        'Долг за материалы' => 'provider'
+        'Долг за материалы' => 'provider',
+        'Долг на зарплаты ИТР' => 'salary_itr',
     ];
 @endphp
 
@@ -151,21 +161,21 @@
         </div>
     </div>
     <div class="card-body pt-0 table-responsive">
-        <table class="table table-hover align-middle table-row-dashed fs-7 gy-5" id="kt_table_users">
+        <table class="objects-table table table-hover align-middle table-row-dashed fs-7 gy-5" id="kt_table_users">
             <thead>
             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                <th class="min-w-200px">Сводка</th>
-                <th class="min-w-200px">Итого</th>
+                <th class="min-w-200px br ps-2">Сводка</th>
+                <th class="min-w-200px hl">Итого</th>
                 @foreach($objects as $object)
-                    <th class="min-w-150px">{{ $object->getName() }}</th>
+                    <th class="min-w-150px {{ $loop->first ? 'bl' : '' }}">{{ $object->getName() }}</th>
                 @endforeach
             </tr>
             </thead>
             <tbody class="text-gray-600 fw-bold">
                 @foreach($infos as $info => $field)
                     <tr>
-                        <td>{{ $info }}</td>
-                        <td class="fw-bolder">
+                        <td class="br ps-2">{{ $info }}</td>
+                        <td class="fw-bolder hl">
                             @if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24')
                                 @continue
                             @endif
@@ -176,6 +186,10 @@
                                 </span>
                             @elseif($field === 'contractor' || $field === 'provider')
                                 <span class="text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB', 0, true) }}
+                                </span>
+                            @elseif($field === 'salary_itr')
+                                <span class="{{ $summary[$field]['RUB'] < 0 ? 'text-danger' : 'text-success' }}">
                                     {{ \App\Models\CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB', 0, true) }}
                                 </span>
                             @else
@@ -189,7 +203,7 @@
                             @endif
                         </td>
                         @foreach($objects as $object)
-                            <td>
+                            <td class="{{ $loop->first ? 'bl' : '' }}">
                                 @if(in_array($field, ['payment_total_balance', 'general_costs_amount', 'general_costs_amount_1', 'general_costs_amount_24']))
                                     @if ($object->code == 288)
                                         @if ($field === 'general_costs_amount')
@@ -220,6 +234,10 @@
                                     @endif
                                 @elseif($field === 'contractor' || $field === 'provider')
                                     <span class="text-danger">
+                                        {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field]['RUB'], 'RUB', 0, true) }}
+                                    </span>
+                                @elseif($field === 'salary_itr')
+                                    <span class="{{ $total[$object->code][$field]['RUB'] < 0 ? 'text-danger' : 'text-success' }}">
                                         {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field]['RUB'], 'RUB', 0, true) }}
                                     </span>
                                 @else

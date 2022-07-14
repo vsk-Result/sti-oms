@@ -34,11 +34,11 @@ class PivotSheet implements
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
         $sheet->setCellValue('A1', 'Долг подрядчикам');
-        $sheet->setCellValue('A3', 'Организация');
+        $sheet->setCellValue('A3', 'Контрагент');
         $sheet->setCellValue('B3', 'Сумма');
 
         $sheet->setCellValue('E1', 'Долг поставщикам');
-        $sheet->setCellValue('E3', 'Организация');
+        $sheet->setCellValue('E3', 'Контрагент');
         $sheet->setCellValue('F3', 'Сумма');
 
         $sheet->getRowDimension(1)->setRowHeight(35);

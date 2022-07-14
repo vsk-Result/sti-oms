@@ -28,8 +28,8 @@ class HistoryController extends Controller
             'code' => 'Кост код',
             'object_id' => 'Объект',
             'description' => 'Описание',
-            'organization_sender_id' => 'Организация отправитель',
-            'organization_receiver_id' => 'Организация получатель',
+            'organization_sender_id' => 'Контрагент отправитель',
+            'organization_receiver_id' => 'Контрагент получатель',
             'amount' => 'Сумма',
             'type_id' => 'Тип',
         ];

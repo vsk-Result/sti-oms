@@ -6,6 +6,7 @@ use App\Helpers\Sanitizer;
 use App\Models\Contract\Act;
 use App\Models\Contract\ActPayment;
 use App\Models\Contract\Contract;
+use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
 use Carbon\Carbon;
@@ -20,6 +21,73 @@ class ActService
     {
         $this->sanitizer = $sanitizer;
         $this->currencyService = $currencyService;
+    }
+
+    public function getPivot(): array
+    {
+        $pivot = [
+            'total' => [
+                'acts' => [
+                    'RUB' => 0,
+                    'EUR' => 0,
+                ],
+                'avanses' => [
+                    'RUB' => 0,
+                    'EUR' => 0,
+                ],
+                'gu' => [
+                    'RUB' => 0,
+                    'EUR' => 0,
+                ],
+            ],
+            'entries' => [],
+        ];
+        $objects = BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '357', '358', '359'])
+            ->orderByDesc('code')
+            ->get();
+        $contractService = new ContractService($this->sanitizer, $this->currencyService);
+
+        foreach ($objects as $object) {
+            $totalInfo = [];
+            $contractService->filterContracts(['object_id' => [$object->id]], $totalInfo);
+
+            $actsAmount['RUB'] = $totalInfo['avanses_acts_left_paid_amount']['RUB'];
+            $actsAmount['EUR'] = $totalInfo['avanses_acts_left_paid_amount']['EUR'];
+
+            $avansesAmount['RUB'] = $totalInfo['avanses_notwork_left_amount']['RUB'];
+            $avansesAmount['EUR'] = $totalInfo['avanses_notwork_left_amount']['EUR'];
+
+            $guAmount['RUB'] = $totalInfo['avanses_acts_deposites_amount']['RUB'];
+            $guAmount['EUR'] = $totalInfo['avanses_acts_deposites_amount']['EUR'];
+
+            $pivot['entries'][] = [
+                'object' => [
+                    'id' => $object->id,
+                    'name' => $object->getName()
+                ],
+                'acts' => [
+                    'RUB' => $actsAmount['RUB'],
+                    'EUR' => $actsAmount['EUR'],
+                ],
+                'avanses' => [
+                    'RUB' => $avansesAmount['RUB'],
+                    'EUR' => $avansesAmount['EUR'],
+                ],
+                'gu' => [
+                    'RUB' => $guAmount['RUB'],
+                    'EUR' => $guAmount['EUR'],
+                ]
+            ];
+
+            $pivot['total']['acts']['RUB'] += $actsAmount['RUB'];
+            $pivot['total']['acts']['EUR'] += $actsAmount['EUR'];
+            $pivot['total']['avanses']['RUB'] += $avansesAmount['RUB'];
+            $pivot['total']['avanses']['EUR'] += $avansesAmount['EUR'];
+            $pivot['total']['gu']['RUB'] += $guAmount['RUB'];
+            $pivot['total']['gu']['EUR'] += $guAmount['EUR'];
+        }
+
+        return $pivot;
     }
 
     public function filterActs(array $requestData, array &$total): LengthAwarePaginator

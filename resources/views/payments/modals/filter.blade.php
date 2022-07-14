@@ -156,7 +156,7 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Организация</label>
+                                <label class="form-label">Контрагент</label>
                                 <select
                                     id="organization-select"
                                     name="organization_id[]"

@@ -88,7 +88,7 @@
                     <th class="min-w-100px">Объект</th>
                     <th class="min-w-150px">Договор</th>
                     <th class="min-w-150px">Номер</th>
-                    <th class="min-w-250px">Организация</th>
+                    <th class="min-w-250px">Контрагент</th>
                     <th class="min-w-125px">Дата окончания БГ</th>
                     <th class="min-w-125px">Сумма БГ</th>
                     <th class="min-w-125px">Комиссия БГ</th>

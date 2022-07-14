@@ -55,7 +55,7 @@
                                 <th class="min-w-120px">Дата</th>
                                 <th class="min-w-120px">Объект</th>
                                 <th class="min-w-70px">Кост код</th>
-                                <th class="min-w-100px">Организация</th>
+                                <th class="min-w-100px">Контрагент</th>
                                 <th class="min-w-300px">Описание</th>
                                 <th class="min-w-200px">Сумма</th>
                                 <th class="min-w-150px">Категория</th>

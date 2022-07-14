@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'Организации')
+@section('toolbar-title', 'Контрагенты')
 @section('breadcrumbs', Breadcrumbs::render('organizations.index'))
 
 @section('content')
@@ -29,7 +29,7 @@
                                         <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
                                     </svg>
                                 </span>
-                                Новая организация
+                                Новый контрагент
                             </a>
                         @endcan
                     </div>
@@ -47,7 +47,7 @@
         const $filterSearch = $('#organization-search');
         const $organizationsContainer = $('#organizations-container');
         const organizationsContainerblockUI = new KTBlockUI($organizationsContainer.get(0), {
-            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Загрузка организаций...</div>',
+            message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Загрузка контрагентов...</div>',
         });
 
         $(function() {

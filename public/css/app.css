@@ -337,3 +337,8 @@ td > a.show-link:hover {
 .min-w-130px {
     min-width: 130px!important;
 }
+
+/* Активное меню с дропдауном */
+.menu-hover-bg .menu-item .menu-link:hover:not(.disabled):not(.active), .menu-hover-bg .menu-item.hover>.menu-link:not(.disabled):not(.active) {
+    background-color: white;
+}

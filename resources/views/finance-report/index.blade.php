@@ -55,3 +55,28 @@
         });
     </script>
 @endpush
+
+@push('styles')
+    <style>
+        .objects-table td, .objects-table th {
+            border: 1px solid #eee;
+        }
+        .bl {
+            border-left: 1px dashed #ccc !important;
+        }
+        .br {
+            border-right: 1px dashed #ccc !important;
+        }
+
+        .hl, .table tbody tr:last-child td.hl {
+            background-color: #f7f7f7 !important;
+            font-weight: bold !important;
+            border: 1px dashed #ccc !important;
+            min-width: 150px !important;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+    </style>
+@endpush

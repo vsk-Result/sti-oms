@@ -39,7 +39,7 @@ class Export implements
         $sheet->setCellValue('B1', 'Договор');
         $sheet->setCellValue('C1', 'Номер');
         $sheet->setCellValue('D1', 'Валюта');
-        $sheet->setCellValue('E1', 'Организация');
+        $sheet->setCellValue('E1', 'Контрагент');
         $sheet->setCellValue('F1', 'Дата окончания БГ');
         $sheet->setCellValue('G1', 'Сумма БГ');
         $sheet->setCellValue('H1', 'Комиссия БГ');

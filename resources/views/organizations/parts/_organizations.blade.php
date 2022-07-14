@@ -1,7 +1,7 @@
 <table class="table table-hover align-middle table-row-dashed fs-6 gy-5">
     <thead>
     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-        <th class="min-w-125px">Организация</th>
+        <th class="min-w-125px">Контрагент</th>
         <th class="min-w-125px">ИНН</th>
         <th class="min-w-125px">КПП</th>
         <th class="min-w-125px">Статус</th>
@@ -41,7 +41,7 @@
                                     <a
                                         href="{{ route('organizations.destroy', $organization) }}"
                                         class="menu-link px-3 text-danger"
-                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить организацию?')) {this.closest('form').submit();}"
+                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить контрагента?')) {this.closest('form').submit();}"
                                     >
                                         Удалить
                                     </a>

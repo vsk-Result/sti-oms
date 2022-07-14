@@ -7,12 +7,12 @@ use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 Breadcrumbs::for('organizations.index', function (BreadcrumbTrail $trail) {
     $route = auth()->user()->can('index organizations') ? route('organizations.index') : null;
     $trail->parent('home');
-    $trail->push('Оргазинации', $route);
+    $trail->push('Контрагенты', $route);
 });
 
 Breadcrumbs::for('organizations.create', function (BreadcrumbTrail $trail) {
     $trail->parent('organizations.index');
-    $trail->push('Новая организация');
+    $trail->push('Новый контрагент');
 });
 
 Breadcrumbs::for('organizations.show', function (BreadcrumbTrail $trail, Organization $organization) {
@@ -23,7 +23,7 @@ Breadcrumbs::for('organizations.show', function (BreadcrumbTrail $trail, Organiz
 
 Breadcrumbs::for('organizations.edit', function (BreadcrumbTrail $trail, Organization $organization) {
     $trail->parent('organizations.show', $organization);
-    $trail->push('Изменение организации');
+    $trail->push('Изменение контрагента');
 });
 
 Breadcrumbs::for('organizations.transfer_payments.create', function (BreadcrumbTrail $trail, Organization $organization) {

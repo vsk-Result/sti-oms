@@ -18,7 +18,7 @@
                         <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
                             <div class="row mb-5">
                                 <div class="col-md-12 fv-row">
-                                    <label class="required fs-5 fw-bold mb-2">На организацию</label>
+                                    <label class="required fs-5 fw-bold mb-2">На контрагента</label>
                                     <select name="organization_id" class="form-select form-select-solid" data-control="select2">
                                         @foreach($organizations as $organization)
                                             <option value="{{ $organization->id }}">{{ $organization->name }}</option>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'Новая организация')
+@section('toolbar-title', 'Новый контрагент')
 @section('breadcrumbs', Breadcrumbs::render('organizations.create'))
 
 @section('content')
@@ -9,7 +9,7 @@
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">Новая организация</span>
+                        <span class="card-label fw-bolder fs-3 mb-1">Новый контрагент</span>
                     </h3>
                 </div>
                 <div class="card-body py-3">
