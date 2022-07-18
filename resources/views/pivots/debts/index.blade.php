@@ -4,8 +4,8 @@
 @section('breadcrumbs', Breadcrumbs::render('pivots.debts.index'))
 
 @section('content')
-    <div class="card mb-5 mb-xl-8">
-        <div class="card-body py-3">
+    <div class="card mb-5 mb-xl-8 border-0">
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle table-row-dashed fs-7">
                     <thead>
@@ -23,7 +23,7 @@
                             @php $i = 0; @endphp
                             @foreach($pivot['total'] as $objectId => $amount)
                                 <th class="text-danger min-w-150px hl" data-index="{{ $i++ }}">
-                                    <a target="_blank" href="{{ route('debts.index') }}?object_id%5B%5D={{ $objectId }}" class="text-danger bb cursor-pointer show-rows">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB') }}</a>
+                                    <a href="{{ route('debts.index') }}?object_id%5B%5D={{ $objectId }}" class="text-danger bb cursor-pointer show-rows">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB') }}</a>
                                 </th>
                             @endforeach
                         </tr>
@@ -35,13 +35,13 @@
                                     {{ $organization->name }}
                                 </td>
                                 <td class="text-danger hl {{ $loop->first ? 'bt' : '' }}">
-                                    <a target="_blank" href="{{ route('debts.index') }}?organization_id%5B%5D={{ $organization->id }}" class="text-danger bb cursor-pointer show-columns">{{ \App\Models\CurrencyExchangeRate::format(array_sum($pivot['entries'][$organization->id]), 'RUB') }}</a>
+                                    <a href="{{ route('debts.index') }}?organization_id%5B%5D={{ $organization->id }}" class="text-danger bb cursor-pointer show-columns">{{ \App\Models\CurrencyExchangeRate::format(array_sum($pivot['entries'][$organization->id]), 'RUB') }}</a>
                                 </td>
                                 @php $i = 0; @endphp
                                 @foreach($pivot['objects'] as $object)
                                     <td class="text-danger {{ $loop->parent->first ? 'bt' : '' }} {{ $loop->first ? ' bl' : '' }}" data-index="{{ $i++ }}">
                                         @if (($pivot['entries'][$organization->id][$object->id] ?? 0) < 0)
-                                            <a target="_blank" href="{{ route('debts.index') }}?organization_id%5B%5D={{ $organization->id }}&object_id%5B%5D={{ $object->id }}" class="text-danger bb cursor-pointer">{{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}</a>
+                                            <a href="{{ route('debts.index') }}?organization_id%5B%5D={{ $organization->id }}&object_id%5B%5D={{ $object->id }}" class="text-danger bb cursor-pointer">{{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}</a>
                                         @else
                                             {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}
                                         @endif

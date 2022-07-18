@@ -4,72 +4,112 @@
 @section('breadcrumbs', Breadcrumbs::render('pivots.acts.index'))
 
 @section('content')
-    <div class="card mb-5 mb-xl-8">
-        <div class="card-header border-0 pt-6">
-            <div class="card-title">
-            </div>
-
-            <div class="card-toolbar">
-            </div>
-        </div>
-        <div class="card-body py-3">
+    <div class="card mb-5 mb-xl-8 border-0">
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle table-row-dashed fs-7">
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px ps-4">Объект</th>
-                            <th class="min-w-150px">По актам</th>
-                            <th class="min-w-150px">Не закрытый аванс</th>
-                            <th class="min-w-150px">Гарантийное удержание</th>
+                            <th class="min-w-100px ps-4 br bb">Объект</th>
+                            <th class="total-column hl text-right">Итого</th>
+                            <th class="min-w-150px bl bb text-right">Сумма неоплаченных работ по актам</th>
+                            <th class="min-w-150px bb text-right">Аванс к получению</th>
+                            <th class="min-w-150px bb text-right pe-4">Гарантийное удержание</th>
                         </tr>
                         <tr class="fw-bolder" style="background-color: #f7f7f7;">
-                            <th class="ps-4" style="vertical-align: middle;">Итого</th>
-                            <th>
-                                {{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts']['RUB'], 'RUB') }}
+                            <th class="ps-4 br hl" style="vertical-align: middle;">Итого</th>
+                            <th class="hl"></th>
+                            <th class="hl text-right">
+                                <span class="{{ $pivot['total']['acts']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts']['RUB'], 'RUB') }}</span>
                                 <br>
-                                {{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts']['EUR'], 'EUR') }}
+                                <span class="{{ $pivot['total']['acts']['EUR'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts']['EUR'], 'EUR') }}</span>
                             </th>
-                            <th>
-                                {{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses']['RUB'], 'RUB') }}
+                            <th class="hl text-right">
+                                <span class="{{ $pivot['total']['avanses']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses']['RUB'], 'RUB') }}</span>
                                 <br>
-                                {{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses']['EUR'], 'EUR') }}
+                                <span class="{{ $pivot['total']['avanses']['EUR'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses']['EUR'], 'EUR') }}</span>
                             </th>
-                            <th>
-                                {{ \App\Models\CurrencyExchangeRate::format($pivot['total']['gu']['RUB'], 'RUB') }}
+                            <th class="hl text-right pe-4">
+                                <span class="{{ $pivot['total']['gu']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['gu']['RUB'], 'RUB') }}</span>
                                 <br>
-                                {{ \App\Models\CurrencyExchangeRate::format($pivot['total']['gu']['EUR'], 'EUR') }}
+                                <span class="{{ $pivot['total']['gu']['EUR'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['gu']['EUR'], 'EUR') }}</span>
                             </th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-bold">
                         @forelse($pivot['entries'] as $entry)
                             <tr>
-                                <td class="ps-4">
+                                <td class="ps-4 br {{ $loop->first ? 'bt' : '' }}">
                                     @if(auth()->user()->can('show objects'))
-                                        <a target="_blank" href="{{ route('objects.show', $entry['object']['id']) }}/acts?object_id%5B%5D={{ $entry['object']['id'] }}" class="show-link">{{ $entry['object']['name'] }}</a>
+                                        <a target="_blank" href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}" class="show-link">{{ $entry['object']['name'] }}</a>
                                     @else
                                         {{ $entry['object']['name'] }}
                                     @endif
                                 </td>
-                                <td>
-                                    <span class="{{ $entry['acts']['RUB'] > 0 ? 'text-success fw-bolder' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['acts']['RUB'], 'RUB') }}</span>
-                                    <br>
-                                    <span class="{{ $entry['acts']['EUR'] > 0 ? 'text-success fw-bolder' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['acts']['EUR'], 'EUR') }}</span>
+                                <td class="hl text-right {{ $loop->first ? 'bt' : '' }}">
+                                    @if (($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']) != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ ($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']) > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']), 'RUB', 0, true) }}</span></a>
+                                    @else
+                                        {{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']), 'RUB', 0, true) }}
+                                    @endif
+                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
+                                        <br>
+                                        @if (($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']) != 0)
+                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ ($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']) > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']), 'EUR', 0, true) }}</span></a>
+                                        @else
+                                            {{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']), 'EUR', 0, true) }}
+                                        @endif
+                                    @endif
                                 </td>
-                                <td>
-                                    <span class="{{ $entry['avanses']['RUB'] > 0 ? 'text-success fw-bolder' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses']['RUB'], 'RUB') }}</span>
-                                    <br>
-                                    <span class="{{ $entry['avanses']['EUR'] > 0 ? 'text-success fw-bolder' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses']['EUR'], 'EUR') }}</span>
+                                <td class="bl text-right {{ $loop->first ? 'bt' : '' }}">
+                                    @if ($entry['acts']['RUB'] != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['acts']['RUB'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['acts']['RUB'], 'RUB', 0, true) }}</span></a>
+                                    @else
+                                        {{ \App\Models\CurrencyExchangeRate::format($entry['acts']['RUB'], 'RUB', 0, true) }}
+                                    @endif
+                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
+                                        <br>
+                                        @if ($entry['acts']['EUR'] != 0)
+                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['acts']['EUR'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['acts']['EUR'], 'EUR', 0, true) }}</span></a>
+                                        @else
+                                            {{ \App\Models\CurrencyExchangeRate::format($entry['acts']['EUR'], 'EUR', 0, true) }}
+                                        @endif
+                                    @endif
                                 </td>
-                                <td>
-                                    <span class="{{ $entry['gu']['RUB'] > 0 ? 'text-success fw-bolder' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['gu']['RUB'], 'RUB') }}</span>
-                                    <br>
-                                    <span class="{{ $entry['gu']['EUR'] > 0 ? 'text-success fw-bolder' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['gu']['EUR'], 'EUR') }}</span>
+                                <td class="bl text-right {{ $loop->first ? 'bt' : '' }}">
+                                    @if ($entry['avanses']['RUB'] != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses']['RUB'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses']['RUB'], 'RUB', 0, true) }}</span></a>
+                                    @else
+                                        {{ \App\Models\CurrencyExchangeRate::format($entry['avanses']['RUB'], 'RUB', 0, true) }}
+                                    @endif
+                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
+                                        <br>
+                                        @if ($entry['avanses']['EUR'] != 0)
+                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses']['EUR'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses']['EUR'], 'EUR', 0, true) }}</span></a>
+                                        @else
+                                            {{ \App\Models\CurrencyExchangeRate::format($entry['avanses']['EUR'], 'EUR', 0, true) }}
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="bl text-right {{ $loop->first ? 'bt' : '' }} pe-4">
+                                    @if ($entry['gu']['RUB'] != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['gu']['RUB'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['gu']['RUB'], 'RUB', 0, true) }}</span></a>
+                                    @else
+                                        {{ \App\Models\CurrencyExchangeRate::format($entry['gu']['RUB'], 'RUB', 0, true) }}
+                                    @endif
+                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
+                                        <br>
+                                        @if ($entry['gu']['EUR'] != 0)
+                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['gu']['EUR'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['gu']['EUR'], 'EUR', 0, true) }}</span></a>
+                                        @else
+                                            {{ \App\Models\CurrencyExchangeRate::format($entry['gu']['EUR'], 'EUR', 0, true) }}
+                                        @endif
+                                    @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4">
+                                <td colspan="5">
                                     <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                         Данные отсутствуют
                                     </p>
@@ -82,3 +122,39 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+    <style>
+        .table td, .table th {
+            border: 1px solid #eee;
+        }
+        .bl {
+            border-left: 1px dashed #ccc !important;
+        }
+        .br {
+            border-right: 1px dashed #ccc !important;
+        }
+        .bb {
+            border-bottom: 1px dashed #ccc !important;
+        }
+        .bt {
+            border-top: 1px dashed #ccc !important;
+        }
+        .hl, .table tbody tr:last-child td.hl {
+            background-color: #f7f7f7 !important;
+            font-weight: bold !important;
+            border: 1px dashed #ccc !important;
+            min-width: 150px !important;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .total-column {
+            min-width: 150px !important;
+            width: 150px !important;
+            max-width: 150px !important;
+        }
+    </style>
+@endpush

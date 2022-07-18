@@ -28,6 +28,9 @@
                             @endif
                         </div>
                         <div class="form-text">Поддерживаются форматы: <code>png, jpg, jpeg</code></div>
+                        @if ($user->photo)
+                            <a target="_blank" href="{{ $user->getPhoto() }}">Посмотреть фото</a>
+                        @endif
                         @if ($errors->has('photo'))
                             <div class="fv-plugins-message-container invalid-feedback">
                                 <div>{{ implode(' ', $errors->get('photo')) }}</div>
