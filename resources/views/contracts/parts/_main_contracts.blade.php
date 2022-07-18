@@ -165,6 +165,10 @@
                     @php
                         $childrenCount = $contract->children->count();
                         $showCurrencies = ['RUB' => 'RUB'];
+                        $actsUrl = '';
+                        foreach(array_merge([$contract->id], $contract->children->pluck('id')->toArray()) as $id) {
+                            $actsUrl .= 'contract_id%5B%5D=' . $id . '&';
+                        }
                     @endphp
                     <tr>
                         <td class="ps-4">
@@ -228,37 +232,37 @@
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount($currency), $currency) }}
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount($currency), $currency) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount($currency), $currency) }}
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount($currency), $currency) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount($currency), $currency) }}
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount($currency), $currency) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency) }}
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency) }}
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency) }}
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency) }}</a>
                                 <br>
                             @endforeach
                         </td>

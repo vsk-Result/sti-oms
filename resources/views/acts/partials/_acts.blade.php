@@ -57,9 +57,9 @@
                 <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                     <th class="min-w-100px ps-4">Объект</th>
-                    <th class="min-w-75px">Номер</th>
                     <th class="min-w-150px">Договор</th>
-                    <th class="min-w-150px">Дата</th>
+                    <th class="min-w-75px">Номер акта</th>
+                    <th class="min-w-150px">Дата акта</th>
                     <th class="min-w-150px">Выполнено</th>
                     <th class="min-w-150px">Аванс удержан</th>
                     <th class="min-w-150px">Депозит удержан</th>
@@ -113,8 +113,14 @@
                                 {{ $act->object->code }}
                             @endif
                         </td>
+                        <td class="px-3">
+                            @if(auth()->user()->can('index contracts'))
+                                <a href="{{ route('contracts.index') }}?name={{ urlencode($act->contract->parent ? $act->contract->parent->name : $act->contract->name) }}" class="show-link">{{ $act->contract->getName() }}</a>
+                            @else
+                                {{ $act->contract->getName() }}
+                            @endif
+                        </td>
                         <td class="text-center">{{ $act->number }}</td>
-                        <td class="px-3">{{ $act->contract->getName() }}</td>
                         <td>{{ $act->getDateFormatted() }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAmount(), $act->currency) }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAvansAmount(), $act->currency) }}</td>

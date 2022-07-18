@@ -9,12 +9,12 @@
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAvansesAmount($currency), $currency) }}</td>
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAvansesReceivedAmount($currency), $currency) }}</td>
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAvansesLeftAmount($currency), $currency) }}</td>
-    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsAmount($currency), $currency) }}</td>
-    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsAvasesAmount($currency), $currency) }}</td>
-    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsDepositesAmount($currency), $currency) }}</td>
-    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsNeedPaidAmount($currency), $currency) }}</td>
-    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsPaidAmount($currency), $currency) }}</td>
-    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsLeftPaidAmount($currency), $currency) }}</td>
+    <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsAmount($currency), $currency) }}</a></td>
+    <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsAvasesAmount($currency), $currency) }}</a></td>
+    <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsDepositesAmount($currency), $currency) }}</a></td>
+    <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsNeedPaidAmount($currency), $currency) }}</a></td>
+    <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsPaidAmount($currency), $currency) }}</a></td>
+    <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsLeftPaidAmount($currency), $currency) }}</a></td>
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAvansesReceivedAmount($currency) - $mainContract->getActsAvasesAmount($currency), $currency) }}</td>
     <td>
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
@@ -58,12 +58,12 @@
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount($currency), $currency) }}</td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency), $currency) }}</td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftAmount($currency), $currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount($currency), $currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount($currency), $currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount($currency), $currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency) }}</td>
-        <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency) }}</td>
+        <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $contract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount($currency), $currency) }}</a></td>
+        <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $contract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount($currency), $currency) }}</a></td>
+        <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $contract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount($currency), $currency) }}</a></td>
+        <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $contract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency) }}</a></td>
+        <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $contract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency) }}</a></td>
+        <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $contract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency) }}</a></td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency) - $contract->getActsAvasesAmount($currency), $currency) }}</td>
         <td>
             <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
