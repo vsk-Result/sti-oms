@@ -101,7 +101,6 @@ class PaymentController extends Controller
         $returnUrl = $request->get('return_url');
 
         $info = [
-            'import_id' => null,
             ''
         ];
 

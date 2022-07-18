@@ -13,6 +13,7 @@
     @csrf
 
     <input type="hidden" name="return_url" value="{{ url()->previous() }}">
+    <input type="hidden" name="import_id" value="{{ $copyPayment?->import_id }}">
 
     <div class="row mb-5">
         <div class="col-md-12 fv-row">

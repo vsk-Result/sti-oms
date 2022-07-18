@@ -16,6 +16,7 @@
                     <form class="form" action="{{ route('payments.store') }}" method="POST">
                         @csrf
 
+                        <input type="hidden" name="import_id" value="{{ $copyPayment?->import_id }}">
                         <input type="hidden" name="return_url" value="{{ url()->previous() }}">
 
                         <div class="row mb-5">
