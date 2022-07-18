@@ -284,8 +284,7 @@ class PaymentService
             $amountGroupedByObjectCode[$item->avans->code] += $item->avans->value;
         }
 
-        $description = $this->sanitizer->set($avansImport->description)->lowerCase()->get();
-        $costCode = str_contains($description, 'зарплат') ? '7.17' : '7.26';
+        $costCode = $avansImport->type === 'Зарплата' ? '7.17' : '7.26';
 
         $company = Company::find(1);
         $organizationSenderId = $company->organizations()->first()->id;
