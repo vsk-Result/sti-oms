@@ -42,11 +42,13 @@
                                 <td class="d-flex align-items-center">
                                     <div class="symbol symbol-circle symbol-50px overflow-hidden me-3 cursor-pointer">
                                         <div class="symbol-label">
-                                            <img src="{{ $user->getPhoto() }}" alt="{{ $user->name }}" class="w-100" />
+                                            <a target="_blank" href="{{ $user->getPhoto() }}">
+                                                <img src="{{ $user->getPhoto() }}" alt="{{ $user->name }}" class="w-100" />
+                                            </a>
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column">
-                                        <span class="text-gray-800 mb-1">{{ $user->name }}</span>
+                                        <a href="{{ route('users.show', $user) }}"><span class="text-gray-800 mb-1">{{ $user->name }}</span></a>
                                         <a href="mailto:{{ $user->email }}"><span>{{ $user->email }}</span></a>
                                     </div>
                                 </td>

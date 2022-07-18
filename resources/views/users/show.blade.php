@@ -18,7 +18,9 @@
                             <label class="col-lg-4 col-form-label fw-bold fs-6">Фотография</label>
                             <div class="col-lg-8">
                                 <div class="image-input image-input-outline" data-kt-image-input="true">
-                                    <div class="image-input-wrapper w-125px h-125px" style="background-image: url({{ $user->getPhoto() }})"></div>
+                                    <a target="_blank" href="{{ $user->getPhoto() }}">
+                                        <div class="image-input-wrapper w-125px h-125px" style="background-image: url({{ $user->getPhoto() }})"></div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
