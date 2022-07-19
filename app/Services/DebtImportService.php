@@ -230,6 +230,11 @@ class DebtImportService
                 'kpp' => null
             ]);
 
+            if (! isset($this->objects[$objectName])) {
+                $this->destroyImport($import);
+                return 'Объекта "' . $objectName . '" нет в списке для загрузки.';
+            }
+
             $object = BObject::where('code', $this->objects[$objectName])->first();
             if (! $object) {
                 $code = str_replace(',', '.', $row[8]);
