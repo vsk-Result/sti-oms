@@ -39,7 +39,11 @@ class ImportController extends Controller
 
     public function store(StoreDebtImportRequest $request): RedirectResponse
     {
-        $this->importService->createImport($request->toArray());
+        $status = $this->importService->createImport($request->toArray());
+        if ($status !== 'ok') {
+            session()->flash('status', $status);
+            return redirect()->back();
+        }
         return redirect()->route('debt_imports.index');
     }
 

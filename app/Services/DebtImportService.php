@@ -90,15 +90,17 @@ class DebtImportService
         $this->organizationService = $organizationService;
     }
 
-    public function createImport(array $requestData): void
+    public function createImport(array $requestData): null|string
     {
         $importData = Excel::toArray(new Import(), $requestData['file']);
 
         if (isset($importData['Для фин отчёта'])) {
-            $this->createSupplyImport($importData, $requestData);
+            return $this->createSupplyImport($importData, $requestData);
         } elseif (isset($importData['ДТТЕРМО'])) {
             $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
         }
+
+        return 'ok';
     }
 
     public function destroyImport(DebtImport $import): DebtImport
@@ -109,7 +111,7 @@ class DebtImportService
         return $import;
     }
 
-    private function createSupplyImport(array $importData, array $requestData): void
+    private function createSupplyImport(array $importData, array $requestData): string
     {
         $import = DebtImport::create([
             'type_id' => DebtImport::TYPE_SUPPLY,
@@ -147,6 +149,11 @@ class DebtImportService
                 'company_id' => null,
                 'kpp' => null
             ]);
+
+            if (! isset($this->objects[$objectName])) {
+                $this->destroyImport($import);
+                return 'Объекта "' . $objectName . '" нет в списке для загрузки.';
+            }
 
             $object = BObject::where('code', $this->objects[$objectName])->first();
             if (! $object) {
@@ -273,6 +280,8 @@ class DebtImportService
                 'invoice_amount' => $row[7] ?? 0
             ]);
         }
+
+        return 'ok';
     }
 
     private function createDTTermoImport(array $importData, array $requestData): void

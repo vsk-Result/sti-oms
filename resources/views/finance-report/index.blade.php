@@ -59,24 +59,40 @@
 @push('styles')
     <style>
         .objects-table td, .objects-table th {
-            border: 1px solid #eee;
+            border: 1px solid #f15a2238;
+        }
+        .table tbody tr:last-child td {
+            border-bottom: 1px solid #f15a2238 !important;
+        }
+        .objects-table th {
+            vertical-align: middle !important;
+            text-align: center !important;
         }
         .bl {
-            border-left: 1px dashed #ccc !important;
+            border-left: 1px dashed #f15a22 !important;
         }
         .br {
-            border-right: 1px dashed #ccc !important;
+            border-right: 1px dashed #f15a22 !important;
         }
 
         .hl, .table tbody tr:last-child td.hl {
             background-color: #f7f7f7 !important;
             font-weight: bold !important;
-            border: 1px dashed #ccc !important;
+            border: 1px dashed #f15a22 !important;
             min-width: 150px !important;
         }
 
         .text-right {
             text-align: right !important;
+        }
+
+        .col-object {
+            color: white !important;
+            background-color: #f15a22 !important;
+        }
+
+        .col-object:not(.bl) {
+            border: 1px solid white !important;
         }
     </style>
 @endpush

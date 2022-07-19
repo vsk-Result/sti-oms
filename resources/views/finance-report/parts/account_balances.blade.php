@@ -3,8 +3,9 @@
 
         <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format(array_sum($balances), 'RUB') }}</div>
 
-        <div class="d-flex align-items-center fs-5 fw-bold text-gray-400 mb-7">
+        <div class="d-flex flex-column fs-5 fw-bold text-gray-400 mb-7">
             <span class="d-flex">Баланс на {{ (clone $date)->subDay(1)->format('d.m.Y') }}</span>
+            <span class="fs-8">(Последняя выписка загружена {{ \App\Models\PaymentImport::orderByDesc('date')->first()->created_at->format('d.m.Y H:i') }})</span>
         </div>
 
         @foreach($balances as $bankName => $balance)

@@ -26,6 +26,17 @@
                         </div>
                     @endif
 
+                    @if (session()->has('status'))
+                        <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-5 mb-10">
+                            <div class="d-flex flex-column pe-0 pe-sm-10">
+                                <h5 class="mb-1">Ошибки при загрузке</h5>
+                                <ul>
+                                    <li>{{ session()->get('status') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+
                     <form class="form" action="{{ route('debt_imports.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row mb-5">

@@ -167,7 +167,7 @@
                 <th class="min-w-200px br ps-2">Сводка</th>
                 <th class="min-w-200px hl">Итого</th>
                 @foreach($objects as $object)
-                    <th class="min-w-150px {{ $loop->first ? 'bl' : '' }}">{{ $object->getName() }}</th>
+                    <th class="min-w-150px col-object {{ $loop->first ? 'bl' : '' }}">{{ $object->getName() }}</th>
                 @endforeach
             </tr>
             </thead>
@@ -175,7 +175,7 @@
                 @foreach($infos as $info => $field)
                     <tr>
                         <td class="br ps-2">{{ $info }}</td>
-                        <td class="fw-bolder hl">
+                        <td class="fw-bolder hl text-right">
                             @if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24')
                                 @continue
                             @endif
@@ -203,7 +203,7 @@
                             @endif
                         </td>
                         @foreach($objects as $object)
-                            <td class="{{ $loop->first ? 'bl' : '' }}">
+                            <td class="text-right {{ $loop->first ? 'bl' : '' }} {{ $loop->last ? 'pe-4' : '' }}">
                                 @if(in_array($field, ['payment_total_balance', 'general_costs_amount', 'general_costs_amount_1', 'general_costs_amount_24']))
                                     @if ($object->code == 288)
                                         @if ($field === 'general_costs_amount')
