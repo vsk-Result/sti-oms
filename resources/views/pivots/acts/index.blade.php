@@ -18,7 +18,11 @@
                         </tr>
                         <tr class="fw-bolder" style="background-color: #f7f7f7;">
                             <th class="ps-4 br hl" style="vertical-align: middle;">Итого</th>
-                            <th class="hl"></th>
+                            <th class="hl text-right">
+                                <span class="{{ ($pivot['total']['acts']['RUB'] + $pivot['total']['avanses']['RUB'] + $pivot['total']['gu']['RUB']) > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format(($pivot['total']['acts']['RUB'] + $pivot['total']['avanses']['RUB'] + $pivot['total']['gu']['RUB']), 'RUB') }}</span>
+                                <br>
+                                <span class="{{ ($pivot['total']['acts']['EUR'] + $pivot['total']['avanses']['EUR'] + $pivot['total']['gu']['EUR']) > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format(($pivot['total']['acts']['EUR'] + $pivot['total']['avanses']['EUR'] + $pivot['total']['gu']['EUR']), 'EUR') }}</span>
+                            </th>
                             <th class="hl text-right">
                                 <span class="{{ $pivot['total']['acts']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts']['RUB'], 'RUB') }}</span>
                                 <br>

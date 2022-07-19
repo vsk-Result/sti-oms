@@ -61,7 +61,9 @@
         ],
     ];
     $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
-    $objects = \App\Models\Object\BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '357', '358', '359'])->get();
+    $objects = \App\Models\Object\BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '358', '359'])
+                ->orderByDesc('code')
+                ->get();
 
     foreach ($objects as $object) {
         $total[$object->code]['payment_total_pay'] = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');

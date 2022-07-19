@@ -58,7 +58,7 @@
 
 @push('styles')
     <style>
-        .objects-table td, .objects-table th {
+        .objects-table td, .objects-table th, .table>:not(:last-child)>:last-child>* {
             border: 1px solid #f15a2238;
         }
         .table tbody tr:last-child td {
@@ -89,10 +89,7 @@
         .col-object {
             color: white !important;
             background-color: #f15a22 !important;
-        }
-
-        .col-object:not(.bl) {
-            border: 1px solid white !important;
+            border-right: 1px solid white !important;
         }
     </style>
 @endpush
