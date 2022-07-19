@@ -202,9 +202,18 @@ class ObjectService
 
         $result = [];
         foreach ($periods as $startDate => $endDate) {
-            $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])->where('type_id', Payment::TYPE_GENERAL)->sum('amount_without_nds');
-            $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_1->id)->sum('amount_without_nds');
-            $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])->where('object_id', $object27_8->id)->sum('amount_without_nds') * 0.7);
+            $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])
+                ->where('type_id', Payment::TYPE_GENERAL)
+                ->where('company_id', 1)
+                ->where('description', 'NOT LIKE', '%nds%')
+                ->where('description', 'NOT LIKE', '%налог на добавленную стоимость%')
+                ->sum('amount_without_nds');
+            $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])
+                ->where('object_id', $object27_1->id)
+                ->sum('amount_without_nds');
+            $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])
+                    ->where('object_id', $object27_8->id)
+                    ->sum('amount_without_nds') * 0.7);
             $generalTotalAmount += $bonus;
 
             $sumCumings = 0;
