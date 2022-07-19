@@ -16,7 +16,7 @@ class GeneralCostsController extends Controller
             '323', '325', '327', '330', '332', '333', '334', '335', '338', '339', '341', '342', '343',
             '344', '346', '349', '350', '352', '353', '358', '359'
         ];
-        $objects = BObject::whereIn('code', $codes)->orderBy('code')->with(['customers', 'payments' => function($q) {
+        $objects = BObject::whereIn('code', $codes)->orderByDesc('code')->with(['customers', 'payments' => function($q) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '>=', 0);
         }])->get();
 
