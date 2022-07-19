@@ -152,7 +152,7 @@ class DebtImportService
 
             if (! isset($this->objects[$objectName])) {
                 $this->destroyImport($import);
-                return 'Объекта "' . $objectName . '" нет в списке для загрузки.';
+                return 'Материалы | Объекта "' . $objectName . '" нет в списке для загрузки.';
             }
 
             $object = BObject::where('code', $this->objects[$objectName])->first();
@@ -232,7 +232,7 @@ class DebtImportService
 
             if (! isset($this->objects[$objectName])) {
                 $this->destroyImport($import);
-                return 'Объекта "' . $objectName . '" нет в списке для загрузки.';
+                return 'Подрядчики | Объекта "' . $objectName . '" нет в списке для загрузки.';
             }
 
             $object = BObject::where('code', $this->objects[$objectName])->first();
