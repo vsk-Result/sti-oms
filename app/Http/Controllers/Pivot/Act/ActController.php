@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Pivot;
+namespace App\Http\Controllers\Pivot\Act;
 
 use App\Http\Controllers\Controller;
 use App\Services\Contract\ActService;
 use Illuminate\View\View;
+use function view;
 
 class ActController extends Controller
 {

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Pivot;
+namespace App\Http\Controllers\Pivot\Debt;
 
 use App\Http\Controllers\Controller;
 use App\Services\DebtService;
 use Illuminate\View\View;
+use function view;
 
 class DebtController extends Controller
 {
