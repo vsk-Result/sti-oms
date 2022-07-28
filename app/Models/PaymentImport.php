@@ -76,8 +76,8 @@ class PaymentImport extends Model
         $payments = $this->payments;
         $this->update([
             'payments_count' => $payments->count(),
-            'amount_pay' => $payments->where('amount', '<', 0)->sum('amount'),
-            'amount_receive' => $payments->where('amount', '>=', 0)->sum('amount'),
+            'amount_pay' => $this->currency === 'RUB' ? $payments->where('amount', '<', 0)->sum('amount') : $payments->where('currency_amount', '<', 0)->sum('currency_amount'),
+            'amount_receive' => $this->currency === 'RUB' ? $payments->where('amount', '>=', 0)->sum('amount') : $payments->where('currency_amount', '>=', 0)->sum('currency_amount'),
             'status_id' => $payments->where('status_id', Status::STATUS_BLOCKED)->count() > 0
                 ? Status::STATUS_BLOCKED
                 : Status::STATUS_ACTIVE,
