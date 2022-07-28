@@ -11,7 +11,7 @@ class CreditService
 {
     public function getCredits(string|Carbon $date, Company $company): array
     {
-        $startCreditDate = Carbon::parse('2022-02-13');
+        $startCreditDate = '2022-02-15';
 
         $credits = [
             [
@@ -19,12 +19,10 @@ class CreditService
                 'bank' => Bank::getBankName(1),
                 'contract' => '№ ВЛ/002020-006438 от 25.12.2020',
                 'amount' => 100000000,
-                'sent' => Payment::where('date', '>=', $startCreditDate)
-                    ->where('date', '<=', $date)
+                'sent' => Payment::whereBetween('date', [$startCreditDate, $date])
                     ->where('description', 'LIKE', 'Погашение основного долга по договору № ВЛ/002020-006438 от 25.12.2020%')
                     ->sum('amount'),
-                'received' => Payment::where('date', '>=', $startCreditDate)
-                    ->where('date', '<=', $date)
+                'received' => Payment::whereBetween('date', [$startCreditDate, $date])
                     ->where('description', 'LIKE', 'Выдача кредита по договору № ВЛ/002020-006438 от 25.12.2020%')
                     ->sum('amount')
             ]
@@ -39,9 +37,9 @@ class CreditService
         $credits = $this->getCredits($date, $company);
 
         foreach ($credits as $credit) {
-            $amount += $credit['amount'] - $credit['amount'] - $credit['received'];
+            $amount += $credit['amount'] - abs($credit['sent']);
         }
 
-        return $amount;
+        return -$amount;
     }
 }

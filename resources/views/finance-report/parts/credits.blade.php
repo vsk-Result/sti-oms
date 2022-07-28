@@ -29,11 +29,11 @@
                     <div class="d-flex">
                         <div class="d-flex flex-column me-8">
                             <span class="text-muted fs-8">Доступно</span>
-                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['amount'] - $credit['received'], 'RUB') }}</span>
+                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format(abs($credit['sent']), 'RUB') }}</span>
                         </div>
                         <div class="d-flex flex-column me-8">
                             <span class="text-muted fs-8">В использовании</span>
-                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format(abs($credit['sent']), 'RUB') }}</span>
+                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['amount'] - abs($credit['sent']), 'RUB') }}</span>
                         </div>
                         <div class="d-flex flex-column">
                             <span class="text-muted fs-8">Всего</span>
