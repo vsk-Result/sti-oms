@@ -28,11 +28,12 @@ class ImportController extends Controller
         $types = PaymentImport::getTypes();
         $banks = Bank::getBanks();
         $statuses = PaymentImport::getStatusesLists();
+        $currencies = ['RUB', 'EUR'];
 
         $importsPaginated = $this->importService->filterImport($request->toArray());
         $importsGroupedByDate = collect($importsPaginated->items())->groupBy('date');
 
-        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate', 'companies', 'types', 'banks', 'statuses'));
+        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate', 'companies', 'types', 'banks', 'statuses', 'currencies'));
     }
 
     public function show(PaymentImport $import): View

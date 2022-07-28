@@ -22,7 +22,8 @@ class Payment extends Model implements Audit
     protected $fillable = [
         'import_id', 'company_id', 'bank_id', 'object_id', 'object_worktype_id', 'organization_sender_id',
         'organization_receiver_id', 'created_by_user_id', 'updated_by_user_id', 'type_id', 'payment_type_id', 'category',
-        'code', 'description', 'date', 'amount', 'amount_without_nds', 'is_need_split', 'status_id', 'parameters'
+        'code', 'description', 'date', 'amount', 'amount_without_nds', 'is_need_split', 'status_id', 'parameters',
+        'currency', 'currency_rate', 'currency_amount'
     ];
 
     protected $casts = [

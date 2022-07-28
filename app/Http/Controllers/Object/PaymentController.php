@@ -34,6 +34,7 @@ class PaymentController extends Controller
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
+        $currencies = ['RUB', 'EUR'];
 
         $totalInfo = [];
         $requestData = array_merge(['object_id' => [$object->id]], $request->toArray());
@@ -55,7 +56,7 @@ class PaymentController extends Controller
             'objects.tabs.payments',
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'activeOrganizations',
-                'categories', 'importTypes', 'banks', 'totalInfo', 'object', 'paymentTypes', 'codes'
+                'categories', 'importTypes', 'banks', 'totalInfo', 'object', 'paymentTypes', 'codes', 'currencies'
             )
         );
     }

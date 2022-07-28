@@ -19,15 +19,20 @@ class PaymentService
 {
     private OrganizationService $organizationService;
     private Sanitizer $sanitizer;
+    private CurrencyExchangeRateService $rateService;
     private array $opsteList;
     private array $radList;
     private array $materialList;
     private string $error = '';
 
-    public function __construct(Sanitizer $sanitizer, OrganizationService $organizationService)
+    public function __construct(
+        Sanitizer $sanitizer, OrganizationService $organizationService,
+        CurrencyExchangeRateService $rateService
+    )
     {
         $this->sanitizer = $sanitizer;
         $this->organizationService = $organizationService;
+        $this->rateService = $rateService;
     }
 
     public function loadCategoriesList(): void
@@ -56,6 +61,10 @@ class PaymentService
 
         if (! empty($requestData['company_id'])) {
             $paymentQuery->whereIn('company_id', $requestData['company_id']);
+        }
+
+        if (! empty($requestData['currency'])) {
+            $paymentQuery->whereIn('currency', $requestData['currency']);
         }
 
         if (! empty($requestData['organization_id'])) {
@@ -195,6 +204,11 @@ class PaymentService
             $requestData = $basePayment->attributesToArray();
         }
 
+        $paymentCurrency = $requestData['currency'] ?? 'RUB';
+        $paymentCurrencyRate = $paymentCurrency !== 'RUB'
+                                ? $this->rateService->getExchangeRate($requestData['date'], $paymentCurrency)->rate
+                                : 1;
+
         $payment = Payment::create([
             'import_id' => $requestData['import_id'] ?? null,
             'company_id' => $requestData['company_id'],
@@ -209,11 +223,14 @@ class PaymentService
             'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->upperCaseFirstWord()->get(),
             'date' => $requestData['date'],
-            'amount' => $requestData['amount'],
+            'amount' => $paymentCurrencyRate * $requestData['amount'],
             'parameters' => $requestData['parameters'] ?? [],
-            'amount_without_nds' => $requestData['amount_without_nds'],
+            'amount_without_nds' => $paymentCurrency === 'RUB' ? $requestData['amount_without_nds'] : ($paymentCurrencyRate * $requestData['amount']),
             'is_need_split' => $requestData['is_need_split'] ?? false,
-            'status_id' => $requestData['status_id'] ?? Status::STATUS_ACTIVE
+            'status_id' => $requestData['status_id'] ?? Status::STATUS_ACTIVE,
+            'currency' => $paymentCurrency,
+            'currency_rate' => $paymentCurrencyRate,
+            'currency_amount' => $requestData['amount'],
         ]);
 
         return $payment;
@@ -527,6 +544,26 @@ class PaymentService
                 $parameters = $payment->parameters ?? [];
                 $parameters[$key] = $value;
                 $requestData['parameters'] = $parameters;
+            }
+        }
+
+        if ($payment) {
+            $paymentCurrency = $requestData['currency'] ?? $payment->currency;
+            $paymentCurrencyRate = $paymentCurrency !== 'RUB'
+                ? $this->rateService->getExchangeRate($requestData['date'] ?? $payment->date, $paymentCurrency)->rate
+                : 1;
+
+            $requestData['currency'] = $paymentCurrency;
+            $requestData['currency_rate'] = $paymentCurrencyRate;
+
+            if ($paymentCurrency === 'RUB') {
+                $requestData['amount'] = $requestData['amount'] ?? $payment->amount;
+                $requestData['amount_without_nds'] = $requestData['amount_without_nds'] ?? $payment->amount_without_nds;
+                $requestData['currency_amount'] = $requestData['amount'] ?? $payment->amount;
+            } else {
+                $requestData['currency_amount'] = $requestData['amount'] ?? $payment->amount;
+                $requestData['amount'] = ($requestData['amount'] ?? $payment->amount) * $paymentCurrencyRate;
+                $requestData['amount_without_nds'] = $requestData['amount'];
             }
         }
     }

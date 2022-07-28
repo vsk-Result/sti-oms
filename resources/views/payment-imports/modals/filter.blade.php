@@ -34,6 +34,22 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Валюта</label>
+                                <select
+                                    name="currency[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentImportModal"
+
+                                    multiple
+                                >
+                                    @foreach($currencies as $currency)
+                                        <option value="{{ $currency }}" {{ in_array($currency, request()->input('currency', [])) ? 'selected' : '' }}>{{ $currency }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
                         <div class="col-md-4">

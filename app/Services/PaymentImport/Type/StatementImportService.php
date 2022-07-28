@@ -47,6 +47,11 @@ class StatementImportService
             return null;
         }
 
+        $importCurrency = $requestData['currency'] ?? 'RUB';
+        $importCurrencyRate = $importCurrency !== 'RUB'
+            ? $this->rateService->getExchangeRate($requestData['date'], $importCurrency)->rate
+            : 1;
+
         $import = PaymentImport::create([
             'type_id' => PaymentImport::TYPE_STATEMENT,
             'bank_id' => $requestData['bank_id'],
@@ -54,7 +59,9 @@ class StatementImportService
             'date' => $requestData['date'],
             'status_id' => Status::STATUS_BLOCKED,
             'file' => $this->uploadService->uploadFile('payment-imports/statements', $requestData['file']),
-            'description' => ''
+            'description' => '',
+            'currency' => $importCurrency,
+            'currency_rate' => $importCurrencyRate,
         ]);
 
         $companyOrganization = $this->organizationService->getOrCreateOrganization([
@@ -159,7 +166,8 @@ class StatementImportService
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
                 'is_need_split' => $isNeedSplit,
-                'status_id' => Status::STATUS_BLOCKED
+                'status_id' => Status::STATUS_BLOCKED,
+                'currency' => $importCurrency,
             ]);
 
             $isCode = false;

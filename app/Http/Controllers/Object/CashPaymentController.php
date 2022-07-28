@@ -71,6 +71,7 @@ class CashPaymentController extends Controller
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
+        $currencies = ['RUB', 'EUR'];
 
         $activeOrganizations = [];
         if (! empty($request->get('organization_id'))) {
@@ -107,7 +108,8 @@ class CashPaymentController extends Controller
             'objects.tabs.cash',
             compact(
                 'object', 'years', 'months', 'companies', 'objects',
-                'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations', 'pType', 'codes'
+                'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations', 'pType',
+                'codes', 'currencies'
             )
         );
     }

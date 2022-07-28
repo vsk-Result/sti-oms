@@ -19,6 +19,13 @@
         $EURExchangeRate = $currencyExchangeService->getExchangeRate($import->date, 'EUR');
     @endphp
 
+    <div class="row mb-7">
+        <label class="col-lg-2 fw-bold text-muted">Валюта</label>
+        <div class="col-lg-10 fv-row">
+            <div class="fw-bold text-gray-800 fs-6">{{ $import->currency }}</div>
+        </div>
+    </div>
+
     @if ($USDExchangeRate && $EURExchangeRate)
         <div class="row mb-7">
             <label class="col-lg-2 fw-bold text-muted">Курс валют</label>

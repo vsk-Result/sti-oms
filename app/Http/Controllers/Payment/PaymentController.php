@@ -36,6 +36,7 @@ class PaymentController extends Controller
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
+        $currencies = ['RUB', 'EUR'];
 
         $totalInfo = [];
         $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
@@ -49,7 +50,7 @@ class PaymentController extends Controller
             'payments.index',
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'categories',
-                'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes', 'codes'
+                'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes', 'codes', 'currencies'
             )
         );
     }
@@ -62,6 +63,7 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
+        $currencies = ['RUB', 'EUR'];
 
         if ($request->ajax()) {
 
@@ -72,11 +74,11 @@ class PaymentController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'payment_form' => view('payments.parts._payment_form', compact('copyPayment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'))->render()
+                'payment_form' => view('payments.parts._payment_form', compact('copyPayment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'))->render()
             ]);
         }
 
-        return view('payments.create', compact('categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'));
+        return view('payments.create', compact('categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'));
     }
 
     public function store(Request $request): JsonResponse|RedirectResponse
@@ -121,15 +123,16 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
+        $currencies = ['RUB', 'EUR'];
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => 'success',
-                'payment_form' => view('payments.parts._edit_payment_form', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'))->render()
+                'payment_form' => view('payments.parts._edit_payment_form', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'))->render()
             ]);
         }
 
-        return view('payments.edit', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes'));
+        return view('payments.edit', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'));
     }
 
     public function update(Payment $payment, Request $request): JsonResponse|RedirectResponse

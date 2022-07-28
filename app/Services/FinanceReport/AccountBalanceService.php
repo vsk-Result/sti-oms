@@ -13,21 +13,34 @@ class AccountBalanceService
     {
         $banks = Bank::getBanks();
         $exceptBanks = [5]; // Росбанк для СТИ не нужно показывать
+        $currencies = ['RUB', 'EUR'];
 
-        $balances = [];
+        $balances = [
+            'total' => [],
+            'banks' => [],
+        ];
+
+        foreach ($currencies as $currency) {
+            $balances['total'][$currency] = 0;
+        }
+
         foreach ($banks as $bankId => $bankName) {
 
             if (in_array($bankId, $exceptBanks)) {
                 continue;
             }
 
-            $balance = PaymentImport::where('company_id', $company->id)
-                ->where('date', '<=', $date)
-                ->where('bank_id', $bankId)
-                ->orderBy('date', 'desc')
-                ->first();
+            foreach ($currencies as $currency) {
+                $balance = PaymentImport::where('company_id', $company->id)
+                    ->where('date', '<=', $date)
+                    ->where('bank_id', $bankId)
+                    ->where('currency', $currency)
+                    ->orderBy('date', 'desc')
+                    ->first();
 
-            $balances[$bankName] = $balance->outgoing_balance ?? 0;
+                $balances['banks'][$bankName][$currency] = $balance->outgoing_balance ?? 0;
+                $balances['total'][$currency] += $balances['banks'][$bankName][$currency];
+            }
         }
 
         return $balances;

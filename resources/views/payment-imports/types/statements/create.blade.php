@@ -50,11 +50,19 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 fv-row">
+                                <div class="col-md-3 fv-row">
                                     <label class="required fs-5 fw-bold mb-2">Банк</label>
                                     <select name="bank_id" class="form-select form-select-solid" data-control="select2">
                                         @foreach($banks as $bankId => $bankName)
                                             <option value="{{ $bankId }}">{{ $bankName }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3 fv-row">
+                                    <label class="required fs-5 fw-bold mb-2">Валюта</label>
+                                    <select name="currency" class="form-select form-select-solid" data-control="select2">
+                                        @foreach($currencies as $currency)
+                                            <option value="{{ $currency }}">{{ $currency }}</option>
                                         @endforeach
                                     </select>
                                 </div>

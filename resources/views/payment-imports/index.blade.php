@@ -116,6 +116,9 @@
                                         </td>
                                         <td class="text-dark fw-bolder">
                                             {{ $import->getType() }}
+                                            @if (! empty($import->currency) && $import->currency !== 'RUB')
+                                                <span class="text-muted fs-8">({{ $import->currency }})</span>
+                                            @endif
                                             @if (! empty($import->description))
                                                 <button type="button" class="btn btn-sm btn-icon h-20px" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="right" title="{{ $import->description }}">
                                                     <i class="las la-info-circle fs-3 me-2"></i>

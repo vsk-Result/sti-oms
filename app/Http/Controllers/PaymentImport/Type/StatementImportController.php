@@ -23,7 +23,8 @@ class StatementImportController extends Controller
     {
         $banks = Bank::getBanks();
         $companies = Company::all();
-        return view('payment-imports.types.statements.create', compact('banks', 'companies'));
+        $currencies = ['RUB', 'EUR'];
+        return view('payment-imports.types.statements.create', compact('banks', 'companies', 'currencies'));
     }
 
     public function store(StoreStatementRequest $request): RedirectResponse

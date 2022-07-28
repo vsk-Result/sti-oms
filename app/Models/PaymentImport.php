@@ -19,7 +19,8 @@ class PaymentImport extends Model
 
     protected $fillable = [
         'type_id', 'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id', 'date', 'payments_count',
-        'amount_pay', 'amount_receive', 'incoming_balance', 'outgoing_balance', 'file', 'description', 'status_id'
+        'amount_pay', 'amount_receive', 'incoming_balance', 'outgoing_balance', 'file', 'description', 'status_id',
+        'currency', 'currency_rate'
     ];
 
     const TYPE_STATEMENT = 0;

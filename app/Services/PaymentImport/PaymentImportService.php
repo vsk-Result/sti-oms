@@ -32,6 +32,10 @@ class PaymentImportService
             $query->whereIn('company_id', $requestData['company_id']);
         }
 
+        if (! empty($requestData['currency'])) {
+            $query->whereIn('currency', $requestData['currency']);
+        }
+
         if (! empty($requestData['bank_id'])) {
             $query->whereIn('bank_id', $requestData['bank_id']);
         }

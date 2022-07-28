@@ -144,7 +144,13 @@
                         <td>{{ $payment->description }}</td>
                         <td>
                             <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ $payment->getAmount() }}</span>
-                            <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
+                            @if ($payment->currency !== 'RUB')
+                                <span class="text-muted fw-bold text-muted d-block fs-7" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="left" title="Курс: {{ $payment->currency_rate }}">
+                                    ({{ \App\Models\CurrencyExchangeRate::format($payment->currency_amount, $payment->currency) }})
+                                </span>
+                            @else
+                                <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
+                            @endif
                         </td>
                         <td>{{ $payment->category }}</td>
                         @if (! auth()->user()->hasRole('object-leader'))
