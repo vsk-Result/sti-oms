@@ -52,6 +52,7 @@ class ObjectController extends Controller
             $object->total_pay = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');
             $object->total_receive = (clone $paymentQuery)->where('object_id', $object->id)->sum('amount') - $object->total_pay;
             $object->total_balance = $object->total_pay + $object->total_receive;
+            $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount');
         }
 
         return response()->json([

@@ -149,7 +149,7 @@
         'Долг гарантийного удержания' => 'contract_avanses_acts_deposites_amount',
         'Долг подрядчикам' => 'contractor',
         'Долг за материалы' => 'provider',
-      //  'Долг на зарплаты ИТР' => 'salary_itr',
+        'Долг на зарплаты ИТР' => 'salary_itr',
     ];
 @endphp
 

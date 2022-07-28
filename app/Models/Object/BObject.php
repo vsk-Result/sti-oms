@@ -5,6 +5,7 @@ namespace App\Models\Object;
 use App\Models\BankGuarantee;
 use App\Models\Contract\Act;
 use App\Models\Contract\Contract;
+use App\Models\CRM\ItrSalary;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Organization;
@@ -252,5 +253,16 @@ class  BObject extends Model implements Audit
             ->whereIn('organization_sender_id', $this->customers->pluck('id')->toArray())
             ->whereBetween('date', [$startDate, $endDate])
             ->sum('amount');
+    }
+
+    public function getITRSalaryDebt(): float
+    {
+        $ITRSalaryObject = ItrSalary::where('kod', 'LIKE', '%' . $this->code. '%')->get();
+        return $ITRSalaryObject->sum('paid') - $ITRSalaryObject->sum('total');
+    }
+
+    public function getWorkSalaryDebt(): float
+    {
+        return 0;
     }
 }

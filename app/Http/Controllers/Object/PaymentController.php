@@ -51,6 +51,7 @@ class PaymentController extends Controller
         $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
         $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
         $object->total_balance = $object->total_pay + $object->total_receive;
+        $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount');
 
         return view(
             'objects.tabs.payments',
