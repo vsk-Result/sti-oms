@@ -300,11 +300,11 @@
                 @php
                     $contractorDebtsAmount = $object->getContractorDebtsAmount();
                     $providerDebtsAmount = $object->getProviderDebtsAmount();
-                    $ITRSalaryDebt = $object->getITRSalaryDebt();
-                    $workSalaryDebt = $object->getWorkSalaryDebt();
-                    $customerDebtInfo = [];
-                    $contractService->filterContracts(['object_id' => [$object->id]], $customerDebtInfo);
-                    $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
+                    //$ITRSalaryDebt = $object->getITRSalaryDebt();
+                    //$workSalaryDebt = $object->getWorkSalaryDebt();
+                   // $customerDebtInfo = [];
+                    //$contractService->filterContracts(['object_id' => [$object->id]], $customerDebtInfo);
+                   // $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
                 @endphp
 
                 <div class="pivot-box border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 position-relative">
