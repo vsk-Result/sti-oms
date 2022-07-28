@@ -77,7 +77,7 @@
                                         <td>{{ $payment->description }}</td>
                                         <td>
                                             <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">
-                                                {{ \App\Models\CurrencyExchangeRate::format($payment->amount, $payment->currency) }}
+                                                {{ \App\Models\CurrencyExchangeRate::format($payment->amount, 'RUB') }}
                                             </span>
 
                                             @if ($payment->currency === 'RUB')
