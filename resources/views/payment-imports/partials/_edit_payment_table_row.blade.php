@@ -19,7 +19,14 @@
         @php
             $textClass = $payment->amount >= 0 ? 'text-success' : 'text-danger';
         @endphp
-        <input name="amount" type="text" class="form-control form-control-sm form-control-solid {{ $textClass }} db-field" value="{{ number_format($payment->amount, 2, '.', '') }}" autocomplete="off" data-index="2" />
+        <input
+            name="amount"
+            type="text"
+            class="form-control form-control-sm form-control-solid {{ $textClass }} db-field"
+            value="{{ number_format($payment->currency === 'RUB' ? $payment->amount : $payment->currency_amount, 2, '.', '') }}"
+            autocomplete="off"
+            data-index="2"
+        />
     </td>
     <td>
         <select

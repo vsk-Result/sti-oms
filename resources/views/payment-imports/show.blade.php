@@ -76,8 +76,19 @@
                                         </td>
                                         <td>{{ $payment->description }}</td>
                                         <td>
-                                            <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ $payment->getAmount() }}</span>
-                                            <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
+                                            <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">
+                                                {{ \App\Models\CurrencyExchangeRate::format($payment->amount, $payment->currency) }}
+                                            </span>
+
+                                            @if ($payment->currency === 'RUB')
+                                                <span class="text-muted fw-bold text-muted d-block fs-7">
+                                                    {{ \App\Models\CurrencyExchangeRate::format($payment->amount_without_nds, $payment->currency) }} без НДС
+                                                </span>
+                                            @else
+                                                <span class="text-muted fw-bold text-muted d-block fs-7">
+                                                    ({{ \App\Models\CurrencyExchangeRate::format($payment->currency_amount, $payment->currency) }})
+                                                </span>
+                                            @endif
                                         </td>
                                         <td>{{ $payment->category }}</td>
                                     </tr>
