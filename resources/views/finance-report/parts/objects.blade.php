@@ -59,6 +59,14 @@
             'RUB' => 0,
             'EUR' => 0,
         ],
+        'salary_work' => [
+            'RUB' => 0,
+            'EUR' => 0,
+        ],
+        'interim_balance' => [
+            'RUB' => 0,
+            'EUR' => 0,
+        ],
     ];
     $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
     $objects = \App\Models\Object\BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '358', '359'])
@@ -129,16 +137,39 @@
         $total[$object->code]['provider']['RUB'] = $object->getProviderDebtsAmount();
 
         $ITRSalaryObject = \App\Models\CRM\ItrSalary::where('kod', 'LIKE', '%' . $object->code. '%')->get();
+        $workSalaryObjectAmount = \App\Models\CRM\SalaryDebt::where('object_code', 'LIKE', '%' . $object->code. '%')->sum('amount');
 
         $total[$object->code]['salary_itr']['RUB'] = $ITRSalaryObject->sum('paid') - $ITRSalaryObject->sum('total');
+        $total[$object->code]['salary_work']['RUB'] = $workSalaryObjectAmount;
+
+        $total[$object->code]['interim_balance']['RUB'] =
+            $total[$object->code]['payment_total_balance'] +
+            $total[$object->code]['general_costs_amount'] +
+            $total[$object->code]['contract_avanses_left_amount']['RUB'] +
+            $total[$object->code]['contract_avanses_acts_left_paid_amount']['RUB'] +
+            $total[$object->code]['contract_avanses_acts_deposites_amount']['RUB'] +
+            $total[$object->code]['contractor']['RUB'] +
+            $total[$object->code]['provider']['RUB'] +
+            $total[$object->code]['salary_itr']['RUB'] +
+            $total[$object->code]['salary_work']['RUB'];
+
+        $total[$object->code]['interim_balance']['EUR'] =
+            $total[$object->code]['contract_avanses_left_amount']['EUR'] +
+            $total[$object->code]['contract_avanses_acts_left_paid_amount']['EUR'] +
+            $total[$object->code]['contract_avanses_acts_deposites_amount']['EUR'];
+
         $summary['contractor']['RUB'] += $total[$object->code]['contractor']['RUB'];
         $summary['provider']['RUB'] += $total[$object->code]['provider']['RUB'];
         $summary['salary_itr']['RUB'] += $total[$object->code]['salary_itr']['RUB'];
+        $summary['salary_work']['RUB'] += $total[$object->code]['salary_work']['RUB'];
+        $summary['interim_balance']['RUB'] += $total[$object->code]['interim_balance']['RUB'];
+        $summary['interim_balance']['EUR'] += $total[$object->code]['interim_balance']['EUR'];
     }
 
     $infos = [
-        'Текущий баланс' => 'payment_total_balance',
+        'Текущее сальдо' => 'payment_total_balance',
         'Общие затраты' => 'general_costs_amount',
+        'Промежуточный баланс с текущими долгами и общими расходами компании' => 'interim_balance',
         'Общая сумма договоров' => 'contract_total_amount',
         'Остаток денег к получ. с учётом ГУ' => 'contract_avanses_non_closes_amount',
         'Сумма аванса к получению' => 'contract_avanses_left_amount',
@@ -150,6 +181,7 @@
         'Долг подрядчикам' => 'contractor',
         'Долг за материалы' => 'provider',
         'Долг на зарплаты ИТР' => 'salary_itr',
+        'Долг на зарплаты рабочим' => 'salary_work',
     ];
 @endphp
 
@@ -190,7 +222,7 @@
                                 <span class="text-danger">
                                     {{ \App\Models\CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB', 0, true) }}
                                 </span>
-                            @elseif($field === 'salary_itr')
+                            @elseif($field === 'salary_itr' || $field === 'salary_work')
                                 <span class="{{ $summary[$field]['RUB'] < 0 ? 'text-danger' : 'text-success' }}">
                                     {{ \App\Models\CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB', 0, true) }}
                                 </span>
@@ -238,7 +270,7 @@
                                     <span class="text-danger">
                                         {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field]['RUB'], 'RUB', 0, true) }}
                                     </span>
-                                @elseif($field === 'salary_itr')
+                                @elseif($field === 'salary_itr' || $field === 'salary_work')
                                     <span class="{{ $total[$object->code][$field]['RUB'] < 0 ? 'text-danger' : 'text-success' }}">
                                         {{ \App\Models\CurrencyExchangeRate::format($total[$object->code][$field]['RUB'], 'RUB', 0, true) }}
                                     </span>

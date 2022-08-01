@@ -22,10 +22,10 @@
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/cash-payments') ? 'active' : '' }}" href="{{ route('objects.cash_payments.index', $object) }}">Касса</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/contracts') ? 'active' : '' }}" href="{{ route('objects.contracts.index', $object) }}">Договора</a>
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/contracts') ? 'active' : '' }}" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">Договора</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/acts') ? 'active' : '' }}" href="{{ route('objects.acts.index', $object) }}">Акты</a>
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/acts') ? 'active' : '' }}" href="{{ route('objects.acts.index', $object) }}?object_id%5B%5D={{ $object->id }}">Акты</a>
                             </li>
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>--}}

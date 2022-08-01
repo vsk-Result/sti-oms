@@ -37,6 +37,11 @@ class ContractController extends Controller
         $object->total_balance = $object->total_pay + $object->total_receive;
         $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount');
 
+        if ($object->code === '288') {
+            $object->general_balance_1 = $object->generalCosts()->where('is_pinned', false)->sum('amount');
+            $object->general_balance_24 = $object->generalCosts()->where('is_pinned', true)->sum('amount');
+        }
+
         return view('objects.tabs.contracts', compact('object', 'contracts', 'objects', 'total', 'actsPaymentsLineChartInfo'));
     }
 }

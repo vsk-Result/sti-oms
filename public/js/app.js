@@ -445,7 +445,7 @@ KTUtil.onDOMContentLoaded(function () {
 
 $(document).on('click', '.btn-copy', function() {
     copyToClipboard(this);
-    toastr.success('Баланс успешно скопирован.');
+    toastr.success('Значение успешно скопировано.');
 });
 
 function copyToClipboard(element) {

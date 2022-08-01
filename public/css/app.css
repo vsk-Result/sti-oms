@@ -315,8 +315,8 @@ td > a.show-link:hover {
     width: 22px !important;
     height: 22px !important;
     position: absolute !important;
-    top: -8px !important;
-    right: -8px !important;
+    top: -2px !important;
+    right: -12px !important;
     display: none !important;
 }
 

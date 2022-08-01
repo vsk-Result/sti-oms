@@ -6,6 +6,7 @@ use App\Models\BankGuarantee;
 use App\Models\Contract\Act;
 use App\Models\Contract\Contract;
 use App\Models\CRM\ItrSalary;
+use App\Models\CRM\SalaryDebt;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Organization;
@@ -263,6 +264,6 @@ class  BObject extends Model implements Audit
 
     public function getWorkSalaryDebt(): float
     {
-        return 0;
+        return SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')->sum('amount');
     }
 }
