@@ -32,6 +32,7 @@
                         <th class="min-w-125px">Роль</th>
                         <th class="min-w-125px">Email проверка</th>
                         <th class="min-w-125px">Зарегистрирован</th>
+                        <th class="min-w-125px">Последний вход</th>
                         <th class="min-w-125px">Статус</th>
                         <th class="text-end min-w-100px">Действия</th>
                     </tr>
@@ -66,6 +67,9 @@
                                     @endif
                                 </td>
                                 <td>{{ $user->created_at->format('d.m.Y H:i:s') }}</td>
+                                <td>
+                                    {{ $user->lastSuccessfulLoginAt()?->diffForHumans() ?? '' }}
+                                </td>
                                 <td>
                                     @include('partials.status', ['status' => $user->getStatus()])
                                 </td>

@@ -67,6 +67,10 @@
             'RUB' => 0,
             'EUR' => 0,
         ],
+        'interim_balance_non_closes' => [
+            'RUB' => 0,
+            'EUR' => 0,
+        ],
     ];
     $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
     $objects = \App\Models\Object\BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '358', '359'])
@@ -158,12 +162,24 @@
             $total[$object->code]['contract_avanses_acts_left_paid_amount']['EUR'] +
             $total[$object->code]['contract_avanses_acts_deposites_amount']['EUR'];
 
+        $total[$object->code]['interim_balance_non_closes']['RUB'] =
+            $total[$object->code]['interim_balance']['RUB'] +
+            $total[$object->code]['contract_avanses_non_closes_amount']['RUB'] -
+            $total[$object->code]['contract_avanses_left_amount']['RUB'];
+
+        $total[$object->code]['interim_balance_non_closes']['EUR'] =
+            $total[$object->code]['interim_balance']['EUR'] +
+            $total[$object->code]['contract_avanses_non_closes_amount']['EUR'] -
+            $total[$object->code]['contract_avanses_left_amount']['EUR'];
+
         $summary['contractor']['RUB'] += $total[$object->code]['contractor']['RUB'];
         $summary['provider']['RUB'] += $total[$object->code]['provider']['RUB'];
         $summary['salary_itr']['RUB'] += $total[$object->code]['salary_itr']['RUB'];
         $summary['salary_work']['RUB'] += $total[$object->code]['salary_work']['RUB'];
         $summary['interim_balance']['RUB'] += $total[$object->code]['interim_balance']['RUB'];
         $summary['interim_balance']['EUR'] += $total[$object->code]['interim_balance']['EUR'];
+        $summary['interim_balance_non_closes']['RUB'] += $total[$object->code]['interim_balance_non_closes']['RUB'];
+        $summary['interim_balance_non_closes']['EUR'] += $total[$object->code]['interim_balance_non_closes']['EUR'];
     }
 
     $infos = [
@@ -172,6 +188,7 @@
         'Промежуточный баланс с текущими долгами и общими расходами компании' => 'interim_balance',
         'Общая сумма договоров' => 'contract_total_amount',
         'Остаток денег к получ. с учётом ГУ' => 'contract_avanses_non_closes_amount',
+        'PROM BALANS +  NE ZAKRITI DOGOVOR' => 'interim_balance_non_closes',
         'Сумма аванса к получению' => 'contract_avanses_left_amount',
         'Долг подписанных актов' => 'contract_avanses_acts_left_paid_amount',
         'Всего оплачено авансов' => 'contract_avanses_received_amount',

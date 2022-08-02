@@ -61,6 +61,44 @@
                     @endcan
                 </div>
             </div>
+
+            <div class="card mb-5 mb-xl-10">
+                <div class="card-header border-0">
+                    <div class="card-title m-0">
+                        <h3 class="fw-bolder m-0">Последние 10 сеансов входа в систему</h3>
+                    </div>
+                </div>
+                <div>
+                    <div class="card-body border-top p-9">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-row-dashed fs-6 gy-5">
+                                <thead class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <tr class="text-start text-muted text-uppercase gs-0">
+                                        <th>IP адрес</th>
+                                        <th>Успешный вход</th>
+                                        <th>Время входа</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-600">
+                                    @foreach($user->authentications->take(10) as $auth)
+                                        <tr>
+                                            <td>{{ $auth->ip_address }}</td>
+                                            <td>{{ $auth->login_successful ? 'Да' : 'Нет' }}</td>
+                                            <td>
+                                                @if ($auth->login_at)
+                                                    {{ $auth->login_at->diffForHumans() }}
+                                                    <br>
+                                                    <span class="fs-7 text-muted">({{ $auth->login_at->format('d.m.Y H:i') }})</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
