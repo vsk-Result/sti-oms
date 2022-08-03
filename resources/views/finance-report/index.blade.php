@@ -17,6 +17,8 @@
                             name="date"
                             value="{{ $date->format('Y-m-d') }}"
                         />
+
+
                     </div>
                 </div>
             </div>

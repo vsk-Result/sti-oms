@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Finance;
+namespace App\Http\Controllers\Finance\FinanceReport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
@@ -11,6 +11,9 @@ use App\Services\FinanceReport\LoanService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use function abort;
+use function now;
+use function view;
 
 class FinanceReportController extends Controller
 {
