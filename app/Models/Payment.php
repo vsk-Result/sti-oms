@@ -140,7 +140,7 @@ class Payment extends Model implements Audit
                     : $this->object->code . '.' . $this->object_worktype_id;
             }
 
-            return $this->object?->code;
+            return $this->object->code ?? '';
         }
 
         switch ($this->type_id) {
