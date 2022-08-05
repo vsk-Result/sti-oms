@@ -34,40 +34,31 @@ class PivotSheet implements
     {
         $dateLastStatement = PaymentImport::orderByDesc('date')->first()->created_at->format('d.m.Y H:i');
         $sheet->setCellValue('A1', "Остатки на счетах" . "\n" . "(Последняя выписка загружена " . $dateLastStatement . ")");
-
         $row = 2;
-        foreach($this->info['balances'] as $bankName => $balance) {
+
+        // Остатки на счетах
+
+        foreach($this->info['balances']['banks'] as $bankName => $balance) {
             if ($bankName === 'ПАО "Росбанк"') {
                 continue;
             }
 
-
             $sheet->setCellValue('A' . $row, $bankName);
 
-//            if ($bankName === 'ПАО "МКБ"') {
-//                $balance = 11000;
-//                $sheet->setCellValue('B' . $row, $balance);
-//                $row++;
-//            } else {
-//                $sheet->setCellValue('B' . $row, $balance['RUB']);
-//                if ($balance['EUR'] !== 0) {
-//                    $row++;
-//                    $sheet->setCellValue('A' . $row, $bankName);
-//                    $sheet->setCellValue('B' . $row, $balance['EUR']);
-//                }
-//            }
-//                    @else
-//                        {{ \App\Models\CurrencyExchangeRate::format($balance['RUB'], 'RUB') }}
-//                        @if ($balance['EUR'] !== 0)
-//                            <br>
-//                            {{ \App\Models\CurrencyExchangeRate::format($balance['EUR'], 'EUR') }}
-//                        @endif
-//                    @endif
-//
-//            $sheet->setCellValue('A' . $row, $bankName);
-//            $sheet->setCellValue('B' . $row, 'Объект');
-//
-//            $row++;
+            if ($bankName === 'ПАО "МКБ"') {
+                $balance = 11000;
+                $sheet->setCellValue('B' . $row, $balance);
+                $row++;
+            } else {
+                $sheet->setCellValue('B' . $row, $balance['RUB']);
+                if ($balance['EUR'] !== 0) {
+                    $row++;
+                    $sheet->setCellValue('A' . $row, $bankName . ' (EUR)');
+                    $sheet->setCellValue('B' . $row, $balance['EUR']);
+                }
+            }
+
+            $row++;
         }
 
 //        $sheet->setCellValue('A1', 'Объект');
