@@ -60,7 +60,10 @@ class ExportController extends Controller
                         'credits' => $credits,
                         'totalAmount' => $totalCreditAmount
                     ],
-                    'loans' => $loans,
+                    'loans' => [
+                        'loans' => $loans,
+                        'totalAmount' => array_sum($loans)
+                     ],
                     'deposites' => [
                         'deposites' => $deposites,
                         'totalAmount' => $depositesAmount

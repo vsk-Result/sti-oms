@@ -13,7 +13,7 @@
                         <input
                             readonly
                             type="text"
-                            class="form-control form-control-solid date-range-picker-single"
+                            class="form-control form-control-solid date-range-picker-single mb-3"
                             name="date"
                             value="{{ $date->format('Y-m-d') }}"
                         />
