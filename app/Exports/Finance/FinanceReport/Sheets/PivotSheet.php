@@ -2,6 +2,7 @@
 
 namespace App\Exports\Finance\FinanceReport\Sheets;
 
+use App\Models\PaymentImport;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -18,10 +19,10 @@ class PivotSheet implements
 
     private array $info;
 
-    public function __construct(string $sheetName, array $pivot)
+    public function __construct(string $sheetName, array $info)
     {
         $this->sheetName = $sheetName;
-        $this->pivot = $pivot;
+        $this->info = $info;
     }
 
     public function title(): string
@@ -31,6 +32,44 @@ class PivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
+        $dateLastStatement = PaymentImport::orderByDesc('date')->first()->created_at->format('d.m.Y H:i');
+        $sheet->setCellValue('A1', "Остатки на счетах" . "\n" . "(Последняя выписка загружена " . $dateLastStatement . ")");
+
+        $row = 2;
+        foreach($this->info['balances'] as $bankName => $balance) {
+            if ($bankName === 'ПАО "Росбанк"') {
+                continue;
+            }
+
+
+            $sheet->setCellValue('A' . $row, $bankName);
+
+//            if ($bankName === 'ПАО "МКБ"') {
+//                $balance = 11000;
+//                $sheet->setCellValue('B' . $row, $balance);
+//                $row++;
+//            } else {
+//                $sheet->setCellValue('B' . $row, $balance['RUB']);
+//                if ($balance['EUR'] !== 0) {
+//                    $row++;
+//                    $sheet->setCellValue('A' . $row, $bankName);
+//                    $sheet->setCellValue('B' . $row, $balance['EUR']);
+//                }
+//            }
+//                    @else
+//                        {{ \App\Models\CurrencyExchangeRate::format($balance['RUB'], 'RUB') }}
+//                        @if ($balance['EUR'] !== 0)
+//                            <br>
+//                            {{ \App\Models\CurrencyExchangeRate::format($balance['EUR'], 'EUR') }}
+//                        @endif
+//                    @endif
+//
+//            $sheet->setCellValue('A' . $row, $bankName);
+//            $sheet->setCellValue('B' . $row, 'Объект');
+//
+//            $row++;
+        }
+
 //        $sheet->setCellValue('A1', 'Объект');
 //        $sheet->setCellValue('B1', 'Итого');
 //        $sheet->setCellValue('C1', 'Сумма неоплаченных работ по актам');
