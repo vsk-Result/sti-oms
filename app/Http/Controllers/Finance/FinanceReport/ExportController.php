@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance\FinanceReport;
 use App\Exports\Finance\FinanceReport\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Services\Contract\ContractService;
 use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
 use App\Services\FinanceReport\DepositService;
@@ -19,17 +20,20 @@ class ExportController extends Controller
     private CreditService $creditService;
     private LoanService $loanService;
     private DepositService $depositeService;
+    private ContractService $contractService;
 
     public function __construct(
         AccountBalanceService $accountBalanceService,
         CreditService $creditService,
         LoanService $loanService,
-        DepositService $depositeService
+        DepositService $depositeService,
+        ContractService $contractService
     ) {
         $this->accountBalanceService = $accountBalanceService;
         $this->creditService = $creditService;
         $this->loanService = $loanService;
         $this->depositeService = $depositeService;
+        $this->contractService = $contractService;
     }
 
     public function store(): BinaryFileResponse
@@ -68,7 +72,8 @@ class ExportController extends Controller
                         'deposites' => $deposites,
                         'totalAmount' => $depositesAmount
                     ],
-                ]
+                ],
+                $this->contractService
             ),
             'Финансовый отчет.xlsx'
         );
