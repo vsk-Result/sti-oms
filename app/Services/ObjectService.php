@@ -150,7 +150,7 @@ class ObjectService
 
         $objects = BObject::with(['customers', 'payments' => function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
-                ->where('amount_without_nds', '>=', 0)
+                ->where('amount', '>=', 0)
                 ->whereBetween('date', [$startDate, $endDate]);
         }])->get();
 
@@ -160,7 +160,7 @@ class ObjectService
             if (
                 $object->payments
                     ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                    ->sum('amount_without_nds')
+                    ->sum('amount')
                 > 0
             ) {
                 if (! empty($object->closing_date)) {
@@ -205,15 +205,13 @@ class ObjectService
             $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])
                 ->where('type_id', Payment::TYPE_GENERAL)
                 ->where('company_id', 1)
-                ->where('description', 'NOT LIKE', '%nds%')
-                ->where('description', 'NOT LIKE', '%налог на добавленную стоимость%')
-                ->sum('amount_without_nds');
+                ->sum('amount');
             $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])
                 ->where('object_id', $object27_1->id)
-                ->sum('amount_without_nds');
+                ->sum('amount');
             $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])
                     ->where('object_id', $object27_8->id)
-                    ->sum('amount_without_nds') * 0.7);
+                    ->sum('amount') * 0.7);
             $generalTotalAmount += $bonus;
 
             $sumCumings = 0;
@@ -225,7 +223,7 @@ class ObjectService
                         ->whereIn('object_worktype_id', [1])
                         ->whereBetween('date', [$startDate, $endDate])
                         ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount_without_nds');
+                        ->sum('amount');
 
                     if ($amount > 0) {
                         $cumings[$object->id.'|1'] = [
@@ -246,7 +244,7 @@ class ObjectService
                         ->whereIn('object_worktype_id', [2, 4])
                         ->whereBetween('date', [$startDate, $endDate])
                         ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount_without_nds');
+                        ->sum('amount');
 
                     if ($amount > 0) {
                         $cumings[$object->id.'|24'] = [
@@ -266,7 +264,7 @@ class ObjectService
                     $amount = $object->payments
                         ->whereBetween('date', [$startDate, $endDate])
                         ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount_without_nds');
+                        ->sum('amount');
 
                     if ($amount > 0) {
                         $cumings[$object->id] = [
