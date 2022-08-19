@@ -37,7 +37,7 @@ class CreditService
         $credits = $this->getCredits($date, $company);
 
         foreach ($credits as $credit) {
-            $amount += $credit['amount'] - abs($credit['sent']);
+            $amount += $credit['sent'] + $credit['received'];
         }
 
         return -$amount;
