@@ -66,6 +66,7 @@ class DebtImportService
         'Мос' => '317',
         'Завидово' => '358',
         'ДТ-Термо' => '27.1',
+        'ДТ Термо' => '27.1',
         'Магнитогорск' => '359',
         'Магнитогорск (Ф)' => '359',
         'Магнитогорск (И)' => '359',
@@ -182,6 +183,11 @@ class DebtImportService
             }
 
             $invoiceDate = is_string($row[6]) ? $row[6] : Carbon::parse(Date::excelToDateTimeObject($row[6]))->format('d/m/Y');
+            $invoiceAmount = $row[7] ?? 0;
+            $invoiceAmount = (string) $invoiceAmount;
+            $invoiceAmount = str_replace(' ', '', $invoiceAmount);
+            $invoiceAmount = str_replace(',', '.', $invoiceAmount);
+            $invoiceAmount = (float) $invoiceAmount;
 
             $this->debtService->createDebt([
                 'import_id' => $import->id,
@@ -201,7 +207,7 @@ class DebtImportService
                 'description' => trim($row[4]),
                 'comment' => $comment,
                 'invoice_payment_due_date' => $dueDate,
-                'invoice_amount' => $row[7] ?? 0
+                'invoice_amount' => $invoiceAmount
             ]);
         }
 
@@ -265,6 +271,12 @@ class DebtImportService
                 $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[15];
             }
 
+            $invoiceAmount = $row[7] ?? 0;
+            $invoiceAmount = (string) $invoiceAmount;
+            $invoiceAmount = str_replace(' ', '', $invoiceAmount);
+            $invoiceAmount = str_replace(',', '.', $invoiceAmount);
+            $invoiceAmount = (float) $invoiceAmount;
+
             $this->debtService->createDebt([
                 'import_id' => $import->id,
                 'type_id' => Debt::TYPE_CONTRACTOR,
@@ -283,7 +295,7 @@ class DebtImportService
                 'description' => trim($row[4]),
                 'comment' =>  $comment,
                 'invoice_payment_due_date' => $dueDate,
-                'invoice_amount' => $row[7] ?? 0
+                'invoice_amount' => $invoiceAmount
             ]);
         }
 
