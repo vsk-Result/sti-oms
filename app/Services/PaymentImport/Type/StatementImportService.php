@@ -53,7 +53,7 @@ class StatementImportService
             : 1;
 
         $import = PaymentImport::create([
-            'type_id' => PaymentImport::TYPE_STATEMENT,
+            'type_id' => is_null($requestData['bank_id']) ? PaymentImport::TYPE_PAYMENTS : PaymentImport::TYPE_STATEMENT,
             'bank_id' => $requestData['bank_id'],
             'company_id' => $requestData['company_id'],
             'date' => $requestData['date'],
@@ -162,7 +162,7 @@ class StatementImportService
                 'code' => $payment['code'] ?? null,
                 'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
                 'description' => $payment['description'],
-                'date' => $import->company->short_name === 'БАМС' ? $payment['date'] : $import->date,
+                'date' => ($import->company->short_name === 'БАМС' || is_null($import->bank_id)) ? $payment['date'] : $import->date,
                 'amount' => $amount,
                 'amount_without_nds' => $amount - $nds,
                 'is_need_split' => $isNeedSplit,

@@ -145,6 +145,10 @@ class DebtImportService
                 continue;
             }
 
+            if (empty($objectName)) {
+                continue;
+            }
+
             $organization = $this->organizationService->getOrCreateOrganization([
                 'inn' => null,
                 'name' => $organizationName,
@@ -227,6 +231,10 @@ class DebtImportService
             }
 
             if (in_array($objectName, ['ГЭС-2 займ', 'займ'])) {
+                continue;
+            }
+
+            if (empty($objectName)) {
                 continue;
             }
 

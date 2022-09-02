@@ -25,7 +25,6 @@ class StoreStatementRequest extends FormRequest
     {
         return [
             'company_id' => 'required|integer',
-            'bank_id' => 'required|integer',
             'date' => 'required|date_format:Y-m-d',
             'file' => 'required|file|mimes:xls,xlsx|max:2048',
         ];

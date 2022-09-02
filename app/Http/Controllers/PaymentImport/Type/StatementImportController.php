@@ -21,7 +21,7 @@ class StatementImportController extends Controller
 
     public function create(): View
     {
-        $banks = Bank::getBanks();
+        $banks = Bank::getBanks() + [null => 'Без банка'];
         $companies = Company::all();
         $currencies = ['RUB', 'EUR'];
         return view('payment-imports.types.statements.create', compact('banks', 'companies', 'currencies'));
