@@ -158,7 +158,7 @@ class StatementImportService
                 'organization_sender_id' => $organizationSender->id,
                 'organization_receiver_id' => $organizationReceiver->id,
                 'type_id' => $payment['type_id'],
-                'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
+                'payment_type_id' => is_null($import->bank_id) ? Payment::PAYMENT_TYPE_CASH : Payment::PAYMENT_TYPE_NON_CASH,
                 'code' => $payment['code'] ?? null,
                 'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
                 'description' => $payment['description'],
