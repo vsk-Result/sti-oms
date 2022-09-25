@@ -6,6 +6,7 @@ use App\Models\Bank;
 use App\Models\Company;
 use App\Models\PaymentImport;
 use Carbon\Carbon;
+use App\Models\Currency;
 
 class AccountBalanceService
 {
@@ -13,7 +14,7 @@ class AccountBalanceService
     {
         $banks = Bank::getBanks();
         $exceptBanks = [5]; // Росбанк для СТИ не нужно показывать
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         $balances = [
             'total' => [],

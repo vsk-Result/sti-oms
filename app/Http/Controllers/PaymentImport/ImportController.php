@@ -12,6 +12,7 @@ use App\Services\PaymentImport\PaymentImportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\Currency;
 
 class ImportController extends Controller
 {
@@ -28,7 +29,7 @@ class ImportController extends Controller
         $types = PaymentImport::getTypes();
         $banks = Bank::getBanks();
         $statuses = PaymentImport::getStatusesLists();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         $importsPaginated = $this->importService->filterImport($request->toArray());
         $importsGroupedByDate = collect($importsPaginated->items())->groupBy('date');

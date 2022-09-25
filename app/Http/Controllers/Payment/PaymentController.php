@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\Currency;
 
 class PaymentController extends Controller
 {
@@ -36,7 +37,7 @@ class PaymentController extends Controller
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         $totalInfo = [];
         $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
@@ -63,7 +64,7 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         if ($request->ajax()) {
 
@@ -123,7 +124,7 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         if ($request->ajax()) {
             return response()->json([

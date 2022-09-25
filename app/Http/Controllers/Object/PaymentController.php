@@ -14,6 +14,7 @@ use App\Models\PaymentImport;
 use App\Services\PaymentService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use App\Models\Currency;
 
 class PaymentController extends Controller
 {
@@ -34,7 +35,7 @@ class PaymentController extends Controller
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         $totalInfo = [];
         $requestData = array_merge(['object_id' => [$object->id]], $request->toArray());

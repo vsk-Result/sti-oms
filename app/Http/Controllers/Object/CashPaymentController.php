@@ -15,6 +15,7 @@ use App\Services\PaymentService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Currency;
 
 class CashPaymentController extends Controller
 {
@@ -71,7 +72,7 @@ class CashPaymentController extends Controller
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         $activeOrganizations = [];
         if (! empty($request->get('organization_id'))) {

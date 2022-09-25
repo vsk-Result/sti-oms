@@ -9,6 +9,7 @@ use App\Models\Contract\ContractReceivedAvans;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Currency;
 
 class ContractService
 {
@@ -43,7 +44,7 @@ class ContractService
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
         foreach ($currencies as $currency) {
             $total['amount'][$currency] = 0;
             $total['avanses_amount'][$currency] = 0;

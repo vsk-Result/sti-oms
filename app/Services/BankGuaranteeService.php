@@ -8,6 +8,7 @@ use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Currency;
 
 class BankGuaranteeService
 {
@@ -53,7 +54,7 @@ class BankGuaranteeService
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
         foreach ($currencies as $currency) {
             $total['amount'][$currency] = 0;
             $total['amount_deposit'][$currency] = 0;

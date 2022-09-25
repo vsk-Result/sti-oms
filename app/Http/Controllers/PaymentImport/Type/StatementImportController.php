@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Statement\StoreStatementRequest;
 use App\Models\Bank;
 use App\Models\Company;
+use App\Models\Currency;
 use App\Services\PaymentImport\Type\StatementImportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +24,7 @@ class StatementImportController extends Controller
     {
         $banks = Bank::getBanks() + [null => 'Без банка'];
         $companies = Company::all();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
         return view('payment-imports.types.statements.create', compact('banks', 'companies', 'currencies'));
     }
 

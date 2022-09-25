@@ -12,6 +12,7 @@ use App\Services\Contract\ContractService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\Currency;
 
 class ContractController extends Controller
 {
@@ -43,7 +44,7 @@ class ContractController extends Controller
         $objectId = $request->get('current_object_id') ?? null;
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         return view('contracts.create', compact('objects', 'companies', 'objectId', 'types', 'mainContracts', 'amountTypes', 'currencies'));
     }
@@ -62,7 +63,7 @@ class ContractController extends Controller
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $statuses = Status::getStatuses();
-        $currencies = ['RUB', 'EUR'];
+        $currencies = Currency::getCurrencies();
 
         return view('contracts.edit', compact('contract', 'objects', 'companies', 'statuses', 'types', 'amountTypes', 'mainContracts', 'currencies'));
     }
