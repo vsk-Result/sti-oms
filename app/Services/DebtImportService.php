@@ -99,7 +99,7 @@ class DebtImportService
         if (isset($importData['Для фин отчёта'])) {
             return $this->createSupplyImport($importData, $requestData);
         } elseif (isset($importData['ДТТЕРМО'])) {
-            $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
+            return $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
         }
 
         return 'ok';
@@ -158,7 +158,7 @@ class DebtImportService
 
             if (! isset($this->objects[$objectName])) {
                 $this->destroyImport($import);
-                return 'Материалы | Объекта "' . $objectName . '" нет в списке для загрузки.';
+                return 'Материалы | Объекта "' . $objectName . '" нет в списке для загрузки. Загрузка не удалась.';
             }
 
             $object = BObject::where('code', $this->objects[$objectName])->first();
@@ -247,7 +247,7 @@ class DebtImportService
 
             if (! isset($this->objects[$objectName])) {
                 $this->destroyImport($import);
-                return 'Подрядчики | Объекта "' . $objectName . '" нет в списке для загрузки.';
+                return 'Подрядчики | Объекта "' . $objectName . '" нет в списке для загрузки. Загрузка не удалась.';
             }
 
             $object = BObject::where('code', $this->objects[$objectName])->first();
@@ -310,7 +310,7 @@ class DebtImportService
         return 'ok';
     }
 
-    private function createDTTermoImport(array $importData, array $requestData): void
+    private function createDTTermoImport(array $importData, array $requestData): string
     {
         $badCodes = ['27', '41', '28', '32', '36', '28', '27.3', '27.8'];
         unset($importData[0], $importData[1], $importData[2], $importData[3], $importData[4], $importData[5], $importData[6]);
@@ -370,15 +370,8 @@ class DebtImportService
 
                 $object = BObject::where('code', $code)->first();
                 if (! $object) {
-                    $object = $this->objectService->createObject([
-                        'code' => $code,
-                        'name' => 'Без названия',
-                        'address' => null,
-                        'responsible_name' => null,
-                        'responsible_email' => null,
-                        'responsible_phone' => null,
-                        'photo' => null,
-                    ]);
+                    $this->destroyImport($import);
+                    return 'Объекта "' . $code . '" нет в системе. Загрузка не удалась.';
                 }
 
                 $this->debtService->createDebt([
@@ -395,5 +388,7 @@ class DebtImportService
                 ]);
             }
         }
+
+        return 'ok';
     }
 }

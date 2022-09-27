@@ -26,6 +26,17 @@
                         </div>
                     @endif
 
+                    @if (session()->has('status'))
+                        <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-5 mb-10">
+                            <div class="d-flex flex-column pe-0 pe-sm-10">
+                                <h5 class="mb-1">Ошибки при загрузке</h5>
+                                <ul>
+                                    <li>{{ session()->get('status') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+
                     <form class="form" action="{{ route('payment_imports.types.crm_cost_closures.store') }}" method="POST">
                         @csrf
                         <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">

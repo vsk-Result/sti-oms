@@ -28,6 +28,7 @@ class SplitResidenceController extends Controller
         $month = $request->get('month');
         $object = BObject::where('code', '288')->first();
         if (! $object) {
+            session()->flash('split_residence_status', 'В системе отсутствует объект 288.');
             return redirect()->back();
         }
 
@@ -41,6 +42,7 @@ class SplitResidenceController extends Controller
             ->get();
 
         if ($paymentsForSplit->count() === 0) {
+            session()->flash('split_residence_status', 'Данных для разбивки нет');
             return redirect()->back();
         }
 
@@ -129,6 +131,20 @@ class SplitResidenceController extends Controller
         }
 
         foreach ($result as $paymentId => $codes) {
+            foreach($codes as $code => $amount) {
+                if ($code == 27) {
+                    $code = '27.1';
+                }
+
+                $object = BObject::where('code', $code)->first();
+                if (! $object) {
+                    session()->flash('split_residence_status', 'Объект "' . $code . '" не найден в системе. Разбивка не удалась.');
+                    return redirect()->back();
+                }
+            }
+        }
+
+        foreach ($result as $paymentId => $codes) {
             $payment = Payment::find($paymentId);
             $requestData = $payment->attributesToArray();
 
@@ -138,17 +154,6 @@ class SplitResidenceController extends Controller
                 }
 
                 $object = BObject::where('code', $code)->first();
-                if (! $object) {
-                    $object = $this->objectService->createObject([
-                        'code' => $code,
-                        'name' => 'Без названия',
-                        'address' => null,
-                        'responsible_name' => null,
-                        'responsible_email' => null,
-                        'responsible_phone' => null,
-                        'photo' => null
-                    ]);
-                }
 
                 $requestData['object_id'] = $object->id;
                 $requestData['amount'] = -$amount;

@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class StatementImportService
 {
+    private string $error;
     private PaymentService $paymentService;
     private OrganizationService $organizationService;
     private UploadService $uploadService;
@@ -32,6 +33,7 @@ class StatementImportService
         ObjectService $objectService,
         CurrencyExchangeRateService $rateService
     ) {
+        $this->error = '';
         $this->paymentService = $paymentService;
         $this->uploadService = $uploadService;
         $this->organizationService = $organizationService;
@@ -134,15 +136,8 @@ class StatementImportService
                 $object = BObject::where('code', $code)->first();
 
                 if (! $object) {
-                    $object = $this->objectService->createObject([
-                        'code' => $code,
-                        'name' => 'Без названия',
-                        'address' => null,
-                        'responsible_name' => null,
-                        'responsible_email' => null,
-                        'responsible_phone' => null,
-                        'photo' => null,
-                    ]);
+                    $this->error = 'Объект "' . $code . '" не найден в системе. Загрузка не удалась.';
+                    return $import;
                 }
 
                 $payment['type_id'] = Payment::TYPE_OBJECT;
@@ -305,5 +300,15 @@ class StatementImportService
     private function getStatementDataFromExcel(UploadedFile $file): array
     {
         return Excel::toArray(new PImport(), $file);
+    }
+
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    public function hasError(): bool
+    {
+        return ! empty($this->error);
     }
 }

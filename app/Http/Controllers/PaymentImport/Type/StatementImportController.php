@@ -7,6 +7,7 @@ use App\Http\Requests\Statement\StoreStatementRequest;
 use App\Models\Bank;
 use App\Models\Company;
 use App\Models\Currency;
+use App\Services\PaymentImport\PaymentImportService;
 use App\Services\PaymentImport\Type\StatementImportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -14,10 +15,12 @@ use Illuminate\Http\RedirectResponse;
 class StatementImportController extends Controller
 {
     private StatementImportService $importService;
+    private PaymentImportService $mainImportService;
 
-    public function __construct(StatementImportService $importService)
+    public function __construct(StatementImportService $importService, PaymentImportService $mainImportService)
     {
         $this->importService = $importService;
+        $this->mainImportService = $mainImportService;
     }
 
     public function create(): View
@@ -31,6 +34,13 @@ class StatementImportController extends Controller
     public function store(StoreStatementRequest $request): RedirectResponse
     {
         $import = $this->importService->createImport($request->toArray());
+
+        if ($this->importService->hasError()) {
+            $this->mainImportService->destroyImport($import);
+            session()->flash('status', $this->importService->getError());
+            return redirect()->back();
+        }
+
         return redirect()->route('payment_imports.edit', $import);
     }
 }

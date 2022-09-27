@@ -79,6 +79,17 @@
                                 </h3>
                             </div>
                             <div class="card-body py-3">
+                                @if (session()->has('split_residence_status'))
+                                    <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-5 mb-10">
+                                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                                            <h5 class="mb-1">Ошибки при разбивке</h5>
+                                            <ul>
+                                                <li>{{ session()->get('split_residence_status') }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <form class="form" action="{{ route('payments.split_residence.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
 
@@ -122,6 +133,17 @@
                                 </h3>
                             </div>
                             <div class="card-body py-3">
+                                @if (session()->has('split_insurance_status'))
+                                    <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-5 mb-10">
+                                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                                            <h5 class="mb-1">Ошибки при разбивке</h5>
+                                            <ul>
+                                                <li>{{ session()->get('split_insurance_status') }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <form class="form" action="{{ route('payments.split_insurance.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
 
@@ -165,6 +187,17 @@
                                 </h3>
                             </div>
                             <div class="card-body py-3">
+                                @if (session()->has('split_ndfl_status'))
+                                    <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-5 mb-10">
+                                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                                            <h5 class="mb-1">Ошибки при разбивке</h5>
+                                            <ul>
+                                                <li>{{ session()->get('split_ndfl_status') }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <form class="form" action="{{ route('payments.split_ndfl.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
 

@@ -37,6 +37,11 @@ class SplitNDFLController extends Controller
             ->orderBy('amount')
             ->get();
 
+        if ($paymentsForSplit->count() === 0) {
+            session()->flash('split_ndfl_status', 'Данных для разбивки нет');
+            return redirect()->back();
+        }
+
         $year = substr($month, strpos($month, ' ') + 1);
         $date = '';
         if (str_contains($month, 'Январь')) {
@@ -85,6 +90,19 @@ class SplitNDFLController extends Controller
         $totalAmount = abs($paymentsForSplit->sum('amount'));
 
         $payment = Payment::find($paymentsForSplit[0]->id);
+
+        foreach ($employeesCount as $code => $count) {
+            if ($code == 27) {
+                $code = '27.1';
+            }
+
+            $object = BObject::where('code', $code)->first();
+            if (! $object) {
+                session()->flash('split_ndfl_status', 'Объект "' . $code . '" не найден в системе. Разбивка не удалась.');
+                return redirect()->back();
+            }
+        }
+
         foreach ($employeesCount as $code => $count) {
             $amount = ($count / $totalEmployees) * $totalAmount;
             $requestData = $payment->attributesToArray();
@@ -94,17 +112,6 @@ class SplitNDFLController extends Controller
             }
 
             $object = BObject::where('code', $code)->first();
-            if (! $object) {
-                $object = $this->objectService->createObject([
-                    'code' => $code,
-                    'name' => 'Без названия',
-                    'address' => null,
-                    'responsible_name' => null,
-                    'responsible_email' => null,
-                    'responsible_phone' => null,
-                    'photo' => null
-                ]);
-            }
 
             $requestData['type_id'] = Payment::TYPE_OBJECT;
             $requestData['object_id'] = $object->id;

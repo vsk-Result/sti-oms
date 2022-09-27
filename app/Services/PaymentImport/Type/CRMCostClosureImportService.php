@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 
 class CRMCostClosureImportService
 {
+    private string $error;
     private PaymentService $paymentService;
     private ObjectService $objectService;
     private OrganizationService $organizationService;
@@ -24,6 +25,7 @@ class CRMCostClosureImportService
         ObjectService $objectService,
         OrganizationService $organizationService
     ) {
+        $this->error = '';
         $this->paymentService = $paymentService;
         $this->objectService = $objectService;
         $this->organizationService = $organizationService;
@@ -87,15 +89,8 @@ class CRMCostClosureImportService
                     }
 
                     if (! $object = BObject::where('code', $objectCode)->first()) {
-                        $object = $this->objectService->createObject([
-                            'code' => $objectCode,
-                            'name' => 'Без названия',
-                            'address' => null,
-                            'responsible_name' => null,
-                            'responsible_email' => null,
-                            'responsible_phone' => null,
-                            'photo' => null
-                        ]);
+                        $this->error = 'Объект "' . $objectCode . '" не найден в системе. Загрузка не удалась.';
+                        return $import;
                     }
 
                     $objectId = $object->id;
@@ -149,5 +144,15 @@ class CRMCostClosureImportService
         $closure->update();
 
         return $import;
+    }
+
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    public function hasError(): bool
+    {
+        return ! empty($this->error);
     }
 }
