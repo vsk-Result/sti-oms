@@ -258,6 +258,7 @@ class StatementImportService
             }
 
             $object = $rowData[0];
+            $object = str_replace(',', '.', $object);
             $code = $rowData[1];
 
             if ($isNotEmptyAdditionInfo) {

@@ -258,8 +258,11 @@ class PaymentImportService
                         $parameters['transfer_background_color'] = '#fdfd6b';
                     }
 
+                    $object = $rowData[0];
+                    $object = str_replace(',', '.', $object);
+
                     $returnData['payments'][] = [
-                        'object' => $rowData[0],
+                        'object' => $object,
                         'code' => $rowData[1],
                         'date' => Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d'),
                         'pay_amount' => $payAmount,
@@ -290,8 +293,11 @@ class PaymentImportService
                 $receiveAmount = $amount;
             }
 
+            $object = $rowData[0];
+            $object = str_replace(',', '.', $object);
+
             $returnData['payments'][] = [
-                'object' => $rowData[0],
+                'object' => $object,
                 'code' => $rowData[1],
                 'date' => Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d'),
                 'pay_amount' => $payAmount,

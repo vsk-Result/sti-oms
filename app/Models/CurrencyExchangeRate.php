@@ -21,7 +21,7 @@ class CurrencyExchangeRate extends Model
         $amount = number_format($amount, $decimals, '.', ' ');
         return match ($currency) {
             'EUR' => $amount . ' €',
-            'USD' => '$' . $amount,
+            'USD' => '$ ' . $amount,
             'RUB' => $amount . ' ₽',
             default => $amount,
         };
