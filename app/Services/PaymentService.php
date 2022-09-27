@@ -559,10 +559,10 @@ class PaymentService
             if ($paymentCurrency === 'RUB') {
                 $requestData['amount'] = $requestData['amount'] ?? $payment->amount;
                 $requestData['amount_without_nds'] = $requestData['amount_without_nds'] ?? $payment->amount_without_nds;
-                $requestData['currency_amount'] = $requestData['amount'] ?? $payment->amount;
+                $requestData['currency_amount'] = $requestData['amount'];
             } else {
-                $requestData['currency_amount'] = $requestData['amount'] ?? $payment->amount;
-                $requestData['amount'] = ($requestData['amount'] ?? $payment->amount) * $paymentCurrencyRate;
+                $requestData['currency_amount'] = $requestData['amount'] ?? $payment->currency_amount;
+                $requestData['amount'] = $requestData['currency_amount'] * $paymentCurrencyRate;
                 $requestData['amount_without_nds'] = $requestData['amount'];
             }
         }
