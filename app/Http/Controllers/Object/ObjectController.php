@@ -85,7 +85,7 @@ class ObjectController extends Controller
 
     public function edit(BObject $object): View
     {
-        $statuses = Status::getStatuses();
+        $statuses = $object->getStatuses();
         $organizations = Organization::orderBy('name')->get();
         $object->load('customers');
         return view('objects.edit', compact('object', 'statuses', 'organizations'));

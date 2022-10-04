@@ -41,6 +41,15 @@ class  BObject extends Model implements Audit
         'closing_date'
     ];
 
+    private function getStatusesList(): array
+    {
+        return [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'Закрыт',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+    }
+
     public function imports(): HasMany
     {
         return $this->hasMany(PaymentImport::class, 'object_id');

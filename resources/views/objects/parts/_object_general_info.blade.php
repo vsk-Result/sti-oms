@@ -9,7 +9,13 @@
             <div class="d-flex flex-column">
                 <div class="d-flex align-items-center mb-1">
                     <a href="{{ route('objects.show', $object) }}" class="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">{{ $object->getName() }}</a>
-                    <span class="badge badge-light-success me-auto">Активен</span>
+                    @if ($object->isActive())
+                        <span class="badge badge-light-success me-auto">Активен</span>
+                    @elseif ($object->isBlocked())
+                        <span class="badge badge-light-danger me-auto">Закрыт</span>
+                    @elseif ($object->isDeleted())
+                        <span class="badge badge-light-danger me-auto">Удален</span>
+                    @endif
                 </div>
 
                 <div class="d-flex flex-wrap fw-bold fs-6 mb-4 pe-2">
