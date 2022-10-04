@@ -43,7 +43,7 @@ class ActService
             ],
             'entries' => [],
         ];
-        $objects = BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '357', '358', '359'])
+        $objects = BObject::active()
             ->orderByDesc('code')
             ->get();
         $contractService = new ContractService($this->sanitizer, $this->currencyService);

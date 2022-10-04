@@ -7,6 +7,7 @@ use App\Models\CRM\SalaryDebt;
 use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Models\Payment;
+use App\Models\Status;
 use App\Services\Contract\ContractService;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -116,7 +117,7 @@ class ObjectPivotSheet implements
             ],
         ];
         $paymentQuery = Payment::select('object_id', 'amount');
-        $objects = BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '358', '359'])
+        $objects = BObject::active()
             ->orderByDesc('code')
             ->get();
 

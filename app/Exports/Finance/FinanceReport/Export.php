@@ -6,6 +6,7 @@ use App\Exports\Finance\FinanceReport\Sheets\ObjectPivotSheet;
 use App\Exports\Finance\FinanceReport\Sheets\ObjectSheet;
 use App\Exports\Finance\FinanceReport\Sheets\PivotSheet;
 use App\Models\Object\BObject;
+use App\Models\Status;
 use App\Services\Contract\ContractService;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -28,7 +29,7 @@ class Export implements WithMultipleSheets
             new ObjectPivotSheet('Сводная по объектам', $this->contractService),
         ];
 
-        $objects = BObject::whereIn('code', ['288', '317', '325', '332', '338', '342', '343', '344', '346', '349', '352', '353', '354', '358', '359'])
+        $objects = BObject::active()
             ->orderByDesc('code')
             ->get();
 

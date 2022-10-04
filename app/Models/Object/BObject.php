@@ -12,6 +12,7 @@ use App\Models\Debt\DebtImport;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
+use App\Models\Status;
 use App\Models\User;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -244,6 +245,7 @@ class  BObject extends Model implements Audit
             '27.8' => '27.8',
             '28' => '28',
             '6' => '6',
+            '0' => '0',
         ];
     }
 
@@ -265,5 +267,11 @@ class  BObject extends Model implements Audit
     public function getWorkSalaryDebt(): float
     {
         return SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')->sum('amount');
+    }
+
+    public function scopeActive($query)
+    {
+        $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());
+        return $query->where('status_id', Status::STATUS_ACTIVE)->whereNotIn('code', $exceptObjectsWithCodes);
     }
 }
