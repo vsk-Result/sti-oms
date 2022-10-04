@@ -4,7 +4,7 @@ namespace App\Http\Controllers\BankGuarantee;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BankGuarantee\StoreBankGuaranteeRequest;
-use App\Http\Requests\BankGuarantee\UpdateBankGuaranteeRequest;
+use App\Http\Requests\BankGuarantee\UpdateGuaranteeRequest;
 use App\Models\Bank;
 use App\Models\BankGuarantee;
 use App\Models\Company;
@@ -70,7 +70,7 @@ class BankGuaranteeController extends Controller
         return view('bank-guarantees.edit', compact('guarantee', 'banks', 'objects', 'companies', 'targets', 'statuses', 'organizations', 'contracts'));
     }
 
-    public function update(BankGuarantee $guarantee, UpdateBankGuaranteeRequest $request): RedirectResponse
+    public function update(BankGuarantee $guarantee, UpdateGuaranteeRequest $request): RedirectResponse
     {
         $this->guaranteeService->updateBankGuarantee($guarantee, $request->toArray());
         return redirect($request->get('return_url') ?? route('bank_guarantees.index'));

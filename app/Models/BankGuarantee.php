@@ -13,10 +13,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class BankGuarantee extends Model implements HasMedia
+class BankGuarantee extends Model implements Audit, HasMedia
 {
-    use SoftDeletes, HasUser, HasStatus, HasBank, InteractsWithMedia;
+    use SoftDeletes, HasUser, HasStatus, HasBank, InteractsWithMedia, Auditable;
 
     protected $table = 'bank_guarantees';
 

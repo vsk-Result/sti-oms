@@ -48,14 +48,10 @@
                 <tr class="fw-bolder" style="background-color: #f7f7f7;">
                     <th colspan="3" class="ps-4" style="vertical-align: middle;">Итого</th>
                     <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}
+                        {{ \App\Models\CurrencyExchangeRate::format($total['amount'], 'RUB') }}
                     </th>
                     <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount']['EUR'], 'EUR') }}
+                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount'], 'RUB') }}
                     </th>
                     <th colspan="5"></th>
                 </tr>
@@ -78,8 +74,8 @@
                             @endif
                         </td>
                         <td>{{ $guarantee->customer->name }}</td>
-                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->getAmount(), $guarantee->currency) }}</td>
-                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->getFactAmount(), $guarantee->currency) }}</td>
+                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, 'RUB') }}</td>
+                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->fact_amount, 'RUB') }}</td>
                         <td>{{ $guarantee->getBankGuaranteeState() }}</td>
                         <td>{{ $guarantee->getFinalActState() }}</td>
                         <td>{{ $guarantee->state }}</td>
@@ -105,7 +101,7 @@
                                             <a
                                                 href="#"
                                                 class="menu-link px-3 text-danger"
-                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить гарантийное удержания?')) {this.closest('form').submit();}"
+                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить гарантийное удержание?')) {this.closest('form').submit();}"
                                             >
                                                 Удалить
                                             </a>

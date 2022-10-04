@@ -4,25 +4,31 @@ namespace App\Http\Controllers\Object;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Object\StoreOrUpdateObjectRequest;
+use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Models\Payment;
-use App\Models\Status;
-use App\Services\ObjectService;
-use Carbon\Carbon;
+use App\Services\GuaranteeService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class GuaranteeController extends Controller
 {
-    private ObjectService $objectService;
+    private GuaranteeService $guaranteeService;
 
-    public function __construct(ObjectService $objectService)
+    public function __construct(GuaranteeService $guaranteeService)
     {
-        $this->objectService = $objectService;
+        $this->guaranteeService = $guaranteeService;
     }
 
-    public function index(BObject $object): View
+    public function index(BObject $object, Request $request): View
     {
+        $requestData = array_merge(['object_id' => [$object->id]], $request->toArray());
+
+        $total = [];
+        $objects = BObject::orderBy('code')->get();
+        $contracts = Contract::with('parent')->orderBy('name')->get();
+        $guarantees = $this->guaranteeService->filterGuarantee($requestData, $total);
+
         $paymentQuery = Payment::select('object_id', 'amount');
         $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
 
@@ -35,6 +41,6 @@ class GuaranteeController extends Controller
             $object->general_balance_24 = $object->generalCosts()->where('is_pinned', true)->sum('amount');
         }
 
-        return view('objects.tabs.guarantees', compact('object'));
+        return view('objects.tabs.guarantees', compact('object', 'objects', 'contracts', 'guarantees', 'total'));
     }
 }

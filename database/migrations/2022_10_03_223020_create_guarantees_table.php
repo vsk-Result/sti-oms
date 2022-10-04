@@ -27,6 +27,7 @@ class CreateGuaranteesTable extends Migration
     {
         Schema::create('guarantees', function (Blueprint $table) {
             $table->id();
+            $table->unsignedTinyInteger('company_id');
             $table->unsignedSmallInteger('object_id');
             $table->unsignedBigInteger('contract_id');
             $table->unsignedSmallInteger('organization_id');
@@ -34,8 +35,6 @@ class CreateGuaranteesTable extends Migration
             $table->unsignedTinyInteger('updated_by_user_id')->nullable();
             $table->decimal('amount', 19, 4)->default(0);
             $table->decimal('fact_amount', 19, 4)->default(0);
-            $table->string('currency', 3)->default('RUB');
-            $table->decimal('currency_rate', 7, 4)->default(1);
             $table->boolean('has_bank_guarantee')->default(false);
             $table->boolean('has_final_act')->nullable();
             $table->string('state')->nullable();

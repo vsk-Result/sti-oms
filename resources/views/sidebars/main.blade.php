@@ -176,6 +176,17 @@
                                 </a>
                             </div>
                         @endcan
+
+                            @can('index guarantees')
+                                <div class="menu-item">
+                                    <a class="menu-link py-2 {{ request()->is('guarantees*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                        <span class="menu-title">Гарантийные удержания</span>
+                                    </a>
+                                </div>
+                            @endcan
                     </div>
                 </div>
             @endcan
