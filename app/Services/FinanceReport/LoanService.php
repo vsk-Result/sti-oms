@@ -56,11 +56,29 @@ class LoanService
 
         $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate;
 
+        $ekskvizitLoan = 0;
+        $ekskvizit = Organization::where('name', 'ООО "ЭКСКВИЗИТ"')->first();
+        if ($ekskvizit) {
+            $ekskvizitLoan = Payment::where('company_id', $company->id)
+                ->where('type_id', Payment::TYPE_TRANSFER)
+                ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                ->where(function ($q) {
+                    $q->where('description', 'LIKE', 'ВОЗВРАТ ЗАЙМА ПО ДОГОВОРУ%');
+                    $q->orWhere('description', 'LIKE', 'ВЫДАЧА ПРОЦЕНТНОГО ЗАЙМА%');
+                })
+                ->where('bank_id', 1)
+                ->where(function ($q) use ($ekskvizit) {
+                    $q->where('organization_receiver_id', $ekskvizit->id);
+                    $q->orWhere('organization_sender_id', $ekskvizit->id);
+                })
+                ->sum('amount');
+        }
+
         $loans = [
             'ООО "Велесстрой"' => -277000000,
             'ООО «ПСБ БИЗНЕС»' => -49990000,
             'Завидово займ' => -30000000,
-            'ООО "ЭКСКВИЗИТ"' => -6500000,
+            'ООО "ЭКСКВИЗИТ"' => $ekskvizitLoan,
             'Белензия (1 243 164 €)' => -1243164 * $rate,
             'ООО "ДТ ТЕРМО ГРУПП"' => $totalLoanDTAmount,
             'ООО "ПРОМТЕХИНЖИНИРИНГ"' => $totalLoanPTIAmount,
