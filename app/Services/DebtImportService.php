@@ -312,6 +312,14 @@ class DebtImportService
 
     private function createDTTermoImport(array $importData, array $requestData): string
     {
+        $transferCodes = [
+            '248' => '27.1',
+            '270' => '27.1',
+            '27.9' => '27.1',
+            '328' => '288.7',
+            '336' => '288.7',
+            '337' => '288.7',
+        ];
         $badCodes = ['27', '41', '28', '32', '36', '28', '27.3', '27.8'];
         unset($importData[0], $importData[1], $importData[2], $importData[3], $importData[4], $importData[5], $importData[6]);
 
@@ -366,6 +374,10 @@ class DebtImportService
                         $code = substr($code, 0, strpos($code, '.'));
                         $worktype = (int) substr($oCode, strpos($oCode, '.') + 1);
                     }
+                }
+
+                if (array_key_exists($code, $transferCodes)) {
+                    $code = $transferCodes[$code];
                 }
 
                 $object = BObject::where('code', $code)->first();
