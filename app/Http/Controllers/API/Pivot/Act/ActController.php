@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Http\Controllers\API\Pivot\Act;
+
+use App\Http\Controllers\Controller;
+use App\Models\Object\BObject;
+use App\Services\Contract\ActService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class ActController extends Controller
+{
+    private ActService $actService;
+
+    public function __construct(ActService $actService)
+    {
+        $this->actService = $actService;
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        if (! $request->has('verify_hash')) {
+            abort(403);
+            return response()->json([], 403);
+        }
+
+        if ($request->has('verify_hash') !== config('qr.verify_hash')) {
+            abort(403);
+            return response()->json([], 403);
+        }
+
+        if (empty($request->object_id)) {
+            $objectList = BObject::active()->orderBy('code')->get();
+            $objects = [];
+
+            foreach ($objectList as $object) {
+                $objects[$object->id] = $object->getName();
+            }
+
+            return response()->json(compact('objects'));
+        }
+
+        $pivot = $this->actService->getPivot($request->object_id);
+
+        return response()->json(compact('pivot'));
+    }
+}

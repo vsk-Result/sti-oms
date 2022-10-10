@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\Pivot\Act\ActController;
+use App\Http\Controllers\API\Pivot\Act\ExportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('pivots/acts', [ActController::class, 'index']);
+Route::get('pivots/acts/export', [ExportController::class, 'store']);

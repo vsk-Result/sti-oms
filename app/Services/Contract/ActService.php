@@ -24,7 +24,7 @@ class ActService
         $this->currencyService = $currencyService;
     }
 
-    public function getPivot(): array
+    public function getPivot(int $id = null): array
     {
         $pivot = [
             'total' => [
@@ -43,9 +43,17 @@ class ActService
             ],
             'entries' => [],
         ];
-        $objects = BObject::active()
+
+        $objectsQuery = BObject::query();
+
+        if ($id) {
+            $objectsQuery->where('id', $id);
+        }
+
+        $objects = $objectsQuery->active()
             ->orderByDesc('code')
             ->get();
+
         $contractService = new ContractService($this->sanitizer, $this->currencyService);
 
         foreach ($objects as $object) {
