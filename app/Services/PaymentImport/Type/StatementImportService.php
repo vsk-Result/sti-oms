@@ -86,7 +86,7 @@ class StatementImportService
             if ($payment['pay_amount'] == 0) {
                 $amount = $payment['receive_amount'];
                 $organizationSender = $this->organizationService->getOrCreateOrganization([
-                    'inn' => null,
+                    'inn' => $payment['organization_inn'],
                     'name' => $payment['organization_name'],
                     'company_id' => null,
                     'kpp' => null
@@ -96,7 +96,7 @@ class StatementImportService
                 $amount = $payment['pay_amount'];
                 $organizationSender = $companyOrganization;
                 $organizationReceiver = $this->organizationService->getOrCreateOrganization([
-                    'inn' => null,
+                    'inn' => $payment['organization_inn'],
                     'name' => $payment['organization_name'],
                     'company_id' => null,
                     'kpp' => null
@@ -270,12 +270,9 @@ class StatementImportService
 
             $date = Carbon::parse(Date::excelToDateTimeObject($rowData[2]))->format('Y-m-d');
 
-            if (isset($rowData[6]) && $rowData[6] !== 'RUB') {
-                $rate = $this->rateService->getExchangeRate($date, $rowData[6])->rate;
-
-                $payAmount *= $rate;
-                $receiveAmount *= $rate;
-                $description .= ' (' . $amount . ' ' . $rowData[6] . ')';
+            $inn = null;
+            if (isset($rowData[6])) {
+                $inn = $this->cleanValue($rowData[6]);
             }
 
             $returnData['payments'][] = [
@@ -285,6 +282,7 @@ class StatementImportService
                 'pay_amount' => $payAmount,
                 'receive_amount' => $receiveAmount,
                 'organization_name' => $this->cleanValue($rowData[3]),
+                'organization_inn' => $inn,
                 'description' => $description,
             ];
         }
