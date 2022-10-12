@@ -11,6 +11,11 @@
                     <h3 class="card-title align-items-start flex-column">
                         <span class="card-label fw-bolder fs-3 mb-1">Загрузка оплат из выписки</span>
                     </h3>
+
+                    <div class="card-toolbar">
+                        <a href="{{ asset('files/statements/Инструкция - загрузка оплат из выписки.docx') }}" class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary me-3">Инструкция</a>
+                        <a href="{{ asset('files/statements/Пример выписки.xlsx') }}" class="btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">Пример выписки</a>
+                    </div>
                 </div>
                 <div class="card-body py-3">
                     @if ($errors->any())
