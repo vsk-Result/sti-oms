@@ -39,12 +39,13 @@ class BankGuaranteeController extends Controller
     {
         $banks = Bank::getBanks();
         $objectId = $request->get('current_object_id') ?? null;
+        $contractId = $request->get('current_contract_id') ?? null;
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
         $targets = BankGuarantee::getTargetsList();
-        return view('bank-guarantees.create', compact('banks', 'objects', 'companies', 'targets', 'objectId', 'organizations', 'contracts'));
+        return view('bank-guarantees.create', compact('banks', 'objects', 'companies', 'targets', 'objectId', 'organizations', 'contracts', 'contractId'));
     }
 
     public function store(StoreBankGuaranteeRequest $request): RedirectResponse

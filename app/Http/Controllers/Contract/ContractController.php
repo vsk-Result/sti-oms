@@ -51,7 +51,12 @@ class ContractController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $this->contractService->createContract($request->toArray());
+        $contract = $this->contractService->createContract($request->toArray());
+
+        if ($request->has('add_bg')) {
+            return redirect(route('bank_guarantees.create') . '?current_contract_id=' . $contract->id . '&current_object_id=' . $contract->object_id);
+        }
+
         return redirect($request->get('return_url') ?? route('contracts.index'));
     }
 

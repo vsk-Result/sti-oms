@@ -2,7 +2,9 @@
 
 namespace App\Models\Contract;
 
+use App\Models\BankGuarantee;
 use App\Models\Company;
+use App\Models\Guarantee;
 use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
@@ -44,6 +46,16 @@ class Contract extends Model implements HasMedia, Audit
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function bankGuarantees(): HasMany
+    {
+        return $this->hasMany(BankGuarantee::class, 'contract_id');
+    }
+
+    public function guarantees(): HasMany
+    {
+        return $this->hasMany(Guarantee::class, 'contract_id');
     }
 
     public function acts(): HasMany

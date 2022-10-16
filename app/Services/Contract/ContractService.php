@@ -96,7 +96,7 @@ class ContractService
         return $contractQuery->paginate($perPage)->withQueryString();
     }
 
-    public function createContract(array $requestData): void
+    public function createContract(array $requestData): Contract
     {
         $contract = Contract::create([
             'parent_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? $requestData['parent_id'] : null,
@@ -159,6 +159,8 @@ class ContractService
                 }
             }
         }
+
+        return $contract;
     }
 
     public function updateContract(Contract $contract, array $requestData): void

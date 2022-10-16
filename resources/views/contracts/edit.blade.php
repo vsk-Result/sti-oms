@@ -444,6 +444,24 @@
                             </div>
                         </div>
 
+                        <h3 class="fw-bolder mb-5">Банковская гарантия</h3>
+
+                        @foreach ($contract->bankGuarantees as $bankGuarantee)
+                            <a target="_blank" class="mb-5 fs-6" href="{{ route('bank_guarantees.edit', $bankGuarantee) }}">{{ $bankGuarantee->number }}</a>
+                            <br/>
+                        @endforeach
+
+                        <a target="_blank" class="mt-5 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2" href="{{ route('bank_guarantees.create') }}?current_contract_id={{ $contract->id }}&current_object_id={{ $contract->object_id }}">Добавить банковскую гарантию</a>
+
+                        <h3 class="fw-bolder mb-5 mt-7">Гарантийное удержание</h3>
+
+                        @foreach ($contract->guarantees as $guarantee)
+                            <a target="_blank" class="mb-5 fs-6" href="{{ route('guarantees.edit', $guarantee) }}">{{ 'Гарантийное удержание #' . $guarantee->id }}</a>
+                            <br/>
+                        @endforeach
+
+                        <a target="_blank" class="mt-5 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2" href="{{ route('guarantees.create') }}?current_contract_id={{ $contract->id }}&current_object_id={{ $contract->object_id }}">Добавить гарантийное удержание</a>
+
                         <div class="d-flex flex-center py-3">
                             <button type="submit" id="kt_modal_new_address_submit" class="btn btn-primary me-3">
                                 <span class="indicator-label">Сохранить</span>

@@ -238,7 +238,7 @@
                             </label>
                         </div>
 
-                        <div class="form-check form-check-custom form-check-solid fw-bold fs-6 container-check" data-target="#avanses-received-container">
+                        <div class="form-check form-check-custom form-check-solid mb-6 fw-bold fs-6 container-check" data-target="#avanses-received-container">
                             <input class="form-check-input" type="checkbox" value="" id="showAvansesReceivedCheckbox"/>
                             <label class="form-check-label" for="showAvansesReceivedCheckbox">
                                 Добавить полученные авансы
@@ -427,6 +427,15 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+
+                        <h3 class="fw-bolder mb-5">Банковская гарантия</h3>
+
+                        <div class="form-check form-check-custom form-check-solid mb-6 fw-bold fs-6 container-check">
+                            <input name="add_bg" class="form-check-input" type="checkbox" value="" id="showBGCheckbox"/>
+                            <label class="form-check-label" for="showBGCheckbox">
+                                Добавить банковскую гарантию после создания
+                            </label>
                         </div>
 
                         <div class="d-flex flex-center py-3">

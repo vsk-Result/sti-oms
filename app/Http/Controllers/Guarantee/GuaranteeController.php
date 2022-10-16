@@ -37,11 +37,12 @@ class GuaranteeController extends Controller
     public function create(Request $request): View
     {
         $objectId = $request->get('current_object_id') ?? null;
+        $contractId = $request->get('current_contract_id') ?? null;
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
-        return view('guarantees.create', compact('objects', 'companies', 'objectId', 'organizations', 'contracts'));
+        return view('guarantees.create', compact('objects', 'companies', 'objectId', 'organizations', 'contracts', 'contractId'));
     }
 
     public function store(StoreGuaranteeRequest $request): RedirectResponse
