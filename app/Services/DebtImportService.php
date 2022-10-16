@@ -368,16 +368,17 @@ class DebtImportService
                 if (isset($codesWithoutWorktype[$code])) {
                     $code = $codesWithoutWorktype[$code];
                 } else {
+
+                    if (array_key_exists($code, $transferCodes)) {
+                        $code = $transferCodes[$code];
+                    }
+
                     $oCode = $code;
 
                     if (str_contains($code, '.')) {
                         $code = substr($code, 0, strpos($code, '.'));
                         $worktype = (int) substr($oCode, strpos($oCode, '.') + 1);
                     }
-                }
-
-                if (array_key_exists($code, $transferCodes)) {
-                    $code = $transferCodes[$code];
                 }
 
                 $object = BObject::where('code', $code)->first();
