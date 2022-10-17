@@ -33,7 +33,7 @@ class ExportController extends Controller
         }
 
         $pivot = $this->actService->getPivot();
-        $filename = 'Долги к СТИ_' . Carbon::now()->format('d.m.Y') . '.xlsx';
+        $filename = 'Debts_to_STI_' . Carbon::now()->format('d._m_Y') . '.xlsx';
 
         Excel::store(new Export($pivot), '/pivots/acts/' . $filename);
 
