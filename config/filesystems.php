@@ -35,6 +35,11 @@ return [
             'root' => storage_path('app'),
         ],
 
+        'qr' => [
+            'driver' => 'local',
+            'root' => '/home/st-ing/web/qr.st-ing.com/public_html/storage/app/public/debts',
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
