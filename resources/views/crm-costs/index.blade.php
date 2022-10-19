@@ -24,6 +24,7 @@
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
                             @foreach($closures as $closureId => $closure)
+                                @continue(count($closure['not_split']) === 0 && count($closure['not_close']) === 0)
                                 <tr>
                                     <td>
                                         <a target="_blank" href="http://crm.local/costs/{{ $closureId }}">{{ $closure['name'] }}</a>
