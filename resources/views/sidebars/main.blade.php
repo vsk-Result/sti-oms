@@ -207,6 +207,22 @@
                 </div>
             @endcan
 
+            @can('index crm-costs')
+                <div class="menu-item pt-5">
+                    <div class="menu-content pb-2">
+                        <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Другое</span>
+                    </div>
+                </div>
+
+                @can('index crm-costs')
+                    <div class="menu-item">
+                        <a href="{{ route('crm_costs.index') }}" class="menu-link {{ request()->is('crm-costs*') ? 'active' : '' }}">
+                            <span class="menu-title">Статус касс CRM</span>
+                        </a>
+                    </div>
+                @endcan
+            @endcan
+
             @can('show admin-sidebar-menu')
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">

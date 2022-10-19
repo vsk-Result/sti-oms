@@ -60,14 +60,14 @@ class ActService
             $totalInfo = [];
             $contractService->filterContracts(['object_id' => [$object->id]], $totalInfo);
 
-            $actsAmount['RUB'] = $totalInfo['avanses_acts_left_paid_amount']['RUB'];
-            $actsAmount['EUR'] = $totalInfo['avanses_acts_left_paid_amount']['EUR'];
+            $actsAmount['RUB'] = $totalInfo['avanses_acts_left_paid_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_left_paid_amount']['RUB'];
+            $actsAmount['EUR'] = $totalInfo['avanses_acts_left_paid_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_left_paid_amount']['EUR'];
 
-            $avansesAmount['RUB'] = $totalInfo['avanses_left_amount']['RUB'];
-            $avansesAmount['EUR'] = $totalInfo['avanses_left_amount']['EUR'];
+            $avansesAmount['RUB'] = $totalInfo['avanses_left_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount']['RUB'];
+            $avansesAmount['EUR'] = $totalInfo['avanses_left_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount']['EUR'];
 
-            $guAmount['RUB'] = $totalInfo['avanses_acts_deposites_amount']['RUB'];
-            $guAmount['EUR'] = $totalInfo['avanses_acts_deposites_amount']['EUR'];
+            $guAmount['RUB'] = $totalInfo['avanses_acts_deposites_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['RUB'];
+            $guAmount['EUR'] = $totalInfo['avanses_acts_deposites_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['EUR'];
 
             $pivot['entries'][] = [
                 'object' => [
