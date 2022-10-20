@@ -12,9 +12,22 @@ class CRMCostStatusController extends Controller
     {
         $closures = [];
         $nowMonth = Carbon::now()->format('Y-m') . '-01';
-        $costs = Cost::where('is_private', false)->where('is_visible', true)->where('is_archive', false)->with('closures')->get();
+        $costs = Cost::where('is_archive', false)->with('closures')->get();
+        $canShowSTI = ['stevan.nikolic@st-ing.com', 'oksana.dashenko@st-ing.com', 'result007@yandex.ru'];
+        $notShowCosts = ['С.В. - Тест', 'СОЧИ', 'КАССА'];
 
         foreach ($costs as $cost) {
+
+            if (in_array($cost->name, $notShowCosts)) {
+                continue;
+            }
+
+            if ($cost->name === 'СТИ') {
+                if (! in_array(auth()->user()->email, $canShowSTI)) {
+                    continue;
+                }
+            }
+
             $closuresList = $cost->closures->where('is_confirm', false)->sortByDesc('date');
 
             $closures[$cost->id]['name'] = $cost->name;
