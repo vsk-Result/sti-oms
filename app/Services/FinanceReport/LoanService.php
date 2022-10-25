@@ -3,6 +3,7 @@
 namespace App\Services\FinanceReport;
 
 use App\Models\Company;
+use App\Models\Loan;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Services\CurrencyExchangeRateService;
@@ -19,6 +20,24 @@ class LoanService
 
     public function getLoans(string|Carbon $date, Company $company): array
     {
+        $loans = [];
+        $loansList = Loan::with('organization')->get();
+
+        foreach ($loansList as $loan) {
+            if ($loan->amount === 0) {
+                continue;
+            }
+
+            if (! isset($loans[$loan->organization->name])) {
+                $loans[$loan->organization->name] = 0;
+            }
+            $loans[$loan->organization->name] += $loan->amount;
+        }
+
+        asort($loans);
+
+        return $loans;
+
         $DTOrganization = Organization::where('name', 'ООО "ДТ ТЕРМО ГРУПП"')->first();
         $PTIOrganization = Organization::where('name', 'ООО "ПРОМТЕХИНЖИНИРИНГ"')->first();
 

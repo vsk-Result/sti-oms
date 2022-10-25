@@ -48,7 +48,7 @@
         </div>
 
         <div class="col-lg-6 col-md-6 col-xxl-5 col-xxl-4">
-            @include('finance-report.parts.credits')
+{{--            @include('finance-report.parts.credits')--}}
             @include('finance-report.parts.loans')
         </div>
     </div>

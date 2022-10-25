@@ -4,7 +4,7 @@
         <div class="fs-1 fw-bolder {{ array_sum($loans) < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format(array_sum($loans), 'RUB') }}</div>
 
         <div class="d-flex align-items-center fs-5 fw-bold text-gray-400 mb-7">
-            <span class="d-flex">Долг по займам на {{ $date->format('d.m.Y') }}</span>
+            <span class="d-flex">Долг по займам и кредитам на {{ $date->format('d.m.Y') }}</span>
         </div>
 
         @foreach($loans as $orgName => $loan)
