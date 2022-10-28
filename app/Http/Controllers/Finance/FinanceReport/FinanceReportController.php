@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Finance\FinanceReport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Loan;
 use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
 use App\Services\FinanceReport\DepositService;
@@ -48,8 +49,10 @@ class FinanceReportController extends Controller
 
         $credits = $this->creditService->getCredits($date, $company);
         $totalCreditAmount = $this->creditService->getTotalCreditAmount($date, $company);
+        $creditsLastUpdateDate = Loan::where('type_id', Loan::TYPE_CREDIT)->latest('updated_at')->first()->updated_at;
 
         $loans = $this->loanService->getLoans($date, $company);
+        $loansLastUpdateDate = Loan::where('type_id', Loan::TYPE_LOAN)->latest('updated_at')->first()->updated_at;
 
         $deposites = $this->depositeService->getDeposites($date, $company);
         $depositesAmount = $this->depositeService->getDepositesTotalAmount($date, $company);
@@ -58,7 +61,7 @@ class FinanceReportController extends Controller
             'finance-report.index',
             compact(
                 'company', 'balances', 'date', 'credits',
-                'totalCreditAmount', 'loans', 'deposites', 'depositesAmount'
+                'totalCreditAmount', 'creditsLastUpdateDate', 'loans', 'loansLastUpdateDate', 'deposites', 'depositesAmount'
             )
         );
     }

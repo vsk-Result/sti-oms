@@ -121,7 +121,13 @@
                             @endif
                         </td>
                         <td class="text-center">{{ $act->number }}</td>
-                        <td>{{ $act->getDateFormatted() }}</td>
+                        <td>
+                            @if(auth()->user()->can('edit acts'))
+                                <a href="{{ route('acts.edit', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
+                            @else
+                                {{ $act->getDateFormatted() }}
+                            @endif
+                        </td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAmount(), $act->currency) }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAvansAmount(), $act->currency) }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getDepositAmount(), $act->currency) }}</td>

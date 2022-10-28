@@ -64,7 +64,8 @@
                         <th class="min-w-150px">Номер</th>
                         <th class="min-w-125px">Дата зачисления</th>
                         <th class="min-w-125px">Дата окончания</th>
-                        <th class="min-w-125px">Сумма</th>
+                        <th class="min-w-125px">Сумма займа/кредита</th>
+                        <th class="min-w-125px">Сумма долга</th>
                         <th class="min-w-100px">Проценты</th>
                         <th class="min-w-125px">Описание</th>
                         <th class="min-w-125px">Действия</th>
@@ -77,9 +78,16 @@
                             <td>{!! $loan->company?->getShortNameColored() !!}</td>
                             <td>{{ $loan->getBankName() }}</td>
                             <td>{{ $loan->organization?->name }}</td>
-                            <td>{{ $loan->name }}</td>
+                            <td>
+                                @if(auth()->user()->can('edit loans'))
+                                    <a href="{{ route('loans.edit', $loan) }}" class="show-link">{{ $loan->name }}</a>
+                                @else
+                                    {{ $loan->name }}
+                                @endif
+                            </td>
                             <td>{{ $loan->getStartDateFormatted() }}</td>
                             <td>{{ $loan->getEndDateFormatted() }}</td>
+                            <td class="{{ $loan->total_amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->total_amount, 'RUB') }}</td>
                             <td class="{{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}</td>
                             <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 2) }}</td>
                             <td>{!! nl2br($loan->description) !!}</td>
@@ -123,9 +131,9 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="12">
+                            <td colspan="13">
                                 <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                    Займы / кредиты отсутствуют
+                                    Займы/кредиты отсутствуют
                                 </p>
                             </td>
                         </tr>

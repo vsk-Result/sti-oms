@@ -4,7 +4,7 @@
         <div class="fs-1 fw-bolder {{ $totalCreditAmount < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($totalCreditAmount, 'RUB') }}</div>
 
         <div class="d-flex align-items-center fs-5 fw-bold text-gray-400 mb-7">
-            <span class="d-flex">Долг по кредитам на {{ $date->format('d.m.Y') }}</span>
+            <span class="d-flex">Долг по кредитам на {{ $creditsLastUpdateDate->format('d.m.Y') }}</span>
         </div>
 
         @foreach($credits as $credit)
@@ -14,14 +14,7 @@
                         {{ $credit['bank'] }}
                     </div>
                     <p class="fs-7">
-                        <a
-                            target="_blank"
-                            class="text-muted"
-                            style="border-bottom: 1px dashed #ccc;"
-                            href="{{ route('payments.index') }}?bank_id%5B%5D={{ $credit['bank_id'] }}&description={{ str_replace(' ', '+', $credit['contract']) }}"
-                        >
-                            {{ $credit['contract'] }}
-                        </a>
+                        {{ $credit['contract'] }}
                     </p>
                 </div>
 
@@ -29,15 +22,15 @@
                     <div class="d-flex">
                         <div class="d-flex flex-column me-8">
                             <span class="text-muted fs-8">Доступно</span>
-                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['amount'] - ($credit['sent'] + $credit['received']), 'RUB') }}</span>
+                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['total'] - $credit['used'], 'RUB') }}</span>
                         </div>
                         <div class="d-flex flex-column me-8">
                             <span class="text-muted fs-8">В использовании</span>
-                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['sent'] + $credit['received'], 'RUB') }}</span>
+                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['used'], 'RUB') }}</span>
                         </div>
                         <div class="d-flex flex-column">
                             <span class="text-muted fs-8">Всего</span>
-                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['amount'], 'RUB') }}</span>
+                            <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit['total'], 'RUB') }}</span>
                         </div>
                     </div>
                 </div>

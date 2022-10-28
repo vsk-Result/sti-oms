@@ -8,6 +8,7 @@ use App\Traits\HasUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
@@ -20,7 +21,7 @@ class Loan extends Model implements Audit
 
     protected $fillable = [
         'type_id', 'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id',
-        'start_date', 'end_date', 'name', 'percent', 'amount', 'status_id', 'description', 'organization_id'
+        'start_date', 'end_date', 'name', 'percent', 'amount', 'total_amount', 'status_id', 'description', 'organization_id'
     ];
 
     const TYPE_CREDIT = 0;
@@ -34,6 +35,11 @@ class Loan extends Model implements Audit
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class, 'organization_id');
+    }
+
+    public function notifyTags(): HasMany
+    {
+        return $this->hasMany(LoanNotifyTag::class, 'loan_id');
     }
 
     public function getStartDateFormatted(string $format = 'd/m/Y'): string

@@ -109,7 +109,13 @@
                         @endif
                     </td>
                     <td>{{ $guarantee->contract?->getName() }}</td>
-                    <td>{{ $guarantee->number }}</td>
+                    <td>
+                        @if(auth()->user()->can('edit bank-guarantees'))
+                            <a href="{{ route('bank_guarantees.edit', $guarantee) }}" class="show-link">{{ $guarantee->number }}</a>
+                        @else
+                            {{ $guarantee->number }}
+                        @endif
+                    </td>
                     <td>{{ $guarantee->organization?->name }}</td>
                     <td>
                         {{ $guarantee->getEndDateFormatted() }}

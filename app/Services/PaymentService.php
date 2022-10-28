@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Helpers\Sanitizer;
 use App\Models\Company;
 use App\Models\CRM\AvansImport;
+use App\Models\Loan;
+use App\Models\LoanNotifyTag;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\Payment;
@@ -14,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentService
 {
@@ -233,6 +236,23 @@ class PaymentService
             'currency_amount' => $requestData['amount'],
         ]);
 
+        // Если в описании встретились теги займов/кредитов, отправим уведомление Алле (пока-что)
+        $activeLoansIds = Loan::all()->pluck('id')->toArray();
+        $tags = LoanNotifyTag::whereIn('loan_id', $activeLoansIds)->get();
+        if (count($tags) > 0) {
+            foreach ($tags as $tag) {
+                if (str_contains($payment->description, $tag->tag)) {
+                    try {
+                        Mail::send('emails.loans.notify', compact('payment', 'tag'), function ($m) {
+                            $m->from('support@crm.local', 'OMS Support');
+                            $m->to('result007@yandex.ru')
+                                ->subject('OMS. Оплата содержит тег займов/кредитов');
+                        });
+                    } catch(\Exception $e){}
+                }
+            }
+        }
+
         return $payment;
     }
 
@@ -274,6 +294,24 @@ class PaymentService
         } else {
             if (! $payment->isBlocked()) {
                 $payment->setBlocked();
+            }
+        }
+
+        // Если в описании встретились теги займов/кредитов, отправим уведомление Алле (пока-что)
+        $activeLoansIds = Loan::all()->pluck('id')->toArray();
+        $tags = LoanNotifyTag::whereIn('loan_id', $activeLoansIds)->get();
+        if (count($tags) > 0) {
+            foreach ($tags as $tag) {
+                if (str_contains($payment->description, $tag->tag)) {
+                    try {
+                        Mail::send('emails.loans.notify', compact('payment', 'tag'), function ($m) {
+                            $m->from('support@crm.local', 'OMS Support');
+                            $m->to('result007@yandex.ru');
+                            $m->to('alla.stepanova@st-ing.com')
+                                ->subject('OMS. Оплата содержит тег займов/кредитов');
+                        });
+                    } catch(\Exception $e){}
+                }
             }
         }
 

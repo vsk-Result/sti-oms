@@ -4,6 +4,7 @@ namespace App\Services\FinanceReport;
 
 use App\Models\Bank;
 use App\Models\Company;
+use App\Models\Loan;
 use App\Models\Payment;
 use Carbon\Carbon;
 
@@ -11,6 +12,25 @@ class CreditService
 {
     public function getCredits(string|Carbon $date, Company $company): array
     {
+        $credits = [];
+        $creditsList = Loan::where('type_id', Loan::TYPE_CREDIT)->with('organization')->get();
+
+        foreach ($creditsList as $credit) {
+            if ($credit->total_amount == 0) {
+                continue;
+            }
+
+            $credits[] = [
+                'bank' => $credit->getBankName(),
+                'contract' => $credit->name,
+                'total' => $credit->total_amount,
+                'used' => abs($credit->amount)
+            ];
+        }
+
+        return $credits;
+
+        // старая ручная реализация
         $startCreditDate = '2022-02-15';
 
         $credits = [
@@ -33,6 +53,15 @@ class CreditService
 
     public function getTotalCreditAmount(string|Carbon $date, Company $company): float
     {
+        $amount = 0;
+        $credits = $this->getCredits($date, $company);
+        foreach ($credits as $credit) {
+            $amount += $credit['used'];
+        }
+
+        return -$amount;
+
+        // старая ручная реализация
         $amount = 0;
         $credits = $this->getCredits($date, $company);
 

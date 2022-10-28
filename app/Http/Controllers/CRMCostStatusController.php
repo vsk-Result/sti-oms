@@ -13,7 +13,12 @@ class CRMCostStatusController extends Controller
         $closures = [];
         $nowMonth = Carbon::now()->format('Y-m') . '-01';
         $costs = Cost::where('is_archive', false)->with('closures')->get();
-        $canShowSTI = ['stevan.nikolic@st-ing.com', 'oksana.dashenko@st-ing.com', 'result007@yandex.ru'];
+        $canShowSTI = [
+            'stevan.nikolic@st-ing.com',
+            'oksana.dashenko@st-ing.com',
+            'result007@yandex.ru',
+            'inna.kamennaya@dttermo.ru'
+        ];
         $notShowCosts = ['С.В. - Тест', 'СОЧИ', 'КАССА'];
 
         foreach ($costs as $cost) {

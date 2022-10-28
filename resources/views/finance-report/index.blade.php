@@ -9,14 +9,14 @@
             <div class="d-flex flex-wrap flex-stack pb-7">
                 <div class="d-flex flex-wrap" data-kt-user-table-toolbar="base">
                     <div class="me-3">
-                        <span class="fs-5 fw-bold text-gray-600 pb-2 d-block">Выберите дату</span>
-                        <input
-                            readonly
-                            type="text"
-                            class="form-control form-control-solid date-range-picker-single mb-3"
-                            name="date"
-                            value="{{ $date->format('Y-m-d') }}"
-                        />
+{{--                        <span class="fs-5 fw-bold text-gray-600 pb-2 d-block">Выберите дату</span>--}}
+{{--                        <input--}}
+{{--                            readonly--}}
+{{--                            type="text"--}}
+{{--                            class="form-control form-control-solid date-range-picker-single mb-3"--}}
+{{--                            name="date"--}}
+{{--                            value="{{ $date->format('Y-m-d') }}"--}}
+{{--                        />--}}
 
                         <form action="{{ route('finance_report.exports.store') }}" method="POST" class="hidden">
                             @csrf
@@ -48,7 +48,7 @@
         </div>
 
         <div class="col-lg-6 col-md-6 col-xxl-5 col-xxl-4">
-{{--            @include('finance-report.parts.credits')--}}
+            @include('finance-report.parts.credits')
             @include('finance-report.parts.loans')
         </div>
     </div>

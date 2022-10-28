@@ -74,7 +74,13 @@
                             @endif
                         </td>
                         <td>{{ $guarantee->customer->name }}</td>
-                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, 'RUB') }}</td>
+                        <td>
+                            @if(auth()->user()->can('edit guarantees'))
+                                <a href="{{ route('guarantees.edit', $guarantee) }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, 'RUB') }}</a>
+                            @else
+                                {{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, 'RUB') }}
+                            @endif
+                        </td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->fact_amount, 'RUB') }}</td>
                         <td>{{ $guarantee->getBankGuaranteeState() }}</td>
                         <td>{{ $guarantee->getFinalActState() }}</td>

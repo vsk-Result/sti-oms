@@ -179,7 +179,11 @@
                             @endif
                         </td>
                         <td class="px-3">
-                            {{ $contract->getName() }}
+                            @if(auth()->user()->can('edit contracts'))
+                                <a href="{{ route('contracts.edit', $contract) }}" class="show-link">{{ $contract->getName() }}</a>
+                            @else
+                                {{ $contract->getName() }}
+                            @endif
                         </td>
                         <td>
                             @foreach(['RUB', 'EUR'] as $currency)

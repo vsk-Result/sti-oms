@@ -139,10 +139,32 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="fv-row">
                                             <div class="mb-1">
-                                                <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
+                                                <label class="form-label fw-bolder text-dark fs-6">Сумма займа/кредита</label>
+                                                <div class="position-relative mb-3">
+                                                    <input
+                                                            class="form-control form-control-lg form-control-solid {{ $errors->has('total_amount') ? 'is-invalid' : '' }}"
+                                                            type="text"
+                                                            name="total_amount"
+                                                            value="{{ old('total_amount', $loan->total_amount) }}"
+                                                            required
+                                                    />
+                                                </div>
+                                                @if ($errors->has('total_amount'))
+                                                    <div class="fv-plugins-message-container invalid-feedback">
+                                                        <div>{{ implode(' ', $errors->get('total_amount')) }}</div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-10 fv-row">
+                                        <div class="fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Сумма долга</label>
                                                 <div class="position-relative mb-3">
                                                     <input
                                                         class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
@@ -161,7 +183,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6 fv-row">
+                                    <div class="col-md-4 fv-row">
                                         <div class="mb-10 fv-row">
                                             <div class="mb-1">
                                                 <label class="form-label fw-bolder text-dark fs-6">Процент</label>
@@ -199,6 +221,11 @@
                                         @endif
                                     </div>
                                 </div>
+
+                                <div class="mb-10">
+                                    <label class="form-label fw-bolder text-dark fs-6">Теги для уведомлений</label>
+                                    <input name="tags" class="form-control form-control-solid form-control-lg" value="{{ implode(', ', $loan->notifyTags->pluck('tag')->toArray()) }}" id="tags"/>
+                                </div>
                             </div>
 
                             <div class="mb-10 fv-row">
@@ -225,3 +252,11 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            new Tagify(document.querySelector('#tags'));
+        });
+    </script>
+@endpush

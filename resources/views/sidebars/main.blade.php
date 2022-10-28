@@ -100,9 +100,9 @@
             @endcan
 
             @can(['index debts', 'index loans'])
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->is('pivots*') ? 'hover show' : '' }}">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('pivots*') || request()->is('loans*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
-                        <span class="menu-title {{ request()->is('pivots*') ? 'fw-boldest' : '' }}">Долги</span>
+                        <span class="menu-title {{ (request()->is('pivots*') || request()->is('loans*')) ? 'fw-boldest' : '' }}">Долги</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
@@ -137,10 +137,10 @@
                 </div>
             @endcan
 
-            @can(['index contracts', 'index acts', 'index bank-guarantees'])
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('loans*')) ? 'hover show' : '' }}">
+            @can(['index contracts', 'index acts', 'index bank-guarantees', 'index guarantees'])
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
-                        <span class="menu-title {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('loans*')) ? 'fw-boldest' : '' }}">Документооборот</span>
+                        <span class="menu-title {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'fw-boldest' : '' }}">Документооборот</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
@@ -177,16 +177,16 @@
                             </div>
                         @endcan
 
-                            @can('index guarantees')
-                                <div class="menu-item">
-                                    <a class="menu-link py-2 {{ request()->is('guarantees*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                        <span class="menu-title">Гарантийные удержания</span>
-                                    </a>
-                                </div>
-                            @endcan
+                        @can('index guarantees')
+                            <div class="menu-item">
+                                <a class="menu-link py-2 {{ request()->is('guarantees*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                    <span class="menu-title">Гарантийные удержания</span>
+                                </a>
+                            </div>
+                        @endcan
                     </div>
                 </div>
             @endcan

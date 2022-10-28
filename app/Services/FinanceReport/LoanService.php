@@ -21,10 +21,10 @@ class LoanService
     public function getLoans(string|Carbon $date, Company $company): array
     {
         $loans = [];
-        $loansList = Loan::with('organization')->get();
+        $loansList = Loan::where('type_id', Loan::TYPE_LOAN)->with('organization')->get();
 
         foreach ($loansList as $loan) {
-            if ($loan->amount === 0) {
+            if ($loan->amount == 0) {
                 continue;
             }
 
@@ -38,6 +38,7 @@ class LoanService
 
         return $loans;
 
+        // Старая ручная реализация
         $DTOrganization = Organization::where('name', 'ООО "ДТ ТЕРМО ГРУПП"')->first();
         $PTIOrganization = Organization::where('name', 'ООО "ПРОМТЕХИНЖИНИРИНГ"')->first();
 

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\Sanitizer;
 use App\Models\Loan;
+use App\Models\LoanNotifyTag;
 use App\Models\Status;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -52,7 +53,7 @@ class LoanService
 
     public function createLoan(array $requestData): void
     {
-        Loan::create([
+        $loan = Loan::create([
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
             'type_id' => $requestData['type_id'],
@@ -62,9 +63,20 @@ class LoanService
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
+            'total_amount' => $this->sanitizer->set($requestData['total_amount'])->toAmount()->get(),
             'percent' => $this->sanitizer->set($requestData['percent'])->toAmount()->get(),
             'status_id' => Status::STATUS_ACTIVE,
         ]);
+
+        if (! is_null($requestData['tags'])) {
+            $tags = json_decode($requestData['tags'], true);
+            foreach ($tags as $tag) {
+                LoanNotifyTag::create([
+                    'loan_id' => $loan->id,
+                    'tag' => $tag['value']
+                ]);
+            }
+        }
     }
 
     public function updateLoan(Loan $loan, array $requestData): void
@@ -79,13 +91,27 @@ class LoanService
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
+            'total_amount' => $this->sanitizer->set($requestData['total_amount'])->toAmount()->get(),
             'percent' => $this->sanitizer->set($requestData['percent'])->toAmount()->get(),
             'status_id' => $requestData['status_id']
         ]);
+
+        $loan->notifyTags()->delete();
+
+        if (! is_null($requestData['tags'])) {
+            $tags = json_decode($requestData['tags'], true);
+            foreach ($tags as $tag) {
+                LoanNotifyTag::create([
+                    'loan_id' => $loan->id,
+                    'tag' => $tag['value']
+                ]);
+            }
+        }
     }
 
     public function destroyLoan(Loan $loan): void
     {
+        $loan->notifyTags()->delete();
         $loan->delete();
     }
 }

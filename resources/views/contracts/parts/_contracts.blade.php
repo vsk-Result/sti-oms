@@ -3,7 +3,13 @@
         $mainContract->type_id = \App\Models\Contract\Contract::TYPE_ADDITIONAL;
     @endphp
     <td></td>
-    <td class="px-3">Основной договор</td>
+    <td class="px-3">
+        @if(auth()->user()->can('edit contracts'))
+            <a href="{{ route('contracts.edit', $mainContract) }}" class="show-link">Основной договор</a>
+        @else
+            Основной договор
+        @endif
+    </td>
     <td></td>
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAmount($currency), $currency) }}</td>
     <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAvansesAmount($currency), $currency) }}</td>
@@ -51,7 +57,11 @@
     <tr class="subcontract-row">
         <td></td>
         <td class="px-3">
-            {{ $contract->getName() }}
+            @if(auth()->user()->can('edit contracts'))
+                <a href="{{ route('contracts.edit', $contract) }}" class="show-link">{{ $contract->getName() }}</a>
+            @else
+                {{ $contract->getName() }}
+            @endif
         </td>
         <td></td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAmount($currency), $currency) }}</td>
