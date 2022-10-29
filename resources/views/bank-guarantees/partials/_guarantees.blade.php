@@ -81,11 +81,11 @@
             </div>
         </div>
     </div>
-    <div class="card-body pt-0 table-responsive">
+    <div class="card-body pt-0 table-responsive freeze-table ps-0">
         <table class="table table-hover align-middle table-row-dashed fs-7 gy-5" id="kt_table_users">
             <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                    <th class="min-w-100px">Объект</th>
+                    <th class="min-w-100px ps-3">Объект</th>
                     <th class="min-w-150px">Договор</th>
                     <th class="min-w-150px">Номер</th>
                     <th class="min-w-250px">Контрагент</th>
@@ -101,7 +101,7 @@
             <tbody class="text-gray-600 fw-bold">
             @forelse($bankGuarantees as $guarantee)
                 <tr>
-                    <td>
+                    <td class="ps-3">
                         @if(auth()->user()->can('show objects'))
                             <a href="{{ route('objects.show', $guarantee->object) }}" class="show-link">{{ $guarantee->object->code }}</a>
                         @else

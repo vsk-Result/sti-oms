@@ -53,11 +53,11 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body pt-0 table-responsive">
-                <table class="table table-hover align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+            <div class="card-body pt-0 table-responsive freeze-table ps-0">
+                <table class="table table-hover align-middle table-row-dashed fs-7 gy-5" id="kt_table_users">
                     <thead>
                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                        <th class="min-w-75px">Тип</th>
+                        <th class="min-w-75px ps-3">Тип</th>
                         <th class="min-w-75px">Компания</th>
                         <th class="min-w-100px">Банк</th>
                         <th class="min-w-125px">Контрагент</th>
@@ -74,7 +74,7 @@
                     <tbody class="text-gray-600 fw-bold">
                     @forelse($loans as $loan)
                         <tr>
-                            <td>{{ $loan->getType() }}</td>
+                            <td class="ps-3">{{ $loan->getType() }}</td>
                             <td>{!! $loan->company?->getShortNameColored() !!}</td>
                             <td>{{ $loan->getBankName() }}</td>
                             <td>{{ $loan->organization?->name }}</td>
@@ -146,3 +146,11 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            mainApp.initFreezeTable(1);
+        });
+    </script>
+@endpush

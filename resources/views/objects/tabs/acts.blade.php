@@ -12,3 +12,11 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            mainApp.initFreezeTable(2);
+        });
+    </script>
+@endpush

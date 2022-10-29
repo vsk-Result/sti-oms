@@ -29,8 +29,8 @@
                 </div>
             </div>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
+        <div class="card-body p-0 ps-0">
+            <div class="table-responsive freeze-table">
                 <table class="table table-hover align-middle table-row-dashed fs-7">
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
@@ -103,6 +103,7 @@
             // $('.show-rows').on('click', function() {
             //
             // });
+            mainApp.initFreezeTable(2);
         });
     </script>
 @endpush

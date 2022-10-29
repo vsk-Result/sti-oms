@@ -70,6 +70,8 @@
                     document.location = url.toString();
                 }, 300);
             });
+
+            mainApp.initFreezeTable(2);
         });
     </script>
 @endpush

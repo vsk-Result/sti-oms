@@ -25,7 +25,7 @@
     @endphp
     <div class="card mb-5 mb-xl-8 p-0 border-0">
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive freeze-table">
                 <table class="table table-hover align-middle table-row-dashed fs-7">
                     <thead class="text-gray-600">
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
@@ -299,6 +299,14 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            mainApp.initFreezeTable(1);
+        });
+    </script>
+@endpush
 
 @push('styles')
     <style>

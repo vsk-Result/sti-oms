@@ -85,12 +85,12 @@
             </div>
         </div>
     </div>
-    <div class="card-body py-3">
-        <div class="table-responsive">
+    <div class="card-body py-3 ps-0">
+        <div class="table-responsive freeze-table">
             <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                    <th data-sort-by="date" class="sortable-row min-w-125px">Дата</th>
+                    <th data-sort-by="date" class="ps-3 sortable-row min-w-125px">Дата</th>
                     <th data-sort-by="company_id" class="sortable-row min-w-100px">Компания</th>
                     <th data-sort-by="bank_id" class="sortable-row min-w-125px">Банк</th>
                     <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>

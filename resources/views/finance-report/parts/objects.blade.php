@@ -211,8 +211,8 @@
 
         </div>
     </div>
-    <div class="card-body pt-0 table-responsive">
-        <table class="objects-table table table-hover align-middle table-row-dashed fs-7 gy-5" id="kt_table_users">
+    <div class="card-body pt-0 px-0 table-responsive freeze-table">
+        <table class="objects-table table table-hover align-middle table-row-dashed fs-7 gy-5">
             <thead>
             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                 <th class="min-w-200px br ps-2">Сводка</th>

@@ -50,3 +50,5 @@
 
     @yield('object-tab-content')
 @endsection
+
+

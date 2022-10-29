@@ -75,12 +75,12 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body py-3">
-                <div class="table-responsive">
+            <div class="card-body py-3 ps-0">
+                <div class="table-responsive freeze-table">
                     <table class="table table-hover align-middle table-row-dashed fs-6" id="kt_table_users">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="w-25px">
+                            <th class="w-25px ps-3">
                                 <div class="form-check form-check-sm form-check-custom form-check-solid">
                                     <input id="check-all-imports" class="form-check-input" type="checkbox" />
                                 </div>
@@ -102,14 +102,14 @@
                             @forelse($importsGroupedByDate as $date => $imports)
                                 <tr>
                                     <td colspan="13">
-                                        <p class="text-left text-dark fw-bolder d-block m-0 fs-6">
+                                        <p class="text-left text-dark fw-bolder d-block m-0 fs-6 ps-3">
                                             <span class="badge badge-light-danger fs-7 fw-bolder">{{ \Carbon\Carbon::parse($date)->format('d/m/Y') }}</span>
                                         </p>
                                     </td>
                                 </tr>
                                 @foreach($imports as $import)
                                     <tr>
-                                        <td>
+                                        <td class="ps-3">
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                                 <input class="form-check-input widget-9-check" type="checkbox" value="{{ $import->id }}">
                                             </div>
@@ -224,4 +224,9 @@
 
 @push('scripts')
     <script src="{{ asset('js/payment-imports/index.js') }}"></script>
+    <script>
+        $(function() {
+            mainApp.initFreezeTable(2);
+        });
+    </script>
 @endpush

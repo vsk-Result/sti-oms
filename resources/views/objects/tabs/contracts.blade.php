@@ -51,6 +51,7 @@
                 },
             )
         });
+        mainApp.initFreezeTable(2);
     </script>
 @endpush
 

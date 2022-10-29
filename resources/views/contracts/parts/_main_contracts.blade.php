@@ -78,9 +78,9 @@
             </div>
         </div>
     </div>
-    <div class="card-body py-3">
+    <div class="card-body py-3 ps-3">
 {{--        <div id="tr-1" class="table-responsive" style="height: 20px;overflow-y: hidden;"><div style="width: 100vw;height: 20px;"></div></div>--}}
-        <div id="tr-2" class="table-responsive">
+        <div id="tr-2" class="table-responsive freeze-table">
             <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
                 <tr class="text-start text-muted fw-bolder fs-8 text-uppercase gs-0">

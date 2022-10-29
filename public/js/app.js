@@ -421,6 +421,19 @@ const mainApp = function() {
         chart.render();
     }
 
+    const initFreezeTable = function(columnNum, freezeHead, freezeColumn) {
+        columnNum = columnNum || 1;
+        freezeHead = freezeHead || true;
+        freezeColumn = freezeColumn || true;
+
+        $(".freeze-table").freezeTable({
+            freezeHead: freezeHead,
+            freezeColumn: freezeColumn,
+            columnNum: columnNum,
+            fixedNavbar: '#kt_header',
+        });
+    }
+
     return {
         init: function () {
             initAjaxSetup();
@@ -436,6 +449,9 @@ const mainApp = function() {
         sendAJAX: function (url, type, data, successCallback, errorCallback, alwaysCallback) {
             initSendAJAX(url, type, data, successCallback, errorCallback, alwaysCallback);
         },
+        initFreezeTable: function(columnNum, freezeHead, freezeColumn) {
+            initFreezeTable(columnNum, freezeHead, freezeColumn);
+        }
     };
 }();
 

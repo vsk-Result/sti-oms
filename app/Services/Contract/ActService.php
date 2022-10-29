@@ -69,6 +69,10 @@ class ActService
             $guAmount['RUB'] = $totalInfo['avanses_acts_deposites_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['RUB'];
             $guAmount['EUR'] = $totalInfo['avanses_acts_deposites_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['EUR'];
 
+            if ($actsAmount['RUB'] == 0 && $actsAmount['EUR'] == 0 && $avansesAmount['RUB'] == 0 && $avansesAmount['EUR'] == 0 && $guAmount['RUB'] == 0 && $guAmount['EUR'] == 0) {
+                continue;
+            }
+
             $pivot['entries'][] = [
                 'object' => [
                     'id' => $object->id,

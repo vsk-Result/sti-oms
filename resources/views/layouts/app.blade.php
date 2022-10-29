@@ -56,6 +56,7 @@
 <!-- Scripts -->
 <script src="{{ asset('js/plugins.bundle.js') }}"></script>
 <script src="{{ asset('js/scripts.bundle.js') }}"></script>
+<script src="{{ asset('vendor/freezeTable/freeze.min.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
 @stack('scripts')
 

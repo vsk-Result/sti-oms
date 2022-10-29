@@ -36,6 +36,14 @@ class ImportController extends Controller
         $importData = Excel::toArray(new ContractImport(), $requestData['file']);
 
         if (isset($importData['Договора'])) {
+
+            $objectIds = BObject::whereNotIn('code', ['288', '358', '346'])->pluck('id')->toArray();
+            Contract::whereIn('object_id', $objectIds)->delete();
+            ContractAvans::whereIn('object_id', $objectIds)->delete();
+            ContractReceivedAvans::whereIn('object_id', $objectIds)->delete();
+            Act::whereIn('object_id', $objectIds)->delete();
+            ActPayment::whereIn('object_id', $objectIds)->delete();
+
             foreach ($importData['Договора'] as $index => $row) {
                 if ($index === 0) continue;
 

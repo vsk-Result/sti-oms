@@ -175,6 +175,8 @@
             const year = $(this).text();
             $('input[name=period]').val('01.01.' + year + ' - 31.12.' + year);
         });
+
+        mainApp.initFreezeTable(1);
     </script>
 @endpush
 
