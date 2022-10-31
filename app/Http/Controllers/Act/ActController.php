@@ -42,7 +42,7 @@ class ActController extends Controller
             $query->where('object_id', $objectId);
         }
 
-        $contracts = $query->where('type_id', Contract::TYPE_MAIN)->get();
+        $contracts = $query->where('type_id', Contract::TYPE_MAIN)->with('object', 'children', 'children.object')->get();
         return view('acts.create', compact('contracts'));
     }
 
@@ -59,7 +59,7 @@ class ActController extends Controller
 
     public function edit(Act $act): View
     {
-        $contracts = Contract::where('type_id', Contract::TYPE_MAIN)->get();
+        $contracts = Contract::where('type_id', Contract::TYPE_MAIN)->with('object', 'children', 'children.object')->get();
         $statuses = Status::getStatuses();
         return view('acts.edit', compact('act', 'contracts', 'statuses'));
     }

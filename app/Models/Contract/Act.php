@@ -25,7 +25,7 @@ class Act extends Model implements Audit, HasMedia
     protected $fillable = [
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
         'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id',
-        'currency', 'currency_rate', 'number'
+        'currency', 'currency_rate', 'number', 'planned_payment_date'
     ];
 
     public function contract(): BelongsTo
@@ -51,6 +51,11 @@ class Act extends Model implements Audit, HasMedia
     public function getDateFormatted(string $format = 'd/m/Y'): string
     {
         return Carbon::parse($this->date)->format($format);
+    }
+
+    public function getPlannedPaymentDateFormatted(string $format = 'd/m/Y'): string
+    {
+        return $this->planned_payment_date ? Carbon::parse($this->planned_payment_date)->format($format) : '';
     }
 
     public function getAmount(): string

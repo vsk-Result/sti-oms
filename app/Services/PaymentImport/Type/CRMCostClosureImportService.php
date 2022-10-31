@@ -69,12 +69,14 @@ class CRMCostClosureImportService
 
         foreach ($items as $item) {
 
-            if ($item->object || $item->type_id === 1) {
+            if ($item->object || $item->type_id === 1 || $item->type_id === 2) {
 
                 $objectId = null;
                 $worktypeCode = null;
 
                 if ($item->type_id === 1 && ! $item->object) {
+                    $typeId = Payment::TYPE_TRANSFER;
+                } else if ($item->type_id === 2 && ! $item->object) {
                     $typeId = Payment::TYPE_TRANSFER;
                 } else {
                     if (isset($codesWithoutWorktype[$item->object->code])) {

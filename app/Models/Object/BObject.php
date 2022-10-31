@@ -284,4 +284,10 @@ class  BObject extends Model implements Audit
         $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());
         return $query->where('status_id', Status::STATUS_ACTIVE)->whereNotIn('code', $exceptObjectsWithCodes);
     }
+
+    public function scopeWithoutGeneral($query)
+    {
+        $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());
+        return $query->whereNotIn('code', $exceptObjectsWithCodes);
+    }
 }

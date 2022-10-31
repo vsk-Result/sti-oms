@@ -37,7 +37,7 @@ class ImportController extends Controller
 
         if (isset($importData['Договора'])) {
 
-            $objectIds = BObject::whereNotIn('code', ['288', '358', '346'])->pluck('id')->toArray();
+            $objectIds = BObject::whereIn('code', ['346', '360'])->pluck('id')->toArray();
             Contract::whereIn('object_id', $objectIds)->delete();
             ContractAvans::whereIn('object_id', $objectIds)->delete();
             ContractReceivedAvans::whereIn('object_id', $objectIds)->delete();
@@ -47,9 +47,10 @@ class ImportController extends Controller
             foreach ($importData['Договора'] as $index => $row) {
                 if ($index === 0) continue;
 
+                $currency = $row[1];
                 $contractName = $this->sanitizer->set($row[2])->get();
 
-                $contract = Contract::where('name', $contractName)->first();
+                $contract = Contract::where('name', $contractName)->where('currency', $currency)->first();
 
                 $needCreate = false;
 
@@ -81,7 +82,7 @@ class ImportController extends Controller
                         'amount' => empty($row[3]) ? 0 : $row[3],
                         'stage_id' => 0,
                         'status_id' => Status::STATUS_ACTIVE,
-                        'currency' => $row[1],
+                        'currency' => $currency,
                         'currency_rate' => 1,
                     ]);
                 }

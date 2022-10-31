@@ -64,6 +64,7 @@
                     <th class="min-w-150px">Аванс удержан</th>
                     <th class="min-w-150px">Депозит удержан</th>
                     <th class="min-w-150px">К оплате</th>
+                    <th class="min-w-150px">Дата планируемой оплаты</th>
                     <th class="min-w-150px">Оплачено</th>
                     <th class="min-w-150px">Сумма неоплаченных работ</th>
                     <th class="min-w-150px">Действие</th>
@@ -90,6 +91,7 @@
                         <br>
                         {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['EUR'], 'EUR') }}
                     </th>
+                    <th></th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['RUB'], 'RUB') }}
                         <br>
@@ -132,6 +134,7 @@
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getAvansAmount(), $act->currency) }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getDepositAmount(), $act->currency) }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getNeedPaidAmount(), $act->currency) }}</td>
+                        <td>{{ $act->getPlannedPaymentDateFormatted() }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getPaidAmount(), $act->currency) }}</td>
                         <td>{{ \App\Models\CurrencyExchangeRate::format($act->getLeftPaidAmount(), $act->currency) }}</td>
                         <td>
@@ -167,7 +170,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10">
+                        <td colspan="11">
                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                 Акты отсутствуют
                             </p>

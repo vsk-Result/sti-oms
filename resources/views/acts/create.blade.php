@@ -60,9 +60,9 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-3 mb-10 fv-row">
                                         <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Дата</label>
+                                            <label class="form-label fw-bolder text-dark fs-6">Дата акта</label>
                                             <div class="position-relative mb-3">
                                                 <input
                                                     class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('date') ? 'is-invalid' : '' }}"
@@ -76,6 +76,26 @@
                                             @if ($errors->has('date'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                     <div>{{ implode(' ', $errors->get('date')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Планируемая дата оплаты</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                        class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('planned_payment_date') ? 'is-invalid' : '' }}"
+                                                        type="text"
+                                                        name="planned_payment_date"
+                                                        value="{{ old('planned_payment_date') }}"
+                                                        readonly
+                                                />
+                                            </div>
+                                            @if ($errors->has('planned_payment_date'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('planned_payment_date')) }}</div>
                                                 </div>
                                             @endif
                                         </div>
