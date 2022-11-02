@@ -37,7 +37,7 @@ class ImportController extends Controller
 
         if (isset($importData['Договора'])) {
 
-            $objectIds = BObject::whereNotIn('code', ['288', '358', '346'])->pluck('id')->toArray();
+            $objectIds = BObject::whereIn('code', ['360', '346'])->pluck('id')->toArray();
             Contract::whereIn('object_id', $objectIds)->delete();
             ContractAvans::whereIn('object_id', $objectIds)->delete();
             ContractReceivedAvans::whereIn('object_id', $objectIds)->delete();
@@ -100,7 +100,7 @@ class ImportController extends Controller
                 }
 
                 $avanseDate = $row[5];
-                if (! empty($avanseDate) && ! empty($row[6])) {
+                if (! empty($row[6])) {
                     $description = null;
                     $date = null;
                     if (is_numeric($avanseDate)) {
