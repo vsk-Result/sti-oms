@@ -273,6 +273,15 @@
                                             />
                                         </td>
                                         <td>
+                                            <input
+                                                class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                type="text"
+                                                name="avanses_planned_payment_date[]"
+                                                value=""
+                                                readonly
+                                            />
+                                        </td>
+                                        <td>
                                             <button
                                                 type="button"
                                                 class="destroy-avans btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
@@ -301,6 +310,7 @@
                                         <thead>
                                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                             <th class="min-w-150px">Сумма аванса</th>
+                                            <th class="min-w-150px">Планируемая дата оплаты</th>
                                             <th class="min-w-150px rounded-end pe-4">Действие</th>
                                         </tr>
                                         </thead>
@@ -314,6 +324,15 @@
                                                             name="isset_avanses[{{ $avans->id }}]"
                                                             value="{{ $avans->amount }}"
                                                             autocomplete="off"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                            type="text"
+                                                            name="isset_avanses_planned_payment_date[{{ $avans->id }}]"
+                                                            value="{{ $avans->planned_payment_date }}"
+                                                            readonly
                                                         />
                                                     </td>
                                                     <td>
@@ -496,6 +515,8 @@
             $('#create-avans').on('click', function () {
                 const $avans = $('#avans-template').clone();
                 $('#avanses-table tbody').append($avans.find('tr'));
+
+                mainApp.init();
             });
 
             $(document).on('click', '.destroy-avans', function() {

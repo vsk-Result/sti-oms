@@ -37,7 +37,7 @@ class ImportController extends Controller
 
         if (isset($importData['Договора'])) {
 
-            $objectIds = BObject::whereIn('code', ['360', '346'])->pluck('id')->toArray();
+            $objectIds = BObject::whereNotIn('code', ['288', '358', '346'])->pluck('id')->toArray();
             Contract::whereIn('object_id', $objectIds)->delete();
             ContractAvans::whereIn('object_id', $objectIds)->delete();
             ContractReceivedAvans::whereIn('object_id', $objectIds)->delete();

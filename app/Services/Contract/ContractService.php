@@ -123,13 +123,15 @@ class ContractService
         }
 
         if (! empty($requestData['avanses'])) {
-            foreach ($requestData['avanses'] as $avansAmount) {
+            foreach ($requestData['avanses'] as $index => $avansAmount) {
                 if ((float) $avansAmount > 0) {
+                    $avansPlannedPaymentDate = $requestData['avanses_planned_payment_date'][$index];
                     ContractAvans::create([
                         'contract_id' => $contract->id,
                         'company_id' => $requestData['company_id'],
                         'object_id' => $requestData['object_id'],
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                        'planned_payment_date' => $avansPlannedPaymentDate,
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,
                         'currency_rate' => $contract->currency_rate,
@@ -194,8 +196,10 @@ class ContractService
         if (! empty($requestData['isset_avanses'])) {
             foreach ($requestData['isset_avanses'] as $avansId => $avansAmount) {
                 $avans = ContractAvans::find($avansId);
+                $avansPlannedPaymentDate = $requestData['isset_avanses_planned_payment_date'][$avansId];
                 $avans->update([
                     'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                    'planned_payment_date' => $avansPlannedPaymentDate,
                     'currency' => $contract->currency,
                 ]);
                 unset($currentAvansesIds[$avansId]);
@@ -208,13 +212,15 @@ class ContractService
         }
 
         if (! empty($requestData['avanses'])) {
-            foreach ($requestData['avanses'] as $avansAmount) {
+            foreach ($requestData['avanses'] as $index => $avansAmount) {
                 if ((float) $avansAmount > 0) {
+                    $avansPlannedPaymentDate = $requestData['avanses_planned_payment_date'][$index];
                     ContractAvans::create([
                         'contract_id' => $contract->id,
                         'company_id' => $requestData['company_id'],
                         'object_id' => $requestData['object_id'],
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                        'planned_payment_date' => $avansPlannedPaymentDate,
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,
                         'currency_rate' => $contract->currency_rate,
