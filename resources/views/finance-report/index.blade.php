@@ -4,6 +4,8 @@
 @section('breadcrumbs', Breadcrumbs::render('finance_report.index'))
 
 @section('content')
+    @include('sidebars.finance_report_legend')
+
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="d-flex flex-wrap flex-stack pb-7">
