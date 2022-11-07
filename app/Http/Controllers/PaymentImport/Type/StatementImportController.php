@@ -4,9 +4,11 @@ namespace App\Http\Controllers\PaymentImport\Type;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Statement\StoreStatementRequest;
+use App\Http\Requests\Statement\UpdateStatementRequest;
 use App\Models\Bank;
 use App\Models\Company;
 use App\Models\Currency;
+use App\Models\PaymentImport;
 use App\Services\PaymentImport\PaymentImportService;
 use App\Services\PaymentImport\Type\StatementImportService;
 use Illuminate\Contracts\View\View;
@@ -42,5 +44,20 @@ class StatementImportController extends Controller
         }
 
         return redirect()->route('payment_imports.edit', $import);
+    }
+
+    public function edit(PaymentImport $statement): View
+    {
+        $banks = Bank::getBanks() + [null => 'Без банка'];
+        $companies = Company::all();
+        $currencies = Currency::getCurrencies();
+        return view('payment-imports.types.statements.edit', compact('statement', 'banks', 'companies', 'currencies'));
+    }
+
+    public function update(UpdateStatementRequest $request, PaymentImport $statement): RedirectResponse
+    {
+        $this->importService->updateImport($statement, $request->toArray());
+
+        return redirect()->route('payment_imports.edit', $statement);
     }
 }

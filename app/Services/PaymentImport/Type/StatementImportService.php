@@ -199,6 +199,33 @@ class StatementImportService
         return $import;
     }
 
+    public function updateImport(PaymentImport $statement, array $requestData): null|PaymentImport
+    {
+        if (
+            $statement->date == $requestData['date'] &&
+            $statement->company_id == $requestData['company_id'] &&
+            $statement->bank_id == $requestData['bank_id']
+        ) {
+            return null;
+        }
+
+        $statement->update([
+            'bank_id' => (int) $requestData['bank_id'],
+            'company_id' => (int) $requestData['company_id'],
+            'date' => $requestData['date'],
+        ]);
+
+        foreach ($statement->payments as $payment) {
+            $this->paymentService->updatePayment($payment, [
+                'company_id' => $statement->company_id,
+                'bank_id' => $statement->bank_id,
+                'date' => ($statement->company->short_name === 'БАМС' || is_null($statement->bank_id)) ? $payment->date : $statement->date,
+            ]);
+        }
+
+        return null;
+    }
+
     private function processInfoFromStatementData(array $statementData): array
     {
         $returnData = [];

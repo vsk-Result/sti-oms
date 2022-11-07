@@ -24,6 +24,8 @@ Route::post('payment-imports/exports', [ExportAllController::class, 'store'])->n
 
 Route::get('payment-imports/types/statements/create', [StatementImportController::class, 'create'])->name('payment_imports.types.statements.create')->middleware('can:create payment-imports');
 Route::post('payment-imports/types/statements', [StatementImportController::class, 'store'])->name('payment_imports.types.statements.store')->middleware('can:create payment-imports');
+Route::get('payment-imports/types/statements/{statement}/edit', [StatementImportController::class, 'edit'])->name('payment_imports.types.statements.edit')->middleware('can:edit payment-imports');
+Route::post('payment-imports/types/statements/{statement}', [StatementImportController::class, 'update'])->name('payment_imports.types.statements.update')->middleware('can:edit payment-imports');
 
 // Загрузка из кассы CRM
 

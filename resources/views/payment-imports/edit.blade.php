@@ -20,6 +20,11 @@
                                     </div>
                                 </div>
                                 <div class="d-flex">
+                                    @can('edit payment-imports')
+                                        @if ($import->isStatement())
+                                            <a href="{{ route('payment_imports.types.statements.edit', $import) }}" class="btn btn-sm btn-primary me-3">Изменить</a>
+                                        @endif
+                                    @endcan
                                     <form action="{{ route('payment_imports.exports.store', $import) }}" method="POST" class="hidden">
                                         @csrf
                                         <a

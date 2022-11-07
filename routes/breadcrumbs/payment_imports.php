@@ -26,6 +26,11 @@ Breadcrumbs::for('payment_imports.types.statements.create', function (Breadcrumb
     $trail->push('Загрузка оплат из выписки');
 });
 
+Breadcrumbs::for('payment_imports.types.statements.edit', function (BreadcrumbTrail $trail) {
+    $trail->parent('payment_imports.index');
+    $trail->push('Изменение данных загрузки оплат из выписки');
+});
+
 Breadcrumbs::for('payment_imports.types.crm_cost_closures.create', function (BreadcrumbTrail $trail) {
     $trail->parent('payment_imports.index');
     $trail->push('Загрузка оплат из кассы CRM');
