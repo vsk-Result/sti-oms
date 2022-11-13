@@ -386,6 +386,9 @@ class PaymentService
         $this->destroyPayment($payment);
         $import->reCalculateAmountsAndCounts();
 
+        $avansImport->is_split = true;
+        $avansImport->update();
+
         return collect($payments)->collect();
     }
 
