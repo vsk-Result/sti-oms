@@ -2,7 +2,9 @@
 
 namespace App\Models\CRM;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AvansImport extends Model
@@ -14,5 +16,31 @@ class AvansImport extends Model
     public function items(): HasMany
     {
         return $this->hasMany(AvansImportItem::class, 'import_id');
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function getDate()
+    {
+        return Carbon::parse($this->date)->format('d/m/Y');
+    }
+
+    public function getItemsSum()
+    {
+        $sum = 0;
+
+        foreach ($this->items as $item) {
+
+            if (!$item->avans) {
+                $item->delete();
+                continue;
+            }
+            $sum += $item->avans->value;
+        }
+
+        return $sum;
     }
 }

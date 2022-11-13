@@ -1,7 +1,6 @@
 <div class="card">
     <div class="card-header border-0 pt-6">
         <div class="card-title">
-            <div>
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                     <div class="d-flex flex-column align-items-left">
                         <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}</div>
@@ -17,25 +16,24 @@
                     </div>
                     <div class="fw-bold fs-6 text-gray-400">Сумма депозита</div>
                 </div>
-            </div>
 
-            <div>
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_commission']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_commission']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма комиссии</div>
-                </div>
+{{--            <div>--}}
+{{--                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">--}}
+{{--                    <div class="d-flex flex-column align-items-left">--}}
+{{--                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_commission']['RUB'], 'RUB') }}</div>--}}
+{{--                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_commission']['EUR'], 'EUR') }}</div>--}}
+{{--                    </div>--}}
+{{--                    <div class="fw-bold fs-6 text-gray-400">Сумма комиссии</div>--}}
+{{--                </div>--}}
 
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_acts_left_paid']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_acts_left_paid']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Остаток неотр. аванса</div>
-                </div>
-            </div>
+{{--                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">--}}
+{{--                    <div class="d-flex flex-column align-items-left">--}}
+{{--                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_acts_left_paid']['RUB'], 'RUB') }}</div>--}}
+{{--                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_acts_left_paid']['EUR'], 'EUR') }}</div>--}}
+{{--                    </div>--}}
+{{--                    <div class="fw-bold fs-6 text-gray-400">Остаток неотр. аванса</div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
         </div>
         <div class="card-toolbar">
             <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterBGModal">

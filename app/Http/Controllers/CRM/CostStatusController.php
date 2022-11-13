@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\CRM;
 
+use App\Http\Controllers\Controller;
 use App\Models\CRM\Cost;
 use Carbon\Carbon;
 use Illuminate\View\View;
 
-class CRMCostStatusController extends Controller
+class CostStatusController extends Controller
 {
     public function index(): View
     {

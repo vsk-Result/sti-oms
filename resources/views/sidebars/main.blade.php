@@ -207,7 +207,7 @@
                 </div>
             @endcan
 
-            @can('index crm-costs')
+            @can(['index crm-costs', 'index crm-split-avans-imports'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Другое</span>
@@ -218,6 +218,14 @@
                     <div class="menu-item">
                         <a href="{{ route('crm_costs.index') }}" class="menu-link {{ request()->is('crm-costs*') ? 'active' : '' }}">
                             <span class="menu-title">Статус касс CRM</span>
+                        </a>
+                    </div>
+                @endcan
+
+                @can('index crm-split-avans-imports')
+                    <div class="menu-item">
+                        <a href="{{ route('crm.avanses.imports.split.index') }}" class="menu-link {{ request()->is('crm-split-avans-imports*') ? 'active' : '' }}">
+                            <span class="menu-title">Статус переноса оплат на карты из CRM</span>
                         </a>
                     </div>
                 @endcan
