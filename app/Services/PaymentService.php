@@ -230,6 +230,7 @@ class PaymentService
             'parameters' => $requestData['parameters'] ?? [],
             'amount_without_nds' => $paymentCurrency === 'RUB' ? $requestData['amount_without_nds'] : ($paymentCurrencyRate * $requestData['amount']),
             'is_need_split' => $requestData['is_need_split'] ?? false,
+            'was_split' => $requestData['was_split'] ?? false,
             'status_id' => $requestData['status_id'] ?? Status::STATUS_ACTIVE,
             'currency' => $paymentCurrency,
             'currency_rate' => $paymentCurrencyRate,
@@ -379,6 +380,7 @@ class PaymentService
                 'amount' => (float) -$amount,
                 'amount_without_nds' => (float) -$amount,
                 'is_need_split' => false,
+                'was_split' => true,
                 'status_id' => Status::STATUS_ACTIVE
             ]);
         }

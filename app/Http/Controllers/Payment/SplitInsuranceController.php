@@ -114,6 +114,7 @@ class SplitInsuranceController extends Controller
             $requestData['object_worktype_id'] = 1;
             $requestData['amount'] = -$amount;
             $requestData['amount_without_nds'] = -$amount;
+            $requestData['was_split'] = true;
             $this->paymentService->createPayment($requestData);
         }
 

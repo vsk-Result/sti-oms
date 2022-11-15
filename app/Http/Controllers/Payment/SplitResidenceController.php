@@ -162,6 +162,7 @@ class SplitResidenceController extends Controller
                 $amountWithoutNds = $amount - $nds;
 
                 $requestData['amount_without_nds'] = -$amountWithoutNds;
+                $requestData['was_split'] = true;
 
                 $this->paymentService->createPayment($requestData);
             }

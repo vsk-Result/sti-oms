@@ -120,6 +120,7 @@ class SplitNDFLController extends Controller
             $requestData['amount_without_nds'] = -$amount;
             $requestData['description'] = 'Налог на доходы физических лиц за ' . $month;
             $requestData['code'] = '7.1';
+            $requestData['was_split'] = true;
             $this->paymentService->createPayment($requestData);
         }
 

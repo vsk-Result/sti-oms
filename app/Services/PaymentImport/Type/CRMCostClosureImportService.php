@@ -134,6 +134,7 @@ class CRMCostClosureImportService
                     'amount' => (float) $item->sum,
                     'amount_without_nds' => (float) $item->sum,
                     'is_need_split' => false,
+                    'was_split' => true,
                     'status_id' => Status::STATUS_ACTIVE
                 ]);
             }

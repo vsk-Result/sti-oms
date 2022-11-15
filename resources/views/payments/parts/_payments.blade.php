@@ -117,14 +117,17 @@
                         }
                     @endphp
                     <tr data-payment-update-url="{{ route('payments.update', $payment) }}" style="{{ $style }}">
-                        <td>
+                        <td class="position-relative">
+                            @if ($payment->was_split)
+                                <div class="position-absolute start-0 top-0 w-2px h-100 rounded-2 bg-warning"></div>
+                            @endif
                             @if (auth()->user()->can('edit payments'))
                                 <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
                             @else
                                 {{ $payment->getDateFormatted() }}
                             @endif
                         </td>
-                        <td>{{ $payment->company->short_name }}</td>
+                        <td>{!! $payment->company->getShortNameColored() !!}</td>
                         <td>{{ $payment->getBankName() }}</td>
                         <td>
                             @if($payment->object && auth()->user()->can('show objects') && $payment->type_id === \App\Models\Payment::TYPE_OBJECT)
