@@ -611,8 +611,12 @@ class PaymentService
         }
     }
 
-    public function checkNeedNDS(string $description, int|null $organizationID): bool
+    public function checkNeedNDS(string|null $description, int|null $organizationID): bool
     {
+        if (is_null($description)) {
+            return false;
+        }
+
         if (is_null($organizationID)) {
             return $this->checkHasNDSFromDescription($description);
         }
