@@ -34,6 +34,7 @@
                             <th class="min-w-250px bt bl ps-2">Разбивка общих затрат по годам</th>
 
                             <th class="min-w-125px bt bl hl">Итого</th>
+                            <th class="bt bl hl" style="min-width: 100px !important;width: 100px !important;"></th>
                             <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotal, 'RUB') }}</th>
 
                             <th class="min-w-125px bt">с 01.01.2022 по 11.10.22</th>
@@ -64,6 +65,7 @@
                             <th class="min-w-250px bl ps-2">Объект</th>
 
                             <th class="min-w-125px bl hl text-center">Получено</th>
+                            <th class="bl hl text-center" style="min-width: 100px !important;width: 100px !important;">%</th>
                             <th class="min-w-125px br hl text-center">Общие расходы</th>
 
                             <th class="min-w-125px">Получено</th>
@@ -104,6 +106,7 @@
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="bl hl text-center" style="min-width: 100px !important;width: 100px !important;">{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @if (isset ($info2022_1[$object->id.'|1']))
@@ -180,6 +183,7 @@
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="bl hl text-center" style="min-width: 100px !important;width: 100px !important;">{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @if (isset ($info2022_1[$object->id.'|24']))
@@ -257,6 +261,7 @@
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                    <td class="bl hl text-center" style="min-width: 100px !important;width: 100px !important;">{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @if (isset ($info2022_1[$object->id]))
