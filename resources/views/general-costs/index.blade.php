@@ -13,15 +13,17 @@
         $general2020 = 2000000 + 418000 + 1615000 + \App\Models\Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
         $general2021_1 = 600000 + \App\Models\Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
         $general2021_2 = 600000 + 68689966 + \App\Models\Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $general2022 = \App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $generalTotal = $general2017 + $general2018 + $general2019 + $general2020 + $general2021_1 + $general2021_2 + $general2022;
+        $general2022_1 = \App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
+        $general2022_2 = \App\Models\Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
+        $generalTotal = $general2017 + $general2018 + $general2019 + $general2020 + $general2021_1 + $general2021_2 + $general2022_1 + $general2022_2;
         $info2017 = \App\Services\ObjectService::getGeneralCostsByPeriod('2017-01-01', '2017-12-31');
         $info2018 = \App\Services\ObjectService::getGeneralCostsByPeriod('2018-01-01', '2018-12-31', 21421114);
         $info2019 = \App\Services\ObjectService::getGeneralCostsByPeriod('2019-01-01', '2019-12-31', (39760000 + 692048));
         $info2020 = \App\Services\ObjectService::getGeneralCostsByPeriod('2020-01-01', '2020-12-31', (2000000 + 418000 + 1615000));
         $info2021_1 = \App\Services\ObjectService::getGeneralCostsByPeriod('2021-01-01', '2021-03-02', 600000);
         $info2021_2 = \App\Services\ObjectService::getGeneralCostsByPeriod('2021-03-03', '2021-12-31', (600000 + 68689966));
-        $info2022 = \App\Services\ObjectService::getGeneralCostsByPeriod('2022-01-01', '2022-12-31');
+        $info2022_1 = \App\Services\ObjectService::getGeneralCostsByPeriod('2022-01-01', '2022-10-11');
+        $info2022_2 = \App\Services\ObjectService::getGeneralCostsByPeriod('2022-10-12', '2022-12-31');
     @endphp
     <div class="card mb-5 mb-xl-8 p-0 border-0">
         <div class="card-body p-0">
@@ -34,8 +36,11 @@
                             <th class="min-w-125px bt bl hl">Итого</th>
                             <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotal, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt">2022</th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022, 'RUB') }}</th>
+                            <th class="min-w-125px bt">с 01.01.2022 по 11.10.22</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022_1, 'RUB') }}</th>
+
+                            <th class="min-w-125px bt">с 12.10.2022 по 31.12.22</th>
+                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022_2, 'RUB') }}</th>
 
                             <th class="min-w-125px bt bl">с 01.01.2021 по 02.03.21</th>
                             <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2021_1, 'RUB') }}</th>
@@ -81,6 +86,9 @@
 
                             <th class="min-w-125px bl">Получено</th>
                             <th class="min-w-125px br">Общие расходы на объект</th>
+
+                            <th class="min-w-125px bl">Получено</th>
+                            <th class="min-w-125px br">Общие расходы на объект</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-bold">
@@ -90,19 +98,27 @@
                                     <td class="bl ps-2">{{ $object->getName() . ' | 1 (Строительство)' }}</td>
 
                                     @php
-                                        $totalCuming = ($info2017[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2018[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2019[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2020[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2022[$object->id.'|1']['cuming_amount'] ?? 0);
-                                        $totalGeneral = ($info2017[$object->id.'|1']['general_amount'] ?? 0) + ($info2018[$object->id.'|1']['general_amount'] ?? 0) + ($info2019[$object->id.'|1']['general_amount'] ?? 0) + ($info2020[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['general_amount'] ?? 0) + ($info2022[$object->id.'|1']['general_amount'] ?? 0);
+                                        $totalCuming = ($info2017[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2018[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2019[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2020[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2022_1[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2022_2[$object->id.'|1']['cuming_amount'] ?? 0);
+                                        $totalGeneral = ($info2017[$object->id.'|1']['general_amount'] ?? 0) + ($info2018[$object->id.'|1']['general_amount'] ?? 0) + ($info2019[$object->id.'|1']['general_amount'] ?? 0) + ($info2020[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['general_amount'] ?? 0) + ($info2022_1[$object->id.'|1']['general_amount'] ?? 0) + ($info2022_2[$object->id.'|1']['general_amount'] ?? 0);
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                    @if (isset ($info2022[$object->id.'|1']))
-                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @if (isset ($info2022_1[$object->id.'|1']))
+                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
                                         <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2022_2[$object->id.'|1']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
                                         <td class="br">-</td>
                                     @endif
 
@@ -166,11 +182,19 @@
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                    @if (isset ($info2022[$object->id.'|24']))
-                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @if (isset ($info2022_1[$object->id.'|24']))
+                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
                                         <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2022_2[$object->id.'|24']))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
                                         <td class="br">-</td>
                                     @endif
 
@@ -227,19 +251,27 @@
                                     <td class="bl ps-2">{{ $object->getName() }}</td>
 
                                     @php
-                                        $totalCuming = ($info2017[$object->id]['cuming_amount'] ?? 0) + ($info2018[$object->id]['cuming_amount'] ?? 0) + ($info2019[$object->id]['cuming_amount'] ?? 0) + ($info2020[$object->id]['cuming_amount'] ?? 0) + ($info2021_1[$object->id]['cuming_amount'] ?? 0) + ($info2021_2[$object->id]['cuming_amount'] ?? 0) + ($info2022[$object->id]['cuming_amount'] ?? 0);
-                                        $totalGeneral = ($info2017[$object->id]['general_amount'] ?? 0) + ($info2018[$object->id]['general_amount'] ?? 0) + ($info2019[$object->id]['general_amount'] ?? 0) + ($info2020[$object->id]['general_amount'] ?? 0) + ($info2021_1[$object->id]['general_amount'] ?? 0) + ($info2021_2[$object->id]['general_amount'] ?? 0) + ($info2022[$object->id]['general_amount'] ?? 0);
+                                        $totalCuming = ($info2017[$object->id]['cuming_amount'] ?? 0) + ($info2018[$object->id]['cuming_amount'] ?? 0) + ($info2019[$object->id]['cuming_amount'] ?? 0) + ($info2020[$object->id]['cuming_amount'] ?? 0) + ($info2021_1[$object->id]['cuming_amount'] ?? 0) + ($info2021_2[$object->id]['cuming_amount'] ?? 0) + ($info2022_1[$object->id]['cuming_amount'] ?? 0) + ($info2022_2[$object->id]['cuming_amount'] ?? 0);
+                                        $totalGeneral = ($info2017[$object->id]['general_amount'] ?? 0) + ($info2018[$object->id]['general_amount'] ?? 0) + ($info2019[$object->id]['general_amount'] ?? 0) + ($info2020[$object->id]['general_amount'] ?? 0) + ($info2021_1[$object->id]['general_amount'] ?? 0) + ($info2021_2[$object->id]['general_amount'] ?? 0) + ($info2022_1[$object->id]['general_amount'] ?? 0) + ($info2022_2[$object->id]['general_amount'] ?? 0);
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                    @if (isset ($info2022[$object->id]))
-                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @if (isset ($info2022_1[$object->id]))
+                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
                                         <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+
+                                    @if (isset ($info2022_2[$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
                                         <td class="br">-</td>
                                     @endif
 
