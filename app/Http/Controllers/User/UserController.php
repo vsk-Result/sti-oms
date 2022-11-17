@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Services\UserService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -54,6 +55,12 @@ class UserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         $this->userService->destroyUser($user);
+        return redirect()->back();
+    }
+
+    public function login(User $user): RedirectResponse
+    {
+        Auth::login($user);
         return redirect()->back();
     }
 }

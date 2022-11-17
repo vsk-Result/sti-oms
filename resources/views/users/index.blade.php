@@ -81,7 +81,7 @@
                                             </svg>
                                         </span>
                                     </a>
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
                                         @can('show admin-users')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('users.show', $user) }}" class="menu-link px-3">Посмотреть</a>
@@ -90,6 +90,19 @@
                                         @can('edit admin-users')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('users.edit', $user) }}" class="menu-link px-3">Изменить</a>
+                                            </div>
+
+                                            <div class="menu-item px-3">
+                                                <form action="{{ route('users.login', $user) }}" method="POST" class="hidden">
+                                                    @csrf
+                                                    <a
+                                                            href="{{ route('users.login', $user) }}"
+                                                            class="menu-link px-3"
+                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите войти в систему под этим пользователем?')) {this.closest('form').submit();}"
+                                                    >
+                                                        Войти в систему
+                                                    </a>
+                                                </form>
                                             </div>
 
                                             @if ($user->isDeleted())

@@ -38,3 +38,7 @@ Route::post('users/{user}/passwords/reset', [PasswordResetController::class, 'up
 
 Route::post('users/{user}/roles', [RoleController::class, 'update'])->name('users.roles.update')->middleware('can:edit admin-users');
 Route::post('users/{user}/permissions', [PermissionController::class, 'update'])->name('users.permissions.update')->middleware('can:edit admin-users');
+
+// Войти под пользователем в систему
+
+Route::post('users/{user}/login', [UserController::class, 'login'])->name('users.login')->middleware('can:edit admin-users');
