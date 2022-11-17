@@ -54,6 +54,8 @@ class UserService
 
     public function blockUser(User $user): void
     {
+        $user->syncRoles([]);
+        $user->syncPermissions([]);
         $user->setBlocked();
     }
 
