@@ -57,6 +57,10 @@ class DebtService
 
         if (! empty($requestData['object_id'])) {
             $query->whereIn('object_id', $requestData['object_id']);
+        } else {
+            if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+                $query->whereIn('object_id', auth()->user()->objects->pluck('id'));
+            }
         }
 
         if (! empty($requestData['organization_id'])) {

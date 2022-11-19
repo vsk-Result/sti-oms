@@ -113,6 +113,10 @@ class PaymentService
                     }
                 });
             }
+        } else {
+            if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+                $paymentQuery->whereIn('object_id', auth()->user()->objects->pluck('id'));
+            }
         }
 
         if (! empty($requestData['object_worktype_id'])) {

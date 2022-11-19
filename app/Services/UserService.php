@@ -56,6 +56,7 @@ class UserService
     {
         $user->syncRoles([]);
         $user->syncPermissions([]);
+        $user->objects()->sync([]);
         $user->setBlocked();
     }
 

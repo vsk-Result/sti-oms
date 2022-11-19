@@ -35,6 +35,11 @@ class HistoryController extends Controller
         ];
         $events = ['created' => 'Cоздание', 'updated' => 'Изменение', 'deleted' => 'Удаление'];
         $objects = BObject::pluck('name', 'id');
+
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->pluck('name', 'id');
+        }
+
         $statuses = Status::getStatuses();
         $types = Payment::getTypes() + [1 => 'Объект'];
         $workTypes = [];

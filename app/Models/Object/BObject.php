@@ -101,6 +101,10 @@ class  BObject extends Model implements Audit
         $workTypes = WorkType::getWorkTypes();
         $objects = static::orderBy('code')->get();
 
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = static::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
         foreach ($objects as $object) {
             if ($object->isWithoutWorktype()) {
                 $result[$object->id . '::' . null] = $object->code;

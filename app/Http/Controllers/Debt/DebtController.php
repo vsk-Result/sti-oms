@@ -26,6 +26,11 @@ class DebtController extends Controller
         $total = [];
         $types = Debt::getTypes();
         $objects = BObject::orderBy('code')->get();
+
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
         $workTypes = WorkType::getWorkTypes();
         $organizations = Organization::orderBy('name')->get();
         $categories = ['Аванс', 'Акт', 'Материалы', 'Транспорт'];

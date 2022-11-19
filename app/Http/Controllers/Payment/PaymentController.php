@@ -29,8 +29,13 @@ class PaymentController extends Controller
 
     public function index(Request $request): View
     {
-        $companies = Company::orderBy('name')->get();
         $objects = BObject::orderBy('code')->get();
+
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
+        $companies = Company::orderBy('name')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
         $importTypes = PaymentImport::getTypes();
@@ -116,7 +121,7 @@ class PaymentController extends Controller
         return redirect($returnUrl ?? route('payments.index'));
     }
 
-    public function edit(Payment $payment, Request $request): View|JsonResponse
+    public function edit(Payment $payment, Request $request): View|JsonResponse|RedirectResponse
     {
         $categories = Payment::getCategories();
         $objects = Payment::getTypes() + BObject::getObjectsList();
@@ -131,6 +136,13 @@ class PaymentController extends Controller
                 'status' => 'success',
                 'payment_form' => view('payments.parts._edit_payment_form', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'))->render()
             ]);
+        }
+
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            if (! in_array($payment->object_id, auth()->user()->objects->pluck('id')->toArray())) {
+                abort(403);
+                return redirect()->back();
+            }
         }
 
         return view('payments.edit', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'));

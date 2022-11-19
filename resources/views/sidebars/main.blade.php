@@ -87,14 +87,16 @@
                                 <span class="menu-title">Оплаты</span>
                             </a>
                         </div>
-                        <div class="menu-item">
-                            <a class="menu-link py-2 {{ request()->is('payments/history*') ? 'active' : '' }}" href="{{ route('payments.history.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">История оплат</span>
-                            </a>
-                        </div>
+                        @if (! auth()->user()->hasRole(['object-leader', 'finance-object-user']))
+                            <div class="menu-item">
+                                <a class="menu-link py-2 {{ request()->is('payments/history*') ? 'active' : '' }}" href="{{ route('payments.history.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">История оплат</span>
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endcan
@@ -137,59 +139,61 @@
                 </div>
             @endcan
 
-            @can(['index contracts', 'index acts', 'index bank-guarantees', 'index guarantees'])
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'hover show' : '' }}">
-                    <span class="menu-link py-2">
-                        <span class="menu-title {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'fw-boldest' : '' }}">Документооборот</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
-                        @can('index contracts')
-                            <div class="menu-item">
-                                <a class="menu-link py-2 {{ request()->is('contracts*') ? 'active' : '' }}" href="{{ route('contracts.index') }}">
+            @if (! auth()->user()->hasRole(['object-leader', 'finance-object-user']))
+                @can(['index contracts', 'index acts', 'index bank-guarantees', 'index guarantees'])
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'hover show' : '' }}">
+                        <span class="menu-link py-2">
+                            <span class="menu-title {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'fw-boldest' : '' }}">Документооборот</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
+                            @can('index contracts')
+                                <div class="menu-item">
+                                    <a class="menu-link py-2 {{ request()->is('contracts*') ? 'active' : '' }}" href="{{ route('contracts.index') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Договора</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('index acts')
+                                <div class="menu-item">
+                                    <a class="menu-link py-2 {{ request()->is('acts*') ? 'active' : '' }}" href="{{ route('acts.index') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Акты</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('index bank-guarantees')
+                                <div class="menu-item">
+                                    <a class="menu-link py-2 {{ request()->is('bank-guarantees*') ? 'active' : '' }}" href="{{ route('bank_guarantees.index') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Банковские гарантии</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('index guarantees')
+                                <div class="menu-item">
+                                    <a class="menu-link py-2 {{ request()->is('guarantees*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">Договора</span>
-                                </a>
-                            </div>
-                        @endcan
-
-                        @can('index acts')
-                            <div class="menu-item">
-                                <a class="menu-link py-2 {{ request()->is('acts*') ? 'active' : '' }}" href="{{ route('acts.index') }}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Акты</span>
-                                </a>
-                            </div>
-                        @endcan
-
-                        @can('index bank-guarantees')
-                            <div class="menu-item">
-                                <a class="menu-link py-2 {{ request()->is('bank-guarantees*') ? 'active' : '' }}" href="{{ route('bank_guarantees.index') }}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Банковские гарантии</span>
-                                </a>
-                            </div>
-                        @endcan
-
-                        @can('index guarantees')
-                            <div class="menu-item">
-                                <a class="menu-link py-2 {{ request()->is('guarantees*') ? 'active' : '' }}" href="{{ route('guarantees.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                    <span class="menu-title">Гарантийные удержания</span>
-                                </a>
-                            </div>
-                        @endcan
+                                        <span class="menu-title">Гарантийные удержания</span>
+                                    </a>
+                                </div>
+                            @endcan
+                        </div>
                     </div>
-                </div>
-            @endcan
+                @endcan
+           @endif
 
             @can('index companies')
                 <div class="menu-item">
