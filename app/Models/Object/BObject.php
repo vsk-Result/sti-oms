@@ -280,6 +280,9 @@ class  BObject extends Model implements Audit
 
     public function getWorkSalaryDebt(): float
     {
+        if (isset(self::getCodesWithoutWorktype()[$this->code])) {
+            return 0;
+        }
         return SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')->sum('amount');
     }
 
