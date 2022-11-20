@@ -62,7 +62,7 @@ class KostCodePivot implements
 
                 $total = $objectPayments->sum('amount');
 
-                $sheet->setCellValue('A' . $row, $codes[$code] ?? $code);
+                $sheet->setCellValue('A' . $row, KostCode::getTitleByCode($code));
                 $sheet->setCellValue('B' . $row, $object->code ?? '');
                 $sheet->setCellValue('C' . $row, $objectPayments->where('amount', '>=', 0)->sum('amount'));
                 $sheet->setCellValue('D' . $row, $objectPayments->where('amount', '<', 0)->sum('amount'));
