@@ -48,7 +48,11 @@ class Bank
         [
             'id' => 11,
             'name' => 'АО "АЛЬФА БАНК"',
-        ]
+        ],
+        [
+            'id' => 12,
+            'name' => 'ВТБ Тинькофф',
+        ],
     ];
 
     public static function getBanks(): array
