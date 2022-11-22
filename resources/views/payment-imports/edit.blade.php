@@ -4,7 +4,6 @@
 @section('breadcrumbs', Breadcrumbs::render('payment_imports.edit', $import))
 
 @section('content')
-    @include('sidebars.cost_codes')
     @include('payment-imports.modals.split_payment_modal')
 
     <div class="post d-flex flex-column-fluid">

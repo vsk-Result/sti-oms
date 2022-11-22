@@ -44,6 +44,8 @@
 
                     @include('toolbars.main')
 
+                    @include('sidebars.cost_codes')
+
                     @yield('content')
                 </div>
 
