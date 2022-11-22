@@ -56,15 +56,15 @@
             <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                    <th class="min-w-100px ps-4">Объект</th>
-                    <th class="min-w-150px">Договор</th>
-                    <th class="min-w-75px">Номер акта</th>
-                    <th class="min-w-150px">Дата акта</th>
-                    <th class="min-w-150px">Выполнено</th>
-                    <th class="min-w-150px">Аванс удержан</th>
-                    <th class="min-w-150px">Депозит удержан</th>
-                    <th class="min-w-150px">К оплате</th>
-                    <th class="min-w-150px">Дата планируемой оплаты</th>
+                    <th data-sort-by="object_id" class="min-w-100px ps-4 sortable-row">Объект</th>
+                    <th data-sort-by="contract_id" class="min-w-150px sortable-row">Договор</th>
+                    <th data-sort-by="number" class="min-w-75px sortable-row">Номер акта</th>
+                    <th data-sort-by="date" class="min-w-150px sortable-row">Дата акта</th>
+                    <th data-sort-by="amount" class="min-w-150px sortable-row">Выполнено</th>
+                    <th data-sort-by="amount_avans" class="min-w-175px sortable-row">Аванс удержан</th>
+                    <th data-sort-by="amount_deposit" class="min-w-150px sortable-row">Депозит удержан</th>
+                    <th data-sort-by="amount_need_paid" class="min-w-150px sortable-row">К оплате</th>
+                    <th data-sort-by="planned_payment_date" class="min-w-150px sortable-row">Дата планируемой оплаты</th>
                     <th class="min-w-150px">Оплачено</th>
                     <th class="min-w-150px">Сумма неоплаченных работ</th>
                     <th class="min-w-150px">Действие</th>

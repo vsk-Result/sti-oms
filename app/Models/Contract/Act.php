@@ -50,7 +50,7 @@ class Act extends Model implements Audit, HasMedia
 
     public function getDateFormatted(string $format = 'd/m/Y'): string
     {
-        return Carbon::parse($this->date)->format($format);
+        return $this->date ? Carbon::parse($this->date)->format($format) : '';
     }
 
     public function getPlannedPaymentDateFormatted(string $format = 'd/m/Y'): string

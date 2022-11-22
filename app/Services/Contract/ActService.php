@@ -115,6 +115,19 @@ class ActService
             $actQuery->whereIn('object_id', $requestData['object_id']);
         }
 
+        if (! empty($requestData['sort_by'])) {
+            if ($requestData['sort_by'] == 'contract_id') {
+                $actQuery->orderBy(Contract::select('name')->whereColumn('contracts.id', 'acts.contract_id'), $requestData['sort_direction'] ?? 'asc');
+            } elseif ($requestData['sort_by'] == 'object_id') {
+                $actQuery->orderBy(BObject::select('code')->whereColumn('objects.id', 'acts.object_id'), $requestData['sort_direction'] ?? 'asc');
+            } else {
+                $actQuery->orderBy($requestData['sort_by'], $requestData['sort_direction'] ?? 'asc');
+            }
+        } else {
+            $actQuery->orderByDesc('date')
+                ->orderByDesc('id');
+        }
+
         $actQuery->with('object', 'contract', 'payments');
 
         $perPage = 30;
