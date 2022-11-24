@@ -50,12 +50,12 @@ class Debt extends Model
 
     public function getDateFormatted(string $format = 'd/m/Y'): string
     {
-        return Carbon::parse($this->date)->format($format);
+        return $this->date ? Carbon::parse($this->date)->format($format) : '';
     }
 
     public function getDueDateFormatted(string $format = 'd/m/Y'): string
     {
-        return Carbon::parse($this->invoice_payment_due_date)->format($format);
+        return $this->invoice_payment_due_date ? Carbon::parse($this->invoice_payment_due_date)->format($format) : '';
     }
 
     public function getAmount(): string
