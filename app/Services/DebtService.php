@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Services\Contract\ContractService;
@@ -23,6 +24,7 @@ class DebtService
             'objects' => BObject::whereIn('id', (clone $debtsQuery)->groupBy('object_id')->pluck('object_id'))->orderByDesc('code')->get(),
             'organizations' => Organization::whereIn('id', (clone $debtsQuery)->groupBy('organization_id')->pluck('organization_id'))->orderBy('name')->get(),
             'entries' => [],
+            'manuals' => [],
             'total' => []
         ];
 
@@ -30,9 +32,14 @@ class DebtService
             $pivot['total'][$object->id] = 0;
         }
 
+
+
         foreach ((clone $debtsQuery)->get()->groupBy('organization_id') as $organizationId => $debtsGrouped) {
             foreach ($debtsGrouped->groupBy('object_id') as $objectId => $debts) {
-                $pivot['entries'][$organizationId][$objectId] = $debts->sum('amount');
+                $debtManuals = DebtManual::where('organization_id', $organizationId)->where('object_id', $objectId)->get();
+
+                $pivot['entries'][$organizationId][$objectId] = $debtManuals->count() > 0 ? $debtManuals->sum('amount') : $debts->sum('amount');
+                $pivot['manuals'][$organizationId][$objectId] = $debtManuals->count() > 0;
                 $pivot['total'][$objectId] += $pivot['entries'][$organizationId][$objectId];
             }
         }

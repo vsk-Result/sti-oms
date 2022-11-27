@@ -3,6 +3,8 @@
 @section('object-tab-title', 'Долги')
 
 @section('object-tab-content')
+    @include('objects.modals.debt_manual_edit')
+
     <div class="card border-0">
         <div class="card-header border-0 justify-content-end align-items-center p-0">
             <div class="card-toolbar">
@@ -230,17 +232,54 @@
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Контрагент</th>
-                                <th>Сумма</th>
+                                <th class="ps-2">Контрагент</th>
+                                <th class="w-175px pe-2">Сумма</th>
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
                                 @forelse($object->getContractorDebts() as $organization => $amount)
-                                    <tr>
-                                        <td>{{ substr($organization, strpos($organization, '::') + 2) }}</td>
-                                        <td class="text-danger">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ substr($organization, 0, strpos($organization, '::')) }}">
-                                                {{ number_format($amount, 2, ',', ' ') }}
+                                    @php
+                                        $type = \App\Models\Debt\DebtManual::TYPE_CONTRACTOR;
+                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
+                                        $organizationName = substr($organization, strpos($organization, '::') + 2);
+                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
+
+                                        $comment = '';
+                                        if ($debtManual) {
+                                            if ($debtManual->updatedBy) {
+                                                $comment = 'Изменил(а) ' . $debtManual->updatedBy->name . ', ' . $debtManual->updated_at->format('d.m.Y H:i');
+                                            } else {
+                                                $comment = 'Создал(а) ' . $debtManual->createdBy->name . ', ' . $debtManual->created_at->format('d.m.Y H:i');
+                                            }
+                                        }
+                                    @endphp
+
+                                    <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">
+                                        <td class="ps-2">{{ $organizationName }}</td>
+                                        <td class="text-danger d-flex justify-content-between gap-2 pe-2">
+                                            @if ($debtManual)
+                                                <div>
+                                                    <span class="fw-boldest">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>
+                                                    <span class="text-muted fs-8">(изменено вручную)</span>
+                                                </div>
+                                            @else
+                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                    {{ number_format($amount, 2, ',', ' ') }}
+                                                </a>
+                                            @endif
+
+                                            <a
+                                                    class="edit-debt-manual d-none text-hover-gray-900"
+                                                    href="javascript:void(0)"
+                                                    data-organization-name="{{ $organizationName }}"
+                                                    data-organization-id="{{ $organizationId }}"
+                                                    data-object-id="{{ $object->id }}"
+                                                    data-type-id="{{ $type }}"
+                                                    data-id="{{ $debtManual->id ?? '' }}"
+                                                    data-amount="{{ $debtManual->amount ?? $amount }}"
+                                                    data-comment="{{ $comment }}"
+                                            >
+                                                <i class="fa fa-pen text-primary"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -459,30 +498,67 @@
                     <div class="card-body p-9 pt-0">
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Контрагент</th>
-                                <th>Сумма</th>
-                            </tr>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="ps-2">Контрагент</th>
+                                    <th class="w-175px pe-2">Сумма</th>
+                                </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                            @forelse($object->getProviderDebts() as $organization => $amount)
-                                <tr>
-                                    <td>{{ substr($organization, strpos($organization, '::') + 2) }}</td>
-                                    <td class="text-danger">
-                                        <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ substr($organization, 0, strpos($organization, '::')) }}">
-                                            {{ number_format($amount, 2, ',', ' ') }}
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="2">
-                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                            Долги отсутствуют
-                                        </p>
-                                    </td>
-                                </tr>
-                            @endforelse
+                                @forelse($object->getProviderDebts() as $organization => $amount)
+                                    @php
+                                        $type = \App\Models\Debt\DebtManual::TYPE_PROVIDER;
+                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
+                                        $organizationName = substr($organization, strpos($organization, '::') + 2);
+                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
+
+                                        $comment = '';
+                                        if ($debtManual) {
+                                            if ($debtManual->updatedBy) {
+                                                $comment = 'Изменил(а) ' . $debtManual->updatedBy->name . ', ' . $debtManual->updated_at->format('d.m.Y H:i');
+                                            } else {
+                                                $comment = 'Создал(а) ' . $debtManual->createdBy->name . ', ' . $debtManual->created_at->format('d.m.Y H:i');
+                                            }
+                                        }
+                                    @endphp
+
+                                    <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">
+                                        <td class="ps-2">{{ $organizationName }}</td>
+                                        <td class="text-danger d-flex justify-content-between gap-2 pe-2">
+                                            @if ($debtManual)
+                                                <div>
+                                                    <span class="fw-boldest">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>
+                                                    <span class="text-muted fs-8">(изменено вручную)</span>
+                                                </div>
+                                            @else
+                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                    {{ number_format($amount, 2, ',', ' ') }}
+                                                </a>
+                                            @endif
+
+                                            <a
+                                                    class="edit-debt-manual d-none text-hover-gray-900"
+                                                    href="javascript:void(0)"
+                                                    data-organization-name="{{ $organizationName }}"
+                                                    data-organization-id="{{ $organizationId }}"
+                                                    data-object-id="{{ $object->id }}"
+                                                    data-type-id="{{ $type }}"
+                                                    data-id="{{ $debtManual->id ?? '' }}"
+                                                    data-amount="{{ $debtManual->amount ?? $amount }}"
+                                                    data-comment="{{ $comment }}"
+                                            >
+                                                <i class="fa fa-pen text-primary"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2">
+                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                Долги отсутствуют
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -491,3 +567,31 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+    <style>
+        .row-edit-debt-manual:hover a.edit-debt-manual {
+            display: block !important;
+        }
+        .row-edit-debt-manual.manual {
+            background-color: cornsilk;
+        }
+    </style>
+@endpush
+
+
+@push('scripts')
+    <script>
+        $('.edit-debt-manual').on('click', function() {
+            $('#debtManualModal').modal('show');
+            $('#debtManualModal .modal-title').text(`Укажите сумму долга вручную для ${$(this).data('organization-name')}`);
+            $('#debt-manual-amount').val($(this).data('amount') || '');
+            $('#debt-manual-id').val($(this).data('id') || '');
+            $('#debt-manual-type-id').val($(this).data('type-id') || '');
+            $('#debt-manual-object-id').val($(this).data('object-id') || '');
+            $('#debt-manual-object-worktype-id').val($(this).data('object-worktype-id') || '');
+            $('#debt-manual-organization-id').val($(this).data('organization-id') || '');
+            $('#debt-manual-comment').text($(this).data('comment') || '');
+        });
+    </script>
+@endpush

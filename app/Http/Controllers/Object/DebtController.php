@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Object;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Object\StoreOrUpdateObjectRequest;
+use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\Status;
@@ -35,6 +36,8 @@ class DebtController extends Controller
             $object->general_balance_24 = $object->generalCosts()->where('is_pinned', true)->sum('amount');
         }
 
-        return view('objects.tabs.debts', compact('object'));
+        $debtManuals = DebtManual::where('object_id', $object->id)->get();
+
+        return view('objects.tabs.debts', compact('object', 'debtManuals'));
     }
 }

@@ -9,6 +9,7 @@ use App\Models\CRM\ItrSalary;
 use App\Models\CRM\SalaryDebt;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\Debt\DebtManual;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
@@ -130,6 +131,7 @@ class  BObject extends Model implements Audit
 
     public function getContractorDebts(): array
     {
+        $debtManuals = DebtManual::where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $this->id)->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
 
@@ -164,6 +166,15 @@ class  BObject extends Model implements Audit
             }
 
             asort($result);
+
+            foreach ($result as $organization => $amount) {
+                $organizationId = substr($organization, 0, strpos($organization, '::'));
+                $debtManual = $debtManuals->where('organization_id', $organizationId)->first();
+
+                if ($debtManual) {
+                    $result[$organization] = $debtManual->amount;
+                }
+            }
         }
 
 
@@ -172,6 +183,7 @@ class  BObject extends Model implements Audit
 
     public function getProviderDebts(): array
     {
+        $debtManuals = DebtManual::where('type_id', Debt::TYPE_PROVIDER)->where('object_id', $this->id)->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debts = $this
@@ -201,10 +213,20 @@ class  BObject extends Model implements Audit
                 if (! isset($result[$id])) {
                     $result[$id] = 0;
                 }
+
                 $result[$id] += $debt->amount;
             }
 
             asort($result);
+
+            foreach ($result as $organization => $amount) {
+                $organizationId = substr($organization, 0, strpos($organization, '::'));
+                $debtManual = $debtManuals->where('organization_id', $organizationId)->first();
+
+                if ($debtManual) {
+                    $result[$organization] = $debtManual->amount;
+                }
+            }
         }
 
         return $result;

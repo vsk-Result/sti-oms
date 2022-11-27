@@ -65,7 +65,11 @@
                                 @foreach($pivot['objects'] as $object)
                                     <td class="text-danger text-right {{ $loop->parent->first ? 'bt' : '' }} {{ $loop->first ? ' bl' : '' }}" data-index="{{ $i++ }}">
                                         @if (($pivot['entries'][$organization->id][$object->id] ?? 0) < 0)
-                                            <a href="{{ route('debts.index') }}?organization_id%5B%5D={{ $organization->id }}&object_id%5B%5D={{ $object->id }}" class="text-danger bb cursor-pointer">{{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}</a>
+                                            @if (($pivot['manuals'][$organization->id][$object->id] ?? false) === true)
+                                                {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}
+                                            @else
+                                                <a href="{{ route('debts.index') }}?organization_id%5B%5D={{ $organization->id }}&object_id%5B%5D={{ $object->id }}" class="text-danger bb cursor-pointer">{{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}</a>
+                                            @endif
                                         @else
                                             {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}
                                         @endif
