@@ -14,7 +14,8 @@ class Import implements WithMultipleSheets, SkipsUnknownSheets
             'МАТЕРИАЛЫ' => new SheetForArray(),
             'ПОДРЯДЧИКИ' => new SheetForArray(),
             'Для фин отчёта' => new SheetForArray(),
-            'ДТТЕРМО' => new SheetForArray()
+            'ДТТЕРМО' => new SheetForArray(),
+            'TDSheet' => new SheetForArray(),
         ];
     }
 

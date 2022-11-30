@@ -112,6 +112,12 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/debug.log'),
             'level' => 'debug'
+        ],
+
+        'custom_imports_log' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/imports.log'),
+            'level' => 'debug'
         ]
     ],
 
