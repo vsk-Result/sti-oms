@@ -15,9 +15,10 @@ class DebtService
     public function getPivot(): array
     {
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+//        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
 
-        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+//        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+        $debtsQuery = Debt::where('import_id', $debtImport?->id)
             ->with('organization', 'object');
 
         $pivot = [
@@ -54,8 +55,9 @@ class DebtService
             $query->whereIn('import_id', $requestData['import_id']);
         } else {
             $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-            $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
-            $query->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id]);
+//            $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+//            $query->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id]);
+            $query->where('import_id', $debtImport?->id);
         }
 
         if (! empty($requestData['type_id'])) {

@@ -133,11 +133,12 @@ class  BObject extends Model implements Audit
     {
         $debtManuals = DebtManual::where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $this->id)->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+//        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
 
         $debts = $this
             ->debts()
-            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+//            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+            ->where('import_id', $debtImport?->id)
             ->where('type_id', Debt::TYPE_CONTRACTOR)
             ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
             ->with('organization')
@@ -185,10 +186,11 @@ class  BObject extends Model implements Audit
     {
         $debtManuals = DebtManual::where('type_id', Debt::TYPE_PROVIDER)->where('object_id', $this->id)->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+//        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debts = $this
             ->debts()
-            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+//            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
+            ->where('import_id', $debtImport?->id)
             ->where('type_id', Debt::TYPE_PROVIDER)
             ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
             ->with('organization')
