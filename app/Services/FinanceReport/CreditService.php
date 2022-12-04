@@ -21,6 +21,7 @@ class CreditService
             }
 
             $credits[] = [
+                'id' => $credit->id,
                 'bank' => $credit->getBankName(),
                 'contract' => $credit->name,
                 'total' => $credit->total_amount,

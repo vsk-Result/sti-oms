@@ -14,7 +14,14 @@
                         {{ $credit['bank'] }}
                     </div>
                     <p class="fs-7">
-                        {{ $credit['contract'] }}
+                        <a
+                            target="_blank"
+                            class="text-muted"
+                            style="border-bottom: 1px dashed #ccc;"
+                            href="{{ route('loans.history.index', $credit['id']) }}"
+                        >
+                            {{ $credit['contract'] }}
+                        </a>
                     </p>
                 </div>
 

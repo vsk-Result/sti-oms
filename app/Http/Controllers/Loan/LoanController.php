@@ -33,7 +33,7 @@ class LoanController extends Controller
         return view('loans.index', compact('loans', 'types', 'companies', 'total', 'banks', 'organizations'));
     }
 
-    public function create(Request $request): View
+    public function create(): View
     {
         $banks = Bank::getBanks();
         $types = Loan::getTypes();
@@ -58,7 +58,7 @@ class LoanController extends Controller
         return view('loans.edit', compact('loan', 'banks', 'types', 'companies', 'statuses', 'organizations'));
     }
 
-    public function update(loan $loan, Request $request): RedirectResponse
+    public function update(Loan $loan, Request $request): RedirectResponse
     {
         $this->loanService->updateLoan($loan, $request->toArray());
         return redirect($request->get('return_url') ?? route('loans.index'));

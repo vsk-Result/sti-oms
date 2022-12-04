@@ -42,6 +42,11 @@ class Loan extends Model implements Audit
         return $this->hasMany(LoanNotifyTag::class, 'loan_id');
     }
 
+    public function historyPayments(): HasMany
+    {
+        return $this->hasMany(LoanHistory::class, 'loan_id');
+    }
+
     public function getStartDateFormatted(string $format = 'd/m/Y'): string
     {
         return $this->start_date ? Carbon::parse($this->start_date)->format($format) : '';

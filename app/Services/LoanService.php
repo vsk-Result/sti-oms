@@ -112,6 +112,7 @@ class LoanService
     public function destroyLoan(Loan $loan): void
     {
         $loan->notifyTags()->delete();
+        $loan->historyPayments()->delete();
         $loan->delete();
     }
 }

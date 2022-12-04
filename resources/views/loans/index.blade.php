@@ -101,11 +101,7 @@
                                 </a>
                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                     <div class="menu-item px-3">
-                                        @if (is_null($loan->bank_id))
-                                            <a target="_blank" href="{{ route('payments.index') }}?description={{ $loan->name }}" class="menu-link px-3">Оплаты</a>
-                                        @else
-                                            <a target="_blank" href="{{ route('payments.index') }}?bank_id%5B%5D={{ $loan->bank_id }}&description={{ $loan->name }}" class="menu-link px-3">Оплаты</a>
-                                        @endif
+                                        <a target="_blank" href="{{ route('loans.history.index', $loan) }}" class="menu-link px-3">Оплаты</a>
                                     </div>
                                     @can('edit loans')
                                         <div class="menu-item px-3">

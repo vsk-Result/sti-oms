@@ -8,6 +8,7 @@ use App\Models\Organization;
 use App\Models\Payment;
 use App\Services\CurrencyExchangeRateService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class LoanService
 {
@@ -18,25 +19,9 @@ class LoanService
         $this->rateService = $rateService;
     }
 
-    public function getLoans(string|Carbon $date, Company $company): array
+    public function getLoans(string|Carbon $date, Company $company): array|Collection
     {
-        $loans = [];
-        $loansList = Loan::where('type_id', Loan::TYPE_LOAN)->with('organization')->get();
-
-        foreach ($loansList as $loan) {
-            if ($loan->amount == 0) {
-                continue;
-            }
-
-            if (! isset($loans[$loan->organization->name])) {
-                $loans[$loan->organization->name] = 0;
-            }
-            $loans[$loan->organization->name] += $loan->amount;
-        }
-
-        asort($loans);
-
-        return $loans;
+        return Loan::where('type_id', Loan::TYPE_LOAN)->where('amount', '!=', 0)->with('organization')->orderBy('amount')->get();
 
         // Старая ручная реализация
         $DTOrganization = Organization::where('name', 'ООО "ДТ ТЕРМО ГРУПП"')->first();
