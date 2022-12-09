@@ -2,10 +2,18 @@
 
 namespace App\Services;
 
+use App\Helpers\Sanitizer;
 use App\Models\Debt\DebtManual;
 
 class DebtManualService
 {
+    private Sanitizer $sanitizer;
+
+    public function __construct(Sanitizer $sanitizer)
+    {
+        $this->sanitizer = $sanitizer;
+    }
+
     public function updateDebtManual(array $requestData): void
     {
         $debtManualId = $requestData['debt_manual_id'];
@@ -26,7 +34,7 @@ class DebtManualService
                 'object_id' => $requestData['debt_manual_object_id'],
                 'object_worktype_id' => $requestData['debt_manual_object_worktype_id'] ?? null,
                 'organization_id' => $requestData['debt_manual_organization_id'],
-                'amount' => $requestData['debt_manual_amount'],
+                'amount' => $this->sanitizer->set($requestData['debt_manual_amount'])->toAmount()->get(),
             ]);
         }
     }

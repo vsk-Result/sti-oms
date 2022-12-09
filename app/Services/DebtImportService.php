@@ -435,8 +435,8 @@ class DebtImportService
         foreach ($contractors as $row) {
 
             $organizationName = trim($row[3]);
-            $objectName = trim($row[10]);
-            $amountDebt = trim($row[12]);
+            $objectName = trim($row[11]);
+            $amountDebt = trim($row[13]);
 
             if (empty($amountDebt)) {
                 continue;
@@ -462,22 +462,22 @@ class DebtImportService
             }
 
             $dueDate = null;
-            $comment = trim($row[16]);
-            if (is_numeric($row[13])) {
-                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[13]))->format('Y-m-d');
-            } else if (is_string($row[13])) {
-                $dueDate = $row[13];
+            $comment = trim($row[17]);
+            if (is_numeric($row[14])) {
+                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[14]))->format('Y-m-d');
+            } else if (is_string($row[14])) {
+                $dueDate = $row[14];
             } else {
-                if (! empty($row[13])) {
-                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[13];
+                if (! empty($row[14])) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
                 }
             }
 
-            if (! empty($row[15])) {
-                $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[15];
+            if (! empty($row[16])) {
+                $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[16];
             }
 
-            $invoiceAmount = $row[7] ?? 0;
+            $invoiceAmount = $row[8] ?? 0;
             $invoiceAmount = (string)$invoiceAmount;
             $invoiceAmount = str_replace(' ', '', $invoiceAmount);
             $invoiceAmount = str_replace(',', '.', $invoiceAmount);
@@ -485,20 +485,20 @@ class DebtImportService
 
             $this->debtService->createDebt([
                 'import_id' => $import->id,
-                'type_id' => Debt::TYPE_CONTRACTOR,
+                'type_id' => $row[4] === 'ПОСТАВЩИКИ' ? Debt::TYPE_PROVIDER : Debt::TYPE_CONTRACTOR,
                 'company_id' => $import->company_id,
                 'object_id' => $object->id,
                 'object_worktype_id' => null,
                 'organization_id' => $organization->id,
                 'date' => $import->date,
-                'amount' => -$row[12],
-                'amount_without_nds' => -($row[12] - ($row[12] / 6)),
+                'amount' => -$row[13],
+                'amount_without_nds' => -($row[13] - ($row[13] / 6)),
                 'status_id' => Status::STATUS_ACTIVE,
-                'category' => trim($row[14]),
-                'code' => trim($row[9]),
-                'invoice_number' => trim($row[5]) . ' от ' . $row[6],
+                'category' => trim($row[15]),
+                'code' => trim($row[10]),
+                'invoice_number' => trim($row[6]) . ' от ' . $row[7],
                 'order_author' => trim($row[1]),
-                'description' => trim($row[2]) . ': ' . trim($row[4]),
+                'description' => trim($row[2]) . ': ' . trim($row[5]),
                 'comment' => $comment,
                 'invoice_payment_due_date' => $dueDate,
                 'invoice_amount' => $invoiceAmount
