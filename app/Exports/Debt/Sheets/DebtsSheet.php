@@ -70,12 +70,12 @@ class DebtsSheet implements
 
         $row = 2;
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-//        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
+        $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
 
         $debts = $this->object
             ->debts()
-//            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id])
-            ->where('import_id', $debtImport?->id)
+            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id])
             ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
             ->with('organization')
             ->orderBy('amount')

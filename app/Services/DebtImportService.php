@@ -133,6 +133,8 @@ class DebtImportService
         unset($providers[0], $providers[1], $providers[2]);
 
         foreach ($providers as $row) {
+            continue;
+
             if (is_null($row[1]) && is_null($row[2])) {
                 break;
             }
@@ -229,13 +231,13 @@ class DebtImportService
             $organizationName = trim($row[3]);
             $objectName = trim($row[10]);
 
-//            if ($organizationName === 'ДТ Термо' || empty($row[12])) {
-//                continue;
-//            }
-
-            if (empty($row[12])) {
+            if ($organizationName === 'ДТ Термо' || empty($row[12])) {
                 continue;
             }
+
+//            if (empty($row[12])) {
+//                continue;
+//            }
 
             if (in_array($objectName, ['ГЭС-2 займ', 'займ'])) {
                 continue;
@@ -421,7 +423,7 @@ class DebtImportService
         }
 
         $import = DebtImport::create([
-            'type_id' => DebtImport::TYPE_SUPPLY,
+            'type_id' => DebtImport::TYPE_1C,
             'company_id' => $company->id,
             'date' => Carbon::now(),
             'file' => $this->uploadService->uploadFile('debt-imports', $requestData['file']),
@@ -435,6 +437,7 @@ class DebtImportService
         foreach ($contractors as $row) {
 
             $organizationName = trim($row[3]);
+            $organizationType = trim($row[4]);
             $objectName = trim($row[11]);
             $amountDebt = trim($row[13]);
 
@@ -443,6 +446,14 @@ class DebtImportService
             }
 
             if (empty($objectName)) {
+                continue;
+            }
+
+            if ($organizationName === 'ДТ ТЕРМО ГРУПП ООО') {
+                continue;
+            }
+
+            if ($organizationType !== 'ПОСТАВЩИКИ') {
                 continue;
             }
 
@@ -485,7 +496,7 @@ class DebtImportService
 
             $this->debtService->createDebt([
                 'import_id' => $import->id,
-                'type_id' => $row[4] === 'ПОСТАВЩИКИ' ? Debt::TYPE_PROVIDER : Debt::TYPE_CONTRACTOR,
+                'type_id' => $organizationType === 'ПОСТАВЩИКИ' ? Debt::TYPE_PROVIDER : Debt::TYPE_CONTRACTOR,
                 'company_id' => $import->company_id,
                 'object_id' => $object->id,
                 'object_worktype_id' => null,
