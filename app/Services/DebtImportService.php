@@ -380,6 +380,11 @@ class DebtImportService
 
                     if (array_key_exists($code, $transferCodes)) {
                         $code = $transferCodes[$code];
+                    } else {
+                        $code = substr($value, 0, strpos($value, '.'));
+                        if (array_key_exists($code, $transferCodes)) {
+                            $code = $transferCodes[$code];
+                        }
                     }
 
                     $oCode = $code;
