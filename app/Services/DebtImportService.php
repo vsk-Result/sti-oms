@@ -349,7 +349,7 @@ class DebtImportService
 
         $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
 
-        foreach ($importData as $index => $row) {
+        foreach ($importData as $row) {
             $value = $row[0];
             $amount = $row[6];
 
@@ -398,7 +398,7 @@ class DebtImportService
                 $object = BObject::where('code', $code)->first();
                 if (!$object) {
                     $this->destroyImport($import);
-                    return $index . ' | Объекта "' . $code . '" нет в системе. Загрузка не удалась.';
+                    return $row[0] . ' | Объекта "' . $code . '" нет в системе. Загрузка не удалась.';
                 }
 
                 $this->debtService->createDebt([
