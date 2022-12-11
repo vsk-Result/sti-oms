@@ -389,7 +389,7 @@ class DebtImportService
 
                     $oCode = $code;
 
-                    if (str_contains($code, '.')) {
+                    if (str_contains($code, '.') && $code !== '27.1') {
                         $code = substr($code, 0, strpos($code, '.'));
                         $worktype = (int)substr($oCode, strpos($oCode, '.') + 1);
                     }
