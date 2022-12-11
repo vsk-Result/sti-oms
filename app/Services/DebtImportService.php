@@ -383,7 +383,7 @@ class DebtImportService
                     } else {
                         $Bcode = substr($code, 0, strpos($code, '.'));
                         if (array_key_exists($Bcode, $transferCodes)) {
-                            $code = $transferCodes[$code];
+                            $code = $transferCodes[$Bcode];
                         }
                     }
 
