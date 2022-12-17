@@ -7,6 +7,7 @@ use App\Http\Controllers\Organization\TransferPaymentImportController;
 // Импорт переноса оплат
 
 Route::post('organizations/transfer-payments/import', [TransferPaymentImportController::class, 'store'])->name('organizations.transfer_payments.import.store')->middleware('can:edit organizations');
+Route::post('organizations/transfer-payments/import/update', [TransferPaymentImportController::class, 'update'])->name('organizations.transfer_payments.import.update')->middleware('can:index scheduler');
 
 // Контрагенты
 

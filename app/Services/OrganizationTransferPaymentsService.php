@@ -1,34 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\Organization;
+namespace App\Services;
 
-use App\Helpers\Sanitizer;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Organization\UpdateTransferPaymentImportRequest;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Organization\PaymentTransferImport;
 use App\Models\Organization;
-use App\Services\OrganizationService;
-use App\Services\UploadService;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 
-class TransferPaymentImportController extends Controller
+class OrganizationTransferPaymentsService
 {
-    private Sanitizer $sanitizer;
     private OrganizationService $organizationService;
 
-    public function __construct(Sanitizer $sanitizer, OrganizationService $organizationService)
+    public function __construct(OrganizationService $organizationService)
     {
-        $this->sanitizer = $sanitizer;
         $this->organizationService = $organizationService;
     }
 
-    public function store(Request $request): RedirectResponse
+    public function transfer(UploadedFile $file): string
     {
-        $requestData = $request->toArray();
-        $importData = Excel::toArray(new PaymentTransferImport(), $requestData['file']);
+        $importData = Excel::toArray(new PaymentTransferImport(), $file);
         foreach ($importData['Организации'] as $index => $row) {
 
             if ($index === 0) continue;
@@ -67,13 +57,6 @@ class TransferPaymentImportController extends Controller
             $this->organizationService->destroyOrganization($organization);
         }
 
-        return redirect()->back();
-    }
-
-    public function update(UpdateTransferPaymentImportRequest $request): RedirectResponse
-    {
-        Storage::putFileAs('public', $request->file('file'), 'transfer_organizations_payments.xlsx');
-        session()->flash('status', 'Загрузка прошла успешно!');
-        return redirect()->back();
+        return 'ok';
     }
 }

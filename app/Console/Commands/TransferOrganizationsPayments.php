@@ -2,34 +2,34 @@
 
 namespace App\Console\Commands;
 
-use App\Services\DebtImportService;
+use App\Services\OrganizationTransferPaymentsService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
-class ImportContractorDebtsFromExcel extends Command
+class TransferOrganizationsPayments extends Command
 {
-    protected $signature = 'oms-imports:contractor-debts-from-excel';
+    protected $signature = 'oms-imports:transfer-organizations-payments-from-excel';
 
-    protected $description = 'Загружает долги по подрядчикам из Excel (из 1С)';
+    protected $description = 'Переносит оплаты с одного контрагента на другого из Excel';
 
-    private DebtImportService $debtImportService;
+    private OrganizationTransferPaymentsService $organizationTransferPaymentsService;
 
-    public function __construct(DebtImportService $debtImportService)
+    public function __construct(OrganizationTransferPaymentsService $organizationTransferPaymentsService)
     {
         parent::__construct();
-        $this->debtImportService = $debtImportService;
+        $this->organizationTransferPaymentsService = $organizationTransferPaymentsService;
     }
 
     public function handle()
     {
         Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Загрузка долгов по подрядчикам из Excel (из 1С)');
+        Log::channel('custom_imports_log')->debug('[START] Автоматический перенос оплат между контрагентами из Excel');
 
-        $importFilePath = storage_path() . '/app/public/public/TabelOMS_(XLSX).xlsx';
+        $importFilePath = storage_path() . '/app/public/public/transfer_organizations_payments.xlsx';
 
         if (! File::exists($importFilePath)) {
             Log::channel('custom_imports_log')->debug('[ERROR] Файл для загрузки "' . $importFilePath . '" не найден');
@@ -37,7 +37,7 @@ class ImportContractorDebtsFromExcel extends Command
         }
 
         try {
-            $importStatus = $this->debtImportService->createImport(['file' => new UploadedFile($importFilePath, 'TabelOMS_(XLSX).xlsx')]);
+            $importStatus = $this->organizationTransferPaymentsService->transfer(new UploadedFile($importFilePath, 'transfer_organizations_payments.xlsx'));
         } catch (\Exception $e) {
             Log::channel('custom_imports_log')->debug('[ERROR] Не удалось загрузить файл: "' . $e->getMessage());
             return 0;
