@@ -16,6 +16,12 @@ class DebtManualController extends Controller
         $this->debtManualService = $debtManualService;
     }
 
+    public function store(Request $request): RedirectResponse
+    {
+        $this->debtManualService->storeDebtManual($request->toArray());
+        return redirect()->back();
+    }
+
     public function update(Request $request): RedirectResponse
     {
         $this->debtManualService->updateDebtManual($request->toArray());

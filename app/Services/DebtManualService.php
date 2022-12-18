@@ -14,6 +14,26 @@ class DebtManualService
         $this->sanitizer = $sanitizer;
     }
 
+    public function storeDebtManual(array $requestData): void
+    {
+        $objectId = $requestData['debt_manual_object_id'];
+        $organizationId = $requestData['debt_manual_organization_id'];
+        $organizationTypeId = $requestData['debt_manual_organization_type_id'];
+        $amount = $requestData['debt_manual_amount'];
+
+        if (empty($organizationId) || empty($amount)) {
+            return;
+        }
+
+        DebtManual::create([
+            'type_id' => $organizationTypeId,
+            'object_id' => $objectId,
+            'object_worktype_id' => null,
+            'organization_id' => $organizationId,
+            'amount' => $this->sanitizer->set($amount)->toAmount()->get(),
+        ]);
+    }
+
     public function updateDebtManual(array $requestData): void
     {
         $debtManualId = $requestData['debt_manual_id'];

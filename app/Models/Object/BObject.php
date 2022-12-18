@@ -166,6 +166,15 @@ class  BObject extends Model implements Audit
                 $result[$id] += $debt->amount;
             }
 
+            foreach ($debtManuals as $debtManual) {
+                $issetDebt = $debts->where('organization_id', $debtManual->organization_id)->first();
+
+                if (! $issetDebt) {
+                    $id = $debtManual->organization_id . '::' . $debtManual->organization->name;
+                    $result[$id] = $debtManual->amount;
+                }
+            }
+
             asort($result);
 
             foreach ($result as $organization => $amount) {
@@ -218,6 +227,15 @@ class  BObject extends Model implements Audit
                 }
 
                 $result[$id] += $debt->amount;
+            }
+
+            foreach ($debtManuals as $debtManual) {
+                $issetDebt = $debts->where('organization_id', $debtManual->organization_id)->first();
+
+                if (! $issetDebt) {
+                    $id = $debtManual->organization_id . '::' . $debtManual->organization->name;
+                    $result[$id] = $debtManual->amount;
+                }
             }
 
             asort($result);

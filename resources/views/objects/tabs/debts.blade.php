@@ -3,13 +3,14 @@
 @section('object-tab-title', 'Долги')
 
 @section('object-tab-content')
+    @include('objects.modals.debt_manual_create')
     @include('objects.modals.debt_manual_edit')
 
     <div class="card border-0">
         <div class="card-header border-0 justify-content-end align-items-center p-0">
             <div class="card-toolbar">
                 <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                    <form action="{{ route('objects.debts.exports.store', $object) }}" method="POST" class="hidden">
+                    <form action="{{ route('objects.debts.exports.store', $object) }}" method="POST" class="hidden me-3">
                         @csrf
                         <a
                             href="javascript:void(0);"
@@ -26,6 +27,17 @@
                             Экспорт в Excel
                         </a>
                     </form>
+
+                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtCreateManualModal" class="btn btn-light-primary">
+                        <span class="svg-icon svg-icon-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
+                                <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
+                                <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
+                            </svg>
+                        </span>
+                        Новый долг
+                    </a>
                 </div>
             </div>
         </div>
@@ -582,6 +594,33 @@
 
 @push('scripts')
     <script>
+        $(function() {
+            $('#organization-select').select2({
+                sorter: function(data) {
+                    return data.sort(function(a, b) {
+                        return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
+                    });
+                },
+                ajax: {
+                    url: '/organizations?type=select',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            search: params.term,
+                            objects: ''
+                        };
+                    },
+                    processResults: function (data) {
+                        const results = [];
+                        $.each(data.organizations, function(id, text) {
+                            results.push({id, text})
+                        });
+                        return {results};
+                    }
+                }
+            });
+        });
+
         $('.edit-debt-manual').on('click', function() {
             $('#debtManualModal').modal('show');
             $('#debtManualModal .modal-title').text(`Укажите сумму долга вручную для ${$(this).data('organization-name')}`);
