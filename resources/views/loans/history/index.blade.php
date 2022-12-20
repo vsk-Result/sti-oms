@@ -65,23 +65,25 @@
                                     </a>
                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                         @can('edit loans')
-                                            <div class="menu-item px-3">
-                                                <a href="{{ route('loans.history.edit', [$loan, $payment]) }}" class="menu-link px-3">Изменить</a>
-                                            </div>
+                                            @if (! $loan->isCredit())
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('loans.history.edit', [$loan, $payment]) }}" class="menu-link px-3">Изменить</a>
+                                                </div>
 
-                                            <div class="menu-item px-3">
-                                                <form action="{{ route('loans.history.destroy', [$loan, $payment]) }}" method="POST" class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <a
-                                                            href="#"
-                                                            class="menu-link px-3 text-danger"
-                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить оплату займа/кредита?')) {this.closest('form').submit();}"
-                                                    >
-                                                        Удалить
-                                                    </a>
-                                                </form>
-                                            </div>
+                                                <div class="menu-item px-3">
+                                                    <form action="{{ route('loans.history.destroy', [$loan, $payment]) }}" method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <a
+                                                                href="#"
+                                                                class="menu-link px-3 text-danger"
+                                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить оплату займа/кредита?')) {this.closest('form').submit();}"
+                                                        >
+                                                            Удалить
+                                                        </a>
+                                                    </form>
+                                                </div>
+                                            @endif
                                         @endcan
                                     </div>
                                 </td>
