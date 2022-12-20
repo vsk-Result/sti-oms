@@ -22,7 +22,7 @@ class LoanHistoryController extends Controller
 
     public function index(Loan $loan): View
     {
-        $historyPayments = $loan->historyPayments()->orderBy('date')->get();
+        $historyPayments = $loan->historyPayments()->orderBy('date', 'DESC')->get();
         return view('loans.history.index', compact('loan', 'historyPayments'));
     }
 
