@@ -292,13 +292,18 @@ class ImportController extends Controller
                         }
                     } else if (! $isTotal) {
                         $parent = $contract;
+                        if (empty($row[6])) {
+                            $name = 'ДС 1000';
+                        } else {
+                            $name = $row[6];
+                        }
                         $contract = Contract::create([
                             'parent_id' => $parent->id,
                             'type_id' => Contract::TYPE_ADDITIONAL,
                             'amount_type_id' => Contract::AMOUNT_TYPE_ADDITIONAL,
                             'company_id' => 1,
                             'object_id' => $objectId,
-                            'name' => $row[6],
+                            'name' => $name,
                             'description' => null,
                             'start_date' => null,
                             'end_date' => null,
