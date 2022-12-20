@@ -20,3 +20,7 @@ Route::post('loans/{loan}/history', [LoanHistoryController::class, 'store'])->na
 Route::get('loans/{loan}/history/{history}/edit', [LoanHistoryController::class, 'edit'])->name('loans.history.edit')->middleware('can:edit loans');
 Route::post('loans/{loan}/history/{history}', [LoanHistoryController::class, 'update'])->name('loans.history.update')->middleware('can:edit loans');
 Route::delete('loans/{loan}/history/{history}', [LoanHistoryController::class, 'destroy'])->name('loans.history.destroy')->middleware('can:edit loans');
+
+// Обновление Истории Займов / Кредитов
+
+Route::get('loans/{loan}/history/reload', [LoanHistoryController::class, 'reload'])->name('loans.history.reload')->middleware('can:edit loans');

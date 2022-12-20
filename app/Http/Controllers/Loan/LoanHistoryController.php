@@ -54,4 +54,10 @@ class LoanHistoryController extends Controller
         $this->loanHistoryService->destroyLoanHistory($loan, $history);
         return redirect()->route('loans.history.index', $loan);
     }
+
+    public function reload(Loan $loan): RedirectResponse
+    {
+        $this->loanHistoryService->reloadLoanHistory($loan);
+        return redirect()->back();
+    }
 }

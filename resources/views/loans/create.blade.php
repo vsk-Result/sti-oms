@@ -19,7 +19,7 @@
                             <div class="col-md-12 fv-row">
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Тип</label>
                                             <div class="position-relative mb-3">
@@ -32,7 +32,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Номер</label>
                                             <div class="position-relative mb-3">
@@ -47,6 +47,26 @@
                                             @if ($errors->has('name'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                     <div>{{ implode(' ', $errors->get('name')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Номер для поиска оплат</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('search_name') ? 'is-invalid' : '' }}"
+                                                    type="text"
+                                                    name="search_name"
+                                                    value="{{ old('search_name') }}"
+                                                    required
+                                                />
+                                            </div>
+                                            @if ($errors->has('search_name'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('search_name')) }}</div>
                                                 </div>
                                             @endif
                                         </div>

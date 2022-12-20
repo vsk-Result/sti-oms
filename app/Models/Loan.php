@@ -21,7 +21,8 @@ class Loan extends Model implements Audit
 
     protected $fillable = [
         'type_id', 'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id',
-        'start_date', 'end_date', 'name', 'percent', 'amount', 'total_amount', 'status_id', 'description', 'organization_id'
+        'start_date', 'end_date', 'name', 'percent', 'amount', 'total_amount', 'status_id', 'description',
+        'organization_id', 'search_name'
     ];
 
     const TYPE_CREDIT = 0;
@@ -68,5 +69,10 @@ class Loan extends Model implements Audit
     public function getType(): string
     {
         return self::getTypes()[$this->type_id];
+    }
+
+    public function isCredit(): bool
+    {
+        return $this->type_id === self::TYPE_CREDIT;
     }
 }

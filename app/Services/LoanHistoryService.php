@@ -6,6 +6,7 @@ use App\Helpers\Sanitizer;
 use App\Models\Loan;
 use App\Models\LoanHistory;
 use App\Models\LoanNotifyTag;
+use App\Models\Payment;
 use App\Models\Status;
 
 class LoanHistoryService
@@ -47,5 +48,35 @@ class LoanHistoryService
     public function destroyLoanHistory(Loan $loan, LoanHistory $loanHistory): void
     {
         $loanHistory->delete();
+    }
+
+    public function reloadLoanHistory(Loan $loan): void
+    {
+        $loan->historyPayments()->delete();
+
+        $searchNames = explode(';', $loan->search_name);
+
+        $payments = Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+            ->where(function($q) use ($searchNames) {
+                foreach ($searchNames as $searchName) {
+                    $q->orWhere('description', 'LIKE', '%' . $searchName . '%');
+                }
+            })
+            ->where('description', 'NOT LIKE', '%процент%')
+            ->where('description', 'NOT LIKE', '%комиссии%')
+            ->get();
+
+        foreach($payments as $payment) {
+            $this->createLoanHistory($loan, [
+                'loan_id' => $loan->id,
+                'date' => $payment->date,
+                'refund_date' => null,
+                'planned_refund_date' => null,
+                'amount' => $payment->amount,
+                'percent' => 0,
+                'description' => $payment->description,
+                'status_id' => Status::STATUS_ACTIVE,
+            ]);
+        }
     }
 }
