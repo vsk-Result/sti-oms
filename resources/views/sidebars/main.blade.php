@@ -211,7 +211,7 @@
                 </div>
             @endcan
 
-            @can(['index crm-costs', 'index crm-split-avans-imports', 'scheduler'])
+            @can(['index crm-costs', 'index crm-split-avans-imports', 'index scheduler'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Другое</span>
