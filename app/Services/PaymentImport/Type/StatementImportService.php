@@ -51,7 +51,7 @@ class StatementImportService
 
         $importCurrency = $requestData['currency'] ?? 'RUB';
         $importCurrencyRate = $importCurrency !== 'RUB'
-            ? $this->rateService->getExchangeRate($requestData['date'], $importCurrency)->rate
+            ? $this->rateService->getExchangeRate($requestData['date'], $importCurrency)->rate ?? 0
             : 1;
 
         $import = PaymentImport::create([

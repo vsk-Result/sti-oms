@@ -59,7 +59,7 @@ class LoanService
             })
             ->sum('amount');
 
-        $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate;
+        $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate ?? 0;
 
         $ekskvizitLoan = 0;
         $ekskvizit = Organization::where('name', 'ООО "ЭКСКВИЗИТ"')->first();

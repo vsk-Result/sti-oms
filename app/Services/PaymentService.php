@@ -213,7 +213,7 @@ class PaymentService
 
         $paymentCurrency = $requestData['currency'] ?? 'RUB';
         $paymentCurrencyRate = $paymentCurrency !== 'RUB'
-                                ? $this->rateService->getExchangeRate($requestData['date'], $paymentCurrency)->rate
+                                ? $this->rateService->getExchangeRate($requestData['date'], $paymentCurrency)->rate ?? 0
                                 : 1;
 
         $payment = Payment::create([
@@ -597,7 +597,7 @@ class PaymentService
         if ($payment) {
             $paymentCurrency = $requestData['currency'] ?? $payment->currency;
             $paymentCurrencyRate = $paymentCurrency !== 'RUB'
-                ? $this->rateService->getExchangeRate($requestData['date'] ?? $payment->date, $paymentCurrency)->rate
+                ? $this->rateService->getExchangeRate($requestData['date'] ?? $payment->date, $paymentCurrency)->rate ?? 0
                 : 1;
 
             $requestData['currency'] = $paymentCurrency;

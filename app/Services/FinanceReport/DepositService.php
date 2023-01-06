@@ -29,7 +29,7 @@ class DepositService
     public function getDepositesTotalAmount(string|Carbon $date, Company $company): float
     {
         $deposites = $this->getDeposites($date, $company);
-        $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate;
+        $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate ?? 0;
 
         return $deposites['RUB'] + $rate * $deposites['EUR'];
     }
