@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class CurrencyExchangeRateService
 {
-    const CBRAPIUrl = 'https://www.cbr.ru/scripts/XML_daily.asp';
+    const CBRAPIUrl = 'http://www.cbr.ru/scripts/XML_daily.asp';
 
     public function getExchangeRate(string $date, string $currency): ?CurrencyExchangeRate
     {
