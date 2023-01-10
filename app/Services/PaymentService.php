@@ -348,7 +348,12 @@ class PaymentService
 
         $company = Company::find(1);
         $organizationSenderId = $company->organizations()->first()->id;
-        $organizationReceiverId = Organization::where('name', 'ФИЛИАЛ № 7701 БАНКА ВТБ (ПАО) Г. МОСКВА')->first()->id;
+        $organizationReceiverId = $this->organizationService->getOrCreateOrganization([
+            'inn' => '7702070139',
+            'name' => 'ФИЛИАЛ "ЦЕНТРАЛЬНЫЙ" БАНКА ВТБ (ПАО)',
+            'company_id' => null,
+            'kpp' => null
+        ])->id;
 
         $payments = [];
         $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
