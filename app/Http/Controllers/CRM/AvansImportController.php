@@ -18,7 +18,9 @@ class AvansImportController extends Controller
             $sum = 0;
 
             foreach ($import->items as $item) {
-                $sum += $item->avans->value;
+                if ($item->avans) {
+                    $sum += $item->avans->value;
+                }
             }
 
             if ((string) $sum === (string) $paymentAmount) {
