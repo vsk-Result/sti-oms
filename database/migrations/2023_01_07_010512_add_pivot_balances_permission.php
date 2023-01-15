@@ -3,10 +3,10 @@
 use App\Services\PermissionService;
 use Illuminate\Database\Migrations\Migration;
 
-class AddSchedulerPermission extends Migration
+class AddPivotBalancesPermission extends Migration
 {
     private array $permissions = [
-        'Планировщик задач' => ['scheduler' => ['index']],
+        'Сводная: Отчет по балансам' => ['pivot-balances' => ['index']],
     ];
 
     private PermissionService $permissionService;

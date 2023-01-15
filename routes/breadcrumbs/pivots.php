@@ -12,3 +12,9 @@ Breadcrumbs::for('pivots.acts.index', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Долги к СТИ');
 });
+
+Breadcrumbs::for('pivots.balances.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Отчет по балансам');
+});
+

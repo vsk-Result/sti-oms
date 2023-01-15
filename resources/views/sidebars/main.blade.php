@@ -34,7 +34,7 @@
                 @endcan
             @endif
 
-            @can(['index finance-report', 'index general-costs', 'index debts'])
+            @can(['index finance-report', 'index general-costs', 'index pivot-balances'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Сводные</span>
@@ -53,6 +53,14 @@
                     <div class="menu-item">
                         <a href="{{ route('general_costs.index') }}" class="menu-link {{ request()->is('general-costs*') ? 'active' : '' }}">
                             <span class="menu-title">Распределение общих затрат</span>
+                        </a>
+                    </div>
+                @endcan
+
+                @can('index pivot-balances')
+                    <div class="menu-item">
+                        <a href="{{ route('pivots.balances.index') }}" class="menu-link {{ request()->is('pivots/balances*') ? 'active' : '' }}">
+                            <span class="menu-title">Отчет по балансам</span>
                         </a>
                     </div>
                 @endcan
@@ -102,9 +110,9 @@
             @endcan
 
             @can(['index debts', 'index loans'])
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('pivots*') || request()->is('loans*')) ? 'hover show' : '' }}">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
-                        <span class="menu-title {{ (request()->is('pivots*') || request()->is('loans*')) ? 'fw-boldest' : '' }}">Долги</span>
+                        <span class="menu-title {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*')) ? 'fw-boldest' : '' }}">Долги</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">

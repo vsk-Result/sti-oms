@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Pivot\Balance\BalanceController;
 use App\Http\Controllers\Pivot\Debt\DebtController;
 use App\Http\Controllers\Pivot\Debt\ExportController;
 use App\Http\Controllers\Pivot\Act\ActController;
@@ -16,3 +17,6 @@ Route::get('pivots/acts', [ActController::class, 'index'])->name('pivots.acts.in
 
 // Экспорт сводной по долгам к СТИ
 Route::post('pivots/acts/export', [ActExportController::class, 'store'])->name('pivots.acts.exports.store');
+
+// Сводная по балансам
+Route::get('pivots/balances', [BalanceController::class, 'index'])->name('pivots.balances.index');
