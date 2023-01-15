@@ -28,7 +28,7 @@
 
     <span class="fs-2">Сводная таблица по счетам за период <strong>{{ \Carbon\Carbon::parse($period[0])->format('d.m.Y') . ' - ' . \Carbon\Carbon::parse($period[1])->format('d.m.Y') }}</strong></span>
 
-    <div class="row mb-3 mt-4">
+    <div class="row mb-4 mt-4">
         <div class="col-md-12">
             <div class="card-body p-0 ps-0">
                 <div class="table-responsive freeze-table">
@@ -116,7 +116,9 @@
         </div>
     </div>
 
-    <div class="row">
+    <span class="fs-2">Графики приходов и расходов за период <strong>{{ \Carbon\Carbon::parse($period[0])->format('d.m.Y') . ' - ' . \Carbon\Carbon::parse($period[1])->format('d.m.Y') }}</strong></span>
+
+    <div class="row mt-4">
         <div class="col-lg-12 col-xl-12 col-xxl-6 mb-5 mb-xl-0">
             <div class="card card-flush overflow-hidden h-md-100">
                 <div class="card-header py-2">
