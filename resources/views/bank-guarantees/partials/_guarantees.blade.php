@@ -90,7 +90,6 @@
                     <th class="min-w-125px">Дата окончания БГ</th>
                     <th class="min-w-125px">Сумма БГ</th>
                     <th class="min-w-125px">Комиссия БГ</th>
-                    <th class="min-w-125px">Остаток неотр. аванса</th>
                     <th class="min-w-125px">Дата окончания депозита</th>
                     <th class="min-w-125px">Сумма депозита</th>
                     <th class="min-w-125px">Действия</th>
@@ -124,7 +123,6 @@
                             {{ \App\Models\CurrencyExchangeRate::format($guarantee->commission, 'RUB') }}
                         </a>
                     </td>
-                    <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->getAvansesLeftAmount(), $guarantee->currency) }}</td>
                     <td>{{ $guarantee->getEndDateDepositFormatted() }}</td>
                     <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount_deposit, $guarantee->currency) }}</td>
                     <td class="text-end">
@@ -160,7 +158,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="11">
+                    <td colspan="10">
                         <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                             Банковские гарантии отсутствуют
                         </p>

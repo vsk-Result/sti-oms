@@ -198,7 +198,7 @@ class ActService
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $act->currency,
                         'currency_rate' => $act->currency !== 'RUB'
-                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
+                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency) ?? 1
                             : $act->currency_rate,
                     ]);
                 }
@@ -249,7 +249,7 @@ class ActService
                     'currency' => $contract->currency,
                     'description' => $this->sanitizer->set($description)->get(),
                     'currency_rate' => $act->currency !== 'RUB'
-                        ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
+                        ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency) ?? 1
                         : $act->currency_rate,
                 ]);
 
@@ -278,7 +278,7 @@ class ActService
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,
                         'currency_rate' => $act->currency !== 'RUB'
-                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency)
+                            ? $this->currencyService->parseRateFromCBR($paymentDate, $act->currency) ?? 1
                             : $act->currency_rate,
                     ]);
                 }
