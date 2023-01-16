@@ -69,7 +69,7 @@ class Export implements
             $sheet->setCellValue('B' . $row, $guarantee->contract?->getName());
             $sheet->setCellValue('C' . $row, $guarantee->number);
             $sheet->setCellValue('D' . $row, $guarantee->currency);
-            $sheet->setCellValue('E' . $row, $guarantee->organization->name);
+            $sheet->setCellValue('E' . $row, $guarantee->organization?->name);
             $sheet->setCellValue('F' . $row, Date::dateTimeToExcel(Carbon::parse($guarantee->end_date)));
             $sheet->setCellValue('G' . $row, $guarantee->amount);
             $sheet->setCellValue('H' . $row, $guarantee->commission);
