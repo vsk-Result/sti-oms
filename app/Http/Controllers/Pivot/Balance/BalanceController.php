@@ -135,8 +135,8 @@ class BalanceController extends Controller
             $pivot['charts']['receive']['months'][] = $date;
         }
 
-        $pivot['charts']['receive']['max_values'] = max($pivot['charts']['receive']['values']);
-        $pivot['charts']['receive']['min_values'] = min($pivot['charts']['receive']['values']);
+        $pivot['charts']['receive']['max_values'] = count($pivot['charts']['receive']['values']) > 0 ? max($pivot['charts']['receive']['values']) : 0;
+        $pivot['charts']['receive']['min_values'] = count($pivot['charts']['receive']['values']) > 0 ? min($pivot['charts']['receive']['values']) : 0;
 
         $groupedPayedPayments = Payment::whereIn('import_id', $allPaymentImportsIds)->where('amount', '<', 0)->get()->groupBy(function($val) {
             return Carbon::parse($val->created_at)->format('M y');
@@ -151,8 +151,8 @@ class BalanceController extends Controller
             $pivot['charts']['pay']['months'][] = $date;
         }
 
-        $pivot['charts']['pay']['max_values'] = max($pivot['charts']['pay']['values']);;
-        $pivot['charts']['pay']['min_values'] = min($pivot['charts']['pay']['values']);;
+        $pivot['charts']['pay']['max_values'] = count($pivot['charts']['pay']['values']) > 0 ? max($pivot['charts']['pay']['values']) : 0;
+        $pivot['charts']['pay']['min_values'] = count($pivot['charts']['pay']['values']) > 0 ? min($pivot['charts']['pay']['values']) : 0;
 
         return view('pivots.balances.index', compact('pivot', 'period'));
     }
