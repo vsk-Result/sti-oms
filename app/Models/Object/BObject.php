@@ -169,7 +169,7 @@ class  BObject extends Model implements Audit
             foreach ($debtManuals as $debtManual) {
                 $issetDebt = $debts->where('organization_id', $debtManual->organization_id)->first();
 
-                if (! $issetDebt) {
+                if (! $issetDebt && isset($debtManual->organization)) {
                     $id = $debtManual->organization_id . '::' . $debtManual->organization->name;
                     $result[$id] = $debtManual->amount;
                 }
