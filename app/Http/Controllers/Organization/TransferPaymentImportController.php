@@ -8,11 +8,11 @@ use App\Http\Requests\Organization\UpdateTransferPaymentImportRequest;
 use App\Imports\Organization\PaymentTransferImport;
 use App\Models\Organization;
 use App\Services\OrganizationService;
-use App\Services\UploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\File;
 
 class TransferPaymentImportController extends Controller
 {
@@ -72,8 +72,20 @@ class TransferPaymentImportController extends Controller
 
     public function update(UpdateTransferPaymentImportRequest $request): RedirectResponse
     {
+        $importFilePath = storage_path() . '/app/public/public/transfer_organizations_payments.xlsx';
+
+        if (File::exists($importFilePath)) {
+            File::delete($importFilePath);
+        }
+
         Storage::putFileAs('public', $request->file('file'), 'transfer_organizations_payments.xlsx');
-        session()->flash('status', 'Загрузка прошла успешно!');
+
+        if (File::exists($importFilePath)) {
+            session()->flash('status', 'Загрузка прошла успешно!');
+        } else {
+            session()->flash('status', 'Что-то пошло не так!');
+        }
+
         return redirect()->back();
     }
 }
