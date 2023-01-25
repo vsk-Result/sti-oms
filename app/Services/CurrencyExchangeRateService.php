@@ -4,11 +4,10 @@ namespace App\Services;
 
 use App\Models\CurrencyExchangeRate;
 use Carbon\Carbon;
+use DOMDocument;
 
 class CurrencyExchangeRateService
 {
-    const CBRAPIUrl = 'http://www.cbr.ru/scripts/XML_daily.asp';
-
     public function getExchangeRate(string $date, string $currency): ?CurrencyExchangeRate
     {
         if (Carbon::now()->isMonday()) {
@@ -54,18 +53,25 @@ class CurrencyExchangeRateService
 
     public function parseRateFromCBR(string $date, string $currency): ?float
     {
-//        $date = Carbon::parse($date)->format('d/m/Y');
-//        $requestUrl = self::CBRAPIUrl . '?date_req=' . $date;
-//        $parseXMLData = simplexml_load_file($requestUrl);
-//
-//        if (! empty($parseXMLData)) {
-//            foreach ($parseXMLData as $value) {
-//                if ((string) $value->{'CharCode'} === $currency) {
-//                    return (float) str_replace(',', '.', (string) $value->{'Value'});
-//                }
-//            }
-//        }
+        $currenciesList = ['USD' => 0, 'EUR' => 0];
 
-        return null;
+        $xml = new DOMDocument();
+        $url = 'http://www.cbr.ru/scripts/XML_daily.asp?date_req=' . Carbon::parse($date)->format('d.m.Y');
+
+        if (@$xml->load($url)) {
+            $root = $xml->documentElement;
+            $items = $root->getElementsByTagName('Valute');
+
+            foreach ($items as $item) {
+                $code = $item->getElementsByTagName('CharCode')->item(0)->nodeValue;
+
+                if (isset($currenciesList[$code])) {
+                    $curs = $item->getElementsByTagName('Value')->item(0)->nodeValue;
+                    $currenciesList[$code] = floatval(str_replace(',', '.', $curs));
+                }
+            }
+        }
+
+        return $currenciesList[$currency] ?? 0;
     }
 }
