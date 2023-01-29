@@ -168,25 +168,41 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-10 fv-row">
-                                    <div class="mb-1">
-                                        <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
-                                        <div class="position-relative mb-3">
-                                            <input
-                                                class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
-                                                type="text"
-                                                name="amount"
-                                                value="{{ old('amount') }}"
-                                                required
-                                            />
-                                        </div>
-                                        @if ($errors->has('amount'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div>{{ implode(' ', $errors->get('amount')) }}</div>
+                                <div class="row">
+                                    <div class="col-md-2 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Валюта</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="currency" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($currencies as $currency)
+                                                        <option value="{{ $currency }}">{{ $currency }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                        @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-10 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Сумма банковской гарантии</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                    type="text"
+                                                    name="amount"
+                                                    value="{{ old('amount') }}"
+                                                    required
+                                                />
+                                            </div>
+                                            @if ($errors->has('amount'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('amount')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <div class="mb-10 fv-row">
                                     <div class="mb-1">

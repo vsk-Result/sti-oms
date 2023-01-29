@@ -9,6 +9,7 @@ use App\Models\Bank;
 use App\Models\BankGuarantee;
 use App\Models\Company;
 use App\Models\Contract\Contract;
+use App\Models\Currency;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\Status;
@@ -30,6 +31,11 @@ class BankGuaranteeController extends Controller
     {
         $total = [];
         $objects = BObject::orderBy('code')->get();
+
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
         $contracts = Contract::with('parent')->orderBy('name')->get();
         $bankGuarantees = $this->guaranteeService->filterBankGuarantee($request->toArray(), $total);
         return view('bank-guarantees.index', compact('bankGuarantees', 'contracts', 'objects', 'total'));
@@ -45,7 +51,8 @@ class BankGuaranteeController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent', 'object', 'children', 'children.object')->orderBy('name')->get();
         $targets = BankGuarantee::getTargetsList();
-        return view('bank-guarantees.create', compact('banks', 'objects', 'companies', 'targets', 'objectId', 'organizations', 'contracts', 'contractId'));
+        $currencies = Currency::getCurrencies();
+        return view('bank-guarantees.create', compact('currencies', 'banks', 'objects', 'companies', 'targets', 'objectId', 'organizations', 'contracts', 'contractId'));
     }
 
     public function store(StoreBankGuaranteeRequest $request): RedirectResponse
@@ -68,7 +75,8 @@ class BankGuaranteeController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent', 'object', 'children', 'children.object')->orderBy('name')->get();
         $statuses = Status::getStatuses();
-        return view('bank-guarantees.edit', compact('guarantee', 'banks', 'objects', 'companies', 'targets', 'statuses', 'organizations', 'contracts'));
+        $currencies = Currency::getCurrencies();
+        return view('bank-guarantees.edit', compact('currencies', 'guarantee', 'banks', 'objects', 'companies', 'targets', 'statuses', 'organizations', 'contracts'));
     }
 
     public function update(BankGuarantee $guarantee, UpdateBankGuaranteeRequest $request): RedirectResponse

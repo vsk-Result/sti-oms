@@ -13,10 +13,12 @@ use App\Models\Currency;
 class BankGuaranteeService
 {
     private Sanitizer $sanitizer;
+    private CurrencyExchangeRateService $rateService;
 
-    public function __construct(Sanitizer $sanitizer)
+    public function __construct(Sanitizer $sanitizer, CurrencyExchangeRateService $rateService)
     {
         $this->sanitizer = $sanitizer;
+        $this->rateService = $rateService;
     }
 
     public function filterBankGuarantee(array $requestData, array &$total = [], bool $needPaginate = true): LengthAwarePaginator|Collection
@@ -76,6 +78,11 @@ class BankGuaranteeService
 
     public function createBankGuarantee(array $requestData): void
     {
+        $currency = $requestData['currency'] ?? 'RUB';
+        $currencyRate = $currency !== 'RUB' && ! empty($requestData['start_date'])
+            ? $this->rateService->getExchangeRate($requestData['start_date'], $currency)->rate ?? 0
+            : 1;
+
         $guarantee = BankGuarantee::create([
             'contract_id' => $requestData['contract_id'],
             'organization_id' => $requestData['organization_id'],
@@ -92,6 +99,8 @@ class BankGuaranteeService
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'target' => $this->sanitizer->set($requestData['target'])->get(),
             'status_id' => Status::STATUS_ACTIVE,
+            'currency' => $currency,
+            'currency_rate' => $currencyRate,
         ]);
 
         if (! empty($requestData['files'])) {
@@ -103,6 +112,11 @@ class BankGuaranteeService
 
     public function updateBankGuarantee(BankGuarantee $guarantee, array $requestData): void
     {
+        $currency = $requestData['currency'] ?? 'RUB';
+        $currencyRate = $currency !== 'RUB' && ! empty($requestData['start_date'])
+            ? $this->rateService->getExchangeRate($requestData['start_date'], $currency)->rate ?? 0
+            : 1;
+
         $guarantee->update([
             'contract_id' => $requestData['contract_id'],
             'organization_id' => $requestData['organization_id'],
@@ -118,7 +132,9 @@ class BankGuaranteeService
             'end_date_deposit' => $requestData['end_date_deposit'],
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'target' => $this->sanitizer->set($requestData['target'])->get(),
-            'status_id' => $requestData['status_id']
+            'status_id' => $requestData['status_id'],
+            'currency' => $currency,
+            'currency_rate' => $currencyRate,
         ]);
     }
 
