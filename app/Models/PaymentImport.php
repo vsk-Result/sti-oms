@@ -113,4 +113,9 @@ class PaymentImport extends Model
     {
         return $this->type_id === self::TYPE_STATEMENT;
     }
+
+    public function getFileLink(): string
+    {
+        return 'storage/' . $this->file;
+    }
 }

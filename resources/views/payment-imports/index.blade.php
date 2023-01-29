@@ -186,6 +186,10 @@
                                                     </div>
 
                                                     <div class="menu-item px-3">
+                                                        <a href="{{ $import->getFileLink() }}" download="Оплаты на {{ $import->date }}" class="menu-link px-3">Скачать</a>
+                                                    </div>
+
+                                                    <div class="menu-item px-3">
                                                         <form action="{{ route('payment_imports.destroy', $import) }}" method="POST" class="hidden">
                                                             @csrf
                                                             @method('DELETE')
