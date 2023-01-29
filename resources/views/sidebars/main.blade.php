@@ -34,7 +34,7 @@
                 @endcan
             @endif
 
-            @can(['index finance-report', 'index general-costs', 'index pivot-balances'])
+            @canAny(['index finance-report', 'index general-costs', 'index pivot-balances'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Сводные</span>
@@ -109,7 +109,7 @@
                 </div>
             @endcan
 
-            @can(['index debts', 'index loans'])
+            @canAny(['index debts', 'index loans'])
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
                         <span class="menu-title {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*')) ? 'fw-boldest' : '' }}">Долги</span>
@@ -148,7 +148,7 @@
             @endcan
 
             @if (! auth()->user()->hasRole(['object-leader', 'finance-object-user']))
-                @can(['index contracts', 'index acts', 'index bank-guarantees', 'index guarantees'])
+                @canAny(['index contracts', 'index acts', 'index bank-guarantees', 'index guarantees'])
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'hover show' : '' }}">
                         <span class="menu-link py-2">
                             <span class="menu-title {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'fw-boldest' : '' }}">Документооборот</span>
@@ -219,7 +219,7 @@
                 </div>
             @endcan
 
-            @can(['index crm-costs', 'index crm-split-avans-imports', 'index scheduler'])
+            @canAny(['index crm-costs', 'index crm-split-avans-imports', 'index scheduler'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Другое</span>
