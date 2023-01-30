@@ -41,6 +41,10 @@
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($audits as $audit)
                                 @foreach($audit->getModified() as $fieldName => $changes)
+                                    @if ((double)($changes['old'] ?? '') == (double)($changes['new'] ?? ''))
+                                        @continue
+                                    @endif
+
                                     @php
                                         if (request()->get('list_fields')) {
                                             foreach (request()->get('list_fields') as $f) {

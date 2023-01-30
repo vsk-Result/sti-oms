@@ -48,7 +48,11 @@ class HistoryController extends Controller
         }
 
         $contracts = Contract::pluck('name', 'id');
-        $statuses = Status::getStatuses();
+        $statuses = [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
         $banks = Bank::getBanks();
         $companies = Company::pluck('name', 'id');
         $organizations = Organization::pluck('name', 'id');

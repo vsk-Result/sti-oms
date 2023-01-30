@@ -92,6 +92,7 @@
                     <th class="min-w-125px">Комиссия БГ</th>
                     <th class="min-w-125px">Дата окончания депозита</th>
                     <th class="min-w-125px">Сумма депозита</th>
+                    <th class="min-w-125px">Статус</th>
                     <th class="min-w-125px">Действия</th>
                 </tr>
             </thead>
@@ -125,6 +126,7 @@
                     </td>
                     <td>{{ $guarantee->getEndDateDepositFormatted() }}</td>
                     <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount_deposit, $guarantee->currency) }}</td>
+                    <td class="fw-bolder">@include('partials.status', ['status' => $guarantee->getStatus()])</td>
                     <td class="text-end">
                         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                             <span class="svg-icon svg-icon-5 m-0">
@@ -168,7 +170,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10">
+                    <td colspan="11">
                         <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                             Банковские гарантии отсутствуют
                         </p>

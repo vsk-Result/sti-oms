@@ -28,6 +28,15 @@ class BankGuarantee extends Model implements Audit, HasMedia
         'contract_id', 'organization_id', 'number', 'commission', 'currency', 'currency_rate'
     ];
 
+    private function getStatusesList(): array
+    {
+        return [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');

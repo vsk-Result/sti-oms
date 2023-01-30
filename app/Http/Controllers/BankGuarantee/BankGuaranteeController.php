@@ -74,7 +74,7 @@ class BankGuaranteeController extends Controller
         $targets = BankGuarantee::getTargetsList();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent', 'object', 'children', 'children.object')->orderBy('name')->get();
-        $statuses = Status::getStatuses();
+        $statuses = $guarantee->getStatuses();
         $currencies = Currency::getCurrencies();
         return view('bank-guarantees.edit', compact('currencies', 'guarantee', 'banks', 'objects', 'companies', 'targets', 'statuses', 'organizations', 'contracts'));
     }
