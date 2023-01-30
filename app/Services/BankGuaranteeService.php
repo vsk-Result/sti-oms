@@ -47,6 +47,10 @@ class BankGuaranteeService
             $query->whereIn('contract_id', $requestData['contract_id']);
         }
 
+        if (! empty($requestData['status_id'])) {
+            $query->whereIn('status_id', $requestData['status_id']);
+        }
+
         if (! empty($requestData['object_id'])) {
             $query->whereIn('object_id', $requestData['object_id']);
         } else {
@@ -145,5 +149,50 @@ class BankGuaranteeService
     public function destroyBankGuarantee(BankGuarantee $guarantee): void
     {
         $guarantee->delete();
+    }
+
+    public function checkExpired(): array
+    {
+        $bgInfo = [];
+        $depositInfo = [];
+
+        $expiredBankGuarantees = BankGuarantee::where('status_id', Status::STATUS_ACTIVE)
+            ->where('end_date', '<', Carbon::now())
+            ->get();
+        foreach ($expiredBankGuarantees as $guarantee) {
+            $info = [
+                'id' => $guarantee->id,
+                'number' => $guarantee->number,
+                'date' => $guarantee->end_date,
+                'object_id' => $guarantee->object_id,
+            ];
+            $guarantee->update([
+                'status_id' => Status::STATUS_BLOCKED
+            ]);
+            $bgInfo[] = $info;
+            break;
+        }
+
+        $expiredDeposites = BankGuarantee::where('status_id', Status::STATUS_ACTIVE)
+            ->where('end_date_deposit', '<', Carbon::now())
+            ->get();
+        foreach ($expiredDeposites as $guarantee) {
+            $info = [
+                'id' => $guarantee->id,
+                'number' => $guarantee->number,
+                'date' => $guarantee->end_date_deposit,
+                'object_id' => $guarantee->object_id,
+            ];
+            $guarantee->update([
+                'status_id' => Status::STATUS_BLOCKED
+            ]);
+            $depositInfo[] = $info;
+            break;
+        }
+
+        return [
+            'bg' => $bgInfo,
+            'deposit' => $depositInfo,
+        ];
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Models\Payment;
+use App\Models\Status;
 use App\Services\BankGuaranteeService;
 use App\Services\Contract\ActService;
 use Illuminate\Contracts\View\View;
@@ -40,7 +41,12 @@ class BankGuaranteeController extends Controller
             $object->general_balance_1 = $object->generalCosts()->where('is_pinned', false)->sum('amount');
             $object->general_balance_24 = $object->generalCosts()->where('is_pinned', true)->sum('amount');
         }
+        $statuses = [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
 
-        return view('objects.tabs.bank_guarantees', compact('object', 'bankGuarantees', 'objects', 'contracts', 'total'));
+        return view('objects.tabs.bank_guarantees', compact('statuses', 'object', 'bankGuarantees', 'objects', 'contracts', 'total'));
     }
 }

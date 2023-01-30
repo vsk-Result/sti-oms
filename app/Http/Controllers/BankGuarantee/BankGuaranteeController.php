@@ -38,7 +38,13 @@ class BankGuaranteeController extends Controller
 
         $contracts = Contract::with('parent')->orderBy('name')->get();
         $bankGuarantees = $this->guaranteeService->filterBankGuarantee($request->toArray(), $total);
-        return view('bank-guarantees.index', compact('bankGuarantees', 'contracts', 'objects', 'total'));
+        $statuses = [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+
+        return view('bank-guarantees.index', compact('statuses', 'bankGuarantees', 'contracts', 'objects', 'total'));
     }
 
     public function create(Request $request): View
@@ -52,6 +58,7 @@ class BankGuaranteeController extends Controller
         $contracts = Contract::with('parent', 'object', 'children', 'children.object')->orderBy('name')->get();
         $targets = BankGuarantee::getTargetsList();
         $currencies = Currency::getCurrencies();
+
         return view('bank-guarantees.create', compact('currencies', 'banks', 'objects', 'companies', 'targets', 'objectId', 'organizations', 'contracts', 'contractId'));
     }
 

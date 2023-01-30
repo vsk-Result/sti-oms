@@ -89,6 +89,21 @@
                                     <input type="hidden" name="object_id[]" value="{{ $object->id }}">
                                 @endif
                             </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Статус</label>
+                                <select
+                                        name="status_id[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterBGModal"
+                                        multiple
+                                >
+                                    @foreach($statuses as $statusId => $status)
+                                        <option value="{{ $statusId }}" {{ in_array($statusId, request()->input('status_id', [])) ? 'selected' : '' }}>{{ $status }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
