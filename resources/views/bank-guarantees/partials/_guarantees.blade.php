@@ -143,7 +143,7 @@
 
                                 @if ($guarantee->audits->count() > 0)
                                     <div class="menu-item px-3">
-                                        <a href="{{ route('bank_guarantees.history.index') }}?guarantee_id={{ $guarantee->id }}" class="menu-link px-3">История</a>
+                                        <a href="{{ route('bank_guarantees.history.index') }}?bank_guarantees_id={{ $guarantee->id }}" class="menu-link px-3">История</a>
                                     </div>
                                 @else
                                     <div class="menu-item px-3" style="cursor:default !important;">
