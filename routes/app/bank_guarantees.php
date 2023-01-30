@@ -3,6 +3,11 @@
 use App\Http\Controllers\BankGuarantee\BankGuaranteeController;
 use App\Http\Controllers\BankGuarantee\ImportController;
 use App\Http\Controllers\BankGuarantee\ExportController;
+use App\Http\Controllers\BankGuarantee\HistoryController;
+
+// История
+
+Route::get('bank-guarantees/history', [HistoryController::class, 'index'])->name('bank_guarantees.history.index');
 
 // Экспорт банковских гарантий и депозитов
 

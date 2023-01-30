@@ -25,3 +25,8 @@ Breadcrumbs::for('bank_guarantees.edit', function (BreadcrumbTrail $trail, BankG
     $trail->parent('bank_guarantees.show', $guarantee);
     $trail->push('Изменение банковской гарантии');
 });
+
+Breadcrumbs::for('bank_guarantees.history.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('bank_guarantees.index');
+    $trail->push('История БГ и депозитов');
+});

@@ -139,6 +139,16 @@
                                     <a href="{{ route('bank_guarantees.edit', $guarantee) }}" class="menu-link px-3">Изменить</a>
                                 </div>
 
+                                @if ($guarantee->audits->count() > 0)
+                                    <div class="menu-item px-3">
+                                        <a href="{{ route('bank_guarantees.history.index') }}?guarantee_id={{ $guarantee->id }}" class="menu-link px-3">История</a>
+                                    </div>
+                                @else
+                                    <div class="menu-item px-3" style="cursor:default !important;">
+                                        <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
+                                    </div>
+                                @endif
+
                                 <div class="menu-item px-3">
                                     <form action="{{ route('bank_guarantees.destroy', $guarantee) }}" method="POST" class="hidden">
                                         @csrf
