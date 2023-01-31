@@ -46,7 +46,7 @@
                                 </div>
 
                                 <div class="col-md-12 fv-row mb-5">
-                                    <a class="fs-6 fw-bold" href="/storage/public/transfer_organizations_payments.xlsx" >Скачать актуальную версию таблицы</a>
+                                    <a class="fs-6 fw-bold" href="{{ route('files.download', ['file' => 'transfer_organizations_payments.xlsx']) }}" >Скачать актуальную версию таблицы</a>
                                 </div>
 
                                 <div class="d-flex flex-center py-3">
