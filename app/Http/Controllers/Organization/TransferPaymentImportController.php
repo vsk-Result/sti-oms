@@ -78,13 +78,13 @@ class TransferPaymentImportController extends Controller
             File::delete($importFilePath);
         }
 
-//        Storage::putFileAs('public', $request->file('file'), 'transfer_organizations_payments.xlsx');
-//
-//        if (File::exists($importFilePath)) {
-//            session()->flash('status', 'Загрузка прошла успешно!');
-//        } else {
-//            session()->flash('status', 'Что-то пошло не так!');
-//        }
+        Storage::putFileAs('public', $request->file('file'), 'transfer_organizations_payments.xlsx');
+
+        if (File::exists($importFilePath)) {
+            session()->flash('status', 'Загрузка прошла успешно!');
+        } else {
+            session()->flash('status', 'Что-то пошло не так!');
+        }
 
         return redirect()->back();
     }
