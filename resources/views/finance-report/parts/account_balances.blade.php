@@ -19,17 +19,10 @@
                 <div class="fw-bold">{{ $bankName }}</div>
 
                 <div class="d-flex fw-bolder text-end">
-                    @if ($bankName === 'ПАО "МКБ"')
-                        @php
-                            $balance = 11000;
-                        @endphp
-                        {{ \App\Models\CurrencyExchangeRate::format($balance, 'RUB') }}
-                    @else
-                        {{ \App\Models\CurrencyExchangeRate::format($balance['RUB'], 'RUB') }}
-                        @if ($balance['EUR'] !== 0)
-                            <br>
-                            {{ \App\Models\CurrencyExchangeRate::format($balance['EUR'], 'EUR') }}
-                        @endif
+                    {{ \App\Models\CurrencyExchangeRate::format($balance['RUB'], 'RUB') }}
+                    @if ($balance['EUR'] !== 0)
+                        <br>
+                        {{ \App\Models\CurrencyExchangeRate::format($balance['EUR'], 'EUR') }}
                     @endif
                 </div>
             </div>
