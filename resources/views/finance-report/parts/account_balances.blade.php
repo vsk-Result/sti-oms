@@ -16,15 +16,17 @@
             @endif
 
             <div class="fs-6 d-flex justify-content-between my-4">
-                <div class="fw-bold">{{ $bankName }}</div>
+                @if ($balance['RUB'] !== 0 && $balance['EUR'] !== 0)
+                    <div class="fw-bold">{{ $bankName }}</div>
 
-                <div class="d-flex fw-bolder text-end">
-                    {{ \App\Models\CurrencyExchangeRate::format($balance['RUB'], 'RUB') }}
-                    @if ($balance['EUR'] !== 0)
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($balance['EUR'], 'EUR') }}
-                    @endif
-                </div>
+                    <div class="d-flex fw-bolder text-end">
+                        {{ \App\Models\CurrencyExchangeRate::format($balance['RUB'], 'RUB') }}
+                        @if ($balance['EUR'] !== 0)
+                            <br>
+                            {{ \App\Models\CurrencyExchangeRate::format($balance['EUR'], 'EUR') }}
+                        @endif
+                    </div>
+                @endif
             </div>
 
             @if (! $loop->last)
