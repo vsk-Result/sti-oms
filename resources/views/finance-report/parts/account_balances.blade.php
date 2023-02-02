@@ -11,15 +11,11 @@
 
         @foreach($balances['banks'] as $bankName => $balance)
 
-            @if ($bankName === 'ПАО "Росбанк"')
+            @if ($bankName === 'ПАО "Росбанк"' || $bankName === 'ПАО "МКБ"' || $bankName === 'АО "АЛЬФА БАНК"')
                 @continue
             @endif
 
             <div class="fs-6 d-flex justify-content-between my-4">
-                @if ($balance['RUB'] === 0 && $balance['EUR'] === 0)
-                    @continue
-                @endif
-
                 <div class="fw-bold">{{ $bankName }}</div>
 
                 <div class="d-flex fw-bolder text-end">
