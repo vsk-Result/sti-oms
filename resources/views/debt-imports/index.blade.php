@@ -105,6 +105,8 @@
                         @endforelse
                         </tbody>
                     </table>
+
+                    {!! $imports->links() !!}
                 </div>
             </div>
         </div>

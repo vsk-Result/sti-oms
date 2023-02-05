@@ -27,7 +27,7 @@ class ImportController extends Controller
 
     public function index(): View
     {
-        $imports = DebtImport::with('company', 'debts', 'createdBy')->orderByDesc('date')->orderByDesc('id')->get();
+        $imports = DebtImport::with('company', 'debts', 'createdBy')->orderByDesc('date')->orderByDesc('id')->paginate(15);
         return view('debt-imports.index', compact('imports'));
     }
 
