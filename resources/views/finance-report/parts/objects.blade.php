@@ -6,6 +6,7 @@
     $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
     $objects = \App\Models\Object\BObject::withoutGeneral()
                 ->orderByDesc('code')
+                ->orderByDesc('closing_date')
                 ->get();
 
     $years = [];
