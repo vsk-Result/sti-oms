@@ -10,10 +10,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class Organization extends Model
+class Organization extends Model implements Audit
 {
-    use SoftDeletes, HasStatus;
+    use SoftDeletes, HasStatus, Auditable;
 
     protected $table = 'organizations';
 
