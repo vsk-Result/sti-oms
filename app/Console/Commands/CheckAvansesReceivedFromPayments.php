@@ -88,7 +88,7 @@ class CheckAvansesReceivedFromPayments extends Command
                     $createdAvans = $checkItem['service']->{$checkItem['create_method']}($contract, [
                         'date' => $payment->date,
                         'amount' => $payment->amount,
-                        'description' => 'Создать автоматически из оплаты #' . $payment->id,
+                        'description' => 'Создано автоматически из оплаты #' . $payment->id,
                     ]);
                     $createdAvansesCount++;
                     Log::channel('custom_imports_log')->debug('[SUCCESS] [ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] [RECEIVED-AVANS-ID: #' . $createdAvans->id . '] Аванс супешно создан');
