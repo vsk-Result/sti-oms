@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @stack('styles')
 </head>
-<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-enabled">
+<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-enabled" data-is-dmitry="{{ auth()->user()->email === 'dmitry.samsonov@dttermo.ru' ? 1 : 0 }}">
 <div class="d-flex flex-column flex-root">
 
     <!-- Scroll Top Button -->

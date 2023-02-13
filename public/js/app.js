@@ -9,6 +9,46 @@ const mainApp = function() {
         });
     }
 
+    // Исключительно в научных целях (кто прочитал, тот пати пупер)
+    const initDmitryPartyPooper = function() {
+        const isDmitryRightNow = $('body').data('is-dmitry') === 1;
+        const images = ['happy.jpg', 'sad.jpg'];
+        const imagePath = '/images/you/must/not/visit/this/folder/';
+        const availableKeyCodes = [1076, 1080, 1084, 1072, 1044, 1048, 1052, 1040]; // димаДИМА
+        const bodyWidth = document.body.clientWidth
+        const bodyHeight = document.body.clientHeight;
+
+        if (isDmitryRightNow) {
+            $('<img>', {
+                class: 'dmitry-love',
+                style: 'position: absolute; top: 0; left: 0; width: 300px; height: auto;',
+                src: ''
+            }).appendTo('body');
+        }
+
+        $(document).on("keypress", function (e) {
+            if (! isDmitryRightNow) {
+                return;
+            }
+
+            if (availableKeyCodes.indexOf(e.which) !== -1) {
+                const randPosX = Math.floor((Math.random() * bodyWidth));
+                const randPosY = Math.floor((Math.random() * bodyHeight));
+                const randomImageIndex = Math.round(Math.random());
+
+                $('<img>', {
+                    class: 'dmitry-love',
+                    style: `cursor: pointer;position: absolute; top: ${randPosY}px; left: ${randPosX}px; width: 200px; height: auto;`,
+                    src: imagePath + images[randomImageIndex]
+                }).appendTo('body');
+            }
+        });
+
+        $(document).on('click', '.dmitry-love', function () {
+            $(this).remove();
+        });
+    }
+
     const initSetToastrOptions = function() {
         toastr.options = {
             "timeOut": "2000",
@@ -441,6 +481,8 @@ const mainApp = function() {
             initFavouriteLinksCreateHandler();
             initDateRangePicker();
             initActsPaymentsLineChart();
+
+            initDmitryPartyPooper();
 
             if ($('#show-date-and-time').length > 0) {
                 setInterval(initShowDateAndTime, 500);
