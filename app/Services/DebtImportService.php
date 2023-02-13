@@ -592,7 +592,7 @@ class DebtImportService
                 'description' => '',
                 'comment' => $description,
                 'invoice_payment_due_date' => null,
-                'invoice_amount' => ''
+                'invoice_amount' => 0
             ]);
         }
 
