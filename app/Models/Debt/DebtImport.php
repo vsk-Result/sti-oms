@@ -22,6 +22,7 @@ class DebtImport extends Model
     const TYPE_SUPPLY = 0;
     const TYPE_DTTERMO = 1;
     const TYPE_1C = 2;
+    const TYPE_OBJECT = 3;
 
     public function company(): BelongsTo
     {
@@ -54,6 +55,7 @@ class DebtImport extends Model
             self::TYPE_SUPPLY => 'Снабжение',
             self::TYPE_DTTERMO => 'ДТ Термо',
             self::TYPE_1C => 'Выгрузка из 1С',
+            self::TYPE_OBJECT => 'Объект',
         ];
     }
 

@@ -224,6 +224,9 @@
                     <div class="card-header mt-6">
                         <div class="card-title flex-column">
                             <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
+                            @if ($hasObjectImport)
+                                <a class="fs-6 fw-bold" href="{{ route('files.download', ['file' => base64_encode($hasObjectImportLink)]) }}" >Скачать детализацию долгов</a>
+                            @endif
                         </div>
 
                         <div class="card-toolbar">

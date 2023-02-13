@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\Sanitizer;
 use App\Imports\DebtImport\Import;
 use App\Models\Company;
 use App\Models\Debt\Debt;
@@ -9,6 +10,7 @@ use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
 use App\Models\Status;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
@@ -18,6 +20,7 @@ class DebtImportService
     private UploadService $uploadService;
     private ObjectService $objectService;
     private OrganizationService $organizationService;
+    private Sanitizer $sanitizer;
 
     private array $objects = [
         'Бамиленд' => '279',
@@ -87,13 +90,15 @@ class DebtImportService
         DebtService         $debtService,
         UploadService       $uploadService,
         ObjectService       $objectService,
-        OrganizationService $organizationService
+        OrganizationService $organizationService,
+        Sanitizer $sanitizer
     )
     {
         $this->debtService = $debtService;
         $this->uploadService = $uploadService;
         $this->objectService = $objectService;
         $this->organizationService = $organizationService;
+        $this->sanitizer = $sanitizer;
     }
 
     public function createImport(array $requestData): null|string
@@ -106,6 +111,8 @@ class DebtImportService
             return $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
         } elseif (isset($importData['TDSheet'])) {
             return $this->create1СExcelContractorImport($importData['TDSheet'], $requestData);
+        } elseif (isset($importData['ВЛАД СВОД'])) {
+            return $this->createObjectContractorsImport($importData['ВЛАД СВОД'], $requestData);
         }
 
         return 'ok';
@@ -522,6 +529,76 @@ class DebtImportService
                 'invoice_payment_due_date' => $dueDate,
                 'invoice_amount' => $invoiceAmount
             ]);
+        }
+
+        return 'ok';
+    }
+
+    private function createObjectContractorsImport(array $importData, array $requestData): string
+    {
+        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+
+        if (!$company) {
+            return 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';
+        }
+
+        $import = DebtImport::create([
+            'type_id' => DebtImport::TYPE_OBJECT,
+            'company_id' => $company->id,
+            'date' => Carbon::now(),
+            'file' => $this->uploadService->uploadFile('debt-imports', $requestData['file']),
+            'status_id' => Status::STATUS_ACTIVE
+        ]);
+
+        $contractors = $importData;
+
+        unset($contractors[0]);
+
+        foreach ($contractors as $row) {
+
+            $organizationName = $this->sanitizer->set($row[1])->get();
+            $description = "Договор: " . $this->sanitizer->set($row[2])->get();
+            $objectCode = $row[0];
+            $amountDebt = $row[3];
+
+            $organization = $this->organizationService->getOrCreateOrganization([
+                'inn' => null,
+                'name' => $organizationName,
+                'company_id' => null,
+                'kpp' => null
+            ]);
+
+            $object = BObject::where('code', $objectCode)->first();
+            if (! $object) {
+                $this->destroyImport($import);
+                return 'Объекта "' . $objectCode . '" нет в системе ОМС.';
+            }
+
+            $this->debtService->createDebt([
+                'import_id' => $import->id,
+                'type_id' => Debt::TYPE_CONTRACTOR,
+                'company_id' => $import->company_id,
+                'object_id' => $object->id,
+                'object_worktype_id' => null,
+                'organization_id' => $organization->id,
+                'date' => $import->date,
+                'amount' => -$amountDebt,
+                'amount_without_nds' => -($amountDebt - ($amountDebt / 6)),
+                'status_id' => Status::STATUS_ACTIVE,
+                'category' => '',
+                'code' => '',
+                'invoice_number' => '',
+                'order_author' => '',
+                'description' => '',
+                'comment' => $description,
+                'invoice_payment_due_date' => null,
+                'invoice_amount' => ''
+            ]);
+        }
+
+        foreach ($requestData['files_objects'] as $file) {
+            $newFileName = $import->id . '_' . $file->getClientOriginalName();
+            Storage::putFileAs('debt-imports/objects', $file, $newFileName);
         }
 
         return 'ok';

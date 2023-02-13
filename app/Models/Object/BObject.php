@@ -135,15 +135,32 @@ class  BObject extends Model implements Audit
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
+        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
 
-        $debts = $this
+        $existInObjectImport = $this
             ->debts()
-            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id])
-            ->where('type_id', Debt::TYPE_CONTRACTOR)
-            ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
-            ->with('organization')
-            ->orderBy('amount')
-            ->get();
+            ->where('import_id', $debtObjectImport?->id)
+            ->first();
+
+        if ($existInObjectImport) {
+            $debts = $this
+                ->debts()
+                ->where('import_id', $debtObjectImport?->id)
+                ->where('type_id', Debt::TYPE_CONTRACTOR)
+                ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
+                ->with('organization')
+                ->orderBy('amount')
+                ->get();
+        } else {
+            $debts = $this
+                ->debts()
+                ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id])
+                ->where('type_id', Debt::TYPE_CONTRACTOR)
+                ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
+                ->with('organization')
+                ->orderBy('amount')
+                ->get();
+        }
 
         if ($this->code === '288') {
             $result = [];

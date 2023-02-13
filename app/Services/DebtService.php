@@ -17,8 +17,11 @@ class DebtService
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
+        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
 
-        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id])->with('organization', 'object');
+        $debtsObjectImport = $debtObjectImport->debts()->with('organization', 'object')->get();
+
+        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id])->with('organization', 'object');
 
         $pivot = [
             'objects' => BObject::whereIn('id', (clone $debtsQuery)->groupBy('object_id')->pluck('object_id'))->orderByDesc('code')->get(),
@@ -32,15 +35,28 @@ class DebtService
             $pivot['total'][$object->id] = 0;
         }
 
+        foreach ((clone $debtsQuery)->get()->groupBy('type_id') as $typeId => $debtsGroupedByType) {
+            foreach ($debtsGroupedByType->groupBy('organization_id') as $organizationId => $debtsGrouped) {
+                foreach ($debtsGrouped->groupBy('object_id') as $objectId => $debts) {
+                    $objectExistInObjectImport = $debtsObjectImport->where('object_id', $objectId)->first();
+                    $debtManuals = DebtManual::where('organization_id', $organizationId)->where('object_id', $objectId)->get();
 
+                    if ($debtManuals->count() > 0) {
+                        $debtsAmount = $debtManuals->sum('amount');
+                    } else {
+                        if ($objectExistInObjectImport && $typeId === Debt::TYPE_CONTRACTOR) {
+                            $debtsAmount = $debtsObjectImport->where('organization_id', $organizationId)
+                                ->where('object_id', $objectId)
+                                ->sum('amount');
+                        } else {
+                            $debtsAmount = $debts->sum('amount');
+                        }
+                    }
 
-        foreach ((clone $debtsQuery)->get()->groupBy('organization_id') as $organizationId => $debtsGrouped) {
-            foreach ($debtsGrouped->groupBy('object_id') as $objectId => $debts) {
-                $debtManuals = DebtManual::where('organization_id', $organizationId)->where('object_id', $objectId)->get();
-
-                $pivot['entries'][$organizationId][$objectId] = $debtManuals->count() > 0 ? $debtManuals->sum('amount') : $debts->sum('amount');
-                $pivot['manuals'][$organizationId][$objectId] = $debtManuals->count() > 0;
-                $pivot['total'][$objectId] += $pivot['entries'][$organizationId][$objectId];
+                    $pivot['entries'][$organizationId][$objectId] = $debtsAmount;
+                    $pivot['manuals'][$organizationId][$objectId] = $debtManuals->count() > 0;
+                    $pivot['total'][$objectId] += $pivot['entries'][$organizationId][$objectId];
+                }
             }
         }
         return $pivot;
@@ -56,8 +72,9 @@ class DebtService
             $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
             $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
             $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
+            $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
 
-            $query->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id]);
+            $query->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id]);
         }
 
         if (! empty($requestData['type_id'])) {

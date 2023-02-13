@@ -78,6 +78,17 @@
                         </div>
                     </div>
 
+                    <div class="row mt-4">
+                        <div class="col-md-6 fv-row"></div>
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-5 fw-bold mb-2">Файлы долгов (для ОБЪЕКТОВ)</label>
+                            <input type="file" class="form-control form-control-solid" multiple  placeholder="" name="files_objects[]" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                            <div class="form-text">Доступные форматы:
+                                <code>xls, xlsx</code>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-flex flex-center py-3">
                         <button type="submit" class="btn btn-primary me-3">
                             <span class="indicator-label">Загрузить</span>
