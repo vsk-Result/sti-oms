@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance\FinanceReport;
 use App\Exports\Finance\FinanceReport\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Loan;
 use App\Services\Contract\ContractService;
 use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
@@ -66,7 +67,7 @@ class ExportController extends Controller
                     ],
                     'loans' => [
                         'loans' => $loans,
-                        'totalAmount' => array_sum($loans)
+                        'totalAmount' => $loans->sum('amount')
                      ],
                     'deposites' => [
                         'deposites' => $deposites,

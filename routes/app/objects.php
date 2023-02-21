@@ -13,6 +13,11 @@ use App\Http\Controllers\Object\FileController;
 use App\Http\Controllers\Object\ActivityController;
 use App\Http\Controllers\Object\UserController;
 use App\Http\Controllers\Object\BankGuaranteeController;
+use App\Http\Controllers\Object\ExportController;
+
+// Экспорт объекта в Excel
+
+Route::post('objects/{object}/export', [ExportController::class, 'store'])->name('objects.exports.store');
 
 // Объекты
 

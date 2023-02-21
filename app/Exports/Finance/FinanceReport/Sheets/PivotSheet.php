@@ -50,32 +50,23 @@ class PivotSheet implements
     private function fillAccounts(&$sheet): void
     {
         $dateLastStatement = PaymentImport::orderByDesc('date')->first()->created_at->format('d.m.Y H:i');
-        $sheet->setCellValue('A1', "Остатки на счетах" . "\n" . "(Последняя выписка загружена " . $dateLastStatement . ")");
+        $sheet->setCellValue('A1', "Балансы" . "\n" . "Последняя выписка загружена " . $dateLastStatement);
         $row = 2;
 
         foreach($this->info['balances']['banks'] as $bankName => $balance) {
-            if ($bankName === 'ПАО "Росбанк"') {
+            if ($bankName === 'ПАО "Росбанк"' || $bankName === 'ПАО "МКБ"' || $bankName === 'АО "АЛЬФА БАНК"') {
                 continue;
             }
 
             $sheet->setCellValue('A' . $row, $bankName);
+            $sheet->setCellValue('B' . $row, $balance['RUB']);
 
-            if ($bankName === 'ПАО "МКБ"') {
+            if ($balance['EUR'] !== 0) {
+                $sheet->getRowDimension($row)->setRowHeight(25);
+                $row++;
 
-                $balance = 11000;
-                $sheet->setCellValue('B' . $row, $balance);
-
-            } else {
-
-                $sheet->setCellValue('B' . $row, $balance['RUB']);
-
-                if ($balance['EUR'] !== 0) {
-                    $sheet->getRowDimension($row)->setRowHeight(25);
-                    $row++;
-
-                    $sheet->setCellValue('A' . $row, $bankName . ' (EUR)');
-                    $sheet->setCellValue('B' . $row, $balance['EUR']);
-                }
+                $sheet->setCellValue('A' . $row, $bankName . ' (EUR)');
+                $sheet->setCellValue('B' . $row, $balance['EUR']);
             }
 
             $sheet->getRowDimension($row)->setRowHeight(25);
@@ -163,9 +154,9 @@ class PivotSheet implements
         $row = 3;
         foreach($this->info['credits']['credits'] as $credit) {
             $sheet->setCellValue('D' . $row, $credit['bank'] . "\n" . $credit['contract']);
-            $sheet->setCellValue('E' . $row, abs($credit['sent']));
-            $sheet->setCellValue('F' . $row, $credit['amount'] - abs($credit['sent']));
-            $sheet->setCellValue('G' . $row, $credit['amount']);
+            $sheet->setCellValue('E' . $row, $credit['total'] - $credit['used']);
+            $sheet->setCellValue('F' . $row, $credit['used']);
+            $sheet->setCellValue('G' . $row, $credit['total']);
             $sheet->getRowDimension($row)->setRowHeight(30);
             $row++;
         }
@@ -203,10 +194,10 @@ class PivotSheet implements
         $sheet->setCellValue('D' . $rowTitle, 'Баланс по займам');
 
         $row ++;
-        foreach($this->info['loans']['loans'] as $organizationName => $loan) {
-            $sheet->setCellValue('D' . $row, $organizationName);
-            $sheet->setCellValue('E' . $row, $loan);
-            $sheet->getStyle('E' . $row)->getFont()->setColor(new Color($loan < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+        foreach($this->info['loans']['loans'] as $loan) {
+            $sheet->setCellValue('D' . $row, $loan->organization->name);
+            $sheet->setCellValue('E' . $row, $loan->amount);
+            $sheet->getStyle('E' . $row)->getFont()->setColor(new Color($loan->amount < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             $sheet->getRowDimension($row)->setRowHeight(25);
             $row++;
         }

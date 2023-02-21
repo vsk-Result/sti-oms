@@ -16,7 +16,7 @@
             $year = \Carbon\Carbon::parse($object->closing_date)->format('Y');
 
             $years[$year][] = $object;
-        } if ($object->status_id === \App\Models\Status::STATUS_BLOCKED && empty($object->closing_date)) {
+        } else if ($object->status_id === \App\Models\Status::STATUS_BLOCKED && empty($object->closing_date)) {
             $years['Закрыты, дата не указана'][] = $object;
         } else {
             $years['Активные'][] = $object;
