@@ -83,6 +83,12 @@ class Bank
             'logo' => '/images/banks/vtb.png',
             'visible' => true
         ],
+        [
+            'id' => 14,
+            'name' => 'АО "Райффайзенбанк"',
+            'logo' => '/images/banks/raifaizen.png',
+            'visible' => true
+        ],
     ];
 
     public static function getBanks(): array
