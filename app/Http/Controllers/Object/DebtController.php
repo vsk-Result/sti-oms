@@ -44,12 +44,14 @@ class DebtController extends Controller
 
         $hasObjectImport = false;
         $hasObjectImportLink = '';
+        $hasObjectImportId = null;
 
         if ($objectExistInObjectImport) {
             $hasObjectImport = true;
             $hasObjectImportLink = 'debt-imports/objects/' . $debtObjectImport->id . '_' . $object->code . '.xlsx';
+            $hasObjectImportId = $debtObjectImport->id;
         }
 
-        return view('objects.tabs.debts', compact('object', 'debtManuals', 'hasObjectImportLink', 'hasObjectImport'));
+        return view('objects.tabs.debts', compact('object', 'debtManuals', 'hasObjectImportLink', 'hasObjectImport', 'hasObjectImportId'));
     }
 }

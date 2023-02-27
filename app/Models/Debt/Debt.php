@@ -22,7 +22,7 @@ class Debt extends Model
         'import_id', 'type_id', 'company_id', 'object_id', 'object_worktype_id', 'organization_id',
         'created_by_user_id', 'updated_by_user_id', 'date', 'amount', 'amount_without_nds', 'status_id',
         'category', 'code', 'invoice_number', 'order_author', 'description', 'comment', 'invoice_payment_due_date',
-        'invoice_amount'
+        'invoice_amount', 'contract', 'avans', 'guarantee'
     ];
 
     const TYPE_CONTRACTOR = 0;

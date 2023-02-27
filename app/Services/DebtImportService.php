@@ -557,9 +557,21 @@ class DebtImportService
         foreach ($contractors as $row) {
 
             $organizationName = $this->sanitizer->set($row[1])->get();
-            $description = "Договор: " . $this->sanitizer->set($row[2])->get();
+            $contract = $this->sanitizer->set($row[2])->get();
             $objectCode = $row[0];
             $amountDebt = $row[3];
+            $guarantee = $row[4];
+            $avans = $row[5];
+
+            if (empty($amountDebt)) {
+                $amountDebt = 0;
+            }
+            if (empty($guarantee)) {
+                $guarantee = 0;
+            }
+            if (empty($avans)) {
+                $avans = 0;
+            }
 
             $organization = $this->organizationService->getOrCreateOrganization([
                 'inn' => null,
@@ -583,6 +595,8 @@ class DebtImportService
                 'organization_id' => $organization->id,
                 'date' => $import->date,
                 'amount' => -$amountDebt,
+                'guarantee' => -$guarantee,
+                'avans' => -$avans,
                 'amount_without_nds' => -($amountDebt - ($amountDebt / 6)),
                 'status_id' => Status::STATUS_ACTIVE,
                 'category' => '',
@@ -590,7 +604,8 @@ class DebtImportService
                 'invoice_number' => '',
                 'order_author' => '',
                 'description' => '',
-                'comment' => $description,
+                'comment' => '',
+                'contract' => $contract,
                 'invoice_payment_due_date' => null,
                 'invoice_amount' => 0
             ]);

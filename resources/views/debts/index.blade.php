@@ -51,11 +51,14 @@
                             <th class="min-w-125px">Категория</th>
                             <th class="min-w-125px">Заказ сделал</th>
                             <th class="min-w-125px">Контрагент</th>
+                            <th class="min-w-125px">Договор</th>
                             <th class="min-w-200px">Описание</th>
                             <th class="min-w-200px">Счет</th>
                             <th class="min-w-125px">Сумма счета</th>
                             <th class="min-w-125px">Сумма оплаты</th>
                             <th class="min-w-125px">Долг</th>
+                            <th class="min-w-125px">ГУ</th>
+                            <th class="min-w-125px">Авансы к оплате</th>
                             <th class="min-w-125px">Срок оплаты счета</th>
                             <th class="min-w-125px">Комментарий</th>
                         </tr>
@@ -78,11 +81,14 @@
                                 <td>{{ $debt->category }}</td>
                                 <td>{{ $debt->order_author }}</td>
                                 <td>{{ $debt->organization?->name }}</td>
+                                <td>{{ $debt->contract }}</td>
                                 <td>{{ $debt->description }}</td>
                                 <td>{{ $debt->invoice_number }}</td>
                                 <td>{{ \App\Models\CurrencyExchangeRate::format($debt->invoice_amount, 'RUB') }}</td>
                                 <td>{{ \App\Models\CurrencyExchangeRate::format($debt->invoice_amount + $debt->amount, 'RUB') }}</td>
                                 <td class="text-danger">{{ \App\Models\CurrencyExchangeRate::format($debt->amount, 'RUB') }}</td>
+                                <td class="text-danger">{{ \App\Models\CurrencyExchangeRate::format($debt->guarantee, 'RUB') }}</td>
+                                <td class="text-danger">{{ \App\Models\CurrencyExchangeRate::format($debt->avans, 'RUB') }}</td>
                                 <td>{{ $debt->getDueDateFormatted() }}</td>
                                 <td>{{ $debt->comment }}</td>
                             </tr>

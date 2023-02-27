@@ -229,17 +229,42 @@
                             @endif
                         </div>
 
-                        <div class="card-toolbar">
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="fs-4 fw-bolder text-danger">
-                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                            {{ number_format($object->getContractorDebtsAmount(), 2, ',', ' ') }}
-                                        </a>
+                        <div class="card-toolbar justify-content-end" style="width: 100%">
+                            @if ($hasObjectImport)
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="fs-4 fw-bolder text-danger">
+                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee'), 2, ',', ' ') }}
+                                            </a>
+                                        </div>
                                     </div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого ГУ</div>
                                 </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого</div>
-                            </div>
+
+
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="fs-4 fw-bolder text-danger">
+                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans'), 2, ',', ' ') }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого авансы</div>
+                                </div>
+                            @endif
+
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="fs-4 fw-bolder text-danger">
+                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format($object->getContractorDebtsAmount(), 2, ',', ' ') }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                                </div>
                         </div>
                     </div>
 
@@ -248,7 +273,14 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="ps-2">Контрагент</th>
-                                <th class="w-175px pe-2">Сумма</th>
+                                @if ($hasObjectImport)
+                                    <th class="w-150px text-end">ГУ</th>
+                                    <th class="w-150px text-end pe-2">Авансы к оплате</th>
+                                    <th class="w-175px text-end">Долг за СМР</th>
+                                @else
+                                    <th class="w-175px text-end pe-2">Сумма</th>
+                                @endif
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -271,10 +303,22 @@
 
                                     <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">
                                         <td class="ps-2">{{ $organizationName }}</td>
-                                        <td class="text-danger d-flex justify-content-between gap-2 pe-2">
+                                        @if ($hasObjectImport)
+                                            <td class="text-danger text-end pe-2">
+                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                    {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('guarantee'), 2, ',', ' ') }}
+                                                </a>
+                                            </td>
+                                            <td class="text-danger text-end pe-2">
+                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                    {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('avans'), 2, ',', ' ') }}
+                                                </a>
+                                            </td>
+                                        @endif
+                                        <td class="text-danger text-end pe-2">
                                             @if ($debtManual)
-                                                <div>
-                                                    <span class="fw-boldest">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>
+                                                <div class="text-end">
+                                                    <span class="fw-boldest text-end">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>
                                                     <span class="text-muted fs-8">(изменено вручную)</span>
                                                 </div>
                                             @else
@@ -282,17 +326,18 @@
                                                     {{ number_format($amount, 2, ',', ' ') }}
                                                 </a>
                                             @endif
-
+                                        </td>
+                                        <td>
                                             <a
-                                                    class="edit-debt-manual d-none text-hover-gray-900"
-                                                    href="javascript:void(0)"
-                                                    data-organization-name="{{ $organizationName }}"
-                                                    data-organization-id="{{ $organizationId }}"
-                                                    data-object-id="{{ $object->id }}"
-                                                    data-type-id="{{ $type }}"
-                                                    data-id="{{ $debtManual->id ?? '' }}"
-                                                    data-amount="{{ $debtManual->amount ?? $amount }}"
-                                                    data-comment="{{ $comment }}"
+                                                class="edit-debt-manual d-none text-hover-gray-900"
+                                                href="javascript:void(0)"
+                                                data-organization-name="{{ $organizationName }}"
+                                                data-organization-id="{{ $organizationId }}"
+                                                data-object-id="{{ $object->id }}"
+                                                data-type-id="{{ $type }}"
+                                                data-id="{{ $debtManual->id ?? '' }}"
+                                                data-amount="{{ $debtManual->amount ?? $amount }}"
+                                                data-comment="{{ $comment }}"
                                             >
                                                 <i class="fa fa-pen text-primary"></i>
                                             </a>
