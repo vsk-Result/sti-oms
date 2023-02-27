@@ -96,14 +96,16 @@ class  BObject extends Model implements Audit
         return $this->hasMany(Act::class, 'object_id');
     }
 
-    public static function getObjectsList(): array
+    public static function getObjectsList($needAllObjects = false): array
     {
         $result = [];
         $workTypes = WorkType::getWorkTypes();
         $objects = static::orderBy('code')->get();
 
-        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
-            $objects = static::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        if (! $needAllObjects) {
+            if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+                $objects = static::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+            }
         }
 
         foreach ($objects as $object) {

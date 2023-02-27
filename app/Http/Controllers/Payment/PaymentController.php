@@ -124,7 +124,7 @@ class PaymentController extends Controller
     public function edit(Payment $payment, Request $request): View|JsonResponse|RedirectResponse
     {
         $categories = Payment::getCategories();
-        $objects = Payment::getTypes() + BObject::getObjectsList();
+        $objects = Payment::getTypes() + BObject::getObjectsList(true);
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
