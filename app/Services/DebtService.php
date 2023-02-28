@@ -12,7 +12,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class DebtService
 {
-    public function getPivot(): array
+    public function getPivot(int $id = null): array
     {
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
@@ -23,8 +23,18 @@ class DebtService
 
         $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id])->with('organization', 'object');
 
+        $objectsQuery = BObject::query();
+
+        if ($id) {
+            $objectsQuery->where('id', $id);
+        } else {
+            $objectsQuery->whereIn('id', (clone $debtsQuery)->groupBy('object_id')->pluck('object_id'));
+        }
+
+        $objects = $objectsQuery->orderByDesc('code')->get();
+
         $pivot = [
-            'objects' => BObject::whereIn('id', (clone $debtsQuery)->groupBy('object_id')->pluck('object_id'))->orderByDesc('code')->get(),
+            'objects' => $objects,
             'organizations' => Organization::whereIn('id', (clone $debtsQuery)->groupBy('organization_id')->pluck('organization_id'))->orderBy('name')->get(),
             'entries' => [],
             'manuals' => [],
