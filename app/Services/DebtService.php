@@ -27,6 +27,7 @@ class DebtService
 
         if ($id) {
             $objectsQuery->where('id', $id);
+            $debtsQuery->where('object_id', $id);
         } else {
             $objectsQuery->whereIn('id', (clone $debtsQuery)->groupBy('object_id')->pluck('object_id'));
         }
