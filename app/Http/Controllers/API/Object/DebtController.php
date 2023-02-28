@@ -11,15 +11,15 @@ class DebtController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-//        if (! $request->has('verify_hash')) {
-//            abort(403);
-//            return response()->json([], 403);
-//        }
-//
-//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-//            abort(403);
-//            return response()->json([], 403);
-//        }
+        if (! $request->has('verify_hash')) {
+            abort(403);
+            return response()->json([], 403);
+        }
+
+        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+            abort(403);
+            return response()->json([], 403);
+        }
 
         if (empty($request->object_id)) {
             abort(404);
