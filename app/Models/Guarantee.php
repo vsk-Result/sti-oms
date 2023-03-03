@@ -22,7 +22,7 @@ class Guarantee extends Model implements Audit, HasMedia
 
     protected $fillable = [
         'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'contract_id', 'organization_id',
-        'amount', 'fact_amount', 'has_final_act', 'has_bank_guarantee', 'state', 'conditions', 'status_id',
+        'amount', 'fact_amount', 'has_final_act', 'has_bank_guarantee', 'state', 'conditions', 'status_id', 'currency'
     ];
 
     public function company(): BelongsTo

@@ -39,8 +39,11 @@ class GuaranteeService
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $total['amount'] = (clone $query)->sum('amount');
-        $total['fact_amount'] = (clone $query)->sum('fact_amount');
+        $total['amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('amount');
+        $total['amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('amount');
+
+        $total['fact_amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('fact_amount');
+        $total['fact_amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('fact_amount');
 
         $query->with('company', 'object', 'contract', 'customer');
         $query->orderByDesc('object_id');
@@ -48,7 +51,7 @@ class GuaranteeService
         return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
 
-    public function createGuarantee(array $requestData): void
+    public function createGuarantee(array $requestData): Guarantee
     {
         $guarantee = Guarantee::create([
             'contract_id' => $requestData['contract_id'],
@@ -61,6 +64,7 @@ class GuaranteeService
             'conditions' => $this->sanitizer->set($requestData['conditions'])->get(),
             'has_bank_guarantee' => $requestData['has_bank_guarantee'],
             'has_final_act' => $requestData['has_final_act'],
+            'currency' => $requestData['currency'] ?? 'RUB',
             'status_id' => Status::STATUS_ACTIVE,
         ]);
 
@@ -69,9 +73,11 @@ class GuaranteeService
                 $guarantee->addMedia($file)->toMediaCollection();
             }
         }
+
+        return $guarantee;
     }
 
-    public function updateGuarantee(Guarantee $guarantee, array $requestData): void
+    public function updateGuarantee(Guarantee $guarantee, array $requestData): Guarantee
     {
         $guarantee->update([
             'contract_id' => $requestData['contract_id'],
@@ -84,6 +90,7 @@ class GuaranteeService
             'conditions' => $this->sanitizer->set($requestData['conditions'])->get(),
             'has_bank_guarantee' => $requestData['has_bank_guarantee'],
             'has_final_act' => $requestData['has_final_act'],
+            'currency' => $requestData['currency'] ?? 'RUB',
             'status_id' => $requestData['status_id'],
         ]);
 
@@ -92,6 +99,8 @@ class GuaranteeService
                 $guarantee->addMedia($file)->toMediaCollection();
             }
         }
+
+        return $guarantee;
     }
 
     public function destroyGuarantee(Guarantee $guarantee): void

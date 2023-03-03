@@ -91,7 +91,7 @@ class CheckAvansesReceivedFromPayments extends Command
                         'description' => 'Создано автоматически из оплаты #' . $payment->id,
                     ]);
                     $createdAvansesCount++;
-                    Log::channel('custom_imports_log')->debug('[SUCCESS] [ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] [RECEIVED-AVANS-ID: #' . $createdAvans->id . '] Аванс супешно создан');
+                    Log::channel('custom_imports_log')->debug('[SUCCESS] [ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] [RECEIVED-AVANS-ID: #' . $createdAvans->id . '] Аванс успешно создан');
                 } catch (\Exception $e) {
                     Log::channel('custom_imports_log')->debug('[ERROR] [ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] Не удалось создать полученный аванс: "' . $e->getMessage());
                     return 0;

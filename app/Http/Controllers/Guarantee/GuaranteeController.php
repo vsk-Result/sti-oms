@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Guarantee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guarantee\StoreGuaranteeRequest;
 use App\Http\Requests\Guarantee\UpdateGuaranteeRequest;
+use App\Models\Currency;
 use App\Models\Guarantee;
 use App\Models\Company;
 use App\Models\Contract\Contract;
@@ -42,7 +43,9 @@ class GuaranteeController extends Controller
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
-        return view('guarantees.create', compact('objects', 'companies', 'objectId', 'organizations', 'contracts', 'contractId'));
+        $currencies = Currency::getCurrencies();
+
+        return view('guarantees.create', compact('currencies', 'objects', 'companies', 'objectId', 'organizations', 'contracts', 'contractId'));
     }
 
     public function store(StoreGuaranteeRequest $request): RedirectResponse
@@ -63,7 +66,9 @@ class GuaranteeController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
         $statuses = Status::getStatuses();
-        return view('guarantees.edit', compact('guarantee', 'objects', 'companies', 'statuses', 'organizations', 'contracts'));
+        $currencies = Currency::getCurrencies();
+
+        return view('guarantees.edit', compact('currencies', 'guarantee', 'objects', 'companies', 'statuses', 'organizations', 'contracts'));
     }
 
     public function update(Guarantee $guarantee, UpdateGuaranteeRequest $request): RedirectResponse

@@ -48,10 +48,14 @@
                 <tr class="fw-bolder" style="background-color: #f7f7f7;">
                     <th colspan="3" class="ps-4" style="vertical-align: middle;">Итого</th>
                     <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['amount'], 'RUB') }}
+                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
+                        <br/>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}
                     </th>
                     <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount'], 'RUB') }}
+                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount']['RUB'], 'RUB') }}
+                        <br/>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount']['EUR'], 'EUR') }}
                     </th>
                     <th colspan="5"></th>
                 </tr>
@@ -73,15 +77,15 @@
                                 {{ $guarantee->contract->getName() }}
                             @endif
                         </td>
-                        <td>{{ $guarantee->customer->name }}</td>
+                        <td>{{ $guarantee->customer->name ?? '' }}</td>
                         <td>
                             @if(auth()->user()->can('edit guarantees'))
                                 <a href="{{ route('guarantees.edit', $guarantee) }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, 'RUB') }}</a>
                             @else
-                                {{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, 'RUB') }}
+                                {{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}
                             @endif
                         </td>
-                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->fact_amount, 'RUB') }}</td>
+                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->fact_amount, $guarantee->currency) }}</td>
                         <td>{{ $guarantee->getBankGuaranteeState() }}</td>
                         <td>{{ $guarantee->getFinalActState() }}</td>
                         <td>{{ $guarantee->state }}</td>
