@@ -33,5 +33,6 @@ return [
     'telegram-bot-api' => [
         'token' => env('TELEGRAM_BOT_TOKEN', ''),
         'channel_id_for_errors' => env('TELEGRAM_CHANNEL_ID_FOR_ERRORS', ''),
+        'channel_id_for_scheduler' => env('TELEGRAM_CHANNEL_ID_FOR_SCHEDULER', ''),
     ],
 ];

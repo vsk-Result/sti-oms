@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Console\BaseNotifyCommand;
 use App\Services\OrganizationTransferPaymentsService;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
-class TransferOrganizationsPayments extends Command
+class TransferOrganizationsPayments extends BaseNotifyCommand
 {
     protected $signature = 'oms-imports:transfer-organizations-payments-from-excel';
 
@@ -20,6 +20,7 @@ class TransferOrganizationsPayments extends Command
     public function __construct(OrganizationTransferPaymentsService $organizationTransferPaymentsService)
     {
         parent::__construct();
+        $this->commandName = 'Удаление дублей и перенос данных между контрагентами';
         $this->organizationTransferPaymentsService = $organizationTransferPaymentsService;
     }
 
@@ -32,24 +33,28 @@ class TransferOrganizationsPayments extends Command
         $importFilePath = storage_path() . '/app/public/public/transfer_organizations_payments.xlsx';
 
         if (! File::exists($importFilePath)) {
-            Log::channel('custom_imports_log')->debug('[ERROR] Файл для загрузки "' . $importFilePath . '" не найден');
+            $this->sendErrorNotification('Файл для загрузки "' . $importFilePath . '" не найден');
             return 0;
         }
 
         try {
-            $importStatus = $this->organizationTransferPaymentsService->transfer(new UploadedFile($importFilePath, 'transfer_organizations_payments.xlsx'));
+            $importResult = $this->organizationTransferPaymentsService->transfer(new UploadedFile($importFilePath, 'transfer_organizations_payments.xlsx'));
         } catch (\Exception $e) {
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось загрузить файл: "' . $e->getMessage());
+            $this->sendErrorNotification('Не удалось загрузить файл: ' . $e->getMessage());
             return 0;
         }
 
-        if ($importStatus !== 'ok') {
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось загрузить файл: "' . $importStatus);
-            return 0;
+        $message = '';
+
+        if (count($importResult) > 0) {
+            foreach ($importResult as $item) {
+                $message .= $item['old'] . ' => ' . $item['new'] . PHP_EOL;
+            }
+        } else {
+            $message.= 'Обработка прошла без изменений';
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Файл успешно загружен');
-
+        $this->sendSuccessNotification($message);
         return 0;
     }
 }

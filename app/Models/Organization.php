@@ -55,6 +55,11 @@ class Organization extends Model implements Audit
         return $this->hasMany(BankGuarantee::class, 'organization_id');
     }
 
+    public function guarantees(): HasMany
+    {
+        return $this->hasMany(Guarantee::class, 'organization_id');
+    }
+
     public function objects(): BelongsToMany
     {
         return $this->belongsToMany(BObject::class, 'object_customer', 'object_id', 'customer_id');

@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Console\BaseNotifyCommand;
 use App\Models\Contract\Contract;
 use App\Models\CurrencyExchangeRate;
 use App\Models\Guarantee;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class CreateGuaranteeForContract extends Command
+class CreateGuaranteeForContract extends BaseNotifyCommand
 {
     protected $signature = 'oms-imports:create-guarantee-for-contract';
 
@@ -18,6 +18,7 @@ class CreateGuaranteeForContract extends Command
     public function __construct()
     {
         parent::__construct();
+        $this->commandName = 'Создания/изменение ГУ для договоров';
     }
 
     public function handle()
@@ -31,6 +32,8 @@ class CreateGuaranteeForContract extends Command
         $contracts = Contract::where('type_id', Contract::TYPE_MAIN)->orderBy('object_id')->get();
         $currencies = ['RUB', 'EUR'];
 
+        $message = '';
+
         foreach ($contracts as $contract) {
             foreach ($currencies as $currency) {
                 $guaranteesAmount = $contract->getActsDepositesAmount($currency);
@@ -42,7 +45,7 @@ class CreateGuaranteeForContract extends Command
 
                 if (! $guarantee) {
                     if ($guaranteesAmount > 0) {
-                        $guarantee = Guarantee::create([
+                        Guarantee::create([
                             'contract_id' => $contract->id,
                             'company_id' => $contract->company_id,
                             'object_id' => $contract->object_id,
@@ -51,7 +54,7 @@ class CreateGuaranteeForContract extends Command
                         ]);
                         $createdGuaranteesCount++;
 
-                        Log::channel('custom_imports_log')->debug('[SUCCESS] [ID: #' . $guarantee->id . '] [CONTRACT-ID: #' . $contract->id . '] Гарантийное удержание успешно создано на сумму ' . $formatAmount);
+                        $message .= 'ГУ для договора "' . $contract->name . '" успешно создано на сумму ' . $formatAmount . PHP_EOL;
                     }
                 } else {
                     if ($guaranteesAmount != $guarantee->fact_amount) {
@@ -61,15 +64,21 @@ class CreateGuaranteeForContract extends Command
                         ]);
                         $updatedGuaranteesCount++;
 
-                        Log::channel('custom_imports_log')->debug('[SUCCESS] [ID: #' . $guarantee->id . '] [CONTRACT-ID: #' . $contract->id . '] Гарантийное удержание успешно обновлено на сумму ' . $formatAmount . ', предыдущая сумма: ' . $formatOldAmount);
+                        $message .= 'ГУ для договора "' . $contract->name . '" успешно обновлено на сумму ' . $formatAmount . ', предыдущая сумма: ' . $formatOldAmount . PHP_EOL;
                     }
                 }
             }
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] ' . $createdGuaranteesCount . ' гарантийных удержаний успешно создано');
-        Log::channel('custom_imports_log')->debug('[SUCCESS] ' . $updatedGuaranteesCount . ' гарантийных удержаний успешно обновлено');
+        $message.= '-------' . PHP_EOL;
+        $message.= $createdGuaranteesCount . ' ГУ успешно создано' . PHP_EOL;
+        $message.= $updatedGuaranteesCount . ' ГУ успешно обновлено' . PHP_EOL;
 
+        if ($createdGuaranteesCount + $updatedGuaranteesCount === 0) {
+            $message = 'Обработка прошла без изменений';
+        }
+
+        $this->sendSuccessNotification($message);
         return 0;
     }
 }

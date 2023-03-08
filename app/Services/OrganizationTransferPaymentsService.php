@@ -16,47 +16,57 @@ class OrganizationTransferPaymentsService
         $this->organizationService = $organizationService;
     }
 
-    public function transfer(UploadedFile $file): string
+    public function transfer(UploadedFile $file): array
     {
+        $result = [];
         $importData = Excel::toArray(new PaymentTransferImport(), $file);
         foreach ($importData['Организации'] as $index => $row) {
 
             if ($index === 0) continue;
 
             $organization = Organization::where('name', $row[0])->first();
-            $newOrganizaition = Organization::where('name', $row[1])->first();
+            $newOrganization = Organization::where('name', $row[1])->first();
 
-            if (! $organization || ! $newOrganizaition) {
+            if (! $organization || ! $newOrganization) {
                 continue;
             }
 
             $organization->paymentsSend()->update([
-                'organization_sender_id' => $newOrganizaition->id
+                'organization_sender_id' => $newOrganization->id
             ]);
 
             $organization->paymentsReceive()->update([
-                'organization_receiver_id' => $newOrganizaition->id
+                'organization_receiver_id' => $newOrganization->id
             ]);
 
             $organization->debts()->update([
-                'organization_id' => $newOrganizaition->id
+                'organization_id' => $newOrganization->id
             ]);
 
             $organization->loans()->update([
-                'organization_id' => $newOrganizaition->id
+                'organization_id' => $newOrganization->id
             ]);
 
             $organization->bankGuarantees()->update([
-                'organization_id' => $newOrganizaition->id
+                'organization_id' => $newOrganization->id
+            ]);
+
+            $organization->guarantees()->update([
+                'organization_id' => $newOrganization->id
             ]);
 
             $organization->objects()->update([
-                'customer_id' => $newOrganizaition->id
+                'customer_id' => $newOrganization->id
             ]);
+
+            $result[] = [
+                'old' => $organization->name,
+                'new' => $newOrganization->name,
+            ];
 
             $this->organizationService->destroyOrganization($organization);
         }
 
-        return 'ok';
+        return $result;
     }
 }

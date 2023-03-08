@@ -60,6 +60,10 @@ class TransferPaymentImportController extends Controller
                 'organization_id' => $newOrganizaition->id
             ]);
 
+            $organization->guarantees()->update([
+                'organization_id' => $newOrganizaition->id
+            ]);
+
             $organization->objects()->update([
                 'customer_id' => $newOrganizaition->id
             ]);
