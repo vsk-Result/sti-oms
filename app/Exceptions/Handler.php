@@ -38,7 +38,7 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             if (config('app.debug') === false) {
-                Notification::send([config('services.telegram-bot-api.channel_id_for_errors')], new ErrorOccurred($e));
+//                Notification::send([config('services.telegram-bot-api.channel_id_for_errors')], new ErrorOccurred($e));
             }
         });
     }
