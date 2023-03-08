@@ -27,7 +27,7 @@ class ErrorOccurred extends Notification
             ->content(
                 sprintf(
                     "*Пользователь:* %s\n---\n*Пред. URL:* %s\n*URL:* %s (%s)\n---\n*Файл:* %s (%s)\n---\n*Ошибка:* %s...",
-                    auth()->user()->name,
+                    auth()->user()->name ?? '',
                     url()->previous(),
                     request()->fullUrl(),
                     request()->method(),
