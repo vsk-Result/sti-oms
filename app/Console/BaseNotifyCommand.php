@@ -18,7 +18,7 @@ class BaseNotifyCommand extends Command
     {
         parent::__construct();
         $this->logChannel = Log::channel('custom_imports_log');
-        $this->botId = config('services.telegram-bot-api.channel_id_for_scheduler');
+        $this->botId = (string) config('services.telegram-bot-api.channel_id_for_scheduler');
     }
 
     public function sendErrorNotification(string $message): void
