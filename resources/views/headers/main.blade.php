@@ -14,8 +14,7 @@
                 </span>
             </div>
             <a href="{{ route('home') }}">
-{{--                <img alt="Logo" src="{{ asset('images/logo.png') }}" class="d-none d-lg-inline h-45px" />--}}
-                <img alt="Logo" src="https://avatanplus.com/files/resources/original/58b832cf6852315a8f867a43.png" style="width: 75%; height: auto !important;" class="d-none d-lg-inline h-45px" />
+                <img alt="Logo" src="{{ asset('images/logo.png') }}" class="d-none d-lg-inline h-45px" />
             </a>
         </div>
         <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1">
