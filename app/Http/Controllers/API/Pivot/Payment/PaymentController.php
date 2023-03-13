@@ -48,7 +48,7 @@ class PaymentController extends Controller
             $paymentQuery->whereBetween('date', [Carbon::parse($startDate)->format('Y-m-d'), Carbon::parse($endDate)->format('Y-m-d')]);
         }
 
-        if ($object !== 'all_object') {
+        if ($object !== 'all_objects') {
             $paymentQuery->where('object_id', $object);
             $generalCostsQuery->where('object_id', $object);
         }
