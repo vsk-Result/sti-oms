@@ -184,7 +184,7 @@ class ActService
 
         if (! empty($requestData['payments_date'])) {
             foreach ($requestData['payments_date'] as $index => $paymentDate) {
-                $paymentAmount = (float) $requestData['payments_amount'][$index];
+                $paymentAmount = $this->sanitizer->set($requestData['payments_amount'][$index])->toAmount()->get();
                 $description = $requestData['payments_description'][$index];
                 if ($paymentAmount > 0) {
                     ActPayment::create([
@@ -240,12 +240,12 @@ class ActService
         if (! empty($requestData['isset_payments_date'])) {
             foreach ($requestData['isset_payments_date'] as $paymentId => $paymentDate) {
                 $payment = ActPayment::find($paymentId);
-                $paymentAmount = (float) $requestData['isset_payments_amount'][$paymentId];
+                $paymentAmount = $this->sanitizer->set($requestData['isset_payments_amount'][$paymentId])->toAmount()->get();
                 $description = $requestData['isset_payments_description'][$paymentId];
 
                 $payment->update([
                     'date' => $paymentDate,
-                    'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
+                    'amount' => $paymentAmount,
                     'currency' => $contract->currency,
                     'description' => $this->sanitizer->set($description)->get(),
                     'currency_rate' => $act->currency !== 'RUB'
@@ -264,8 +264,9 @@ class ActService
 
         if (! empty($requestData['payments_date'])) {
             foreach ($requestData['payments_date'] as $index => $paymentDate) {
-                $paymentAmount = (float) $requestData['payments_amount'][$index];
+                $paymentAmount = $this->sanitizer->set($requestData['payments_amount'][$index])->toAmount()->get();
                 $description = $requestData['payments_description'][$index];
+
                 if ($paymentAmount > 0) {
                     ActPayment::create([
                         'contract_id' => $contract->id,
@@ -274,7 +275,7 @@ class ActService
                         'object_id' => $act->object_id,
                         'date' => $paymentDate,
                         'description' => $this->sanitizer->set($description)->get(),
-                        'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
+                        'amount' => $paymentAmount,
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,
                         'currency_rate' => $act->currency !== 'RUB'

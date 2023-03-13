@@ -142,7 +142,7 @@ class ContractService
 
         if (! empty($requestData['received_avanses_date'])) {
             foreach ($requestData['received_avanses_date'] as $index => $avansDate) {
-                $avansAmount = (float) $requestData['received_avanses_amount'][$index];
+                $avansAmount = $this->sanitizer->set($requestData['received_avanses_amount'][$index])->toAmount()->get();
                 $description = $requestData['received_avanses_description'][$index];
                 if ($avansAmount > 0) {
                     ContractReceivedAvans::create([
@@ -150,7 +150,7 @@ class ContractService
                         'company_id' => $requestData['company_id'],
                         'object_id' => $requestData['object_id'],
                         'date' => $avansDate,
-                        'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                        'amount' => $avansAmount,
                         'description' => $this->sanitizer->set($description)->get(),
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,
@@ -234,12 +234,12 @@ class ContractService
         if (! empty($requestData['isset_received_avanses_date'])) {
             foreach ($requestData['isset_received_avanses_date'] as $avansId => $avansDate) {
                 $avans = ContractReceivedAvans::find($avansId);
-                $avansAmount = (float) $requestData['isset_received_avanses_amount'][$avansId];
+                $avansAmount = $this->sanitizer->set($requestData['isset_received_avanses_amount'][$avansId])->toAmount()->get();
                 $description = $requestData['isset_received_avanses_description'][$avansId];
 
                 $avans->update([
                     'date' => $avansDate,
-                    'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                    'amount' => $avansAmount,
                     'currency' => $contract->currency,
                     'description' => $this->sanitizer->set($description)->get(),
                     'currency_rate' => $contract->currency !== 'RUB'
@@ -257,7 +257,7 @@ class ContractService
 
         if (! empty($requestData['received_avanses_date'])) {
             foreach ($requestData['received_avanses_date'] as $index => $avansDate) {
-                $avansAmount = (float) $requestData['received_avanses_amount'][$index];
+                $avansAmount = $this->sanitizer->set($requestData['received_avanses_amount'][$index])->toAmount()->get();
                 $description = $requestData['received_avanses_description'][$index];
                 if ($avansAmount > 0) {
                     ContractReceivedAvans::create([
@@ -266,7 +266,7 @@ class ContractService
                         'object_id' => $requestData['object_id'],
                         'date' => $avansDate,
                         'description' => $this->sanitizer->set($description)->get(),
-                        'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
+                        'amount' => $avansAmount,
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $contract->currency,
                         'currency_rate' => $contract->currency !== 'RUB'

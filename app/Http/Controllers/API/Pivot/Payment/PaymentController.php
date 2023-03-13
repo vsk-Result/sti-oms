@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Pivot\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
 use App\Models\Payment;
 use Carbon\Carbon;
@@ -37,20 +38,24 @@ class PaymentController extends Controller
             }
         }
 
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
         $object = $request->get('object');
 
         $paymentQuery = Payment::select('date', 'object_id', 'amount');
         $generalCostsQuery = GeneralCost::query();
 
         if ($date !== 'all_period') {
-            $paymentQuery->whereBetween('date', [Carbon::parse($startDate)->format('Y-m-d'), Carbon::parse($endDate)->format('Y-m-d')]);
+            $startDate = Carbon::parse($request->get('start_date'))->format('Y-m') . '-01';
+            $endDate = Carbon::parse($request->get('end_date'))->format('Y-m') . '-' . Carbon::parse($request->get('end_date'))->lastOfMonth()->day;
+            $paymentQuery->whereBetween('date', [$startDate, $endDate]);
         }
 
         if ($object !== 'all_objects') {
             $paymentQuery->where('object_id', $object);
             $generalCostsQuery->where('object_id', $object);
+        } else {
+            $objectIds = BObject::active()->lists('id')->toArray();
+            $paymentQuery->whereIn('object_id', $objectIds);
+            $generalCostsQuery->whereIn('object_id', $objectIds);
         }
 
         $pay = (float) (clone $paymentQuery)->where('amount', '<', 0)->sum('amount');
