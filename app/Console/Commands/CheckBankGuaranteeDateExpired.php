@@ -2,24 +2,25 @@
 
 namespace App\Console\Commands;
 
+use App\Console\BaseNotifyCommand;
 use App\Models\Object\BObject;
 use App\Services\BankGuaranteeService;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class CheckBankGuaranteeDateExpired extends Command
+class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
 {
     protected $signature = 'oms-imports:check-bank-guarantee-date-expired';
 
-    protected $description = 'Проверка окончания действий банковских гарантиий';
+    protected $description = 'Проверка окончания сроков действий банковских гарантиий';
 
     private BankGuaranteeService $bankGuaranteeService;
 
     public function __construct(BankGuaranteeService $bankGuaranteeService)
     {
         parent::__construct();
+        $this->commandName = 'Проверка окончания сроков действий БГ и депозитов';
         $this->bankGuaranteeService = $bankGuaranteeService;
     }
 
@@ -32,12 +33,24 @@ class CheckBankGuaranteeDateExpired extends Command
         try {
             $checkInfo = $this->bankGuaranteeService->checkExpired();
         } catch (\Exception $e) {
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось провести проверку: "' . $e->getMessage());
+            $this->sendErrorNotification('Не удалось провести проверку: ' . $e->getMessage());
             return 0;
         }
 
+        $message = '';
+        $expiredBGCount = 0;
+        $expiredDepositCount = 0;
+
+        if (count($checkInfo['bg']) > 0) {
+            $message .= '<strong>Банковские гарантии</strong>' . PHP_EOL . PHP_EOL;
+        }
+
         foreach ($checkInfo['bg'] as $info) {
-            Log::channel('custom_imports_log')->debug('[INFO] Истек срок действия банковской гарантии #' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $info['date']);
+            $date = Carbon::parse($info['date'])->format('d.m.Y');
+            $message .= 'Истек срок действия БГ <strong>' . $info['number'] . '</strong>, дата окончания: <strong>' . $date . '</strong>' . PHP_EOL;
+            $expiredBGCount++;
+
+            Log::channel('custom_imports_log')->debug('[INFO] Истек срок действия банковской гарантии #' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $date);
             Log::channel('custom_imports_log')->debug('[INFO] Банковская гарантия #' . $info['id'] . ' переведена в архив');
 
             $object = BObject::find($info['object_id']);
@@ -61,8 +74,16 @@ class CheckBankGuaranteeDateExpired extends Command
             }
         }
 
+        if (count($checkInfo['deposit']) > 0) {
+            $message .= '<strong>Депозиты</strong>' . PHP_EOL . PHP_EOL;
+        }
+
         foreach ($checkInfo['deposit'] as $info) {
-            Log::channel('custom_imports_log')->debug('[INFO] Истек срок действия депозита по БГ#' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $info['date']);
+            $date = Carbon::parse($info['date'])->format('d.m.Y');
+            $message .= 'Истек срок действия депозита по БГ <strong>' . $info['number'] . '</strong>, дата окончания: <strong>' . $date . '</strong>' . PHP_EOL;
+            $expiredDepositCount++;
+
+            Log::channel('custom_imports_log')->debug('[INFO] Истек срок действия депозита по БГ#' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $date);
             Log::channel('custom_imports_log')->debug('[INFO] Банковская гарантия #' . $info['id'] . ' переведена в архив');
 
             $object = BObject::find($info['object_id']);
@@ -87,7 +108,12 @@ class CheckBankGuaranteeDateExpired extends Command
         }
 
         if (count($checkInfo['bg']) === 0 && count($checkInfo['deposit']) === 0) {
-            Log::channel('custom_imports_log')->debug('[INFO] Истекших сроков действия не обнаружено');
+            $this->sendSuccessNotification('Истекших сроков действия не обнаружено');
+        } else {
+            $message.= PHP_EOL . '-------' . PHP_EOL;
+            $message.= $expiredBGCount . ' БГ с истекшим сроком' . PHP_EOL;
+            $message.= $expiredDepositCount . ' депозитов с истекшим сроком' . PHP_EOL;
+            $this->sendSuccessNotification($message);
         }
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Проверка прошла успешно');

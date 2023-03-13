@@ -64,7 +64,7 @@ class CreateGuaranteeForContract extends BaseNotifyCommand
                         ]);
                         $updatedGuaranteesCount++;
 
-                        $message .= 'ГУ для договора "' . $contract->name . '" успешно обновлено на сумму ' . $formatAmount . ', предыдущая сумма: ' . $formatOldAmount . PHP_EOL;
+                        $message .= 'ГУ для договора "' . $contract->name . '" успешно обновлено, новая сумма ' . $formatAmount . ', предыдущая сумма: ' . $formatOldAmount . PHP_EOL;
                     }
                 }
             }
