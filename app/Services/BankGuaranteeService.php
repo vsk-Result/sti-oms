@@ -66,16 +66,13 @@ class BankGuaranteeService
 
         $currencies = Currency::getCurrencies();
         foreach ($currencies as $currency) {
-            $total['amount'][$currency] = 0;
-            $total['amount_deposit'][$currency] = 0;
-            $total['amount_commission'][$currency] = 0;
-            $total['amount_acts_left_paid'][$currency] = 0;
-            foreach ((clone $query)->where('currency', $currency)->get() as $guarantee) {
-                $total['amount'][$currency] += $guarantee->amount;
-                $total['amount_deposit'][$currency] += $guarantee->amount_deposit;
-                $total['amount_commission']['RUB'] += $guarantee->commission;
-                $total['amount_acts_left_paid'][$currency] += $guarantee->getAvansesLeftAmount();
-            }
+            $bgQuery = (clone $query)->where('currency', $currency);
+
+            $total['amount']['active'][$currency] = (clone $bgQuery)->where('end_date', '>=', Carbon::now())->sum('amount');
+            $total['amount']['expired'][$currency] = (clone $bgQuery)->where('end_date', '<', Carbon::now())->sum('amount');
+
+            $total['amount_deposit']['active'][$currency] = (clone $bgQuery)->where('end_date_deposit', '>=', Carbon::now())->sum('amount_deposit');
+            $total['amount_deposit']['expired'][$currency] = (clone $bgQuery)->where('end_date_deposit', '<', Carbon::now())->sum('amount_deposit');
         }
 
         $query->with('company', 'object', 'contract', 'contract.acts', 'contract.avansesReceived', 'organization');

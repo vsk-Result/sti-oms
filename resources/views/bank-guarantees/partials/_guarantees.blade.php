@@ -1,21 +1,53 @@
 <div class="card">
     <div class="card-header border-0 pt-6">
         <div class="card-title">
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма БГ</div>
+            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                <div class="d-flex flex-column align-items-left">
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['active']['RUB'], 'RUB') }}</div>
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['active']['EUR'], 'EUR') }}</div>
                 </div>
+                <div class="fw-bold fs-6 text-gray-400">
+                    Сумма БГ
+                    <br/>
+                    <span class="text-success">Действующие</span>
+                </div>
+            </div>
 
-                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_deposit']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_deposit']['EUR'], 'EUR') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Сумма депозита</div>
+            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                <div class="d-flex flex-column align-items-left">
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_deposit']['active']['RUB'], 'RUB') }}</div>
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_deposit']['active']['EUR'], 'EUR') }}</div>
                 </div>
+                <div class="fw-bold fs-6 text-gray-400">
+                    Сумма депозита
+                    <br/>
+                    <span class="text-success">Действующие</span>
+                </div>
+            </div>
+
+            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                <div class="d-flex flex-column align-items-left">
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['expired']['RUB'], 'RUB') }}</div>
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount']['expired']['EUR'], 'EUR') }}</div>
+                </div>
+                <div class="fw-bold fs-6 text-gray-400">
+                    Сумма БГ
+                    <br/>
+                    <span class="text-primary">Истекшие</span>
+                </div>
+            </div>
+
+            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                <div class="d-flex flex-column align-items-left">
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_deposit']['expired']['RUB'], 'RUB') }}</div>
+                    <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_deposit']['expired']['EUR'], 'EUR') }}</div>
+                </div>
+                <div class="fw-bold fs-6 text-gray-400">
+                    Сумма депозита
+                    <br/>
+                    <span class="text-primary">Истекшие</span>
+                </div>
+            </div>
 
 {{--            <div>--}}
 {{--                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">--}}
