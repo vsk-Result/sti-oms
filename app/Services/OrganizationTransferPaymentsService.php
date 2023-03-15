@@ -31,6 +31,10 @@ class OrganizationTransferPaymentsService
                 continue;
             }
 
+            if ($organization->id === $newOrganization->id) {
+                continue;
+            }
+
             $organization->paymentsSend()->update([
                 'organization_sender_id' => $newOrganization->id
             ]);
