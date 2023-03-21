@@ -35,8 +35,8 @@ class ActSheet implements
     public function __construct(string $sheetName, Builder $acts, int $actCount)
     {
         $this->sheetName = $sheetName;
-        $this->acts = $acts;
         $this->actCount = $actCount;
+        $this->acts = $acts;
     }
 
     public function title(): string
