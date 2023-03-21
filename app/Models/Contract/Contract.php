@@ -167,8 +167,8 @@ class Contract extends Model implements HasMedia, Audit
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
-            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(8, json_decode($this->params) ?? [])) {
-                return json_decode($this->params)[8] - json_decode($this->params)[9];
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(10, json_decode($this->params) ?? [])) {
+                return json_decode($this->params)[10] ?? 0;
             }
 
             foreach ($this->children->where('currency', $currency) as $subContract) {
@@ -299,6 +299,10 @@ class Contract extends Model implements HasMedia, Audit
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $amount += $subContract->acts->sum('amount_need_paid');
             }
+        }
+
+        if ($this->object_id === 5 && $currency === 'RUB' && ($amount - $paid) < 0) {
+            return 0;
         }
 
         return $amount - $paid;
