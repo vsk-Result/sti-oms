@@ -2,7 +2,9 @@
 
 namespace App\Exports\Object;
 
+use App\Exports\Object\Sheets\ActSheet;
 use App\Exports\Object\Sheets\PaymentSheet;
+use App\Models\Contract\Act;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
@@ -23,9 +25,15 @@ class Export implements WithMultipleSheets
             ->orderByDesc('date')
             ->orderByDesc('id');
 
+        $actsQuery = Act::where('object_id', $this->object->id)
+            ->with('object', 'contract', 'payments')
+            ->orderByDesc('date')
+            ->orderByDesc('id');
+
         return [
             new PaymentSheet('Оплаты', $paymentsQuery, (clone $paymentsQuery)->count()),
             new PaymentSheet('Касса', (clone $paymentsQuery)->where('payment_type_id', Payment::PAYMENT_TYPE_CASH), (clone $paymentsQuery)->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->count()),
+            new ActSheet('Акты', $actsQuery, (clone $actsQuery)->count()),
         ];
     }
 }
