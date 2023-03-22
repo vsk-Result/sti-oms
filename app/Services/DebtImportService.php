@@ -492,7 +492,11 @@ class DebtImportService
             if (is_numeric($row[14])) {
                 $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[14]))->format('Y-m-d');
             } else if (is_string($row[14])) {
-                $dueDate = $row[14];
+                try {
+                    $dueDate = Carbon::parse($row[14])->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
+                }
             } else {
                 if (! empty($row[14])) {
                     $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
