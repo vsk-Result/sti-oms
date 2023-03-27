@@ -61,7 +61,7 @@ class GeneralSheet implements
             Date::dateTimeToExcel(Carbon::parse($row->date)),
             Date::dateTimeToExcel(Carbon::parse($row->date)),
             $row->amount,
-            $row->code,
+            $row->code . ' ',
             $row->company->short_name,
             $row->description,
             $row->organizationReceiver->name,

@@ -76,7 +76,7 @@ class PaymentSheet implements
             $row->amount < 0 ? 'Расход' : 'Приход',
             $row->getPaymentType(),
             Date::dateTimeToExcel(Carbon::parse($row->date)),
-            $row->code,
+            $row->code . ' ',
             $row->amount,
             $row->amount_without_nds,
             $row->amount < 0 ? ($row->organizationReceiver->name ?? '') : ($row->organizationSender->name ?? ''),

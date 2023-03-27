@@ -79,7 +79,7 @@ class ObjectSheet implements
             '',
             Date::dateTimeToExcel(Carbon::parse($row->date)),
             $row->object_worktype_id,
-            $row->code,
+            $row->code . ' ',
             $row->amount,
             $row->amount,
             '0',
