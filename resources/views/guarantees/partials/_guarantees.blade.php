@@ -80,7 +80,7 @@
                         <td>{{ $guarantee->customer->name ?? '' }}</td>
                         <td>
                             @if(auth()->user()->can('edit guarantees'))
-                                <a href="{{ route('guarantees.edit', $guarantee) }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, 'RUB') }}</a>
+                                <a href="{{ route('guarantees.edit', $guarantee) }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}</a>
                             @else
                                 {{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}
                             @endif
