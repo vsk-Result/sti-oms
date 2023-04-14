@@ -71,7 +71,9 @@
                             @endif
                         </td>
                         <td class="px-3">
-                            @if(auth()->user()->can('index contracts'))
+                            @if (!$guarantee->contract)
+
+                            @elseif(auth()->user()->can('index contracts'))
                                 <a href="{{ route('contracts.index') }}?name={{ urlencode($guarantee->contract->parent ? $guarantee->contract->parent->name : $guarantee->contract->name) }}" class="show-link">{{ $guarantee->contract->getName() }}</a>
                             @else
                                 {{ $guarantee->contract->getName() }}
