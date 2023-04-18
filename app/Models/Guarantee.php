@@ -8,6 +8,7 @@ use App\Traits\HasStatus;
 use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -22,7 +23,8 @@ class Guarantee extends Model implements Audit, HasMedia
 
     protected $fillable = [
         'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'contract_id', 'organization_id',
-        'amount', 'fact_amount', 'has_final_act', 'has_bank_guarantee', 'state', 'conditions', 'status_id', 'currency'
+        'amount', 'fact_amount', 'has_final_act', 'has_bank_guarantee', 'state', 'conditions', 'status_id', 'currency',
+        'amount_payments'
     ];
 
     public function company(): BelongsTo
@@ -45,6 +47,11 @@ class Guarantee extends Model implements Audit, HasMedia
         return $this->belongsTo(BObject::class, 'object_id');
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(GuaranteePayment::class, 'guarantee_id');
+    }
+
     public function getBankGuaranteeState(): string
     {
         return $this->has_bank_guarantee ? 'Есть' : 'Нет';
@@ -56,5 +63,17 @@ class Guarantee extends Model implements Audit, HasMedia
             return '';
         }
         return $this->has_final_act ? 'Есть' : 'Нет';
+    }
+
+    public function getFactAmount()
+    {
+        return $this->fact_amount - $this->amount_payments;
+    }
+
+    public function updatePayments()
+    {
+        $this->update([
+            'amount_payments' => $this->payments->sum('amount')
+        ]);
     }
 }

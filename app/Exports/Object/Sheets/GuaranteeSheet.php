@@ -72,7 +72,7 @@ class GuaranteeSheet implements
             $row->customer->name ?? '',
             $row->currency,
             $row->amount,
-            $row->fact_amount,
+            $row->fact_amount - $row->amount_payments,
             $row->getBankGuaranteeState(),
             $row->getFinalActState(),
             $row->state,

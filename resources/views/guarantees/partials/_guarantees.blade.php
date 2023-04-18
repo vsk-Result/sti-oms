@@ -87,7 +87,7 @@
                                 {{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}
                             @endif
                         </td>
-                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->fact_amount, $guarantee->currency) }}</td>
+                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->getFactAmount(), $guarantee->currency) }}</td>
                         <td>{{ $guarantee->getBankGuaranteeState() }}</td>
                         <td>{{ $guarantee->getFinalActState() }}</td>
                         <td>{{ $guarantee->state }}</td>

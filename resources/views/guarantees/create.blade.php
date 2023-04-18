@@ -13,8 +13,11 @@
                     </h3>
                 </div>
                 <div class="card-body py-3">
-                    <form class="form" action="{{ route('guarantees.store') }}?return_url={{ request()->get('return_url', '') }}" method="POST" enctype="multipart/form-data">
+                    <form class="form" action="{{ route('guarantees.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+
+                        <input type="hidden" name="return_url" value="{{ url()->previous() }}">
+
                         <div class="row mb-5">
                             <div class="col-md-12 fv-row">
 
@@ -217,11 +220,102 @@
                             </div>
                         </div>
 
+                        <div class="row mb-5">
+                            <h3 class="fw-bolder">Оплаты</h3>
+
+                            <div id="payment-template" class="col-md-3 mb-10 fv-row" style="display: none;">
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <input
+                                                    class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_date[]"
+                                                    value=""
+                                                    readonly
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                    class="form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_amount[]"
+                                                    value=""
+                                                    autocomplete="off"
+                                            />
+                                        </td>
+                                        <td>
+                                            <button
+                                                    type="button"
+                                                    class="destroy-payment btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                            >
+                                                Удалить
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mb-4 d-flex flex-left">
+                                <button
+                                        type="button"
+                                        id="create-payment"
+                                        class="mt-4 btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success me-2 mb-2"
+                                >
+                                    Добавить запись
+                                </button>
+                            </div>
+
+                            <div class="d-flex flex-left mb-4">
+                                <table id="payments-table" class="table align-middle table-row-dashed fs-6">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-150px">Дата оплаты</th>
+                                        <th class="min-w-150px">Сумма оплаты</th>
+                                        <th class="min-w-150px rounded-end pe-4">Действие</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-gray-600 fw-bold">
+                                    <tr>
+                                        <td>
+                                            <input
+                                                    class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_date[]"
+                                                    value=""
+                                                    readonly
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                    class="form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="payments_amount[]"
+                                                    value=""
+                                                    autocomplete="off"
+                                            />
+                                        </td>
+                                        <td>
+                                            <button
+                                                    type="button"
+                                                    class="destroy-payment btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                            >
+                                                Удалить
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <div class="d-flex flex-center py-3">
                             <button type="submit" id="kt_modal_new_address_submit" class="btn btn-primary me-3">
                                 <span class="indicator-label">Создать</span>
                             </button>
-                            <a href="{{ request()->get('return_url') ?? route('guarantees.index') }}" class="btn btn-light">Отменить</a>
+                            <a href="{{ url()->previous() }}" class="btn btn-light">Отменить</a>
                         </div>
                     </form>
                 </div>
@@ -229,3 +323,21 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            $('#create-payment').on('click', function () {
+                const $payment = $('#payment-template').clone();
+                $('#payments-table tbody').append($payment.find('tr'));
+
+                mainApp.init();
+            });
+
+            $(document).on('click', '.destroy-payment', function() {
+                $(this).closest('tr').remove();
+            });
+        });
+    </script>
+@endpush
+

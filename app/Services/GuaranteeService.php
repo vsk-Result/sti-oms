@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\Sanitizer;
 use App\Models\Guarantee;
+use App\Models\GuaranteePayment;
 use App\Models\Status;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -42,8 +43,8 @@ class GuaranteeService
         $total['amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('amount');
         $total['amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('amount');
 
-        $total['fact_amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('fact_amount');
-        $total['fact_amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('fact_amount');
+        $total['fact_amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('fact_amount') - (clone $query)->where('currency', 'RUB')->sum('amount_payments');
+        $total['fact_amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('fact_amount') - (clone $query)->where('currency', 'EUR')->sum('amount_payments');
 
         $query->with('company', 'object', 'contract', 'customer');
         $query->orderByDesc('object_id');
@@ -68,11 +69,31 @@ class GuaranteeService
             'status_id' => Status::STATUS_ACTIVE,
         ]);
 
+        if (! empty($requestData['payments_date'])) {
+            foreach ($requestData['payments_date'] as $index => $paymentDate) {
+                $paymentAmount = $this->sanitizer->set($requestData['payments_amount'][$index])->toAmount()->get();
+                if ($paymentAmount > 0) {
+                    GuaranteePayment::create([
+                        'contract_id' => $requestData['contract_id'],
+                        'guarantee_id' => $guarantee->id,
+                        'company_id' => $requestData['company_id'],
+                        'object_id' => $requestData['object_id'],
+                        'date' => $paymentDate,
+                        'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
+                        'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $guarantee->currency,
+                    ]);
+                }
+            }
+        }
+
         if (! empty($requestData['files'])) {
             foreach ($requestData['files'] as $file) {
                 $guarantee->addMedia($file)->toMediaCollection();
             }
         }
+
+        $guarantee->updatePayments();
 
         return $guarantee;
     }
@@ -94,17 +115,61 @@ class GuaranteeService
             'status_id' => $requestData['status_id'],
         ]);
 
+        $currentPaymentsIds = $guarantee->payments()->pluck('id', 'id')->toArray();
+
+        if (! empty($requestData['isset_payments_date'])) {
+            foreach ($requestData['isset_payments_date'] as $paymentId => $paymentDate) {
+                $payment = GuaranteePayment::find($paymentId);
+                $paymentAmount = $this->sanitizer->set($requestData['isset_payments_amount'][$paymentId])->toAmount()->get();
+
+                $payment->update([
+                    'date' => $paymentDate,
+                    'amount' => $paymentAmount,
+                    'currency' => $guarantee->currency,
+                ]);
+
+                unset($currentPaymentsIds[$paymentId]);
+            }
+        }
+
+        foreach ($currentPaymentsIds as $paymentId) {
+            $payment = GuaranteePayment::find($paymentId);
+            $payment->delete();
+        }
+
+        if (! empty($requestData['payments_date'])) {
+            foreach ($requestData['payments_date'] as $index => $paymentDate) {
+                $paymentAmount = $this->sanitizer->set($requestData['payments_amount'][$index])->toAmount()->get();
+
+                if ($paymentAmount > 0) {
+                    GuaranteePayment::create([
+                        'contract_id' => $guarantee->contract_id,
+                        'guarantee_id' => $guarantee->id,
+                        'company_id' => $guarantee->company_id,
+                        'object_id' => $guarantee->object_id,
+                        'date' => $paymentDate,
+                        'amount' => $paymentAmount,
+                        'status_id' => Status::STATUS_ACTIVE,
+                        'currency' => $guarantee->currency,
+                    ]);
+                }
+            }
+        }
+
         if (! empty($requestData['files'])) {
             foreach ($requestData['files'] as $file) {
                 $guarantee->addMedia($file)->toMediaCollection();
             }
         }
 
+        $guarantee->updatePayments();
+
         return $guarantee;
     }
 
     public function destroyGuarantee(Guarantee $guarantee): void
     {
+        $guarantee->payments()->delete();
         $guarantee->delete();
     }
 }

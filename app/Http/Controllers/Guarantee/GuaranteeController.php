@@ -42,7 +42,7 @@ class GuaranteeController extends Controller
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
-        $contracts = Contract::with('parent')->orderBy('name')->get();
+        $contracts = Contract::with('object', 'children', 'children.object')->orderBy('name')->get();
         $currencies = Currency::getCurrencies();
 
         return view('guarantees.create', compact('currencies', 'objects', 'companies', 'objectId', 'organizations', 'contracts', 'contractId'));
@@ -64,7 +64,7 @@ class GuaranteeController extends Controller
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $organizations = Organization::orderBy('name')->get();
-        $contracts = Contract::with('parent')->orderBy('name')->get();
+        $contracts = Contract::with('object', 'children', 'children.object')->orderBy('name')->get();
         $statuses = Status::getStatuses();
         $currencies = Currency::getCurrencies();
 
