@@ -90,7 +90,7 @@
                 $workSalaryDebt = $object->getWorkSalaryDebt();
                 $customerDebtInfo = [];
                 $contractService->filterContracts(['object_id' => [$object->id]], $customerDebtInfo);
-                $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
+                $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
                 $objectBalance = $object->total_with_general_balance +
                                 $customerDebtInfo['avanses_left_amount']['RUB'] +
                                 $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] +
