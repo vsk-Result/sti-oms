@@ -10,6 +10,7 @@ use App\Models\CRM\SalaryDebt;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Debt\DebtManual;
+use App\Models\GuaranteePayment;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentImport;
@@ -79,6 +80,11 @@ class  BObject extends Model implements Audit
     public function bankGuarantees(): HasMany
     {
         return $this->hasMany(BankGuarantee::class, 'object_id');
+    }
+
+    public function guaranteePayments(): HasMany
+    {
+        return $this->hasMany(GuaranteePayment::class, 'object_id');
     }
 
     public function debts(): HasMany
