@@ -40,9 +40,12 @@
                     <th class="min-w-150px">Сумма ГУ (по договору)</th>
                     <th class="min-w-150px">Сумма ГУ (по факту)</th>
                     <th class="min-w-150px">БГ по условиям договора</th>
-                    <th class="min-w-150px">Итоговый акт</th>
-                    <th class="min-w-150px">Статус</th>
-                    <th class="min-w-150px">Условия оплаты гар.удержания и комментарии</th>
+                    <th class="min-w-150px">Оплачено ГУ</th>
+                    <th class="min-w-150px">Дата посл. оплаты</th>
+                    <th class="min-w-150px">Остаток к получению ГУ</th>
+{{--                    <th class="min-w-150px">Итоговый акт</th>--}}
+{{--                    <th class="min-w-150px">Статус</th>--}}
+{{--                    <th class="min-w-150px">Условия оплаты гар.удержания и комментарии</th>--}}
                     <th class="min-w-150px">Действие</th>
                 </tr>
                 <tr class="fw-bolder" style="background-color: #f7f7f7;">
@@ -57,7 +60,19 @@
                         <br/>
                         {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount']['EUR'], 'EUR') }}
                     </th>
-                    <th colspan="5"></th>
+                    <th></th>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['amount_payments']['RUB'], 'RUB') }}
+                        <br/>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['amount_payments']['EUR'], 'EUR') }}
+                    </th>
+                    <td></td>
+                    <th>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount']['RUB'] - $total['amount_payments']['RUB'], 'RUB') }}
+                        <br/>
+                        {{ \App\Models\CurrencyExchangeRate::format($total['fact_amount']['EUR'] - $total['amount_payments']['EUR'], 'EUR') }}
+                    </th>
+                    <th colspan="4"></th>
                 </tr>
                 </thead>
                 <tbody class="text-gray-600 fw-bold">
@@ -87,11 +102,14 @@
                                 {{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}
                             @endif
                         </td>
-                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->getFactAmount(), $guarantee->currency) }}</td>
+                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->fact_amount, $guarantee->currency) }}</td>
                         <td>{{ $guarantee->getBankGuaranteeState() }}</td>
-                        <td>{{ $guarantee->getFinalActState() }}</td>
-                        <td>{{ $guarantee->state }}</td>
-                        <td>{{ $guarantee->conditions }}</td>
+                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount_payments, $guarantee->currency) }}</td>
+                        <td>{{ $guarantee->getLastPaymentDate(true) }}</td>
+                        <td>{{ \App\Models\CurrencyExchangeRate::format($guarantee->fact_amount - $guarantee->amount_payments, $guarantee->currency) }}</td>
+{{--                        <td>{{ $guarantee->getFinalActState() }}</td>--}}
+{{--                        <td>{{ $guarantee->state }}</td>--}}
+{{--                        <td>{{ $guarantee->conditions }}</td>--}}
                         <td>
                             <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                 <span class="svg-icon svg-icon-5 m-0">
@@ -125,7 +143,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10">
+                        <td colspan="13">
                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                 Гарантийные удержания отсутствуют
                             </p>

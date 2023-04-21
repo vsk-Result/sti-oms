@@ -53,6 +53,9 @@ class GuaranteeSheet implements
             'Сумма ГУ (по договору)',
             'Сумма ГУ (по факту)',
             'БГ по условиям договора',
+            'Оплачено ГУ',
+            'Дата посл. оплаты',
+            'Остаток к получению ГУ',
             'Итоговый акт',
             'Статус',
             'Условия оплаты гар.удержания и комментарии',
@@ -72,8 +75,11 @@ class GuaranteeSheet implements
             $row->customer->name ?? '',
             $row->currency,
             $row->amount,
-            $row->fact_amount - $row->amount_payments,
+            $row->fact_amount,
             $row->getBankGuaranteeState(),
+            $row->amount_payments,
+            $row->getLastPaymentDate(false, true),
+            $row->fact_amount - $row->amount_payments,
             $row->getFinalActState(),
             $row->state,
             $row->conditions,
@@ -86,17 +92,20 @@ class GuaranteeSheet implements
         return [
             'D' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
             'E' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'G' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'H' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'I' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
         ];
     }
 
     public function styles(Worksheet $sheet): void
     {
-        $sheet->getStyle('A1:J' . ($this->guaranteeCount + 1))->applyFromArray([
+        $sheet->getStyle('A1:M' . ($this->guaranteeCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
-        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
 
-        $sheet->setAutoFilter('A1:J' . ($this->guaranteeCount + 1));
+        $sheet->setAutoFilter('A1:M' . ($this->guaranteeCount + 1));
     }
 }

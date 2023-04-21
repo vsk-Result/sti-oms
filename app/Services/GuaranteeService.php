@@ -43,8 +43,11 @@ class GuaranteeService
         $total['amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('amount');
         $total['amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('amount');
 
-        $total['fact_amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('fact_amount') - (clone $query)->where('currency', 'RUB')->sum('amount_payments');
-        $total['fact_amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('fact_amount') - (clone $query)->where('currency', 'EUR')->sum('amount_payments');
+        $total['fact_amount']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('fact_amount');
+        $total['fact_amount']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('fact_amount');
+
+        $total['amount_payments']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('amount_payments');
+        $total['amount_payments']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('amount_payments');
 
         $query->with('company', 'object', 'contract', 'customer');
         $query->orderByDesc('object_id');

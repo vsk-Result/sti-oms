@@ -6,10 +6,12 @@ use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use OwenIt\Auditing\Auditable;
@@ -75,5 +77,24 @@ class Guarantee extends Model implements Audit, HasMedia
         $this->update([
             'amount_payments' => $this->payments->sum('amount')
         ]);
+    }
+
+    public function getLastPaymentDate($formatted = false, $toExcel = false): string
+    {
+        $lastPayment = $this->payments()->orderBy('date', 'DESC')->first();
+
+        if (!$lastPayment) {
+            return '';
+        }
+
+        if (empty($lastPayment->date)) {
+            return '';
+        }
+
+        if ($toExcel) {
+            return Date::dateTimeToExcel(Carbon::parse($lastPayment->date));
+        }
+
+        return $formatted ? Carbon::parse($lastPayment->date)->format('d.m.Y') : $lastPayment->date;
     }
 }
