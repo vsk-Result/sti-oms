@@ -561,14 +561,18 @@ class DebtImportService
         $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
 
         foreach ($importData as $row) {
-            $contractDT = $row[0];
-            $contractSTI = $row[1];
-            $objectName = $row[2];
-            $objectCode = $row[3];
-            $amount = $row[4];
+            $objectName = $row[0];
+            $objectCode = $row[1];
+            $amount = $row[2];
+            $contractSTI = $row[3];
+            $contractDT = $row[4];
 
             if (empty($contractDT)) {
                 continue;
+            }
+
+            if ($objectCode == 27) {
+                $objectCode = '27.1';
             }
 
             $objectCode = str_replace(' ', '', $objectCode);
