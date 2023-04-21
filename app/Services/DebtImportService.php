@@ -567,7 +567,7 @@ class DebtImportService
             $contractSTI = $row[3];
             $contractDT = $row[4];
 
-            if (empty($contractDT)) {
+            if (empty($objectName)) {
                 continue;
             }
 

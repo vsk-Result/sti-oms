@@ -18,3 +18,8 @@ Breadcrumbs::for('pivots.balances.index', function (BreadcrumbTrail $trail) {
     $trail->push('Отчет по балансам');
 });
 
+Breadcrumbs::for('pivots.dtsti.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Долги ДТ - СТИ');
+});
+

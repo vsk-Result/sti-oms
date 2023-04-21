@@ -110,9 +110,9 @@
             @endcan
 
             @canAny(['index debts', 'index loans'])
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*')) ? 'hover show' : '' }}">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*') || request()->is('pivots/dt-sti*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
-                        <span class="menu-title {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*')) ? 'fw-boldest' : '' }}">Долги</span>
+                        <span class="menu-title {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*') || request()->is('pivots/dt-sti*')) ? 'fw-boldest' : '' }}">Долги</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
@@ -130,6 +130,14 @@
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">К СТИ</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link py-2 {{ request()->is('pivots/dt-sti*') ? 'active' : '' }}" href="{{ route('pivots.dtsti.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">ДТ - СТИ</span>
                             </a>
                         </div>
 
