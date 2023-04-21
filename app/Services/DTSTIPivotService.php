@@ -15,7 +15,7 @@ class DTSTIPivotService
 
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
 
-        foreach ($debtDTImport->debts as $debt) {
+        foreach ($debtDTImport->debts()->orderBy('amount', 'ASC')->get() as $debt) {
             $pivot['entries'][] = [
                 'object' => [
                     'id' => $debt->object->id,
