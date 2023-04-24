@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\BankGuarantee\BankGuaranteeController;
 use App\Http\Controllers\API\BankGuarantee\ExportController as BExportController;
+use App\Http\Controllers\API\Loan\LoanController;
 use App\Http\Controllers\API\Pivot\Act\ActController;
 use App\Http\Controllers\API\Pivot\Act\ExportController;
 use App\Http\Controllers\API\Pivot\Debt\DebtController;
@@ -39,4 +40,6 @@ Route::get('debts/organizations', [OrganizationController::class, 'index']);
 
 Route::get('bank-guarantees', [BankGuaranteeController::class, 'index']);
 Route::get('bank-guarantees/export', [BExportController::class, 'store']);
+
+Route::get('loans', [LoanController::class, 'index']);
 
