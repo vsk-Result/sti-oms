@@ -35,18 +35,21 @@ class CreateGuaranteeForContract extends BaseNotifyCommand
         $contracts = Contract::where('type_id', Contract::TYPE_MAIN)->orderBy('object_id')->get();
         $currencies = ['RUB', 'EUR'];
 
-        // Для ГЭС-2 заново подгружаем ГУ и создаем для них оплаты без даты
+        // Для ГЭС-2 ничего не делаем
         $gesObjectId = '';
         $gesObject = BObject::where('code', '288')->first();
         if ($gesObject) {
-            $gesObject->guaranteePayments()->delete();
-            $gesObject->guarantees()->delete();
             $gesObjectId = $gesObject->id;
         }
 
         $message = '';
 
         foreach ($contracts as $contract) {
+
+            if ($gesObjectId === $contract->object_id) {
+                continue;
+            }
+
             foreach ($currencies as $currency) {
                 $guaranteesAmount = $contract->getActsDepositesAmount($currency);
                 $formatAmount = CurrencyExchangeRate::format($guaranteesAmount, $currency);
@@ -57,28 +60,13 @@ class CreateGuaranteeForContract extends BaseNotifyCommand
 
                 if (! $guarantee) {
                     if ($guaranteesAmount > 0) {
-                        $guarantee = Guarantee::create([
+                        Guarantee::create([
                             'contract_id' => $contract->id,
                             'company_id' => $contract->company_id,
                             'object_id' => $contract->object_id,
                             'fact_amount' => $guaranteesAmount,
                             'currency' => $currency,
                         ]);
-
-                        if ($gesObjectId === $contract->object_id) {
-                            GuaranteePayment::create([
-                                'contract_id' => $contract->id,
-                                'guarantee_id' => $guarantee->id,
-                                'company_id' => $contract->company_id,
-                                'object_id' => $contract->object_id,
-                                'amount' => $guaranteesAmount,
-                                'status_id' => Status::STATUS_ACTIVE,
-                                'currency' => $currency,
-                            ]);
-
-                            $guarantee->updatePayments();
-                            continue;
-                        }
 
                         $createdGuaranteesCount++;
                         $message .= 'ГУ для договора "' . $contract->name . '" успешно создано на сумму ' . $formatAmount . PHP_EOL;

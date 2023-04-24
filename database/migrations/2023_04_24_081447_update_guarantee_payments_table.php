@@ -15,6 +15,7 @@ class UpdateGuaranteePaymentsTable extends Migration
     {
         Schema::table('guarantee_payments', function (Blueprint $table) {
             $table->unsignedSmallInteger('created_by_user_id')->nullable()->change();
+            $table->string('description', 300)->nullable();
         });
     }
 

@@ -88,7 +88,7 @@ class Guarantee extends Model implements Audit, HasMedia
         }
 
         if (empty($lastPayment->date)) {
-            return '';
+            return $lastPayment->description ?? '';
         }
 
         if ($toExcel) {

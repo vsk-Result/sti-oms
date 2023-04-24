@@ -23,7 +23,7 @@ class GuaranteePayment extends Model implements Audit
 
     protected $fillable = [
         'contract_id', 'guarantee_id', 'company_id', 'object_id', 'created_by_user_id', 'organization_id',
-        'updated_by_user_id', 'date', 'amount', 'status_id', 'currency'
+        'updated_by_user_id', 'date', 'amount', 'status_id', 'currency', 'description'
     ];
 
     public function guarantee(): BelongsTo

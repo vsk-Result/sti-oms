@@ -10,6 +10,8 @@ use App\Models\Contract\ActPayment;
 use App\Models\Contract\Contract;
 use App\Models\Contract\ContractAvans;
 use App\Models\Contract\ContractReceivedAvans;
+use App\Models\Guarantee;
+use App\Models\GuaranteePayment;
 use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
@@ -187,6 +189,8 @@ class ImportController extends Controller
             ContractReceivedAvans::where('object_id', $objectId)->delete();
             Act::where('object_id', $objectId)->delete();
             ActPayment::where('object_id', $objectId)->delete();
+            Guarantee::where('object_id', $objectId)->delete();
+            GuaranteePayment::where('object_id', $objectId)->delete();
 
             foreach ($importData['СВОДНАЯ ГЭС-2'] as $index => $row) {
                 if ($index < 6 || empty($row[1])) continue;
@@ -194,7 +198,6 @@ class ImportController extends Controller
                 $contractName = $this->sanitizer->set($row[1])->get();
                 $contract = Contract::where('name', $contractName)->first();
 
-                $isDS = mb_strpos($row[6], 'ДС') !== false;
                 $isAct = mb_strpos($row[6], 'Акт') !== false;
                 $isTotal = mb_strpos($row[6], 'Итого') !== false;
 
@@ -289,6 +292,29 @@ class ImportController extends Controller
                                 'currency' => $act->currency,
                                 'currency_rate' => $act->currency_rate,
                             ]);
+                        }
+
+                        $guarantee = Guarantee::create([
+                            'contract_id' => $contract->id,
+                            'company_id' => $contract->company_id,
+                            'object_id' => $contract->object_id,
+                            'fact_amount' => $act->amount_deposit,
+                            'currency' => 'RUB',
+                        ]);
+
+                        if (isset($row[20]) && !empty($row[20])) {
+                            GuaranteePayment::create([
+                                'contract_id' => $contract->id,
+                                'guarantee_id' => $guarantee->id,
+                                'company_id' => $contract->company_id,
+                                'object_id' => $contract->object_id,
+                                'amount' => $this->prepareAmount($row[20]),
+                                'description' => is_numeric($row[22]) ? Carbon::parse(Date::excelToDateTimeObject($row[22]))->format('d.m.Y') : $row[22],
+                                'status_id' => Status::STATUS_ACTIVE,
+                                'currency' => 'RUB',
+                            ]);
+
+                            $guarantee->updatePayments();
                         }
                     } else if (! $isTotal) {
                         $parent = $contract;
