@@ -84,6 +84,7 @@ class BankGuarantee extends Model implements Audit, HasMedia
           'Обеспечение аванса',
           'Обеспечение контракта',
           'Обеспечение депозита',
+          'Обеспечение тендера',
        ] ;
     }
 
