@@ -44,6 +44,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Договор</label>
                                             <div class="position-relative mb-3">
                                                 <select name="contract_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    <option value="null" {{ $guarantee->contract_id === null ? 'selected' : '' }}>Отсутствует</option>
                                                     @foreach($contracts as $contract)
                                                         <option value="{{ $contract->id }}" {{ $contract->id === $guarantee->contract_id ? 'selected' : '' }}>{{ $contract->object->code }} | {{ $contract->getName() }}</option>
 

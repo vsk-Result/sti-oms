@@ -89,7 +89,7 @@ class BankGuaranteeService
             : 1;
 
         $guarantee = BankGuarantee::create([
-            'contract_id' => $requestData['contract_id'],
+            'contract_id' => $requestData['contract_id'] === 'null' ? null : $requestData['contract_id'],
             'organization_id' => $requestData['organization_id'],
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
@@ -123,7 +123,7 @@ class BankGuaranteeService
             : 1;
 
         $guarantee->update([
-            'contract_id' => $requestData['contract_id'],
+            'contract_id' => $requestData['contract_id'] === 'null' ? null : $requestData['contract_id'],
             'organization_id' => $requestData['organization_id'],
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
