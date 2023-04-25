@@ -8,7 +8,7 @@ use App\Models\Loan;
 use App\Models\Payment;
 use Carbon\Carbon;
 
-class CreditService
+class вCreditService
 {
     public function getCredits(string|Carbon $date, Company $company): array
     {

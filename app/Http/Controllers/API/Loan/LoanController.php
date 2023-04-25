@@ -13,22 +13,23 @@ class LoanController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (! $request->has('verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
-
-        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
+//        if (! $request->has('verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
+//
+//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
 
         $info = [];
-        $loans = Loan::where('type_id', Loan::TYPE_LOAN)->get();
+        $loans = Loan::get();
 
         foreach ($loans as $loan) {
             $info[] = [
                 'total' => CurrencyExchangeRate::format($loan->total_amount, 'RUB'),
+                'paid' => CurrencyExchangeRate::format($loan->total_amount - abs($loan->amount), 'RUB'),
                 'amount' => CurrencyExchangeRate::format($loan->amount, 'RUB'),
                 'organization' => $loan->organization?->name,
             ];

@@ -65,6 +65,7 @@
                         <th class="min-w-125px">Дата зачисления</th>
                         <th class="min-w-125px">Дата окончания</th>
                         <th class="min-w-125px">Сумма займа/кредита</th>
+                        <th class="min-w-125px">Сумма оплачено</th>
                         <th class="min-w-125px">Сумма долга</th>
                         <th class="min-w-100px">Проценты</th>
                         <th class="min-w-125px">Описание</th>
@@ -88,6 +89,7 @@
                             <td>{{ $loan->getStartDateFormatted() }}</td>
                             <td>{{ $loan->getEndDateFormatted() }}</td>
                             <td class="{{ $loan->total_amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->total_amount, 'RUB') }}</td>
+                            <td class="{{ ($loan->total_amount - abs($loan->amount)) < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format(($loan->total_amount - abs($loan->amount)), 'RUB') }}</td>
                             <td class="{{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}</td>
                             <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 2) }}</td>
                             <td>{!! nl2br($loan->description) !!}</td>
