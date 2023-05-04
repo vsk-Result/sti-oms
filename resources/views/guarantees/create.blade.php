@@ -82,7 +82,20 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-2 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Валюта</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="currency" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($currencies as $currency)
+                                                        <option value="{{ $currency }}">{{ $currency }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма ГУ (по договору)</label>
                                             <div class="position-relative mb-3">
@@ -102,7 +115,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-5 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма ГУ (по факту)</label>
                                             <div class="position-relative mb-3">

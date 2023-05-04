@@ -1,3 +1,5 @@
+@inject('currencyExchangeService', 'App\Services\CurrencyExchangeRateService')
+
 <div class="d-flex flex-wrap flex-sm-nowrap mb-6">
     <div class="me-7 mb-4">
         <div class="symbol symbol-150px">
@@ -91,6 +93,13 @@
                 $customerDebtInfo = [];
                 $contractService->filterContracts(['object_id' => [$object->id]], $customerDebtInfo);
                 $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
+
+                $date = now();
+                $EURExchangeRate = $currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'EUR');
+                if ($EURExchangeRate) {
+                    $customerDebt += ($customerDebtInfo['avanses_acts_deposites_amount']['EUR'] * $EURExchangeRate->rate) - ($object->guaranteePayments->where('currency', 'EUR')->sum('amount')  * $EURExchangeRate->rate);
+                }
+
                 $objectBalance = $object->total_with_general_balance +
                                 $customerDebtInfo['avanses_left_amount']['RUB'] +
                                 $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] +
