@@ -175,7 +175,6 @@
                                                     type="text"
                                                     name="state"
                                                     value="{{ old('state', $guarantee->state) }}"
-                                                    required
                                                 />
                                             </div>
                                             @if ($errors->has('state'))
@@ -195,7 +194,6 @@
                                                     type="text"
                                                     name="conditions"
                                                     value="{{ old('conditions', $guarantee->conditions) }}"
-                                                    required
                                                 />
                                             </div>
                                             @if ($errors->has('conditions'))
