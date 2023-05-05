@@ -145,7 +145,7 @@ class  BObject extends Model implements Audit
 
     public function getContractorDebts(): array
     {
-        $debtManuals = DebtManual::where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $this->id)->get();
+        $debtManuals = DebtManual::where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $this->id)->with('organization')->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
@@ -224,7 +224,7 @@ class  BObject extends Model implements Audit
 
     public function getProviderDebts(): array
     {
-        $debtManuals = DebtManual::where('type_id', Debt::TYPE_PROVIDER)->where('object_id', $this->id)->get();
+        $debtManuals = DebtManual::where('type_id', Debt::TYPE_PROVIDER)->where('object_id', $this->id)->with('organization')->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
