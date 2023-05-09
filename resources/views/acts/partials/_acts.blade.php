@@ -59,6 +59,7 @@
                     <th data-sort-by="object_id" class="min-w-100px ps-4 sortable-row">Объект</th>
                     <th data-sort-by="contract_id" class="min-w-150px sortable-row">Договор</th>
                     <th data-sort-by="number" class="min-w-75px sortable-row">Номер акта</th>
+                    <th class="min-w-25px"></th>
                     <th data-sort-by="date" class="min-w-150px sortable-row">Дата акта</th>
                     <th data-sort-by="amount" class="min-w-150px sortable-row">Выполнено</th>
                     <th data-sort-by="amount_avans" class="min-w-175px sortable-row">Аванс удержан</th>
@@ -123,6 +124,11 @@
                             @endif
                         </td>
                         <td class="text-center">{{ $act->number }}</td>
+                        <td class="text-center">
+                            @if ($act->hasMedia())
+                                <a href="{{ $act->getFirstMediaUrl() }}" download="Акт {{ $act->number }} от {{ $act->getDateFormatted() }}" class="menu-link px-3"><i class="fa fa-download"></i></a>
+                            @endif
+                        </td>
                         <td>
                             @if(auth()->user()->can('edit acts'))
                                 <a href="{{ route('acts.edit', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
@@ -170,7 +176,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11">
+                        <td colspan="12">
                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                 Акты отсутствуют
                             </p>
