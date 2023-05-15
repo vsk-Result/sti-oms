@@ -249,7 +249,7 @@ class PaymentService
                 if (str_contains($payment->description, $tag->tag)) {
                     try {
                         Mail::send('emails.loans.notify', compact('payment', 'tag'), function ($m) {
-                            $m->from('support@crm.local', 'OMS Support');
+                            $m->from('support@st-ing.com', 'OMS Support');
                             $m->to('result007@yandex.ru')
                                 ->subject('OMS. Оплата содержит тег займов/кредитов');
                         });
@@ -310,7 +310,7 @@ class PaymentService
                 if (str_contains($payment->description, $tag->tag)) {
                     try {
                         Mail::send('emails.loans.notify', compact('payment', 'tag'), function ($m) {
-                            $m->from('support@crm.local', 'OMS Support');
+                            $m->from('support@st-ing.com', 'OMS Support');
                             $m->to('result007@yandex.ru');
                             $m->to('alla.stepanova@st-ing.com')
                                 ->subject('OMS. Оплата содержит тег займов/кредитов');

@@ -60,7 +60,7 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
                     try {
                         $mes = 'Истек срок действия банковской гарантии ' . $info['number'];
                         Mail::send('emails.bank-guarantees.expired_notify', compact('info', 'mes'), function ($m) use ($info, $user, $mes) {
-                            $m->from('support@crm.local', 'OMS Support');
+                            $m->from('support@st-ing.com', 'OMS Support');
                             $m->to('result007@yandex.ru');
                             $m->to($user->email)
                                 ->subject('OMS. ' . $mes);
@@ -93,7 +93,7 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
                     try {
                         $mes = 'Истек срок действия депозита по БГ ' . $info['number'];
                         Mail::send('emails.bank-guarantees.expired_notify', compact('info', 'mes'), function ($m) use ($info, $user, $mes) {
-                            $m->from('support@crm.local', 'OMS Support');
+                            $m->from('support@st-ing.com', 'OMS Support');
                             $m->to('result007@yandex.ru');
                             $m->to($user->email)
                                 ->subject('OMS. ' . $mes);

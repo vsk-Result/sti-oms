@@ -40,7 +40,7 @@ class CheckObjectsForGeneralCodesToCustomersExist extends Command
         if (count($invalidObjects) > 0) {
             try {
                 Mail::send('emails.objects.general_costs_customers', compact('invalidObjects'), function ($m) {
-                    $m->from('support@crm.local', 'OMS Support');
+                    $m->from('support@st-ing.com', 'OMS Support');
                     $m->to('oksana.dashenko@st-ing.com');
                     $m->cc('result007@yandex.ru')
                         ->subject('OMS. Проблемные объекты для расчета общих затрат');
