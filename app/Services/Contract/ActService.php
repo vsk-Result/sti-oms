@@ -24,7 +24,7 @@ class ActService
         $this->currencyService = $currencyService;
     }
 
-    public function getPivot(int $id = null): array
+    public function getPivot(int | string | null $id = null): array
     {
         $pivot = [
             'total' => [
