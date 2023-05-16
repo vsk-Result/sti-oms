@@ -71,7 +71,7 @@
                     <th class="min-w-150px">Действие</th>
                 </tr>
                 <tr class="fw-bolder" style="background-color: #f7f7f7;">
-                    <th colspan="4" class="ps-4" style="vertical-align: middle;">Итого</th>
+                    <th colspan="5" class="ps-4" style="vertical-align: middle;">Итого</th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
                         <br>
