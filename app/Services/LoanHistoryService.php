@@ -52,6 +52,10 @@ class LoanHistoryService
 
     public function reloadLoanHistory(Loan $loan): void
     {
+        $loan->updatePayments();
+        $loan->updateDebtAmount();
+        return;
+
         $loan->historyPayments()->delete();
 
         $searchNames = explode(';', $loan->search_name);

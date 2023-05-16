@@ -12,18 +12,18 @@
                     <div>
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_loan'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder {{ $total['amount_loan'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_loan'], 'RUB') }}</div>
                             </div>
-                            <div class="fw-bold fs-6 text-gray-400">Сумма займов</div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма долга по займам</div>
                         </div>
                     </div>
 
                     <div>
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($total['amount_credit'], 'RUB') }}</div>
+                                <div class="fs-5 fw-bolder {{ $total['amount_credit'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_credit'], 'RUB') }}</div>
                             </div>
-                            <div class="fw-bold fs-6 text-gray-400">Сумма кредитов</div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма долга по кредитам</div>
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                         <th class="min-w-125px">Сумма оплачено</th>
                         <th class="min-w-125px">Сумма долга</th>
                         <th class="min-w-100px">Проценты</th>
-                        <th class="min-w-125px">Описание</th>
+                        <th class="min-w-400px">Описание</th>
                         <th class="min-w-125px">Действия</th>
                     </tr>
                     </thead>
@@ -88,8 +88,8 @@
                             </td>
                             <td>{{ $loan->getStartDateFormatted() }}</td>
                             <td>{{ $loan->getEndDateFormatted() }}</td>
-                            <td class="{{ $loan->total_amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->total_amount, 'RUB') }}</td>
-                            <td class="{{ ($loan->total_amount - abs($loan->amount)) < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format(($loan->total_amount - abs($loan->amount)), 'RUB') }}</td>
+                            <td class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($loan->total_amount, 'RUB') }}</td>
+                            <td class="{{ $loan->getPaidAmount() < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->getPaidAmount(), 'RUB') }}</td>
                             <td class="{{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}</td>
                             <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 2) }}</td>
                             <td>{!! nl2br($loan->description) !!}</td>

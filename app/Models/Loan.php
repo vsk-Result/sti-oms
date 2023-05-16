@@ -8,6 +8,7 @@ use App\Traits\HasUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
@@ -22,7 +23,7 @@ class Loan extends Model implements Audit
     protected $fillable = [
         'type_id', 'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id',
         'start_date', 'end_date', 'name', 'percent', 'amount', 'total_amount', 'status_id', 'description',
-        'organization_id', 'search_name'
+        'organization_id', 'search_name', 'is_auto_paid', 'paid_amount'
     ];
 
     const TYPE_CREDIT = 0;
@@ -46,6 +47,11 @@ class Loan extends Model implements Audit
     public function historyPayments(): HasMany
     {
         return $this->hasMany(LoanHistory::class, 'loan_id');
+    }
+
+    public function payments(): BelongsToMany
+    {
+        return $this->belongsToMany(Payment::class, 'loan_payment', 'payment_id', 'loan_id', 'id');
     }
 
     public function getStartDateFormatted(string $format = 'd/m/Y'): string
@@ -74,5 +80,43 @@ class Loan extends Model implements Audit
     public function isCredit(): bool
     {
         return $this->type_id === self::TYPE_CREDIT;
+    }
+
+    public function getPaidAmount(): float
+    {
+        if ($this->is_auto_paid) {
+            return $this->payments()->sum('amount');
+        }
+        return $this->paid_amount;
+    }
+
+    public function updateDebtAmount(): void
+    {
+        $this->update([
+            'amount' => -($this->total_amount - $this->getPaidAmount())
+        ]);
+    }
+
+    public function updatePayments(): void
+    {
+        if (empty($this->search_name)) {
+            return;
+        }
+
+        $this->payments()->delete();
+
+        $searchNames = explode(';', $this->search_name);
+
+        $paymentIds = Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+            ->where(function($q) use ($searchNames) {
+                foreach ($searchNames as $searchName) {
+                    $q->orWhere('description', 'LIKE', '%' . $searchName . '%');
+                }
+            })
+            ->where('description', 'NOT LIKE', '%процент%')
+            ->where('description', 'NOT LIKE', '%комиссии%')
+            ->pluck('id')->toArray();
+
+        $this->payments()->sync($paymentIds);
     }
 }

@@ -29,8 +29,12 @@ class UpdateLoanHistoryPayments extends Command
         Log::channel('custom_imports_log')->debug('[START] Обновление истории оплат займов/кредитов');
 
         try {
-            $loans = Loan::where('type_id', Loan::TYPE_CREDIT)->get();
+            $loans = Loan::get();
             foreach ($loans as $loan) {
+                if (!$loan->is_auto_paid) {
+                    continue;
+                }
+
                 $this->loanHistoryService->reloadLoanHistory($loan);
                 Log::channel('custom_imports_log')->debug('[SUCCESS] Список оплат успешно обновлен [' . $loan->name . ']');
             }

@@ -32,7 +32,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mb-10 fv-row">
+                                    <div class="col-md-8 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Номер</label>
                                             <div class="position-relative mb-3">
@@ -47,26 +47,6 @@
                                             @if ($errors->has('name'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                     <div>{{ implode(' ', $errors->get('name')) }}</div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4 mb-10 fv-row">
-                                        <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Номер для поиска оплат</label>
-                                            <div class="position-relative mb-3">
-                                                <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('search_name') ? 'is-invalid' : '' }}"
-                                                    type="text"
-                                                    name="search_name"
-                                                    value="{{ old('search_name') }}"
-                                                    required
-                                                />
-                                            </div>
-                                            @if ($errors->has('search_name'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div>{{ implode(' ', $errors->get('search_name')) }}</div>
                                                 </div>
                                             @endif
                                         </div>
@@ -159,7 +139,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-4 mb-10 fv-row">
+                                    <div class="col-md-4 fv-row">
                                         <div class="fv-row">
                                             <div class="mb-1">
                                                 <label class="form-label fw-bolder text-dark fs-6">Сумма займа/кредита</label>
@@ -168,7 +148,7 @@
                                                             class="form-control form-control-lg form-control-solid {{ $errors->has('total_amount') ? 'is-invalid' : '' }}"
                                                             type="text"
                                                             name="total_amount"
-                                                            value="{{ old('total_amount') }}"
+                                                            value="{{ old('total_amount', 0) }}"
                                                             required
                                                     />
                                                 </div>
@@ -181,22 +161,22 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 mb-10 fv-row">
+                                    <div class="col-md-4 fv-row">
                                         <div class="fv-row">
                                             <div class="mb-1">
-                                                <label class="form-label fw-bolder text-dark fs-6">Сумма долга</label>
+                                                <label class="form-label fw-bolder text-dark fs-6">Сумма оплаты</label>
                                                 <div class="position-relative mb-3">
                                                     <input
-                                                        class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                        class="form-control form-control-lg form-control-solid {{ $errors->has('paid_amount') ? 'is-invalid' : '' }}"
                                                         type="text"
-                                                        name="amount"
-                                                        value="{{ old('amount') }}"
+                                                        name="paid_amount"
+                                                        value="{{ old('paid_amount', 0) }}"
                                                         required
                                                     />
                                                 </div>
-                                                @if ($errors->has('amount'))
+                                                @if ($errors->has('paid_amount'))
                                                     <div class="fv-plugins-message-container invalid-feedback">
-                                                        <div>{{ implode(' ', $errors->get('amount')) }}</div>
+                                                        <div>{{ implode(' ', $errors->get('paid_amount')) }}</div>
                                                     </div>
                                                 @endif
                                             </div>
@@ -204,7 +184,7 @@
                                     </div>
 
                                     <div class="col-md-4 fv-row">
-                                        <div class="mb-10 fv-row">
+                                        <div class="fv-row mb-10">
                                             <div class="mb-1">
                                                 <label class="form-label fw-bolder text-dark fs-6">Процент</label>
                                                 <div class="position-relative mb-3">
@@ -218,6 +198,43 @@
                                                 @if ($errors->has('percent'))
                                                     <div class="fv-plugins-message-container invalid-feedback">
                                                         <div>{{ implode(' ', $errors->get('percent')) }}</div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 fv-row">
+                                        <div class="fv-row mb-10">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Расчет оплаты</label>
+                                                <div class="position-relative mb-3">
+                                                    <select name="auto_paid" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        <option value="auto">Автоматический</option>
+                                                        <option value="manual" selected>Ручной</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-8 fv-row" id="visible-search-name" style="display: none;">
+                                        <div class="fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Описание для поиска оплат</label>
+                                                <div class="position-relative mb-3">
+                                                    <input
+                                                            class="form-control form-control-lg form-control-solid {{ $errors->has('search_name') ? 'is-invalid' : '' }}"
+                                                            type="text"
+                                                            name="search_name"
+                                                            value="{{ old('search_name') }}"
+                                                    />
+                                                </div>
+                                                @if ($errors->has('search_name'))
+                                                    <div class="fv-plugins-message-container invalid-feedback">
+                                                        <div>{{ implode(' ', $errors->get('search_name')) }}</div>
                                                     </div>
                                                 @endif
                                             </div>
@@ -266,6 +283,15 @@
     <script>
         $(function() {
             new Tagify(document.querySelector('#tags'));
+        });
+
+        $('select[name=auto_paid]').on('change', function() {
+            const value = $(this).val();
+            if (value === 'auto') {
+                $('#visible-search-name').show();
+            } else {
+                $('#visible-search-name').hide();
+            }
         });
     </script>
 @endpush

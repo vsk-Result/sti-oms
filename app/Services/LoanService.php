@@ -63,11 +63,15 @@ class LoanService
             'description' => $requestData['description'],
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
-            'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
+            'amount' => 0,
+            'paid_amount' => $this->sanitizer->set($requestData['paid_amount'])->toAmount()->get(),
             'total_amount' => $this->sanitizer->set($requestData['total_amount'])->toAmount()->get(),
             'percent' => $this->sanitizer->set($requestData['percent'])->toAmount()->get(),
             'status_id' => Status::STATUS_ACTIVE,
+            'is_auto_paid' => $requestData['auto_paid'] === 'auto',
         ]);
+
+        $loan->updateDebtAmount();
 
         if (! is_null($requestData['tags'])) {
             $tags = json_decode($requestData['tags'], true);
@@ -92,12 +96,15 @@ class LoanService
             'description' => $requestData['description'],
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
-            'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
+            'amount' => 0,
+            'paid_amount' => $this->sanitizer->set($requestData['paid_amount'])->toAmount()->get(),
             'total_amount' => $this->sanitizer->set($requestData['total_amount'])->toAmount()->get(),
             'percent' => $this->sanitizer->set($requestData['percent'])->toAmount()->get(),
-            'status_id' => $requestData['status_id']
+            'status_id' => $requestData['status_id'],
+            'is_auto_paid' => $requestData['auto_paid'] === 'auto',
         ]);
 
+        $loan->updateDebtAmount();
         $loan->notifyTags()->delete();
 
         if (! is_null($requestData['tags'])) {
@@ -115,6 +122,7 @@ class LoanService
     {
         $loan->notifyTags()->delete();
         $loan->historyPayments()->delete();
+        $loan->payments()->delete();
         $loan->delete();
     }
 }
