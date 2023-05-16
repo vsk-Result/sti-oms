@@ -179,6 +179,7 @@ class ActService
             'status_id' => Status::STATUS_ACTIVE,
             'currency' => $contract->currency,
             'currency_rate' => $contract->currency_rate,
+            'manual_left_paid_amount' => ! empty($requestData['manual_left_paid_amount']) ? $this->sanitizer->set($requestData['manual_left_paid_amount'])->toAmount()->get() : null,
         ]);
 
         $act->update([
@@ -232,6 +233,7 @@ class ActService
             'status_id' => $requestData['status_id'],
             'currency' => $contract->currency,
             'currency_rate' => $contract->currency_rate,
+            'manual_left_paid_amount' => ! empty($requestData['manual_left_paid_amount']) ? $this->sanitizer->set($requestData['manual_left_paid_amount'])->toAmount()->get() : null,
         ]);
 
         $act->update([

@@ -192,6 +192,29 @@
                                 <div class="row">
                                     <div class="col-md-12 mb-10 fv-row">
                                         <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Сумма неоплаченных работ</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                        class="form-control form-control-lg form-control-solid {{ $errors->has('manual_left_paid_amount') ? 'is-invalid' : '' }}"
+                                                        type="text"
+                                                        name="manual_left_paid_amount"
+                                                        value="{{ old('manual_left_paid_amount') }}"
+                                                        autocomplete="off"
+                                                />
+                                                <p class="text-muted">Если поле заполнено, значение будет браться из него, иначе будет расчитанно автоматически</p>
+                                            </div>
+                                            @if ($errors->has('manual_left_paid_amount'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('manual_left_paid_amount')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 mb-10 fv-row">
+                                        <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Файлы</label>
                                             <input
                                                 type="file"
