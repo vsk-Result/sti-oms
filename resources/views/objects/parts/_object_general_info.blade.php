@@ -104,6 +104,7 @@
                                 $ITRSalaryDebt +
                                 $workSalaryDebt;
 
+
                 $date = now();
                 $EURExchangeRate = $currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'EUR');
                 if ($EURExchangeRate) {
