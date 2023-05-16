@@ -101,17 +101,17 @@
                     <th class="min-w-75px ps-4">Объект</th>
                     <th class="min-w-200px">Номер</th>
                     <th class="min-w-100px"></th>
-                    <th class="min-w-125px">Сумма</th>
-                    <th class="min-w-125px">Сумма аванса</th>
-                    <th class="min-w-125px">Сумма получ. аванса</th>
-                    <th class="min-w-125px">Сумма аванса к получению</th>
-                    <th class="min-w-125px">Выполнено по актам</th>
-                    <th class="min-w-125px">Аванс удержан по актам</th>
-                    <th class="min-w-125px">Депозит удержан по актам</th>
-                    <th class="min-w-125px">К оплате по актам</th>
-                    <th class="min-w-125px">Оплачено по актам</th>
-                    <th class="min-w-125px">Сумма неоплаченных работ по актам</th>
-                    <th class="min-w-125px">Остаток неотработанного аванса</th>
+                    <th class="min-w-150px">Сумма</th>
+                    <th class="min-w-150px">Сумма аванса</th>
+                    <th class="min-w-150px">Сумма получ. аванса</th>
+                    <th class="min-w-150px">Сумма аванса к получению</th>
+                    <th class="min-w-150px">Выполнено по актам</th>
+                    <th class="min-w-150px">Аванс удержан по актам</th>
+                    <th class="min-w-150px">Депозит удержан по актам</th>
+                    <th class="min-w-150px">К оплате по актам</th>
+                    <th class="min-w-150px">Оплачено по актам</th>
+                    <th class="min-w-150px">Сумма неоплаченных работ по актам</th>
+                    <th class="min-w-150px">Остаток неотработанного аванса</th>
                     <th class="min-w-125px rounded-end pe-4">Действия</th>
                 </tr>
                 <tr class="fw-bolder" style="background-color: #f7f7f7;">
