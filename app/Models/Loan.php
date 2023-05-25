@@ -23,11 +23,14 @@ class Loan extends Model implements Audit
     protected $fillable = [
         'type_id', 'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id',
         'start_date', 'end_date', 'name', 'percent', 'amount', 'total_amount', 'status_id', 'description',
-        'organization_id', 'search_name', 'is_auto_paid', 'paid_amount'
+        'organization_id', 'search_name', 'is_auto_paid', 'paid_amount', 'organization_type_id'
     ];
 
     const TYPE_CREDIT = 0;
     const TYPE_LOAN = 1;
+
+    const ORGANIZATION_TYPE_LENDER = 0;
+    const ORGANIZATION_TYPE_BORROWER = 1;
 
     public function company(): BelongsTo
     {
@@ -82,18 +85,37 @@ class Loan extends Model implements Audit
         return $this->type_id === self::TYPE_CREDIT;
     }
 
+    public static function getOrganizationTypes(): array
+    {
+        return [
+            self::ORGANIZATION_TYPE_LENDER => 'Кредитор/займодавец',
+            self::ORGANIZATION_TYPE_BORROWER => 'Заемщик',
+        ];
+    }
+
+    public function getOrganizationType(): string
+    {
+        return self::getOrganizationTypes()[$this->organization_type_id];
+    }
+
+    public function isLender(): bool
+    {
+        return $this->organization_type_id === self::ORGANIZATION_TYPE_LENDER;
+    }
+
     public function getPaidAmount(): float
     {
         if ($this->is_auto_paid) {
-            return $this->payments()->sum('amount');
+            return abs($this->payments()->sum('amount'));
         }
         return $this->paid_amount;
     }
 
     public function updateDebtAmount(): void
     {
+        $debtAmount = $this->total_amount - $this->getPaidAmount();
         $this->update([
-            'amount' => -($this->total_amount - $this->getPaidAmount())
+            'amount' => $this->isLender() ? -$debtAmount : $debtAmount
         ]);
     }
 

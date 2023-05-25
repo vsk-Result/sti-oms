@@ -45,8 +45,11 @@ class LoanService
         $query->with('company', 'organization');
         $query->orderByDesc('amount');
 
-        $total['amount_loan'] = (clone $query)->where('type_id', Loan::TYPE_LOAN)->sum('amount');
-        $total['amount_credit'] = (clone $query)->where('type_id', Loan::TYPE_CREDIT)->sum('amount');
+        $total['amount_loan_from_sti'] = (clone $query)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
+        $total['amount_credit_from_sti'] = (clone $query)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
+
+        $total['amount_loan_to_sti'] = (clone $query)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_BORROWER)->sum('amount');
+        $total['amount_credit_to_sti'] = (clone $query)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_BORROWER)->sum('amount');
 
         return $query->paginate($perPage)->withQueryString();
     }
@@ -57,6 +60,7 @@ class LoanService
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
             'type_id' => $requestData['type_id'],
+            'organization_type_id' => $requestData['organization_type_id'],
             'organization_id' => $requestData['organization_id'],
             'name' => $requestData['name'],
             'search_name' => $requestData['search_name'],
@@ -90,6 +94,7 @@ class LoanService
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
             'type_id' => $requestData['type_id'],
+            'organization_type_id' => $requestData['organization_type_id'],
             'organization_id' => $requestData['organization_id'],
             'name' => $requestData['name'],
             'search_name' => $requestData['search_name'],

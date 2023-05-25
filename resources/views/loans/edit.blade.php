@@ -32,7 +32,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-8 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Номер</label>
                                             <div class="position-relative mb-3">
@@ -51,9 +51,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="row">
                                     <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Компания</label>
@@ -66,7 +64,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
+                                <div class="row">
                                     <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Банк</label>
@@ -80,6 +80,20 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-4 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Тип контрагента</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="organization_type_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($organizationTypes as $typeId => $typeName)
+                                                        <option value="{{ $typeId }}" {{ $loan->organization_type_id === $typeId ? 'selected' : '' }}>{{ $typeName }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
 
                                     <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">

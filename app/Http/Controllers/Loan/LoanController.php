@@ -37,9 +37,10 @@ class LoanController extends Controller
     {
         $banks = Bank::getBanks();
         $types = Loan::getTypes();
+        $organizationTypes = Loan::getOrganizationTypes();
         $organizations = Organization::orderBy('name')->get();
         $companies = Company::orderBy('name')->get();
-        return view('loans.create', compact('banks', 'types', 'companies', 'organizations'));
+        return view('loans.create', compact('banks', 'types', 'companies', 'organizations', 'organizationTypes'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -52,10 +53,11 @@ class LoanController extends Controller
     {
         $banks = Bank::getBanks();
         $types = Loan::getTypes();
+        $organizationTypes = Loan::getOrganizationTypes();
         $organizations = Organization::orderBy('name')->get();
         $companies = Company::orderBy('name')->get();
         $statuses = Status::getStatuses();
-        return view('loans.edit', compact('loan', 'banks', 'types', 'companies', 'statuses', 'organizations'));
+        return view('loans.edit', compact('loan', 'banks', 'types', 'companies', 'statuses', 'organizations', 'organizationTypes'));
     }
 
     public function update(Loan $loan, Request $request): RedirectResponse

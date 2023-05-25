@@ -10,20 +10,42 @@
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div>
-                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                            <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder {{ $total['amount_loan'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_loan'], 'RUB') }}</div>
+                        <div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex flex-column align-items-left">
+                                    <div class="fs-5 fw-bolder {{ $total['amount_loan_to_sti'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_loan_to_sti'], 'RUB') }}</div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Долг по займам перед СТИ</div>
                             </div>
-                            <div class="fw-bold fs-6 text-gray-400">Сумма долга по займам</div>
+                        </div>
+
+                        <div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex flex-column align-items-left">
+                                    <div class="fs-5 fw-bolder {{ $total['amount_credit_to_sti'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_credit_to_sti'], 'RUB') }}</div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Долг по кредитам перед СТИ</div>
+                            </div>
                         </div>
                     </div>
 
                     <div>
-                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                            <div class="d-flex flex-column align-items-left">
-                                <div class="fs-5 fw-bolder {{ $total['amount_credit'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_credit'], 'RUB') }}</div>
+                        <div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex flex-column align-items-left">
+                                    <div class="fs-5 fw-bolder {{ $total['amount_loan_from_sti'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_loan_from_sti'], 'RUB') }}</div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Долг по займам от СТИ</div>
                             </div>
-                            <div class="fw-bold fs-6 text-gray-400">Сумма долга по кредитам</div>
+                        </div>
+
+                        <div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex flex-column align-items-left">
+                                    <div class="fs-5 fw-bolder {{ $total['amount_credit_from_sti'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_credit_from_sti'], 'RUB') }}</div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Долг по кредитам от СТИ</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -58,9 +80,9 @@
                     <thead>
                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                         <th class="min-w-75px ps-3">Тип</th>
-                        <th class="min-w-75px">Компания</th>
                         <th class="min-w-100px">Банк</th>
-                        <th class="min-w-125px">Контрагент</th>
+                        <th class="min-w-75px">Кредитор/займодавец</th>
+                        <th class="min-w-125px">Заемщик</th>
                         <th class="min-w-150px">Номер</th>
                         <th class="min-w-125px">Дата зачисления</th>
                         <th class="min-w-125px">Дата окончания</th>
@@ -76,9 +98,21 @@
                     @forelse($loans as $loan)
                         <tr>
                             <td class="ps-3">{{ $loan->getType() }}</td>
-                            <td>{!! $loan->company?->getShortNameColored() !!}</td>
                             <td>{{ $loan->getBankName() }}</td>
-                            <td>{{ $loan->organization?->name }}</td>
+                            <td>
+                                @if ($loan->isLender())
+                                    {{ $loan->organization?->name }}
+                                @else
+                                    {!! $loan->company?->getShortNameColored() !!}
+                                @endif
+                            </td>
+                            <td>
+                                @if ($loan->isLender())
+                                    {!! $loan->company?->getShortNameColored() !!}
+                                @else
+                                    {{ $loan->organization?->name }}
+                                @endif
+                            </td>
                             <td>
                                 @if(auth()->user()->can('edit loans'))
                                     <a href="{{ route('loans.edit', $loan) }}" class="show-link">{{ $loan->name }}</a>

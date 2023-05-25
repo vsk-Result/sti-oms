@@ -29,7 +29,7 @@ class LoanController extends Controller
         foreach ($loans as $loan) {
             $info[] = [
                 'total' => CurrencyExchangeRate::format($loan->total_amount, 'RUB'),
-                'paid' => CurrencyExchangeRate::format($loan->total_amount - abs($loan->amount), 'RUB'),
+                'paid' => CurrencyExchangeRate::format($loan->getPaidAmount(), 'RUB'),
                 'amount' => CurrencyExchangeRate::format($loan->amount, 'RUB'),
                 'organization' => $loan->organization?->name,
             ];
