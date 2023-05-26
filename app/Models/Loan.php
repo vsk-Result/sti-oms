@@ -82,7 +82,7 @@ class Loan extends Model implements Audit
 
     public function isCredit(): bool
     {
-        return $this->type_id === self::TYPE_CREDIT;
+        return $this->type_id == self::TYPE_CREDIT;
     }
 
     public static function getOrganizationTypes(): array
@@ -100,7 +100,7 @@ class Loan extends Model implements Audit
 
     public function isLender(): bool
     {
-        return $this->organization_type_id === self::ORGANIZATION_TYPE_LENDER;
+        return $this->organization_type_id == self::ORGANIZATION_TYPE_LENDER;
     }
 
     public function getPaidAmount(): float
