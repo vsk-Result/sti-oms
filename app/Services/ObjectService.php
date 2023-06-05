@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Helpers\Sanitizer;
 use App\Models\Object\BObject;
+use App\Models\Object\GeneralCost;
 use App\Models\Payment;
 use App\Models\Status;
 use Carbon\Carbon;
@@ -148,7 +149,15 @@ class ObjectService
             ];
         }
 
-        $objects = BObject::with(['customers', 'payments' => function($q) use ($startDate, $endDate) {
+        $codes = GeneralCost::getObjectCodesForGeneralCosts();
+        $objectsQuery = BObject::query()->whereIn('code', $codes);
+
+        // исключили 349 из 2023 года по письму от Оксаны 30 мая 2023
+        if (str_contains($startDate, '2023')) {
+            $objectsQuery->where('code', '!=', '349');
+        }
+
+        $objects = $objectsQuery->with(['customers', 'payments' => function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
                 ->where('amount', '>=', 0)
                 ->whereBetween('date', [$startDate, $endDate]);
