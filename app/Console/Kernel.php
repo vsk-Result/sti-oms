@@ -30,9 +30,10 @@ class Kernel extends ConsoleKernel
          $schedule->command('oms-imports:update-loans-history-payments')->twiceDaily(13, 18);
          $schedule->command('oms-imports:check-bank-guarantee-date-expired')->dailyAt('07:00');
          $schedule->command('oms-imports:check-avanses-received-from-payments')->twiceDaily(13, 18);
-         $schedule->command('oms-imports:create-guarantee-for-contract')->twiceDaily(13, 18);
-         $schedule->command('oms-imports:update-general-costs')->dailyAt('19:00');
-         $schedule->command('oms-imports:check-objects-for-general-codes-to-customers-exist')->dailyAt('07:00');
+        $schedule->command('oms-imports:create-guarantee-for-contract')->twiceDaily(13, 18);
+        $schedule->command('oms-imports:update-general-costs')->dailyAt('19:00');
+        $schedule->command('oms-imports:check-objects-for-general-codes-to-customers-exist')->dailyAt('07:00');
+        $schedule->command('oms-imports:objects-debts-from-excel')->dailyAt('19:00');
     }
 
     /**
