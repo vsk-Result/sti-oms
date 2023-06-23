@@ -1,13 +1,13 @@
 <div class="card card-xxl-stretch mb-5 mb-xxl-10">
     <div class="card-body p-9">
 
-        <div class="fs-1 fw-bolder {{ $loans->sum('amount') < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($loans->sum('amount'), 'RUB') }}</div>
+        <div class="fs-1 fw-bolder {{ $loansInfo->totalLoanAmount < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($loansInfo->totalLoanAmount, 'RUB') }}</div>
 
         <div class="d-flex align-items-center fs-5 fw-bold text-gray-400 mb-7">
-            <span class="d-flex">Долг по займам на {{ $loansLastUpdateDate->format('d.m.Y') }}</span>
+            <span class="d-flex">Долг по займам на {{ $loansInfo->loansLastUpdateDate }}</span>
         </div>
 
-        @foreach($loans as $loan)
+        @foreach($loansInfo->loans as $loan)
             <div class="fs-6 d-flex justify-content-between my-4">
                 <div>
                     <div class="fw-bold">{{ $loan->organization->name }}</div>
@@ -16,7 +16,7 @@
                             target="_blank"
                             class="text-muted"
                             style="border-bottom: 1px dashed #ccc;"
-                            href="{{ route('loans.history.index', $loan) }}"
+                            href="{{ route('loans.history.index', $loan->id) }}"
                         >
                             {{ $loan->name }}
                         </a>

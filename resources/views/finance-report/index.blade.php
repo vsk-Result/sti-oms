@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'Финансовый отчет')
+@section('toolbar-title', 'Финансовый отчет на ' . $date->format('d.m.Y'))
 @section('breadcrumbs', Breadcrumbs::render('finance_report.index'))
 
 @section('content')
@@ -10,7 +10,7 @@
         <div class="col-md-12">
             <div class="d-flex flex-wrap flex-stack pb-7">
                 <div class="d-flex flex-wrap" data-kt-user-table-toolbar="base">
-                    <div class="me-3">
+                    <div class="me-3 d-flex flex-row gap-2">
 {{--                        <span class="fs-5 fw-bold text-gray-600 pb-2 d-block">Выберите дату</span>--}}
 {{--                        <input--}}
 {{--                            readonly--}}
@@ -20,7 +20,7 @@
 {{--                            value="{{ $date->format('Y-m-d') }}"--}}
 {{--                        />--}}
 
-                        <form action="{{ route('finance_report.exports.store') }}" method="POST" class="hidden">
+                        <form action="{{ route('finance_report.exports.store', $date->format('Y-m-d')) }}" method="POST" class="hidden">
                             @csrf
                             <a
                                 href="javascript:void(0);"
@@ -37,6 +37,11 @@
                                 Экспорт в Excel
                             </a>
                         </form>
+
+                        <a
+                            href="{{ route('finance_report.history.index') }}"
+                            class="btn btn-light-dark"
+                        >История</a>
                     </div>
                 </div>
             </div>

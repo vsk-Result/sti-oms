@@ -27,10 +27,13 @@ class ObjectPivotSheet implements
 
     private array $pivotInfo;
 
-    public function __construct(string $sheetName, array $pivotInfo)
+    private string $year;
+
+    public function __construct(string $sheetName, array $pivotInfo, string $year)
     {
         $this->sheetName = $sheetName;
         $this->pivotInfo = $pivotInfo;
+        $this->year = $year;
     }
 
     public function title(): string
@@ -48,6 +51,7 @@ class ObjectPivotSheet implements
 
     private function fillObjects(&$sheet): void
     {
+        $year = $this->year;
         $infos = $this->pivotInfo['pivot_list'];
         $objects = $this->pivotInfo['objects'];
         $summary = $this->pivotInfo['pivot_info']['summary'];
@@ -62,7 +66,7 @@ class ObjectPivotSheet implements
         $columnIndex = 3;
         foreach($objects as $object) {
             $column = $this->getColumnWord($columnIndex);
-            $sheet->setCellValue($column . $rowTitle, $object->getName());
+            $sheet->setCellValue($column . $rowTitle, $object->code . ' | '  . $object->name);
             $sheet->getColumnDimension($column)->setWidth(35);
             $columnIndex++;
         }
@@ -74,18 +78,17 @@ class ObjectPivotSheet implements
             if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24') {
                 continue;
             }
-
             if (in_array($field, ['payment_total_balance', 'general_costs_amount'])) {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB'));
+                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB'));
             } elseif ($field === 'contractor' || $field === 'provider') {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB', 0, true));
+                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true));
             } elseif ($field === 'salary_itr' || $field === 'salary_work') {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB', 0, true));
+                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true));
             } else {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary[$field]['RUB'], 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($summary[$field]['EUR'], 'EUR', 0, true));
+                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($summary->{$year}->{$field}->EUR, 'EUR', 0, true));
             }
 
-            $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($summary[$field]['RUB'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($summary->{$year}->{$field}->RUB < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
             $columnIndex = 3;
             foreach($objects as $object) {
@@ -93,8 +96,8 @@ class ObjectPivotSheet implements
                 if (in_array($field, ['payment_total_balance', 'general_costs_amount', 'general_costs_amount_1', 'general_costs_amount_24'])) {
                     if ($object->code == 288) {
                         if ($field === 'general_costs_amount') {
-                            $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total[$object->code]['general_costs_amount_1'], 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($total[$object->code]['general_costs_amount_24'], 'RUB', 0, true));
-                            $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total[$object->code]['general_costs_amount_1'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                            $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{'general_costs_amount_1'}, 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($total->{$year}->{$object->code}->{'general_costs_amount_24'}, 'RUB', 0, true));
+                            $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{'general_costs_amount_1'} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
                             $columnIndex++;
                             continue;
@@ -102,22 +105,22 @@ class ObjectPivotSheet implements
                         if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24') {
                             continue;
                         } else {
-                            $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total[$object->code][$field], 'RUB', 0, true));
-                            $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total[$object->code][$field] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                            $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB', 0, true));
+                            $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                         }
                     } else {
                         if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24') {
                             continue;
                         }
-                        $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total[$object->code][$field], 'RUB', 0, true));
-                        $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total[$object->code][$field] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                        $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB', 0, true));
+                        $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                     }
                 } else if (in_array($field, ['contractor', 'provider', 'salary_itr', 'salary_work'])) {
-                    $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total[$object->code][$field]['RUB'], 'RUB', 0, true));
-                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total[$object->code][$field]['RUB'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                    $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->RUB, 'RUB', 0, true));
+                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field}->RUB < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                 } else {
-                    $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total[$object->code][$field]['RUB'], 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($total[$object->code][$field]['EUR'], 'RUB', 0, true));
-                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total[$object->code][$field]['RUB'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                    $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->RUB, 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->EUR, 'RUB', 0, true));
+                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field}->RUB < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                 }
 
                 $columnIndex++;
@@ -146,7 +149,7 @@ class ObjectPivotSheet implements
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
         $sheet->getStyle('B' . $rowTitle . ':B' . $row)->applyFromArray([
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_DASHED, 'color' => ['rgb' => 'f15a22']]]
+            'borders' => ['allBorders' => ['bordedrStyle' => Border::BORDER_DASHED, 'color' => ['rgb' => 'f15a22']]]
         ]);
         $sheet->getStyle('C' . $rowTitle . ':' . $lastColumn . $rowTitle)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'ffffff']]]

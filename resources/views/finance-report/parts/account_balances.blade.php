@@ -1,15 +1,15 @@
 <div class="card card-xxl-stretch mb-5 mb-xxl-10">
     <div class="card-body p-9">
 
-        <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($balances['total']['RUB'], 'RUB') }}</div>
-        <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($balances['total']['EUR'], 'EUR') }}</div>
+        <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($balancesInfo->balances->total->RUB, 'RUB') }}</div>
+        <div class="fs-1 fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($balancesInfo->balances->total->EUR, 'EUR') }}</div>
 
         <div class="d-flex flex-column fs-5 fw-bold text-gray-400 mb-7">
             <span class="d-flex">Балансы</span>
-            <span class="fs-8">(Последняя выписка загружена {{ \App\Models\PaymentImport::orderByDesc('date')->first()->created_at->format('d.m.Y H:i') }})</span>
+            <span class="fs-8">(Последняя выписка загружена {{ $balancesInfo->dateLastStatement }})</span>
         </div>
 
-        @foreach($balances['banks'] as $bankName => $balance)
+        @foreach($balancesInfo->balances->banks as $bankName => $balance)
 
             @if ($bankName === 'ПАО "Росбанк"' || $bankName === 'ПАО "МКБ"' || $bankName === 'АО "АЛЬФА БАНК"')
                 @continue
@@ -19,10 +19,10 @@
                 <div class="fw-bold">{{ $bankName }}</div>
 
                 <div class="d-flex fw-bolder text-end">
-                    {{ \App\Models\CurrencyExchangeRate::format($balance['RUB'], 'RUB') }}
-                    @if ($balance['EUR'] !== 0)
+                    {{ \App\Models\CurrencyExchangeRate::format($balance->RUB, 'RUB') }}
+                    @if ($balance->EUR !== 0)
                         <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($balance['EUR'], 'EUR') }}
+                        {{ \App\Models\CurrencyExchangeRate::format($balance->EUR, 'EUR') }}
                     @endif
                 </div>
             </div>

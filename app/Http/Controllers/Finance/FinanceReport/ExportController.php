@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance\FinanceReport;
 use App\Exports\Finance\FinanceReport\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\FinanceReportHistory;
 use App\Models\Loan;
 use App\Services\Contract\ContractService;
 use App\Services\FinanceReport\AccountBalanceService;
@@ -12,6 +13,7 @@ use App\Services\FinanceReport\CreditService;
 use App\Services\FinanceReport\DepositService;
 use App\Services\FinanceReport\LoanService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -37,7 +39,7 @@ class ExportController extends Controller
         $this->contractService = $contractService;
     }
 
-    public function store(): BinaryFileResponse
+    public function store(Request $request): BinaryFileResponse
     {
         $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
 
@@ -45,36 +47,28 @@ class ExportController extends Controller
             abort(404);
         }
 
-        $date = now();
+        $date = Carbon::parse($request->get('date'));
+        $financeReportHistory = FinanceReportHistory::where('date', $date->format('Y-m-d'))->first();
 
-        $balances = $this->accountBalanceService->getBalances($date, $company);
+        if (!$financeReportHistory) {
+            abort(404);
+        }
 
-        $credits = $this->creditService->getCredits($date, $company);
-        $totalCreditAmount = $this->creditService->getTotalCreditAmount($date, $company);
-
-        $loans = $this->loanService->getLoans($date, $company);
-
-        $deposites = $this->depositeService->getDeposites($date, $company);
-        $depositesAmount = $this->depositeService->getDepositesTotalAmount($date, $company);
+        $balancesInfo = json_decode($financeReportHistory->balances);
+        $creditsInfo = json_decode($financeReportHistory->credits);
+        $loansInfo = json_decode($financeReportHistory->loans);
+        $depositsInfo = json_decode($financeReportHistory->deposits);
+        $objectsInfo = json_decode($financeReportHistory->objects);
 
         return Excel::download(
             new Export(
                 [
-                    'balances' => $balances,
-                    'credits' => [
-                        'credits' => $credits,
-                        'totalAmount' => $totalCreditAmount
-                    ],
-                    'loans' => [
-                        'loans' => $loans,
-                        'totalAmount' => $loans->sum('amount')
-                     ],
-                    'deposites' => [
-                        'deposites' => $deposites,
-                        'totalAmount' => $depositesAmount
-                    ],
-                ],
-                $this->contractService
+                    'balancesInfo' => $balancesInfo,
+                    'creditsInfo' => $creditsInfo,
+                    'loansInfo' => $loansInfo,
+                    'depositsInfo' => $depositsInfo,
+                    'objectsInfo' => $objectsInfo
+                ]
             ),
             'Финансовый отчет.xlsx'
         );

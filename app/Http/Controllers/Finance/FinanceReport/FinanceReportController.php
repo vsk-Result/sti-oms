@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Finance\FinanceReport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
-use App\Models\Loan;
-use App\Services\FinanceReport\AccountBalanceService;
-use App\Services\FinanceReport\CreditService;
-use App\Services\FinanceReport\DepositService;
-use App\Services\FinanceReport\LoanService;
+use App\Models\FinanceReportHistory;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use function abort;
@@ -18,23 +15,6 @@ use function view;
 
 class FinanceReportController extends Controller
 {
-    private AccountBalanceService $accountBalanceService;
-    private CreditService $creditService;
-    private LoanService $loanService;
-    private DepositService $depositeService;
-
-    public function __construct(
-        AccountBalanceService $accountBalanceService,
-        CreditService $creditService,
-        LoanService $loanService,
-        DepositService $depositeService
-    ) {
-        $this->accountBalanceService = $accountBalanceService;
-        $this->creditService = $creditService;
-        $this->loanService = $loanService;
-        $this->depositeService = $depositeService;
-    }
-
     public function index(Request $request): View
     {
         $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
@@ -44,24 +24,23 @@ class FinanceReportController extends Controller
         }
 
         $date = Carbon::parse($request->get('balance_date', now()));
+        $financeReportHistory = FinanceReportHistory::where('date', $date->format('Y-m-d'))->first();
 
-        $balances = $this->accountBalanceService->getBalances($date, $company);
+        if (!$financeReportHistory) {
+            abort(404);
+        }
 
-        $credits = $this->creditService->getCredits($date, $company);
-        $totalCreditAmount = $this->creditService->getTotalCreditAmount($date, $company);
-        $creditsLastUpdateDate = Loan::where('type_id', Loan::TYPE_CREDIT)->latest('updated_at')->first()->updated_at;
-
-        $loans = $this->loanService->getLoans($date, $company);
-        $loansLastUpdateDate = Loan::where('type_id', Loan::TYPE_LOAN)->latest('updated_at')->first()->updated_at;
-
-        $deposites = $this->depositeService->getDeposites($date, $company);
-        $depositesAmount = $this->depositeService->getDepositesTotalAmount($date, $company);
+        $balancesInfo = json_decode($financeReportHistory->balances);
+        $creditsInfo = json_decode($financeReportHistory->credits);
+        $loansInfo = json_decode($financeReportHistory->loans);
+        $depositsInfo = json_decode($financeReportHistory->deposits);
+        $objectsInfo = json_decode($financeReportHistory->objects);
 
         return view(
             'finance-report.index',
             compact(
-                'company', 'balances', 'date', 'credits',
-                'totalCreditAmount', 'creditsLastUpdateDate', 'loans', 'loansLastUpdateDate', 'deposites', 'depositesAmount'
+                'company', 'balancesInfo',
+                'date', 'creditsInfo', 'loansInfo', 'depositsInfo', 'objectsInfo'
             )
         );
     }
