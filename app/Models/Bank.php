@@ -89,6 +89,12 @@ class Bank
             'logo' => '/images/banks/raifaizen.png',
             'visible' => true
         ],
+        [
+            'id' => 15,
+            'name' => 'ВТБ Камчатка',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
     ];
 
     public static function getBanks(): array

@@ -5,6 +5,7 @@
 @section('object-tab-content')
     @include('objects.modals.debt_manual_create')
     @include('objects.modals.debt_manual_edit')
+    @include('objects.modals.debt_upload_manual')
 
     <div class="card border-0">
         <div class="card-header border-0 justify-content-end align-items-center p-0">
@@ -222,10 +223,25 @@
             @else
                 <div class="card card-flush h-lg-100">
                     <div class="card-header mt-6">
-                        <div class="card-title flex-column">
-                            <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
+                        <div class="card-title justify-content-between w-100">
+                            <div class="d-flex flex-column">
+                                <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
+                            </div>
+
                             @if ($hasObjectImport)
-                                <a class="fs-6 fw-bold" href="{{ route('files.download', ['file' => base64_encode($hasObjectImportLink)]) }}" >Скачать детализацию долгов</a>
+                                <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                                    </svg>
+                                </a>
+                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-250px py-4" data-kt-menu="true">
+                                    <div class="menu-item px-3">
+                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal" class="menu-link px-3">Загрузить долги вручную</a>
+                                    </div>
+                                    <div class="menu-item px-3">
+                                        <a href="{{ route('files.download', ['file' => base64_encode($hasObjectImportLink)]) }}" class="menu-link px-3 text-primary">Скачать детализацию долгов</a>
+                                    </div>
+                                </div>
                             @endif
                         </div>
 
