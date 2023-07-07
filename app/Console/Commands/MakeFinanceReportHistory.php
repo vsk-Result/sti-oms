@@ -101,7 +101,9 @@ class MakeFinanceReportHistory extends Command
             } else if ($object->status_id === \App\Models\Status::STATUS_BLOCKED && empty($object->closing_date)) {
                 $years['Закрыты, дата не указана'][] = $object;
             } else {
-                $years['Активные'][] = $object;
+                if ($object->status_id !== \App\Models\Status::STATUS_DELETED) {
+                    $years['Активные'][] = $object;
+                }
             }
         }
 
