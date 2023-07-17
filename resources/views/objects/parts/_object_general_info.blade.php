@@ -87,6 +87,15 @@
 
             @php
                 $contractorDebtsAmount = $object->getContractorDebtsAmount();
+
+                $debtObjectImport = \App\Models\Debt\DebtImport::where('type_id', \App\Models\Debt\DebtImport::TYPE_OBJECT)->latest('date')->first();
+                $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+
+                if ($objectExistInObjectImport) {
+                    $contractorDebtsAvans = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
+                    $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans;
+                }
+
                 $providerDebtsAmount = $object->getProviderDebtsAmount();
                 $ITRSalaryDebt = $object->getITRSalaryDebt();
                 $workSalaryDebt = $object->getWorkSalaryDebt();
