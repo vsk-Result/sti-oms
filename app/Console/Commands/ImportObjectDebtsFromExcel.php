@@ -7,6 +7,7 @@ use App\Imports\DebtImport\ObjectImport;
 use App\Models\Company;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Services\DebtService;
@@ -143,6 +144,9 @@ class ImportObjectDebtsFromExcel extends Command
                 return 0;
             }
         }
+
+        $objectIds = BObject::whereIn('code', $availableCodes)->pluck('id')->toArray();
+        DebtManual::whereIn('object_id', $objectIds)->delete();
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Импорт прошел успешно');
 
