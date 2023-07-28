@@ -126,7 +126,7 @@
                         <td class="text-center">{{ $act->number }}</td>
                         <td class="text-center">
                             @if ($act->hasMedia())
-                                <a href="{{ $act->getFirstMediaUrl() }}" download="Акт {{ $act->number }} от {{ $act->getDateFormatted() }}" class="menu-link px-3"><i class="fa fa-download"></i></a>
+                                <a target="_blank" href="{{ $act->getFirstMediaUrl() }}" download="Акт {{ $act->number }} от {{ $act->getDateFormatted() }}" class="menu-link px-3"><i class="fa fa-download"></i></a>
                             @endif
                         </td>
                         <td>
