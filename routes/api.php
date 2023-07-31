@@ -7,6 +7,7 @@ use App\Http\Controllers\API\Pivot\Act\ActController;
 use App\Http\Controllers\API\Pivot\Act\ExportController;
 use App\Http\Controllers\API\Pivot\Debt\DebtController;
 use App\Http\Controllers\API\Pivot\Debt\ExportController as DExportController;
+use App\Http\Controllers\API\Pivot\Object\ObjectInfoController;
 use App\Http\Controllers\API\Pivot\Payment\PaymentController;
 use App\Http\Controllers\API\Pivot\Bank\BankController;
 use App\Http\Controllers\API\Object\DebtController as ODebtController;
@@ -33,6 +34,8 @@ Route::get('pivots/debts/export', [DExportController::class, 'store']);
 Route::get('pivots/payments', [PaymentController::class, 'index']);
 
 Route::get('pivots/banks', [BankController::class, 'index']);
+
+Route::get('pivots/objects/info', [ObjectInfoController::class, 'index']);
 
 Route::get('objects/debts', [ODebtController::class, 'index']);
 
