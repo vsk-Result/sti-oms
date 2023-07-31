@@ -307,6 +307,9 @@
                                         $organizationName = substr($organization, strpos($organization, '::') + 2);
                                         $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
 
+                                        $avans = \App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('avans');
+                                        $guarantee = \App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('guarantee');
+
                                         $comment = '';
                                         if ($debtManual) {
                                             if ($debtManual->updatedBy) {
@@ -314,22 +317,36 @@
                                             } else {
                                                 $comment = 'Создал(а) ' . $debtManual->createdBy->name . ', ' . $debtManual->created_at->format('d.m.Y H:i');
                                             }
+
+                                            if ($hasObjectImport) {
+                                                $avans = $debtManual->avans;
+                                                $guarantee = $debtManual->guarantee;
+                                            }
                                         }
                                     @endphp
 
                                     <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">
                                         <td class="ps-2">{{ $organizationName }}</td>
                                         @if ($hasObjectImport)
-                                            <td class="text-danger text-end pe-2">
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
-                                                    {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('guarantee'), 2, ',', ' ') }}
-                                                </a>
-                                            </td>
-                                            <td class="text-danger text-end pe-2">
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
-                                                    {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('avans'), 2, ',', ' ') }}
-                                                </a>
-                                            </td>
+                                            @if ($debtManual)
+                                                <td class="text-danger text-end pe-2">
+                                                    <span class="fw-boldest text-end">{{ number_format($guarantee, 2, ',', ' ') }}</span>
+                                                </td>
+                                                <td class="text-danger text-end pe-2">
+                                                    <span class="fw-boldest text-end">{{ number_format($avans, 2, ',', ' ') }}</span>
+                                                </td>
+                                            @else
+                                                <td class="text-danger text-end pe-2">
+                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                        {{ number_format($guarantee, 2, ',', ' ') }}
+                                                    </a>
+                                                </td>
+                                                <td class="text-danger text-end pe-2">
+                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                        {{ number_format($avans, 2, ',', ' ') }}
+                                                    </a>
+                                                </td>
+                                            @endif
                                         @endif
                                         <td class="text-danger text-end pe-2">
                                             @if ($debtManual)
@@ -353,6 +370,8 @@
                                                 data-type-id="{{ $type }}"
                                                 data-id="{{ $debtManual->id ?? '' }}"
                                                 data-amount="{{ $debtManual->amount ?? $amount }}"
+                                                data-avans="{{ $debtManual->avans ?? $avans }}"
+                                                data-guarantee="{{ $debtManual->guarantee ?? $guarantee }}"
                                                 data-comment="{{ $comment }}"
                                             >
                                                 <i class="fa fa-pen text-primary"></i>
@@ -620,6 +639,8 @@
                                                     data-type-id="{{ $type }}"
                                                     data-id="{{ $debtManual->id ?? '' }}"
                                                     data-amount="{{ $debtManual->amount ?? $amount }}"
+                                                    data-avans="{{ $debtManual->avans ?? 0 }}"
+                                                    data-guarantee="{{ $debtManual->guarantee ?? 0 }}"
                                                     data-comment="{{ $comment }}"
                                             >
                                                 <i class="fa fa-pen text-primary"></i>
@@ -689,6 +710,8 @@
             $('#debtManualModal').modal('show');
             $('#debtManualModal .modal-title').text(`Укажите сумму долга вручную для ${$(this).data('organization-name')}`);
             $('#debt-manual-amount').val($(this).data('amount') || '');
+            $('#debt-manual-avans').val($(this).data('avans') || '');
+            $('#debt-manual-guarantee').val($(this).data('guarantee') || '');
             $('#debt-manual-id').val($(this).data('id') || '');
             $('#debt-manual-type-id').val($(this).data('type-id') || '');
             $('#debt-manual-object-id').val($(this).data('object-id') || '');

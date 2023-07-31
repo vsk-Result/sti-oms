@@ -18,7 +18,9 @@ class DebtManual extends Model implements Audit
 
     protected $table = 'debt_manuals';
 
-    protected $fillable = ['type_id', 'object_id', 'object_worktype_id', 'created_by_user_id', 'updated_by_user_id', 'organization_id', 'amount', 'status_id'];
+    protected $fillable = [
+        'type_id', 'object_id', 'object_worktype_id', 'created_by_user_id', 'updated_by_user_id',
+        'organization_id', 'amount', 'status_id', 'avans', 'guarantee'];
 
     const TYPE_CONTRACTOR = 0;
     const TYPE_PROVIDER = 1;
