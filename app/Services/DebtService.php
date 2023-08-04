@@ -56,9 +56,9 @@ class DebtService
                         $debtsAmount = $debtManuals->sum('amount');
                     } else {
                         if ($objectExistInObjectImport && $typeId === Debt::TYPE_CONTRACTOR) {
-                            $debtsAmount = $debtsObjectImport->where('organization_id', $organizationId)
-                                ->where('object_id', $objectId)
-                                ->sum('amount');
+                            $dQuery = $debtsObjectImport->where('organization_id', $organizationId)
+                                ->where('object_id', $objectId);
+                            $debtsAmount = $dQuery->sum('amount') + $dQuery->sum('avans');
                         } else {
                             $debtsAmount = $debts->sum('amount');
                         }
@@ -128,7 +128,7 @@ class DebtService
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $total['amount_contractor']['RUB'] = (clone $query)->where('type_id', Debt::TYPE_CONTRACTOR)->sum('amount');
+        $total['amount_contractor']['RUB'] = (clone $query)->where('type_id', Debt::TYPE_CONTRACTOR)->sum('amount') + (clone $query)->where('type_id', Debt::TYPE_CONTRACTOR)->sum('avans');
         $total['amount_provider']['RUB'] = (clone $query)->where('type_id', Debt::TYPE_PROVIDER)->sum('amount');
 
         return $query->paginate($perPage)->withQueryString();

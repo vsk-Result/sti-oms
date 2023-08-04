@@ -43,7 +43,7 @@ class ImportObjectDebtsFromExcel extends Command
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
         Log::channel('custom_imports_log')->debug('[START] Загрузка долгов по подрядчикам объектов из Excel');
 
-        $availableCodes = ['346', '349', '353', '358', '359', '360'];
+        $availableCodes = ['360'];
 
         $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
 
@@ -65,8 +65,12 @@ class ImportObjectDebtsFromExcel extends Command
             $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xlsx';
 
             if (! File::exists($importFilePath)) {
-                Log::channel('custom_imports_log')->debug('[ERROR] Файл для загрузки "' . $importFilePath . '" не найден');
-                continue;
+                $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xls';
+
+                if (! File::exists($importFilePath)) {
+                    Log::channel('custom_imports_log')->debug('[ERROR] Файл для загрузки "' . $importFilePath . '" не найден');
+                    continue;
+                }
             }
 
             try {
