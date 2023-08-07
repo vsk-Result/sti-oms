@@ -66,7 +66,7 @@
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Сумма</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $guarantee->getAmount() }}</span>
+                                    <span class="fw-bold text-gray-800 fs-6">{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}</span>
                                 </div>
                             </div>
 
@@ -87,7 +87,7 @@
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Сумма депозита</label>
                                 <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $guarantee->getAmountDeposit() }}</span>
+                                    <span class="fw-bold text-gray-800 fs-6">{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount_deposit, $guarantee->currency) }}</span>
                                 </div>
                             </div>
 
