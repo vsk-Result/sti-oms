@@ -35,22 +35,10 @@ class DebtController extends Controller
             return response()->json([], 404);
         }
 
-        $contractorDebtsAmount = $object->getContractorDebtsAmount();
-
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-
-        if ($objectExistInObjectImport) {
-            $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-            $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans;
-        }
-
-        $providerDebtsAmount = $object->getProviderDebtsAmount();
-
         $info = [
             'object' => $object->__toString(),
-            'contractors' => $contractorDebtsAmount,
-            'providers' => $providerDebtsAmount,
+            'contractors' => $object->getContractorDebts(true),
+            'providers' => $object->getProviderDebts(),
         ];
 
         return response()->json(compact('info'));

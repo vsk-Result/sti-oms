@@ -143,7 +143,7 @@ class  BObject extends Model implements Audit
         return $this->code . ' | '  . $this->name;
     }
 
-    public function getContractorDebts(): array
+    public function getContractorDebts($forApi = false): array
     {
         $debtManuals = DebtManual::where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $this->id)->with('organization')->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
@@ -195,6 +195,10 @@ class  BObject extends Model implements Audit
                     $result[$id] = 0;
                 }
                 $result[$id] += $debt->amount;
+
+                if ($forApi && $existInObjectImport) {
+                    $result[$id] += $debt->avans;
+                }
             }
 
             foreach ($debtManuals as $debtManual) {
@@ -203,6 +207,10 @@ class  BObject extends Model implements Audit
                 if (! $issetDebt && isset($debtManual->organization)) {
                     $id = $debtManual->organization_id . '::' . $debtManual->organization->name;
                     $result[$id] = $debtManual->amount;
+
+                    if ($forApi && $existInObjectImport) {
+                        $result[$id] += $debtManual->avans;
+                    }
                 }
             }
 
@@ -214,6 +222,10 @@ class  BObject extends Model implements Audit
 
                 if ($debtManual) {
                     $result[$organization] = $debtManual->amount;
+
+                    if ($forApi && $existInObjectImport) {
+                        $result[$organization] += $debtManual->avans;
+                    }
                 }
             }
         }
@@ -284,9 +296,9 @@ class  BObject extends Model implements Audit
         return $result;
     }
 
-    public function getContractorDebtsAmount(): float
+    public function getContractorDebtsAmount($forApi = false): float
     {
-        return array_sum($this->getContractorDebts());
+        return array_sum($this->getContractorDebts($forApi));
     }
 
     public function getProviderDebtsAmount(): float
