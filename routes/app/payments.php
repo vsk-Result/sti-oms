@@ -3,6 +3,7 @@
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\SplitController;
 use App\Http\Controllers\Payment\SplitResidenceController;
+use App\Http\Controllers\Payment\SplitResidenceExcelController;
 use App\Http\Controllers\Payment\SplitInsuranceController;
 use App\Http\Controllers\Payment\SplitNDFLController;
 use App\Http\Controllers\Payment\ExportController;
@@ -26,6 +27,10 @@ Route::post('payments/{payment}/split', [SplitController::class, 'store'])->name
 // Разбивка оплат проживания
 
 Route::post('payments/split_residence', [SplitResidenceController::class, 'store'])->name('payments.split_residence.store');
+
+// Разбивка оплат проживания из Excel
+
+Route::post('payments/split_residence_excel', [SplitResidenceExcelController::class, 'store'])->name('payments.split_residence_excel.store');
 
 // Разбивка оплат страховых взносов
 

@@ -3,12 +3,21 @@
 namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
+use App\Models\Organization;
 use Illuminate\View\View;
 
 class ReportController extends Controller
 {
     public function index(): View
     {
-        return view('reports.index');
+        // Организации для разбивки проживания
+        $splitResidenceOrganizationsNames = [
+            'ИП Кадинова Елена Николаевна',
+            'Общество с ограниченной ответственностью "АРТИСТ ПЛЮС"',
+            'АО "ИНТЕРМЕТСЕРВИС"'
+        ];
+        $splitResidenceOrganizations = Organization::whereIn('name', $splitResidenceOrganizationsNames)->get();
+
+        return view('reports.index', compact('splitResidenceOrganizations'));
     }
 }
