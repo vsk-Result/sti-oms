@@ -242,7 +242,7 @@ class MakeFinanceReportHistory extends Command
                 $summary[$year]['contract_avanses_acts_deposites_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['RUB'];
                 $summary[$year]['contract_avanses_acts_deposites_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['EUR'];
 
-                $total[$year][$object->code]['contractor']['RUB'] = $object->getContractorDebtsAmount();
+                $total[$year][$object->code]['contractor']['RUB'] = $object->getContractorDebtsAmount(true);
                 $total[$year][$object->code]['provider']['RUB'] = $object->getProviderDebtsAmount();
 
                 $ITRSalaryObject = \App\Models\CRM\ItrSalary::where('kod', 'LIKE', '%' . $object->code. '%')->get();
