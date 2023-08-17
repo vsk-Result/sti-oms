@@ -97,7 +97,16 @@ class CheckAvansesReceivedFromPayments extends Command
                     return 0;
                 }
             }
+
+            $avans = $contract->avanses->first();
+            if ($avans) {
+                $avans->update([
+                    'amount' => $contract->avansesReceived->sum('amount')
+                ]);
+            }
         }
+
+
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] ' . $createdAvansesCount . ' полученных авансов успешно создано');
 
