@@ -77,9 +77,33 @@ class PivotController extends Controller
         $customerDebtRUB = $contractsTotal['avanses_acts_left_paid_amount']['RUB'] + $contractsTotal['avanses_left_amount']['RUB'] + $contractsTotal['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
         $customerDebtEUR = $contractsTotal['avanses_acts_left_paid_amount']['EUR'] + $contractsTotal['avanses_left_amount']['EUR'] + $contractsTotal['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount');
 
+        $customerAvansLeftDebtRUB = $contractsTotal['avanses_left_amount']['RUB'];
+        $customerAvansLeftDebtEUR = $contractsTotal['avanses_left_amount']['EUR'];
+
+        $customerActDebtRUB = $contractsTotal['avanses_acts_left_paid_amount']['RUB'];
+        $customerActDebtEUR = $contractsTotal['avanses_acts_left_paid_amount']['EUR'];
+
+        $customerActGUDebtRUB = $contractsTotal['avanses_acts_deposites_amount']['RUB'];
+        $customerActGUDebtEUR = $contractsTotal['avanses_acts_deposites_amount']['EUR'];
+
+        $customerGUReceiveRUB = $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
+        $customerGUReceiveEUR = $object->guaranteePayments->where('currency', 'EUR')->sum('amount');
+
         if ($currentRate) {
             $customerDebtRUB = $customerDebtRUB + $customerDebtEUR * $currentRate->rate;
             $customerDebtEUR = 0;
+
+            $customerActDebtRUB = $customerActDebtRUB + $customerActDebtEUR * $currentRate->rate;
+            $customerActDebtEUR = 0;
+
+            $customerAvansLeftDebtRUB = $customerAvansLeftDebtRUB + $customerAvansLeftDebtEUR * $currentRate->rate;
+            $customerAvansLeftDebtEUR = 0;
+
+            $customerActGUDebtRUB = $customerActGUDebtRUB + $customerActGUDebtEUR * $currentRate->rate;
+            $customerActGUDebtEUR = 0;
+
+            $customerGUReceiveRUB = $customerGUReceiveRUB + $customerGUReceiveEUR * $currentRate->rate;
+            $customerGUReceiveEUR = 0;
         }
 
         $contractorDebtsAmount = $object->getContractorDebtsAmount(true);
@@ -150,6 +174,14 @@ class PivotController extends Controller
             'workers_debts' => CurrencyExchangeRate::format($workSalaryDebt, 'RUB'),
             'customer_debts_rub' => CurrencyExchangeRate::format($customerDebtRUB, 'RUB'),
             'customer_debts_eur' => CurrencyExchangeRate::format($customerDebtEUR, 'EUR'),
+            'customer_acts_debts_rub' => CurrencyExchangeRate::format($customerActDebtRUB, 'RUB'),
+            'customer_acts_debts_eur' => CurrencyExchangeRate::format($customerActDebtEUR, 'EUR'),
+            'customer_avanses_left_debts_rub' => CurrencyExchangeRate::format($customerAvansLeftDebtRUB, 'RUB'),
+            'customer_avanses_left_debts_eur' => CurrencyExchangeRate::format($customerAvansLeftDebtEUR, 'EUR'),
+            'customer_acts_gu_debts_rub' => CurrencyExchangeRate::format($customerActGUDebtRUB, 'RUB'),
+            'customer_acts_gu_debts_eur' => CurrencyExchangeRate::format($customerActGUDebtEUR, 'EUR'),
+            'customer_gu_receive_rub' => CurrencyExchangeRate::format($customerGUReceiveRUB, 'RUB'),
+            'customer_gu_receive_eur' => CurrencyExchangeRate::format($customerGUReceiveEUR, 'EUR'),
             'object_balance_rub' => CurrencyExchangeRate::format($objectBalanceRUB, 'RUB'),
             'object_balance_eur' => CurrencyExchangeRate::format($objectBalanceEUR, 'EUR'),
             'prom_balance_rub' => CurrencyExchangeRate::format($promBalanceRUB, 'RUB'),
