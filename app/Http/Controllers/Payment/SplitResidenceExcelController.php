@@ -29,13 +29,11 @@ class SplitResidenceExcelController extends Controller
     {
         $requestData = $request->toArray();
 
-        $paymentIds = json_decode($requestData['payment_ids'], true);
-        foreach ($paymentIds as $paymentId) {
-            $payment = Payment::find($paymentId);
-            if (!$payment) {
-                session()->flash('split_residence_excel_status', 'Не найдена оплата с ID: ' . $paymentId);
-                return redirect()->back()->withInput();
-            }
+        $payments = Payment::where('organization_receiver_id', $requestData['organization_id'])->get();
+
+        if ($payments->count() === 0) {
+            session()->flash('split_residence_excel_status', 'Не найдены оплаты у выбранного контрагента');
+            return redirect()->back()->withInput();
         }
 
         $importData = Excel::toArray(new SplitResidenceExcelImport(), $requestData['file']);
@@ -47,15 +45,7 @@ class SplitResidenceExcelController extends Controller
 
         $totalAmount = 0;
         $groupedObjectAmount = [];
-        $month = $requestData['month'];
         foreach ($importData['Отчет'] as $rowIndex => $row) {
-            if ($rowIndex === 4) {
-                if (mb_strpos($row[0], $month) === false) {
-                    session()->flash('split_residence_excel_status', 'Дата в заголовке таблицы не совпадает с выбранной');
-                    return redirect()->back()->withInput();
-                }
-            }
-
             if ($rowIndex < 7) {
                 continue;
             }
@@ -68,8 +58,7 @@ class SplitResidenceExcelController extends Controller
             $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, ' -'));
 
             if (empty($objectCode)) {
-                session()->flash('split_residence_excel_status', 'На строке ' . ($rowIndex + 1) . ' не указан объект');
-                return redirect()->back()->withInput();
+                $objectCode = '27.1';
             }
 
             $worktype = null;
@@ -93,45 +82,56 @@ class SplitResidenceExcelController extends Controller
             $totalAmount += $row[40];
         }
 
-        $payments = Payment::whereIn('id', $paymentIds)->get();
         $paymentsTotalAmount = $payments->sum('amount');
 
-        if ((float) abs($paymentsTotalAmount) !== (float) $totalAmount) {
-            session()->flash('split_residence_excel_status', 'Сумма оплат (' . $paymentsTotalAmount . ') не совпадает с суммой в таблице (' . $totalAmount . ')');
+        if ((float) abs($paymentsTotalAmount) < (float) $totalAmount) {
+            session()->flash('split_residence_excel_status', 'Сумма оплат по контрагенту (' . $paymentsTotalAmount . ') меньше суммы в таблице (' . $totalAmount . ')');
             return redirect()->back()->withInput();
         }
-
-        $description = $requestData['description'];
-
-        if (empty($description)) {
-            $description = $payments->first()->description;
-        }
-
-        $requestData = $payments->first()->attributesToArray();
-        $requestData['description'] = $description;
 
         foreach($groupedObjectAmount as $code => $info) {
             $object = BObject::where('code', $code)->first();
 
             foreach ($info as $worktype => $amount) {
-                $requestData['object_id'] = $object->id;
-                $requestData['object_worktype_id'] = $worktype;
-                $requestData['amount'] = -$amount;
-
-                $nds = $this->paymentService->checkNeedNDS($requestData['description'], null) ? round($amount / 6, 2) : 0;
-                $amountWithoutNds = $amount - $nds;
-
-                $requestData['amount_without_nds'] = -$amountWithoutNds;
-                $requestData['was_split'] = true;
-
-                $this->paymentService->createPayment($requestData);
+                $this->splitPayment($object, $worktype, $amount, $requestData['organization_id']);
             }
         }
 
-        foreach ($payments as $payment) {
-            $this->paymentService->destroyPayment($payment);
-        }
-
         return redirect()->back();
+    }
+
+    private function splitPayment(BObject $object, int|null $worktype, float $amount, int $organizationId): void
+    {
+        $payment = Payment::where('organization_receiver_id', $organizationId)->orderBy('date')->first();
+        $requestData = $payment->attributesToArray();
+        $requestData['object_id'] = $object->id;
+        $requestData['object_worktype_id'] = $worktype;
+        $requestData['was_split'] = true;
+
+        if ($payment->amount >= $amount) {
+            $requestData['amount'] = -$amount;
+
+            $nds = $this->paymentService->checkNeedNDS($requestData['description'], null) ? round($amount / 6, 2) : 0;
+            $amountWithoutNds = $amount - $nds;
+
+            $requestData['amount_without_nds'] = -$amountWithoutNds;
+
+            $this->paymentService->createPayment($requestData);
+
+            if ($payment->amount === $amount) {
+                $this->paymentService->destroyPayment($payment);
+            } else {
+                $this->paymentService->updatePayment($payment, [
+                    'amount' => $payment->amount - $requestData['amount']
+                ]);
+            }
+        } else {
+            $amountForNewSplit = $amount - $payment->amount;
+
+            $this->paymentService->createPayment($requestData);
+            $this->paymentService->destroyPayment($payment);
+
+            $this->splitPayment($object, $worktype, $amountForNewSplit, $organizationId);
+        }
     }
 }

@@ -406,28 +406,6 @@
 
                                 <div class="col-md-12 fv-row mb-5">
                                     <div class="mb-1">
-                                        <label class="required form-label fw-bolder text-dark fs-6">Месяц</label>
-                                        <div class="position-relative mb-3">
-                                            @php
-                                                $months = [];
-                                                foreach (['2023'] as $year) {
-                                                    foreach (['Декабрь', 'Ноябрь', 'Октябрь', 'Сентябрь', 'Август', 'Июль', 'Июнь', 'Май', 'Апрель', 'Март', 'Февраль', 'Январь'] as $m) {
-                                                        $months[] = $m . ' ' . $year;
-                                                    }
-                                                }
-                                            @endphp
-
-                                            <select name="month" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                @foreach($months as $month)
-                                                    <option value="{{ $month }}">{{ $month }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12 fv-row mb-5">
-                                    <div class="mb-1">
                                         <label class="required form-label fw-bolder text-dark fs-6">Контрагент</label>
                                         <div class="position-relative mb-3">
                                             <select name="organization_id" data-control="select2" class="form-select form-select-solid form-select-lg">
@@ -437,16 +415,6 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="mb-5">
-                                    <label class="form-label fw-bolder text-dark fs-6">Описание для новых оплат</label>
-                                    <input name="description" class="form-control form-control-solid form-control-lg" value="{{ old('description') }}" />
-                                </div>
-
-                                <div class="mb-5">
-                                    <label class="required form-label fw-bolder text-dark fs-6">ID-ки оплат</label>
-                                    <input name="payment_ids" class="form-control form-control-solid form-control-lg" value="{{ old('payment_ids') }}" id="split-residence-payment-ids" required />
                                 </div>
 
                                 <div class="col-md-12 fv-row mb-5">
