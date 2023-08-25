@@ -29,7 +29,7 @@ class SplitResidenceExcelController extends Controller
     {
         $requestData = $request->toArray();
 
-        $payments = Payment::where('organization_receiver_id', $requestData['organization_id'])->get();
+        $payments = Payment::where('organization_receiver_id', $requestData['organization_id'])->where('was_split', false)->get();
 
         if ($payments->count() === 0) {
             session()->flash('split_residence_excel_status', 'Не найдены оплаты у выбранного контрагента');
@@ -93,40 +93,40 @@ class SplitResidenceExcelController extends Controller
             $object = BObject::where('code', $code)->first();
 
             foreach ($info as $worktype => $amount) {
-                $this->splitPayment($object, $worktype, $amount, $requestData['organization_id']);
+                $this->splitPayment($object, $worktype, -$amount, $requestData['organization_id']);
             }
         }
 
         return redirect()->back();
     }
 
-    private function splitPayment(BObject $object, int|null $worktype, float $amount, int $organizationId): void
+    private function splitPayment(BObject $object, int|string|null $worktype, float $amount, int $organizationId): void
     {
-        $payment = Payment::where('organization_receiver_id', $organizationId)->orderBy('date')->first();
+        $payment = Payment::where('organization_receiver_id', $organizationId)->where('was_split', false)->orderBy('date')->first();
         $requestData = $payment->attributesToArray();
         $requestData['object_id'] = $object->id;
-        $requestData['object_worktype_id'] = $worktype;
+        $requestData['object_worktype_id'] = empty($worktype) ? null : $worktype;
         $requestData['was_split'] = true;
 
-        if ($payment->amount >= $amount) {
-            $requestData['amount'] = -$amount;
+        if (abs((float) $payment->amount) >= abs($amount)) {
+            $requestData['amount'] = $amount;
 
             $nds = $this->paymentService->checkNeedNDS($requestData['description'], null) ? round($amount / 6, 2) : 0;
             $amountWithoutNds = $amount - $nds;
 
-            $requestData['amount_without_nds'] = -$amountWithoutNds;
+            $requestData['amount_without_nds'] = $amountWithoutNds;
 
             $this->paymentService->createPayment($requestData);
 
-            if ($payment->amount === $amount) {
+            if (abs((float) $payment->amount) === abs($amount)) {
                 $this->paymentService->destroyPayment($payment);
             } else {
                 $this->paymentService->updatePayment($payment, [
-                    'amount' => $payment->amount - $requestData['amount']
+                    'amount' => (float) $payment->amount - $requestData['amount']
                 ]);
             }
         } else {
-            $amountForNewSplit = $amount - $payment->amount;
+            $amountForNewSplit = $amount - (float) $payment->amount;
 
             $this->paymentService->createPayment($requestData);
             $this->paymentService->destroyPayment($payment);
