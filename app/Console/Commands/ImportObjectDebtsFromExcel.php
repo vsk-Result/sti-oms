@@ -43,7 +43,7 @@ class ImportObjectDebtsFromExcel extends Command
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
         Log::channel('custom_imports_log')->debug('[START] Загрузка долгов по подрядчикам объектов из Excel');
 
-        $availableCodes = ['360'];
+        $availableCodes = ['346', '349', '353', '358', '359', '360'];
 
         $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
 
