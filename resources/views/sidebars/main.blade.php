@@ -156,10 +156,10 @@
             @endcan
 
             @if (! auth()->user()->hasRole(['object-leader', 'finance-object-user']))
-                @canAny(['index contracts', 'index acts', 'index bank-guarantees', 'index guarantees'])
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'hover show' : '' }}">
+                @canAny(['index contracts', 'index acts', 'index bank-guarantees', 'index guarantees', 'index deposits'])
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*') || request()->is('deposits*')) ? 'hover show' : '' }}">
                         <span class="menu-link py-2">
-                            <span class="menu-title {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*')) ? 'fw-boldest' : '' }}">Документооборот</span>
+                            <span class="menu-title {{ (request()->is('contracts*') || request()->is('acts*') || request()->is('bank-guarantees*') || request()->is('guarantees*') || request()->is('deposits*')) ? 'fw-boldest' : '' }}">Документооборот</span>
                             <span class="menu-arrow"></span>
                         </span>
                         <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
@@ -192,6 +192,17 @@
                                             <span class="bullet bullet-dot"></span>
                                         </span>
                                         <span class="menu-title">Банковские гарантии</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('index deposits')
+                                <div class="menu-item">
+                                    <a class="menu-link py-2 {{ request()->is('deposits*') ? 'active' : '' }}" href="{{ route('deposits.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Депозиты</span>
                                     </a>
                                 </div>
                             @endcan

@@ -13,6 +13,7 @@ use App\Http\Controllers\Object\FileController;
 use App\Http\Controllers\Object\ActivityController;
 use App\Http\Controllers\Object\UserController;
 use App\Http\Controllers\Object\BankGuaranteeController;
+use App\Http\Controllers\Object\DepositController;
 use App\Http\Controllers\Object\ExportController;
 
 // Экспорт объекта в Excel
@@ -43,6 +44,10 @@ Route::get('objects/{object}/acts', [ActController::class, 'index'])->name('obje
 // Банковские гарантии
 
 Route::get('objects/{object}/bank-guarantees', [BankGuaranteeController::class, 'index'])->name('objects.bank_guarantees.index');
+
+// Депозиты
+
+Route::get('objects/{object}/deposits', [DepositController::class, 'index'])->name('objects.deposits.index');
 
 // Гарантийные удержания
 

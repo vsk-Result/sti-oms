@@ -4,6 +4,7 @@ namespace App\Services\FinanceReport;
 
 use App\Models\BankGuarantee;
 use App\Models\Company;
+use App\Models\Deposit;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
 use Carbon\Carbon;
@@ -19,9 +20,15 @@ class DepositService
 
     public function getDeposites(string|Carbon $date, Company $company): array
     {
+        $bgDepositsRUB = BankGuarantee::where('status_id', Status::STATUS_ACTIVE)->where('end_date_deposit', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount_deposit');
+        $bgDepositsEUR = BankGuarantee::where('status_id', Status::STATUS_ACTIVE)->where('end_date_deposit', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount_deposit');
+
+        $depositsRUB = Deposit::where('status_id', Status::STATUS_ACTIVE)->where('end_date', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount');
+        $depositsEUR = Deposit::where('status_id', Status::STATUS_ACTIVE)->where('end_date', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount');
+
         $deposites = [
-            'RUB' => BankGuarantee::where('status_id', Status::STATUS_ACTIVE)->where('end_date_deposit', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount_deposit'),
-            'EUR' => BankGuarantee::where('status_id', Status::STATUS_ACTIVE)->where('end_date_deposit', '>=', Carbon::now())->where('currency', 'EUR')->sum('amount_deposit'),
+            'RUB' => $bgDepositsRUB + $depositsRUB,
+            'EUR' => $bgDepositsEUR + $depositsEUR,
         ];
 
         return $deposites;
