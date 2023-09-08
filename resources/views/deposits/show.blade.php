@@ -22,20 +22,6 @@
                     <div class="d-flex flex-wrap flex-sm-nowrap mb-3">
                         <div class="flex-grow-1">
                             <div class="row mb-7">
-                                <label class="col-lg-2 fw-bold text-muted">Компания</label>
-                                <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $deposit->company->name }}</span>
-                                </div>
-                            </div>
-
-                            <div class="row mb-7">
-                                <label class="col-lg-2 fw-bold text-muted">Банк</label>
-                                <div class="col-lg-10 fv-row">
-                                    <span class="fw-bold text-gray-800 fs-6">{{ $deposit->getBankName() }}</span>
-                                </div>
-                            </div>
-
-                            <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Объект</label>
                                 <div class="col-lg-10 fv-row">
                                     <span class="fw-bold text-gray-800 fs-6">{{ $deposit->object->getName() }}</span>

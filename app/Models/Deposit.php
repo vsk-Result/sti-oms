@@ -23,8 +23,8 @@ class Deposit extends Model implements Audit, HasMedia
     protected $table = 'deposits';
 
     protected $fillable = [
-        'bank_guarantee_id', 'company_id', 'bank_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'start_date',
-        'end_date', 'amount', 'status_id', 'contract_id', 'organization_id', 'currency', 'currency_rate'
+        'object_id', 'created_by_user_id', 'updated_by_user_id', 'start_date',
+        'end_date', 'amount', 'status_id', 'currency', 'currency_rate', 'description'
     ];
 
     private function getStatusesList(): array
@@ -34,26 +34,6 @@ class Deposit extends Model implements Audit, HasMedia
             Status::STATUS_BLOCKED => 'В архиве',
             Status::STATUS_DELETED => 'Удален'
         ];
-    }
-
-    public function bankGuarantee(): BelongsTo
-    {
-        return $this->belongsTo(BankGuarantee::class, 'bank_guarantee_id');
-    }
-
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
-
-    public function contract(): BelongsTo
-    {
-        return $this->belongsTo(Contract::class, 'contract_id');
-    }
-
-    public function organization(): BelongsTo
-    {
-        return $this->belongsTo(Organization::class, 'organization_id');
     }
 
     public function object(): BelongsTo

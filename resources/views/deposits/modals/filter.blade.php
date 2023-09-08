@@ -10,27 +10,6 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label class="form-label">Договор</label>
-                                <select
-                                    name="contract_id[]"
-                                    class="form-select form-select-solid"
-                                    data-control="select2"
-                                    data-dropdown-parent="#filterDepositModal"
-                                    multiple
-                                >
-                                    @foreach($contracts as $contract)
-                                        <option value="{{ $contract->id }}" {{ in_array($contract->id, request()->input('contract_id', [])) ? 'selected' : '' }}>
-                                            @if ($contract->parent)
-                                                {{ $contract->parent->getName() . ' | ' . $contract->name }}
-                                            @else
-                                                {{ $contract->getName() }}
-                                            @endif
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group mb-3">
                                 <label class="form-label">Валюта</label>
                                 <select
                                     name="currency[]"

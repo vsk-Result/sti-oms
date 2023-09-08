@@ -34,10 +34,6 @@ class DepositService
             $query->whereIn('currency', $requestData['currency']);
         }
 
-        if (! empty($requestData['contract_id'])) {
-            $query->whereIn('contract_id', $requestData['contract_id']);
-        }
-
         if (! empty($requestData['status_id'])) {
             $query->whereIn('status_id', $requestData['status_id']);
         }
@@ -63,7 +59,7 @@ class DepositService
             $total['amount']['expired'][$currency] = (clone $dQuery)->where('end_date', '<', Carbon::now())->sum('amount');
         }
 
-        $query->with('company', 'object', 'contract', 'contract.acts', 'contract.avansesReceived', 'organization');
+        $query->with( 'object');
         $query->orderByDesc('object_id');
 
         return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
@@ -77,13 +73,10 @@ class DepositService
             : 1;
 
         $deposit = Deposit::create([
-            'contract_id' => $requestData['contract_id'] === 'null' ? null : $requestData['contract_id'],
-            'organization_id' => $requestData['organization_id'] === 'null' ? null : $requestData['organization_id'],
-            'company_id' => $requestData['company_id'],
-            'bank_id' => $requestData['bank_id'],
             'object_id' => $requestData['object_id'],
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
+            'description' => $requestData['description'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'status_id' => Status::STATUS_ACTIVE,
             'currency' => $currency,
@@ -105,15 +98,12 @@ class DepositService
             : 1;
 
         $deposit->update([
-            'contract_id' => $requestData['contract_id'] === 'null' ? null : $requestData['contract_id'],
-            'organization_id' => $requestData['organization_id'] === 'null' ? null : $requestData['organization_id'],
-            'company_id' => $requestData['company_id'],
-            'bank_id' => $requestData['bank_id'],
             'object_id' => $requestData['object_id'],
             'start_date' => $requestData['start_date'],
             'end_date' => $requestData['end_date'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'status_id' => $requestData['status_id'],
+            'description' => $requestData['description'],
             'currency' => $currency,
             'currency_rate' => $currencyRate,
         ]);

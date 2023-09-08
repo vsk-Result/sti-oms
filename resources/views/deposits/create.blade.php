@@ -18,40 +18,6 @@
                         <div class="row mb-5">
                             <div class="col-md-12 fv-row">
                                 <div class="row">
-                                    <div class="col-md-6 mb-10 fv-row">
-                                        <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Договор</label>
-                                            <div class="position-relative mb-3">
-                                                <select name="contract_id" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                    <option value="null">Отсутствует</option>
-                                                    @foreach($contracts as $contract)
-                                                        <option value="{{ $contract->id }}" {{ $contract->id == $contractId ? 'selected' : '' }}>{{ $contract->object->code }} | {{ $contract->getName() }}</option>
-
-                                                        @foreach($contract->children as $subContract)
-                                                            <option value="{{ $subContract->id }}" {{ $subContract->id == $contractId ? 'selected' : '' }}>{{ $subContract->object->code }} | {{ $contract->getName() . ' | ' . $subContract->getName() }}</option>
-                                                        @endforeach
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 mb-10 fv-row">
-                                        <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Контрагент</label>
-                                            <div class="position-relative mb-3">
-                                                <select name="organization_id" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                    <option value="null">Отсутствует</option>
-                                                    @foreach($organizations as $organization)
-                                                        <option value="{{ $organization->id }}">{{ $organization->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
                                     <div class="col-md-12 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Объект</label>
@@ -59,34 +25,6 @@
                                                 <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                     @foreach($objects as $object)
                                                         <option value="{{ $object->id }}" {{ $object->id == $objectId ? 'selected' : '' }}>{{ $object->getName() }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-10 fv-row">
-                                        <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Компания</label>
-                                            <div class="position-relative mb-3">
-                                                <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                    @foreach($companies as $company)
-                                                        <option value="{{ $company->id }}" {{ $company->id === 1 ? 'selected' : '' }}>{{ $company->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 mb-10 fv-row">
-                                        <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Банк</label>
-                                            <div class="position-relative mb-3">
-                                                <select name="bank_id" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                    @foreach($banks as $bankId => $bankName)
-                                                        <option value="{{ $bankId }}">{{ $bankName }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -165,6 +103,27 @@
                                             @if ($errors->has('amount'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                     <div>{{ implode(' ', $errors->get('amount')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Описание</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('description') ? 'is-invalid' : '' }}"
+                                                    type="text"
+                                                    name="description"
+                                                    value="{{ old('description') }}"
+                                                />
+                                            </div>
+                                            @if ($errors->has('description'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('description')) }}</div>
                                                 </div>
                                             @endif
                                         </div>

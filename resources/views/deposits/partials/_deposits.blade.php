@@ -70,11 +70,10 @@
             <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                     <th class="min-w-100px ps-3">Объект</th>
-                    <th class="min-w-150px">Договор</th>
-                    <th class="min-w-250px">Контрагент</th>
                     <th class="min-w-125px">Дата начала</th>
                     <th class="min-w-125px">Дата окончания</th>
                     <th class="min-w-125px">Сумма</th>
+                    <th class="min-w-250px">Описание</th>
                     <th class="min-w-125px">Статус</th>
                     <th class="min-w-125px">Действия</th>
                 </tr>
@@ -89,11 +88,10 @@
                             {{ $deposit->object->code }}
                         @endif
                     </td>
-                    <td>{{ $deposit->contract?->getName() }}</td>
-                    <td>{{ $deposit->organization?->name }}</td>
                     <td>{{ $deposit->getStartDateFormatted() }}</td>
                     <td>{{ $deposit->getEndDateFormatted() }}</td>
                     <td>{{ \App\Models\CurrencyExchangeRate::format($deposit->amount, $deposit->currency) }}</td>
+                    <td>{{ $deposit->description }}</td>
                     <td class="fw-bolder">@include('partials.status', ['status' => $deposit->getStatus()])</td>
                     <td class="text-end">
                         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия

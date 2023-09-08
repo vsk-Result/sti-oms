@@ -24,8 +24,6 @@ class StoreDepositRequest extends FormRequest
     public function rules()
     {
         return [
-            'company_id' => 'required|integer',
-            'bank_id' => 'required|integer',
             'object_id' => 'required|integer',
             'start_date' => 'nullable|date_format:Y-m-d',
             'end_date' => 'nullable|date_format:Y-m-d',
