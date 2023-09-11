@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\z;
+namespace App\Exports\BankGuarantee;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
