@@ -37,6 +37,7 @@
                                     <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2020</span>
                                     <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2021</span>
                                     <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2022</span>
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2023</span>
                                 </div>
                             </div>
 
