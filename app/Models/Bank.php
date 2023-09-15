@@ -95,6 +95,12 @@ class Bank
             'logo' => '/images/banks/vtb.png',
             'visible' => true
         ],
+        [
+            'id' => 16,
+            'name' => 'ВТБ Аэрострой',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
     ];
 
     public static function getBanks(): array
