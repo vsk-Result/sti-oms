@@ -13,7 +13,7 @@ class AvansImportController extends Controller
     {
         $imports = [];
         $paymentAmount = (float) abs($request->payment_amount);
-        $avansImports = AvansImport::orderByDesc('id')->take(30)->with('items', 'items.avans')->get();
+        $avansImports = AvansImport::orderByDesc('id')->take(50)->with('items', 'items.avans')->get();
         foreach ($avansImports as $import) {
             $sum = 0;
 
