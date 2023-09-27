@@ -18,6 +18,7 @@ use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Models\User;
+use App\Models\Writeoff;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -63,6 +64,11 @@ class  BObject extends Model implements Audit
     public function generalCosts(): HasMany
     {
         return $this->hasMany(GeneralCost::class, 'object_id');
+    }
+
+    public function writeoffs(): HasMany
+    {
+        return $this->hasMany(Writeoff::class, 'object_id');
     }
 
     public function payments(): HasMany

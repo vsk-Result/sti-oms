@@ -91,6 +91,6 @@ class WriteoffController extends Controller
     public function destroy(Writeoff $writeoff): RedirectResponse
     {
         $this->writeoffService->destroyWriteoff($writeoff);
-        return redirect()->route('writeoffs.index');
+        return redirect()->back();
     }
 }

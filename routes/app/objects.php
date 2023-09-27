@@ -15,6 +15,7 @@ use App\Http\Controllers\Object\UserController;
 use App\Http\Controllers\Object\BankGuaranteeController;
 use App\Http\Controllers\Object\DepositController;
 use App\Http\Controllers\Object\ExportController;
+use App\Http\Controllers\Object\WriteoffController;
 
 // Экспорт объекта в Excel
 
@@ -32,6 +33,10 @@ Route::post('objects/{object}', [ObjectController::class, 'update'])->name('obje
 // Сводная информация
 
 Route::get('objects/{object}/pivot', [PivotController::class, 'index'])->name('objects.pivot.index');
+
+// Списания
+
+Route::get('objects/{object}/writeoffs', [WriteoffController::class, 'index'])->name('objects.writeoffs.index');
 
 // Договора
 

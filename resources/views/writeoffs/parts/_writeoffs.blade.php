@@ -48,7 +48,7 @@
                 </form>
 
                 @can('create writeoffs')
-                    <a href="{{ route('writeoffs.create') }}" class="btn btn-light-primary">
+                    <a href="{{ route('writeoffs.create') }}{{ isset($object) ? ('?current_object_id=' . $object->id) : '' }}" class="btn btn-light-primary me-3">
                             <span class="svg-icon svg-icon-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>

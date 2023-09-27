@@ -271,7 +271,9 @@ class MakeFinanceReportHistory extends Command
                         $total[$year][$object->code]['contractor']['RUB'] +
                         $total[$year][$object->code]['provider']['RUB'] +
                         $total[$year][$object->code]['salary_itr']['RUB'] +
-                        $total[$year][$object->code]['salary_work']['RUB'];
+                        $total[$year][$object->code]['salary_work']['RUB'] +
+                        $object->writeoffs->sum('amount')
+                    ;
 
                     $total[$year][$object->code]['interim_balance']['EUR'] =
                         $total[$year][$object->code]['contract_avanses_left_amount']['EUR'] +

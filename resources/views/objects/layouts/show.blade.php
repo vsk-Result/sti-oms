@@ -19,6 +19,9 @@
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/payments') ? 'active' : '' }}" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">Оплаты</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/writeoffs') ? 'active' : '' }}" href="{{ route('objects.writeoffs.index', $object) }}?object_id%5B%5D={{ $object->id }}">Списания</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/cash-payments') ? 'active' : '' }}" href="{{ route('objects.cash_payments.index', $object) }}">Касса</a>
                             </li>
                             <li class="nav-item">
