@@ -24,16 +24,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('oms-imports:contractor-debts-from-excel')->dailyAt('19:00');
-        $schedule->command('oms-imports:dt-debts-from-excel')->dailyAt('19:30');
-        $schedule->command('oms-imports:transfer-organizations-payments-from-excel')->twiceDaily(13, 18);
-        $schedule->command('oms-imports:update-loans-history-payments')->twiceDaily(13, 18);
-        $schedule->command('oms-imports:check-bank-guarantee-date-expired')->dailyAt('07:00');
-        $schedule->command('oms-imports:check-avanses-received-from-payments')->twiceDaily(13, 18);
-        $schedule->command('oms-imports:create-guarantee-for-contract')->twiceDaily(13, 18);
-        $schedule->command('oms-imports:update-general-costs')->dailyAt('19:00');
-        $schedule->command('oms-imports:check-objects-for-general-codes-to-customers-exist')->dailyAt('07:00');
-        $schedule->command('oms-imports:objects-debts-from-excel')->dailyAt('19:00');
+        $schedule->command('oms:contractor-debts-from-excel')->dailyAt('19:00');
+        $schedule->command('oms:dt-debts-from-excel')->dailyAt('19:30');
+        $schedule->command('oms:transfer-organizations-payments-from-excel')->twiceDaily(13, 18);
+        $schedule->command('oms:update-loans-history-payments')->twiceDaily(13, 18);
+        $schedule->command('oms:check-bank-guarantee-date-expired')->dailyAt('07:00');
+        $schedule->command('oms:check-avanses-received-from-payments')->twiceDaily(13, 18);
+        $schedule->command('oms:create-guarantee-for-contract')->twiceDaily(13, 18);
+        $schedule->command('oms:update-general-costs')->dailyAt('19:00');
+        $schedule->command('oms:check-objects-for-general-codes-to-customers-exist')->dailyAt('07:00');
+        $schedule->command('oms:objects-debts-from-excel')->dailyAt('19:00');
         $schedule->command('oms:make-finance-report-history')->everyTenMinutes();
     }
 

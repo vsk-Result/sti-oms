@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Console\BaseNotifyCommand;
 use App\Models\Object\BObject;
 use App\Services\BankGuaranteeService;
+use App\Services\CRONProcessService;
 use App\Services\DepositService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 
 class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
 {
-    protected $signature = 'oms-imports:check-bank-guarantee-date-expired';
+    protected $signature = 'oms:check-bank-guarantee-date-expired';
 
     protected $description = 'Проверка окончания сроков действий банковских гарантиий';
 
@@ -20,12 +21,18 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
 
     private DepositService $depositService;
 
-    public function __construct(BankGuaranteeService $bankGuaranteeService, DepositService $depositService)
+    public function __construct(BankGuaranteeService $bankGuaranteeService, DepositService $depositService, CRONProcessService $CRONProcessService)
     {
         parent::__construct();
         $this->commandName = 'Проверка окончания сроков действий БГ и депозитов';
         $this->bankGuaranteeService = $bankGuaranteeService;
         $this->depositService = $depositService;
+        $this->CRONProcessService = $CRONProcessService;
+        $this->CRONProcessService->createProcess(
+            $this->signature,
+            $this->description,
+            'Ежедневно в 07:00'
+        );
     }
 
     public function handle()
@@ -38,7 +45,9 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
             $checkInfo = $this->bankGuaranteeService->checkExpired();
             $depositsCheckInfo = $this->depositService->checkExpired();
         } catch (\Exception $e) {
-            $this->sendErrorNotification('Не удалось провести проверку: ' . $e->getMessage());
+            $errorMessage = 'Не удалось провести проверку: ' . $e->getMessage();
+            $this->sendErrorNotification($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
             return 0;
         }
 
@@ -151,6 +160,7 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
         }
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Проверка прошла успешно');
+        $this->CRONProcessService->successProcess($this->signature);
 
         return 0;
     }

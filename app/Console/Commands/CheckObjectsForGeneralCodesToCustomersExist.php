@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
+use App\Services\CRONProcessService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -11,13 +12,19 @@ use Illuminate\Support\Facades\Mail;
 
 class CheckObjectsForGeneralCodesToCustomersExist extends Command
 {
-    protected $signature = 'oms-imports:check-objects-for-general-codes-to-customers-exist';
+    protected $signature = 'oms:check-objects-for-general-codes-to-customers-exist';
 
     protected $description = 'Проверяет объекты для расчета общих затрат на наличие заказчиков';
 
-    public function __construct()
+    public function __construct(CRONProcessService $CRONProcessService)
     {
         parent::__construct();
+        $this->CRONProcessService = $CRONProcessService;
+        $this->CRONProcessService->createProcess(
+            $this->signature,
+            $this->description,
+            'Ежедневно в 07:00'
+        );
     }
 
     public function handle()
@@ -51,6 +58,7 @@ class CheckObjectsForGeneralCodesToCustomersExist extends Command
         }
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] ' . count($invalidObjects) . ' проблемных объектов выявлено');
+        $this->CRONProcessService->successProcess($this->signature);
 
         return 0;
     }

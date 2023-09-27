@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Console\BaseNotifyCommand;
+use App\Services\CRONProcessService;
 use App\Services\OrganizationTransferPaymentsService;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -11,17 +12,23 @@ use Illuminate\Support\Facades\Log;
 
 class TransferOrganizationsPayments extends BaseNotifyCommand
 {
-    protected $signature = 'oms-imports:transfer-organizations-payments-from-excel';
+    protected $signature = 'oms:transfer-organizations-payments-from-excel';
 
     protected $description = 'Переносит оплаты с одного контрагента на другого из Excel';
 
     private OrganizationTransferPaymentsService $organizationTransferPaymentsService;
 
-    public function __construct(OrganizationTransferPaymentsService $organizationTransferPaymentsService)
+    public function __construct(OrganizationTransferPaymentsService $organizationTransferPaymentsService, CRONProcessService $CRONProcessService)
     {
         parent::__construct();
         $this->commandName = 'Удаление дублей и перенос данных между контрагентами';
         $this->organizationTransferPaymentsService = $organizationTransferPaymentsService;
+        $this->CRONProcessService = $CRONProcessService;
+        $this->CRONProcessService->createProcess(
+            $this->signature,
+            $this->description,
+            'Ежедневно в 13:00 и в 18:00'
+        );
     }
 
     public function handle()
@@ -33,14 +40,18 @@ class TransferOrganizationsPayments extends BaseNotifyCommand
         $importFilePath = storage_path() . '/app/public/public/transfer_organizations_payments.xlsx';
 
         if (! File::exists($importFilePath)) {
-            $this->sendErrorNotification('Файл для загрузки "' . $importFilePath . '" не найден');
+            $errorMessage = 'Файл для загрузки "' . $importFilePath . '" не найден';
+            $this->sendErrorNotification($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
             return 0;
         }
 
         try {
             $importResult = $this->organizationTransferPaymentsService->transfer(new UploadedFile($importFilePath, 'transfer_organizations_payments.xlsx'));
         } catch (\Exception $e) {
-            $this->sendErrorNotification('Не удалось загрузить файл: ' . $e->getMessage());
+            $errorMessage = 'Не удалось загрузить файл: ' . $e->getMessage();
+            $this->sendErrorNotification($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
             return 0;
         }
 
@@ -55,6 +66,8 @@ class TransferOrganizationsPayments extends BaseNotifyCommand
         }
 
         $this->sendSuccessNotification($message);
+        $this->CRONProcessService->successProcess($this->signature);
+
         return 0;
     }
 }

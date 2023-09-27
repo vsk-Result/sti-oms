@@ -10,6 +10,7 @@ use App\Models\Debt\DebtImport;
 use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
 use App\Models\Status;
+use App\Services\CRONProcessService;
 use App\Services\DebtService;
 use App\Services\OrganizationService;
 use Carbon\Carbon;
@@ -21,7 +22,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ImportObjectDebtsFromExcel extends Command
 {
-    protected $signature = 'oms-imports:objects-debts-from-excel';
+    protected $signature = 'oms:objects-debts-from-excel';
 
     protected $description = 'Загружает долги по подрядчикам объектов из Excel';
 
@@ -29,9 +30,15 @@ class ImportObjectDebtsFromExcel extends Command
     private Sanitizer $sanitizer;
     private DebtService $debtService;
 
-    public function __construct(OrganizationService $organizationService, Sanitizer $sanitizer, DebtService $debtService)
+    public function __construct(OrganizationService $organizationService, Sanitizer $sanitizer, DebtService $debtService, CRONProcessService $CRONProcessService)
     {
         parent::__construct();
+        $this->CRONProcessService = $CRONProcessService;
+        $this->CRONProcessService->createProcess(
+            $this->signature,
+            $this->description,
+            'Ежедневно в 19:00'
+        );
         $this->organizationService = $organizationService;
         $this->sanitizer = $sanitizer;
         $this->debtService = $debtService;
@@ -48,7 +55,10 @@ class ImportObjectDebtsFromExcel extends Command
         $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
 
         if (!$company) {
-            return 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';
+            $errorMessage = 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';
+            Log::channel('custom_imports_log')->debug($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            return 0;
         }
 
         $import = DebtImport::create([
@@ -68,8 +78,10 @@ class ImportObjectDebtsFromExcel extends Command
                 $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xls';
 
                 if (! File::exists($importFilePath)) {
-                    Log::channel('custom_imports_log')->debug('[ERROR] Файл для загрузки "' . $importFilePath . '" не найден');
-                    continue;
+                    $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден';
+                    Log::channel('custom_imports_log')->debug($errorMessage);
+                    $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                    return 0;
                 }
             }
 
@@ -77,8 +89,10 @@ class ImportObjectDebtsFromExcel extends Command
                 $importData = Excel::toArray(new ObjectImport(), $importFilePath);
 
                 if (!isset($importData['OMS'])) {
-                    Log::channel('custom_imports_log')->debug('[ERROR] В загружаемом файле отсутствует лист OMS');
-                    continue;
+                    $errorMessage = '[ERROR] В загружаемом файле отсутствует лист OMS';
+                    Log::channel('custom_imports_log')->debug($errorMessage);
+                    $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                    return 0;
                 }
 
                 foreach ($importData['OMS'] as $row) {
@@ -137,14 +151,19 @@ class ImportObjectDebtsFromExcel extends Command
                 }
 
             } catch (\Exception $e) {
-                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось загрузить файл: "' . $e->getMessage());
+                $errorMessage = '[ERROR] Не удалось загрузить файл: "' . $e->getMessage();
+                Log::channel('custom_imports_log')->debug($errorMessage);
+                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                return 0;
             }
 
             try {
                 $newFileName = $import->id . '_' . $code . '.xlsx';
                 Storage::putFileAs('debt-imports/objects', $importFilePath, $newFileName);
             } catch (\Exception $e) {
-                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось сохранить файл: "' . $e->getMessage());
+                $errorMessage = '[ERROR] Не удалось сохранить файл: "' . $e->getMessage();
+                Log::channel('custom_imports_log')->debug($errorMessage);
+                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
                 return 0;
             }
         }
@@ -153,6 +172,7 @@ class ImportObjectDebtsFromExcel extends Command
         DebtManual::whereIn('object_id', $objectIds)->delete();
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Импорт прошел успешно');
+        $this->CRONProcessService->successProcess($this->signature);
 
         return 0;
     }

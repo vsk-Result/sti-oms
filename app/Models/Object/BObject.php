@@ -7,6 +7,7 @@ use App\Models\Contract\Act;
 use App\Models\Contract\Contract;
 use App\Models\CRM\ItrSalary;
 use App\Models\CRM\SalaryDebt;
+use App\Models\CRM\SalaryPaidMonth;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Debt\DebtManual;
@@ -18,6 +19,7 @@ use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Models\User;
 use App\Traits\HasStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -366,10 +368,43 @@ class  BObject extends Model implements Audit
 
     public function getWorkSalaryDebt(): float
     {
+        $details = $this->getWorkSalaryDebtDetails();
+
+        return $details['real']['amount'] + $details['predict']['amount'];
+    }
+
+    public function getWorkSalaryDebtDetails(): array
+    {
+        $details = [
+            'real' => [
+                'date' => '---',
+                'amount' => 0,
+            ],
+            'predict' => [
+                'date' => '---',
+                'amount' => 0,
+            ]
+        ];
+
         if (isset(self::getCodesWithoutWorktype()[$this->code])) {
-            return 0;
+            return $details;
         }
-        return SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')->sum('amount');
+
+        $lastPaidMonth = SalaryPaidMonth::where('is_paid', 1)->orderBy('month', 'desc')->first();
+
+        if (!$lastPaidMonth) {
+            return $details;
+        }
+
+        $details['real']['date'] = Carbon::parse($lastPaidMonth->month . '-01')->format('F Y');
+        $details['predict']['date'] = Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('F Y');
+
+        $details['real']['amount'] = SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')
+            ->whereIn('month', $lastPaidMonth->month)
+            ->sum('amount');
+        $details['predict']['amount'] = $details['real']['amount'] * 2;
+
+        return $details;
     }
 
     public function scopeActive($query)

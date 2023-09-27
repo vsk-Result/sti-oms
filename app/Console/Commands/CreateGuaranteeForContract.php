@@ -9,18 +9,25 @@ use App\Models\Guarantee;
 use App\Models\GuaranteePayment;
 use App\Models\Object\BObject;
 use App\Models\Status;
+use App\Services\CRONProcessService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class CreateGuaranteeForContract extends BaseNotifyCommand
 {
-    protected $signature = 'oms-imports:create-guarantee-for-contract';
+    protected $signature = 'oms:create-guarantee-for-contract';
 
     protected $description = 'Создает или обновляет информацию по гарантийным удержаниям для договоров';
 
-    public function __construct()
+    public function __construct(CRONProcessService $CRONProcessService)
     {
         parent::__construct();
+        $this->CRONProcessService = $CRONProcessService;
+        $this->CRONProcessService->createProcess(
+            $this->signature,
+            $this->description,
+            'Ежедневно в 13:00 и в 18:00'
+        );
         $this->commandName = 'Создания/изменение ГУ для договоров';
     }
 
@@ -94,6 +101,8 @@ class CreateGuaranteeForContract extends BaseNotifyCommand
         }
 
         $this->sendSuccessNotification($message);
+        $this->CRONProcessService->successProcess($this->signature);
+
         return 0;
     }
 }

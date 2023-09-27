@@ -26,7 +26,9 @@ class PermissionService
             foreach ($permission as $name => $permissionPrefixes) {
                 foreach ($permissionPrefixes as $prefix) {
                     $permission = Permission::where('category', $category)->where('name', "$prefix $name")->first();
-                    $permission->forceDelete();
+                    if ($permission) {
+                        $permission->forceDelete();
+                    }
                 }
             }
         }

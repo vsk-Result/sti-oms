@@ -70,22 +70,22 @@
                             <th class="bt bl hl" style="min-width: 100px !important;width: 100px !important;"></th>
                             <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotal, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt">с 31.12.23 по 21.07.23</th>
+                            <th class="min-w-125px bt">с 21.07.23 по 31.12.23</th>
                             <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2023_2, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt">с 20.07.23 по 01.01.23</th>
+                            <th class="min-w-125px bt">с 01.01.23 по 20.07.23</th>
                             <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2023_1, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt">с 31.12.22 по 12.10.22</th>
+                            <th class="min-w-125px bt">с 12.10.22 по 31.12.22</th>
                             <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022_2, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt">с 11.10.22 по 01.01.2022</th>
+                            <th class="min-w-125px bt">с 01.01.2022 по 11.10.22</th>
                             <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022_1, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt bl">с 31.12.21 по 03.03.21</th>
+                            <th class="min-w-125px bt bl">с 03.03.21 по 31.12.21</th>
                             <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2021_2, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt bl">с 02.03.21 по 01.01.2021</th>
+                            <th class="min-w-125px bt bl">с 01.01.2021 по 02.03.21</th>
                             <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2021_1, 'RUB') }}</th>
 
                             <th class="min-w-125px bt bl">2020</th>

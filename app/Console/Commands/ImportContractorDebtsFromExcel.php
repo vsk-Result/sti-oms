@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\CRONProcessService;
 use App\Services\DebtImportService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -11,15 +12,21 @@ use Illuminate\Support\Facades\Log;
 
 class ImportContractorDebtsFromExcel extends Command
 {
-    protected $signature = 'oms-imports:contractor-debts-from-excel';
+    protected $signature = 'oms:contractor-debts-from-excel';
 
     protected $description = 'Загружает долги по подрядчикам из Excel (из 1С)';
 
     private DebtImportService $debtImportService;
 
-    public function __construct(DebtImportService $debtImportService)
+    public function __construct(DebtImportService $debtImportService, CRONProcessService $CRONProcessService)
     {
         parent::__construct();
+        $this->CRONProcessService = $CRONProcessService;
+        $this->CRONProcessService->createProcess(
+            $this->signature,
+            $this->description,
+            'Ежедневно в 19:00'
+        );
         $this->debtImportService = $debtImportService;
     }
 
@@ -32,23 +39,30 @@ class ImportContractorDebtsFromExcel extends Command
         $importFilePath = storage_path() . '/app/public/public/TabelOMS_(XLSX).xlsx';
 
         if (! File::exists($importFilePath)) {
-            Log::channel('custom_imports_log')->debug('[ERROR] Файл для загрузки "' . $importFilePath . '" не найден');
+            $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден';
+            Log::channel('custom_imports_log')->debug($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
             return 0;
         }
 
         try {
             $importStatus = $this->debtImportService->createImport(['file' => new UploadedFile($importFilePath, 'TabelOMS_(XLSX).xlsx')]);
         } catch (\Exception $e) {
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось загрузить файл: "' . $e->getMessage());
+            $errorMessage = '[ERROR] Не удалось загрузить файл: "' . $e->getMessage();
+            Log::channel('custom_imports_log')->debug($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
             return 0;
         }
 
         if ($importStatus !== 'ok') {
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось загрузить файл: "' . $importStatus);
+            $errorMessage = '[ERROR] Не удалось загрузить файл: "' . $importStatus;
+            Log::channel('custom_imports_log')->debug($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
             return 0;
         }
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Файл успешно загружен');
+        $this->CRONProcessService->successProcess($this->signature);
 
         return 0;
     }

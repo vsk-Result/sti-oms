@@ -342,3 +342,26 @@ td > a.show-link:hover {
 .menu-hover-bg .menu-item .menu-link:hover:not(.disabled):not(.active), .menu-hover-bg .menu-item.hover>.menu-link:not(.disabled):not(.active) {
     background-color: white;
 }
+
+.workers-salary-detailing-popover {
+    max-width: 340px;
+    width: 100%;
+    box-shadow: 0 0 50px 0 rgba(82,63,105,.3) !important;
+}
+.workers-salary-detailing-popover .popover-header{
+    font-size: 1.1rem;
+    border-bottom: 1px solid #eff3f7;
+}
+.workers-salary-detailing-popover .popover-body .row {
+    text-align: center;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #eff3f7;
+}
+.workers-salary-detailing-popover .popover-body .col-md-6 {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+}
+.workers-salary-detailing-popover .popover-body .predict {
+    margin-top: 1.25rem;
+}
