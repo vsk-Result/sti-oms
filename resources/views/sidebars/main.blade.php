@@ -80,7 +80,7 @@
                 </div>
             @endcan
 
-            @can(['index payments', 'index writeoffs'])
+            @canAny(['index payments', 'index writeoffs'])
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('payments*') || request()->is('writeoffs*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
                         <span class="menu-title {{ (request()->is('payments*') || request()->is('writeoffs*')) ? 'fw-boldest' : '' }}">Оплаты</span>
