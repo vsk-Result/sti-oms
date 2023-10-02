@@ -405,10 +405,11 @@ class  BObject extends Model implements Audit
         $details['real']['date'] = Carbon::parse($lastPaidMonth->month . '-01')->format('F Y');
         $details['predict']['date'] = Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('F Y');
 
-        $details['real']['amount'] = SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')
-            ->whereIn('month', $lastPaidMonth->month)
-            ->sum('amount');
-        $details['predict']['amount'] = $details['real']['amount'] * 2;
+        $debtQuery = SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')
+            ->whereIn('month', $lastPaidMonth->month);
+
+        $details['real']['amount'] = $debtQuery->sum('amount');
+        $details['predict']['amount'] = $debtQuery->sum('total_amount');
 
         return $details;
     }
