@@ -408,8 +408,8 @@ class  BObject extends Model implements Audit
         $debtQuery = SalaryDebt::where('object_code', 'LIKE', '%' . $this->code. '%')
             ->whereIn('month', $lastPaidMonth->month);
 
-        $details['real']['amount'] = $debtQuery->sum('amount');
-        $details['predict']['amount'] = $debtQuery->sum('total_amount');
+        $details['real']['amount'] = (clone $debtQuery)->sum('amount');
+        $details['predict']['amount'] = (clone $debtQuery)->sum('total_amount');
 
         return $details;
     }
