@@ -41,6 +41,10 @@ class ObjectController extends Controller
             });
         }
 
+        if ($request->input('status', '') !== 'all') {
+            $query->where('status_id', $request->input('status'));
+        }
+
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
             $query->whereIn('id', auth()->user()->objects->pluck('id'));
         }

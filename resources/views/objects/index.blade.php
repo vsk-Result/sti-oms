@@ -15,7 +15,18 @@
                                 <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="black"></path>
                             </svg>
                         </span>
-                        <input autofocus id="object-search" type="text" class="form-control form-control-sm form-control-solid w-300px ps-10" placeholder="Поиск">
+                        <input autofocus id="object-search" type="text" class="me-3 form-control form-control-sm form-control-solid w-300px ps-10" placeholder="Поиск">
+
+                        <div class="d-flex my-2" data-select2-id="select2-data-134-ljzk">
+                            <!--begin::Select-->
+                            <select name="status" id="object-status" data-control="select2" data-hide-search="true" class="form-select form-select-sm form-select-solid w-125px select2-hidden-accessible" data-select2-id="select2-data-7-gv27" tabindex="-1" aria-hidden="true" data-kt-initialized="1">
+                                <option value="all" data-select2-id="1">Все</option>
+                                <option value="0" selected="" data-select2-id="2">Активные</option>
+                                <option value="1" data-select2-id="3">Закрытые</option>
+                                <option value="2" data-select2-id="4">Удаленные</option>
+                            </select>
+                            <!--end::Select-->
+                        </div>
                     </div>
 
                     <div class="d-flex flex-wrap justify-content-end" data-kt-user-table-toolbar="base">
@@ -43,6 +54,7 @@
 @push('scripts')
     <script>
         const $filterSearch = $('#object-search');
+        const $filterStatus = $('#object-status');
         const $objectsContainer = $('#objects-container');
         const objectsContainerblockUI = new KTBlockUI($objectsContainer.get(0), {
             message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Загрузка объектов...</div>',
@@ -55,6 +67,10 @@
         $(document).on('click', '.page-link', function(e) {
             loadObjects($(this).attr('href').split('=').pop());
             return false;
+        });
+
+        $filterStatus.on('change', function() {
+            filterObjects();
         });
 
         let delayTimer;
@@ -74,7 +90,7 @@
             page = page || '';
             objectsContainerblockUI.block();
             mainApp.sendAJAX(
-                $objectsContainer.data('objects-index-url') + '?q=' + $filterSearch.val() + '&page=' + page,
+                $objectsContainer.data('objects-index-url') + '?q=' + $filterSearch.val() + '&status=' + $filterStatus.val() + '&page=' + page,
                 'GET',
                 {},
                 (data) => {

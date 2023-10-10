@@ -58,6 +58,19 @@
 
                                 <div class="mb-10 fv-row">
                                     <div class="mb-1">
+                                        <label class="form-label fw-bolder text-dark fs-6">Объект</label>
+                                        <div class="position-relative mb-3">
+                                            <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                @foreach($objects as $object)
+                                                    <option value="{{ $object->id }}" {{ $ticket->object_id === $object->id ? 'selected' : '' }}>{{ $object->getName() }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-10 fv-row">
+                                    <div class="mb-1">
                                         <label class="form-label fw-bolder text-dark fs-6">Приоритет</label>
                                         <div class="position-relative mb-3">
                                             <select name="priority_id" data-control="select2" class="form-select form-select-solid form-select-lg">
@@ -66,6 +79,26 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-10 fv-row">
+                                    <div class="mb-1">
+                                        <label class="form-label fw-bolder text-dark fs-6">Срок исполнения</label>
+                                        <div class="position-relative mb-3">
+                                            <input
+                                                class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('execution_date') ? 'is-invalid' : '' }}"
+                                                type="text"
+                                                name="execution_date"
+                                                value="{{ old('execution_date', $ticket->execution_date) }}"
+                                                readonly
+                                            />
+                                        </div>
+                                        @if ($errors->has('execution_date'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div>{{ implode(' ', $errors->get('execution_date')) }}</div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
 

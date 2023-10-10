@@ -58,6 +58,19 @@
 
                                 <div class="mb-10 fv-row">
                                     <div class="mb-1">
+                                        <label class="form-label fw-bolder text-dark fs-6">Объект</label>
+                                        <div class="position-relative mb-3">
+                                            <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                @foreach($objects as $object)
+                                                    <option value="{{ $object->id }}">{{ $object->getName() }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-10 fv-row">
+                                    <div class="mb-1">
                                         <label class="form-label fw-bolder text-dark fs-6">Приоритет</label>
                                         <div class="position-relative mb-3">
                                             <select name="priority_id" data-control="select2" class="form-select form-select-solid form-select-lg">

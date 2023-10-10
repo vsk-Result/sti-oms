@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Helpdesk\StoreTicketRequest;
 use App\Models\Helpdesk\Priority;
 use App\Models\Helpdesk\Ticket;
+use App\Models\Object\BObject;
 use App\Services\Helpdesk\TicketService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,14 +23,37 @@ class TicketController extends Controller
 
     public function index(Request $request): View
     {
-        $tickets = $this->ticketService->filterTicket($request->toArray());
-        return view('helpdesk.tickets.index', compact('tickets'));
+        $total = [];
+        $tickets = $this->ticketService->filterTicket($request->toArray(), $total);
+
+        $openTicketsCount = $total['open_tickets_count'];
+        $closeTicketsCount = $total['close_tickets_count'];
+        $groupedByPriorities = $total['grouped_by_priorities'];
+        $groupedByObjects = $total['grouped_by_objects'];
+        $groupedByUsers = $total['grouped_by_users'];
+
+        return view(
+            'helpdesk.tickets.index',
+            compact(
+                'tickets',
+                'openTicketsCount',
+                'closeTicketsCount',
+                'groupedByPriorities',
+                'groupedByObjects',
+                'groupedByUsers',
+            )
+        );
     }
 
-    public function create(Request $request): View
+    public function create(): View
     {
         $priorities = Priority::getPriorities();
-        return view('helpdesk.tickets.create', compact('priorities'));
+        $objects = BObject::orderBy('code')->get();
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
+        return view('helpdesk.tickets.create', compact('priorities', 'objects'));
     }
 
     public function store(StoreTicketRequest $request): RedirectResponse
@@ -46,7 +70,12 @@ class TicketController extends Controller
     public function edit(Ticket $ticket): View
     {
         $priorities = Priority::getPriorities();
-        return view('helpdesk.tickets.edit', compact('ticket', 'priorities'));
+        $objects = BObject::orderBy('code')->get();
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
+        return view('helpdesk.tickets.edit', compact('ticket', 'priorities', 'objects'));
     }
 
     public function update(Ticket $ticket, Request $request): RedirectResponse

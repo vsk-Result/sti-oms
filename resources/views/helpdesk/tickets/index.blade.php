@@ -4,42 +4,87 @@
 @section('breadcrumbs', Breadcrumbs::render('helpdesk.tickets.index'))
 
 @section('content')
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card mb-5 mb-xl-8 border-0">
-                <div class="card-header border-0 p-0">
-                    <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-1">
-                            <h1 class="d-flex align-items-center my-1">
-                                <span class="text-dark fw-bold fs-1">
-                                    Мои обращения
-                                </span>
-
-                                <small class="text-muted fs-6 fw-semibold ms-1">
-                                    ({{ $tickets->count() }})
-                                </small>
-                            </h1>
+    <div class="row h-100">
+        <div class="col-md-2">
+            <div class="aside w-100">
+                <div class="menu menu-column menu-active-bg menu-hover-bg menu-title-gray-700 fs-6 menu-rounded w-100">
+                    <div class="menu-item">
+                        <div class="menu-content pb-2">
+                            <span class="menu-section text-muted text-uppercase fs-7 fw-bold">Обращения</span>
                         </div>
                     </div>
-                    <div class="card-toolbar">
-                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            <a href="{{ route('helpdesk.tickets.create') }}" class="btn btn-light-primary me-3">
-                        <span class="svg-icon svg-icon-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
-                                <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
-                                <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
-                            </svg>
-                        </span>
-                                Новое обращение
+
+                    <div class="menu-item">
+                        <a href="{{ route('helpdesk.tickets.index') }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index') ? 'active' : '' }}">
+                            <span class="menu-title">Открытые</span>
+                            <span class="menu-badge">{{ $openTicketsCount }}</span>
+                        </a>
+                    </div>
+
+                    <div class="menu-item">
+                        <a href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_BLOCKED]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_BLOCKED]]) ? 'active' : '' }}">
+                            <span class="menu-title">Закрытые</span>
+                            <span class="menu-badge">{{ $closeTicketsCount }}</span>
+                        </a>
+                    </div>
+
+                    <div class="menu-item pt-5">
+                        <div class="menu-content pb-2">
+                            <span class="menu-section text-muted text-uppercase fs-7 fw-bold">Приоритет</span>
+                        </div>
+                    </div>
+
+                    @foreach($groupedByPriorities as $info)
+                        <div class="menu-item">
+                            <a href="{{ route('helpdesk.tickets.index', ['priority_id' => [$info['priority_id']]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['priority_id' => [$info['priority_id']]]) ? 'active' : '' }}">
+                                <span class="menu-title">{{ $info['priority_name'] }}</span>
+                                <span class="menu-badge">{{ $info['tickets_count'] }}</span>
                             </a>
                         </div>
-                    </div>
+                    @endforeach
+
+                    @if (count($groupedByObjects) > 0)
+                        <div class="menu-item pt-5">
+                            <div class="menu-content pb-2">
+                                <span class="menu-section text-muted text-uppercase fs-7 fw-bold">Объект</span>
+                            </div>
+                        </div>
+
+                        @foreach($groupedByObjects as $info)
+                            <div class="menu-item">
+                                <a href="{{ route('helpdesk.tickets.index', ['object_id' => [$info['object_id']]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['object_id' => [$info['object_id']]]) ? 'active' : '' }}">
+                                    <span class="menu-title">{{ $info['object_name'] }}</span>
+                                    <span class="menu-badge">{{ $info['tickets_count'] }}</span>
+                                </a>
+                            </div>
+                        @endforeach
+                    @endif
+
+                    @can('index admin-users')
+                        @if (count($groupedByUsers) > 0)
+                            <div class="menu-item pt-5">
+                                <div class="menu-content pb-2">
+                                    <span class="menu-section text-muted text-uppercase fs-7 fw-bold">Пользователи</span>
+                                </div>
+                            </div>
+
+                            @foreach($groupedByUsers as $info)
+                                <div class="menu-item">
+                                    <a href="{{ route('helpdesk.tickets.index', ['user_id' => [$info['user_id']]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['user_id' => [$info['user_id']]]) ? 'active' : '' }}">
+                                        <span class="menu-title">{{ $info['user_name'] }}</span>
+                                        <span class="menu-badge">{{ $info['tickets_count'] }}</span>
+                                    </a>
+                                </div>
+                            @endforeach
+                        @endif
+                    @endcan
                 </div>
             </div>
+        </div>
 
+        <div id="ticket-preview-block" class="col-md-10 ps-6">
             @forelse($tickets as $ticket)
-                @include('helpdesk.tickets.partials._ticket', compact('ticket'))
+                @include('helpdesk.tickets.partials._ticket_preview', compact('ticket'))
 
                 @if(!$loop->last)
                     <div class="separator separator-dashed border-gray-300 my-8"></div>
@@ -55,8 +100,27 @@
 
 @push('scripts')
     <script>
-        $(function() {
 
-        });
     </script>
+@endpush
+
+@push('styles')
+    <style>
+        #ticket-preview-block {
+            border-left: 1px dashed #e4e6ef;
+        }
+
+        .ticket-preview-title:hover {
+            color: #f15a22 !important;
+        }
+
+        .menu-link:hover:not(.active) {
+            transition: color 1s ease, background-color 1s ease !important;
+            background-color: #F9F9F9 !important;
+        }
+
+        .menu-link:hover:not(.active) .menu-title {
+            color: #f15a22 !important;
+        }
+    </style>
 @endpush

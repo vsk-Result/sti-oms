@@ -4,22 +4,89 @@ namespace App\Services\Helpdesk;
 
 use App\Models\BankGuarantee;
 use App\Models\Currency;
+use App\Models\Helpdesk\Priority;
 use App\Models\Helpdesk\Ticket;
+use App\Models\Object\BObject;
 use App\Models\Status;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class TicketService
 {
-    public function filterTicket(array $requestData, bool $needPaginate = true): LengthAwarePaginator|Collection
+    public function filterTicket(array $requestData, array &$total, bool $needPaginate = true): LengthAwarePaginator|Collection
     {
+        $totalQuery = Ticket::query();
         $query = Ticket::query();
+
+        if (! auth()->user()->hasRole('super-admin')) {
+            $totalQuery->where('created_by_user_id', auth()->id());
+            $query->where('created_by_user_id', auth()->id());
+        }
+
+        if (! empty($requestData['priority_id'])) {
+            $query->whereIn('priority_id', $requestData['priority_id']);
+        }
+
+        if (! empty($requestData['object_id'])) {
+            $query->whereIn('object_id', $requestData['object_id']);
+        }
+
+        if (! empty($requestData['user_id'])) {
+            $query->whereIn('created_by_user_id', $requestData['user_id']);
+        }
+
+        if (! empty($requestData['status_id'])) {
+            $query->whereIn('status_id', $requestData['status_id']);
+        }
 
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
+
+        $total['open_tickets_count'] = (clone $totalQuery)->active()->count();
+        $total['close_tickets_count'] = (clone $totalQuery)->closed()->count();
+
+        $total['grouped_by_objects'] = [];
+        foreach ((clone $totalQuery)->active()->get()->groupBy('object_id') as $objectId => $tickets) {
+            $object = BObject::find($objectId);
+
+            if (!$object) {
+                continue;
+            }
+
+            $total['grouped_by_objects'][] = [
+                'object_id' => $objectId,
+                'object_name' => $object->getName(),
+                'tickets_count' => $tickets->count(),
+            ];
+        }
+
+        $total['grouped_by_priorities'] = [];
+        foreach (Priority::getPriorities() as $priority) {
+            $total['grouped_by_priorities'][] = [
+                'priority_id' => $priority->id,
+                'priority_name' => $priority->name,
+                'tickets_count' => (clone $totalQuery)->active()->where('priority_id', $priority->id)->count(),
+            ];
+        }
+
+        $total['grouped_by_users'] = [];
+        foreach (Ticket::get()->groupBy('created_by_user_id') as $userId => $tickets) {
+            $user = User::find($userId);
+
+            $total['grouped_by_users'][] = [
+                'user_id' => $userId,
+                'user_name' => $user->name,
+                'tickets_count' => $tickets->count(),
+            ];
+        }
+
+
+        $query->with( 'answers');
+        $query->orderByDesc('priority_id')->orderByDesc('execution_date');
 
         return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
@@ -28,6 +95,7 @@ class TicketService
     {
         $ticket = Ticket::create([
             'priority_id' => $requestData['priority_id'],
+            'object_id' => $requestData['object_id'],
             'title' => $requestData['title'],
             'content' => $requestData['content'],
             'status_id' => Status::STATUS_ACTIVE,
