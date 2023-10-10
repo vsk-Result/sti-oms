@@ -8,7 +8,12 @@
         <div class="col-md-2">
             <div class="aside w-100">
                 <div class="menu menu-column menu-active-bg menu-hover-bg menu-title-gray-700 fs-6 menu-rounded w-100">
-                    <div class="menu-item">
+                    <a href="{{ route('helpdesk.tickets.create') }}" class="btn btn-icon-primary btn-light-primary py-1">
+                        <i class="fa fa-plus fs-6"><span class="path1"></span><span class="path2"></span></i>
+                        Новое обращение
+                    </a>
+
+                    <div class="menu-item pt-5">
                         <div class="menu-content pb-2">
                             <span class="menu-section text-muted text-uppercase fs-7 fw-bold">Обращения</span>
                         </div>
