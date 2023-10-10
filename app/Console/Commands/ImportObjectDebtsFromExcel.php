@@ -127,7 +127,7 @@ class ImportObjectDebtsFromExcel extends Command
 
                     $object = BObject::where('code', $code)->first();
 
-                    $this->debtService->createDebt([
+                    $debt = $this->debtService->createDebt([
                         'import_id' => $import->id,
                         'type_id' => Debt::TYPE_CONTRACTOR,
                         'company_id' => $import->company_id,
