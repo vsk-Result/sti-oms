@@ -70,11 +70,13 @@ class ImportObjectDebtsFromExcel extends Command
         ]);
 
         foreach ($availableCodes as $code) {
-            Log::channel('custom_imports_log')->debug('[INFO] Загружается файл ' . $code . '.xls');
+            Log::channel('custom_imports_log')->debug('[INFO] Загружается файл ' . $code . '.xlsx');
 
             $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xlsx';
 
             if (! File::exists($importFilePath)) {
+                Log::channel('custom_imports_log')->debug('[INFO] Не загрузился файл ' . $code . '.xlsx, загружается файл ' . $code . '.xls');
+
                 $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xls';
 
                 if (! File::exists($importFilePath)) {
