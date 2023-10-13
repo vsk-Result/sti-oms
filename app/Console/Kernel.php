@@ -34,6 +34,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:update-general-costs')->dailyAt('19:00');
         $schedule->command('oms:check-objects-for-general-codes-to-customers-exist')->dailyAt('07:00');
         $schedule->command('oms:objects-debts-from-excel')->dailyAt('19:00');
+        $schedule->command('oms:service-debts-from-excel')->dailyAt('19:00');
         $schedule->command('oms:make-finance-report-history')->everyTenMinutes();
     }
 

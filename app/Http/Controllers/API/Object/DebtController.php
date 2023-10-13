@@ -39,6 +39,7 @@ class DebtController extends Controller
             'object' => $object->__toString(),
             'contractors' => $object->getContractorDebts(true),
             'providers' => $object->getProviderDebts(),
+            'service' => $object->getServiceDebts(),
         ];
 
         return response()->json(compact('info'));

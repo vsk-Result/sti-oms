@@ -67,8 +67,9 @@ class OrganizationController extends Controller
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
         $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+        $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
 
-        $organization_ids = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id])
+        $organization_ids = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id, $debt1CServiceImport?->id])
             ->groupBy('organization_id')
             ->pluck('organization_id')
             ->toArray();

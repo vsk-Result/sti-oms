@@ -11,18 +11,18 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
 
-                        @can('create debt-imports')
-                            <a href="{{ route('debt_imports.create') }}" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-start">
-                                <span class="svg-icon svg-icon-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
-                                        <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
-                                        <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
-                                    </svg>
-                                </span>
-                                Загрузить долги
-                            </a>
-                        @endcan
+{{--                        @can('create debt-imports')--}}
+{{--                            <a href="{{ route('debt_imports.create') }}" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-start">--}}
+{{--                                <span class="svg-icon svg-icon-3">--}}
+{{--                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+{{--                                        <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>--}}
+{{--                                        <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>--}}
+{{--                                        <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>--}}
+{{--                                    </svg>--}}
+{{--                                </span>--}}
+{{--                                Загрузить долги--}}
+{{--                            </a>--}}
+{{--                        @endcan--}}
                     </div>
                 </div>
             </div>
@@ -36,6 +36,7 @@
                                 <th class="min-w-120px">Компания</th>
                                 <th class="min-w-120px">Долг подрядчикам</th>
                                 <th class="min-w-120px">Долг поставщикам</th>
+                                <th class="min-w-120px">Долг за услуги</th>
                                 <th class="min-w-120px">Файл</th>
                                 <th class="min-w-120px">Статус</th>
                                 <th class="min-w-100px text-end rounded-end pe-4">Действия</th>
@@ -54,9 +55,10 @@
                                         {{ $import->getDateFormatted() }}
                                     @endif
                                 </td>
-                                <td class="fw-bolder">{{ $import->company->name }}</td>
-                                <td class="fw-bolder text-danger">{{ number_format($import->debts->where('type_id', 0)->sum('amount'), 2, '.', ' ') }}</td>
-                                <td class="fw-bolder text-danger">{{ number_format($import->debts->where('type_id', 1)->sum('amount'), 2, '.', ' ') }}</td>
+                                <td class="fw-bolder">{!! $import->company->getShortNameColored() !!}</td>
+                                <td class="fw-bolder text-danger">{{ number_format($import->debts->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->sum('amount'), 2, '.', ' ') }}</td>
+                                <td class="fw-bolder text-danger">{{ number_format($import->debts->where('type_id', \App\Models\Debt\Debt::TYPE_PROVIDER)->sum('amount'), 2, '.', ' ') }}</td>
+                                <td class="fw-bolder text-danger">{{ number_format($import->debts->where('type_id', \App\Models\Debt\Debt::TYPE_SERVICE)->sum('amount'), 2, '.', ' ') }}</td>
                                 <td class="fw-bolder"><a href="{{ $import->getFileLink() }}" download="Долги на {{ $import->date }}">Скачать</a></td>
                                 <td class="text-dark fw-bolder">@include('partials.status', ['status' => $import->getStatus()])</td>
                                 <td class="text-end text-dark fw-bolder">

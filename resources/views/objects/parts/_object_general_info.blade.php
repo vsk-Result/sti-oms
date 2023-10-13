@@ -86,6 +86,7 @@
             @inject('contractService', 'App\Services\Contract\ContractService')
 
             @php
+                $serviceDebtsAmount = $object->getServiceDebtsAmount();
                 $contractorDebtsAmount = $object->getContractorDebtsAmount();
 
                 $debtObjectImport = \App\Models\Debt\DebtImport::where('type_id', \App\Models\Debt\DebtImport::TYPE_OBJECT)->latest('date')->first();
@@ -112,6 +113,7 @@
                                 $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] +
                                 $contractorDebtsAmount +
                                 $providerDebtsAmount +
+                                $serviceDebtsAmount +
                                 $ITRSalaryDebt +
                                 $workSalaryDebt +
                                 $writeoffs;
@@ -421,6 +423,25 @@
                 <div class="separator separator-dashed my-3"></div>
 
                 <div class="d-flex flex-stack">
+                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг за услуги</div>
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $serviceDebtsAmount < 0 ? 'text-danger' : 'text-success' }}">
+                            {{ \App\Models\CurrencyExchangeRate::format($serviceDebtsAmount, 'RUB') }}
+                        </div>
+                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $serviceDebtsAmount }}">
+                            <span class="svg-icon svg-icon-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </a>
+                </div>
+
+                <div class="separator separator-dashed my-3"></div>
+
+                <div class="d-flex flex-stack">
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг на зарплаты ИТР</div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $ITRSalaryDebt < 0 ? 'text-danger' : 'text-success' }}">
@@ -436,9 +457,9 @@
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="separator separator-dashed my-3"></div>
-
+            <div class="">
                 <div class="d-flex flex-stack">
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">
@@ -479,9 +500,9 @@
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="">
+                <div class="separator separator-dashed my-3"></div>
+
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг заказчиков</div>

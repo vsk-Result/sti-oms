@@ -221,7 +221,7 @@
                     </div>
                 </div>
             @else
-                <div class="card card-flush h-lg-100">
+                <div class="card card-flush mb-4">
                     <div class="card-header mt-6">
                         <div class="card-title justify-content-between w-100">
                             <div class="d-flex flex-column">
@@ -337,12 +337,12 @@
                                                 </td>
                                             @else
                                                 <td class="text-danger text-end pe-2">
-                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                         {{ number_format($guarantee, 2, ',', ' ') }}
                                                     </a>
                                                 </td>
                                                 <td class="text-danger text-end pe-2">
-                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                         {{ number_format($avans, 2, ',', ' ') }}
                                                     </a>
                                                 </td>
@@ -355,7 +355,7 @@
                                                     <span class="text-muted fs-8">(изменено вручную)</span>
                                                 </div>
                                             @else
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                     {{ number_format($amount, 2, ',', ' ') }}
                                                 </a>
                                             @endif
@@ -375,6 +375,65 @@
                                                 data-comment="{{ $comment }}"
                                             >
                                                 <i class="fa fa-pen text-primary"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2">
+                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                Долги отсутствуют
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6 align-items-baseline">
+                        <div class="card-title">
+                            <div class="d-flex flex-column">
+                                <h3 class="fw-bolder mb-1">Долг за услуги</h3>
+                            </div>
+                        </div>
+
+                        <div class="card-toolbar">
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="fs-4 fw-bolder text-danger">
+                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                                            {{ number_format($object->getServiceDebtsAmount(), 2, ',', ' ') }}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-9 pt-0">
+                        <table class="table table-hover align-middle table-row-dashed fs-6">
+                            <thead>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="ps-2">Контрагент</th>
+                                    <th class="w-175px text-end pe-2">Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 fw-bold">
+                                @forelse($object->getServiceDebts() as $organization => $amount)
+                                    @php
+                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
+                                        $organizationName = substr($organization, strpos($organization, '::') + 2);
+                                    @endphp
+
+                                    <tr>
+                                        <td class="ps-2">{{ $organizationName }}</td>
+                                        <td class="text-danger text-end pe-2">
+                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                                                {{ number_format($amount, 2, ',', ' ') }}
                                             </a>
                                         </td>
                                     </tr>
@@ -625,7 +684,7 @@
                                                     <span class="text-muted fs-8">(изменено вручную)</span>
                                                 </div>
                                             @else
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}">
+                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
                                                     {{ number_format($amount, 2, ',', ' ') }}
                                                 </a>
                                             @endif

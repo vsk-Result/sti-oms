@@ -26,6 +26,15 @@
                             <div class="fw-bold fs-6 text-gray-400">Сумма долга поставщикам</div>
                         </div>
                     </div>
+
+                    <div>
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex flex-column align-items-left">
+                                <div class="fs-5 fw-bolder text-danger">{{ \App\Models\CurrencyExchangeRate::format($total['amount_service']['RUB'], 'RUB') }}</div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Сумма долга за услуги</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card-toolbar">

@@ -18,10 +18,11 @@ class DebtService
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
         $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+        $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
 
         $debtsObjectImport = $debtObjectImport->debts()->with('organization', 'object')->get();
 
-        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id])->with('organization', 'object');
+        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id, $debt1CServiceImport?->id])->with('organization', 'object');
 
         $objectsQuery = BObject::query();
 
@@ -84,8 +85,9 @@ class DebtService
             $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
             $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
             $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+            $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
 
-            $query->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id]);
+            $query->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id, $debt1CServiceImport?->id]);
         }
 
         if (! empty($requestData['type_id'])) {
@@ -130,6 +132,7 @@ class DebtService
 
         $total['amount_contractor']['RUB'] = (clone $query)->where('type_id', Debt::TYPE_CONTRACTOR)->sum('amount') + (clone $query)->where('type_id', Debt::TYPE_CONTRACTOR)->sum('avans');
         $total['amount_provider']['RUB'] = (clone $query)->where('type_id', Debt::TYPE_PROVIDER)->sum('amount');
+        $total['amount_service']['RUB'] = (clone $query)->where('type_id', Debt::TYPE_SERVICE)->sum('amount');
 
         return $query->paginate($perPage)->withQueryString();
     }

@@ -102,9 +102,14 @@ class DebtImportService
         $this->sanitizer = $sanitizer;
     }
 
-    public function createImport(array $requestData): null|string
+    public function createImport(array $requestData, string|null $type = null): null|string
     {
         $importData = Excel::toArray(new Import(), $requestData['file']);
+
+        if ($type === 'service') {
+            return $this->create1СExcelServiceImport($importData['TDSheet'], $requestData);
+        }
+
         if (isset($importData['Для фин отчёта'])) {
             return $this->createSupplyImport($importData, $requestData);
         } elseif (isset($importData['ДТТЕРМО'])) {
@@ -426,6 +431,111 @@ class DebtImportService
                     'status_id' => Status::STATUS_ACTIVE,
                 ]);
             }
+        }
+
+        return 'ok';
+    }
+
+    private function create1СExcelServiceImport(array $importData, array $requestData): string
+    {
+        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+
+        if (!$company) {
+            return 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';
+        }
+
+        $import = DebtImport::create([
+            'type_id' => DebtImport::TYPE_SERVICE_1C,
+            'company_id' => $company->id,
+            'date' => Carbon::now(),
+            'file' => $this->uploadService->uploadFile('debt-imports', $requestData['file']),
+            'status_id' => Status::STATUS_ACTIVE
+        ]);
+
+        $services = $importData;
+
+        unset($services[0]);
+
+        foreach ($services as $row) {
+
+            $organizationName = trim($row[3]);
+            $organizationType = trim($row[4]);
+            $objectName = trim($row[11]);
+            $amountDebt = trim($row[13]);
+
+            if (empty($amountDebt)) {
+                continue;
+            }
+
+            if (empty($objectName)) {
+                continue;
+            }
+
+            if ($organizationType !== 'УСЛУГИ') {
+                continue;
+            }
+
+            $organization = $this->organizationService->getOrCreateOrganization([
+                'inn' => null,
+                'name' => $organizationName,
+                'company_id' => null,
+                'kpp' => null
+            ]);
+
+            $objectCode = $this->getObjectCodeFromFullName($objectName);
+
+            $object = BObject::where('code', $objectCode)->first();
+            if (! $object) {
+                $this->destroyImport($import);
+                return 'Объекта "' . $objectName . '" нет в системе ОМС.';
+            }
+
+            $dueDate = null;
+            $comment = trim($row[17]);
+            if (is_numeric($row[14])) {
+                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[14]))->format('Y-m-d');
+            } else if (is_string($row[14])) {
+                try {
+                    $dueDate = Carbon::parse($row[14])->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
+                }
+            } else {
+                if (! empty($row[14])) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
+                }
+            }
+
+            if (! empty($row[16])) {
+                $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[16];
+            }
+
+            $invoiceAmount = $row[8] ?? 0;
+            $invoiceAmount = (string)$invoiceAmount;
+            $invoiceAmount = str_replace(' ', '', $invoiceAmount);
+            $invoiceAmount = str_replace(',', '.', $invoiceAmount);
+            $invoiceAmount = (float)$invoiceAmount;
+
+            $this->debtService->createDebt([
+                'import_id' => $import->id,
+                'type_id' => Debt::TYPE_SERVICE,
+                'company_id' => $import->company_id,
+                'object_id' => $object->id,
+                'object_worktype_id' => null,
+                'organization_id' => $organization->id,
+                'date' => $import->date,
+                'amount' => -$row[13],
+                'amount_without_nds' => -($row[13] - ($row[13] / 6)),
+                'status_id' => Status::STATUS_ACTIVE,
+                'category' => trim($row[15]),
+                'code' => trim($row[10]),
+                'invoice_number' => trim($row[6]) . ' от ' . $row[7],
+                'order_author' => trim($row[1]),
+                'description' => trim($row[2]) . ': ' . trim($row[5]),
+                'comment' => $comment,
+                'invoice_payment_due_date' => $dueDate,
+                'invoice_amount' => $invoiceAmount
+            ]);
         }
 
         return 'ok';

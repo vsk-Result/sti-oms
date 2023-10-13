@@ -41,20 +41,28 @@ class PivotSheet implements
         $sheet->setCellValue('E3', 'Контрагент');
         $sheet->setCellValue('F3', 'Сумма');
 
+        $sheet->setCellValue('I1', 'Долг за услуги');
+        $sheet->setCellValue('I3', 'Контрагент');
+        $sheet->setCellValue('J3', 'Сумма');
+
         $sheet->getRowDimension(1)->setRowHeight(35);
         $sheet->getRowDimension(3)->setRowHeight(40);
 
         $sheet->getColumnDimension('A')->setWidth(40);
         $sheet->getColumnDimension('E')->setWidth(40);
+        $sheet->getColumnDimension('I')->setWidth(40);
 
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(20);
+        $sheet->getColumnDimension('J')->setWidth(20);
 
         $sheet->getStyle('A1:B3')->getFont()->setBold(true);
         $sheet->getStyle('E1:F3')->getFont()->setBold(true);
+        $sheet->getStyle('I1:J3')->getFont()->setBold(true);
 
         $sheet->setCellValue('B1', $this->object->getContractorDebtsAmount());
         $sheet->setCellValue('F1', $this->object->getProviderDebtsAmount());
+        $sheet->setCellValue('J1', $this->object->getServiceDebtsAmount());
 
         // Подрядчики
         $row = 4;
@@ -91,5 +99,23 @@ class PivotSheet implements
         $sheet->getStyle('F1:F1')->getFont()->setColor(new Color(Color::COLOR_RED));
         $sheet->getStyle('F4:F' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
         $sheet->getStyle('F1:F' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+
+        // Услуги
+        $row = 4;
+        foreach ($this->object->getServiceDebts() as $organization => $amount) {
+            $sheet->setCellValue('I' . $row, substr($organization, strpos($organization, '::') + 2));
+            $sheet->setCellValue('J' . $row, $amount);
+
+            $sheet->getRowDimension($row)->setRowHeight(25);
+            $row++;
+        }
+        $row--;
+
+        $sheet->getStyle('I1:J' . $row)->applyFromArray($THINStyleArray);
+        $sheet->getStyle('I1:I' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('J1:J' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('J1:J1')->getFont()->setColor(new Color(Color::COLOR_RED));
+        $sheet->getStyle('J4:J' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+        $sheet->getStyle('J1:J' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }

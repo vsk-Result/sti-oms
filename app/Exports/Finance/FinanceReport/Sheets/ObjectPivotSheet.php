@@ -80,7 +80,7 @@ class ObjectPivotSheet implements
             }
             if (in_array($field, ['payment_total_balance', 'general_costs_amount'])) {
                 $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB'));
-            } elseif ($field === 'contractor' || $field === 'provider') {
+            } elseif ($field === 'contractor' || $field === 'provider' || $field === 'service') {
                 $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true));
             } elseif ($field === 'salary_itr' || $field === 'salary_work') {
                 $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true));
@@ -115,7 +115,7 @@ class ObjectPivotSheet implements
                         $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB', 0, true));
                         $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                     }
-                } else if (in_array($field, ['contractor', 'provider', 'salary_itr', 'salary_work'])) {
+                } else if (in_array($field, ['contractor', 'provider', 'service', 'salary_itr', 'salary_work'])) {
                     $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->RUB, 'RUB', 0, true));
                     $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field}->RUB < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                 } else {

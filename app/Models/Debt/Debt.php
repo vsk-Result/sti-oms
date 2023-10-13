@@ -27,6 +27,7 @@ class Debt extends Model
 
     const TYPE_CONTRACTOR = 0;
     const TYPE_PROVIDER = 1;
+    const TYPE_SERVICE = 2;
 
     public function import(): BelongsTo
     {
@@ -73,6 +74,7 @@ class Debt extends Model
         return [
             self::TYPE_CONTRACTOR => 'Подрядчик',
             self::TYPE_PROVIDER => 'Поставщик',
+            self::TYPE_SERVICE => 'Услуги',
         ];
     }
 

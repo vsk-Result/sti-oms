@@ -18,6 +18,7 @@
             'Долг гарантийного удержания' => 'contract_avanses_acts_deposites_amount',
             'Долг подрядчикам' => 'contractor',
             'Долг за материалы' => 'provider',
+            'Долг за услуги' => 'service',
             'Долг на зарплаты ИТР' => 'salary_itr',
             'Долг на зарплаты рабочим' => 'salary_work',
         ];
@@ -62,7 +63,7 @@
                                             <span class="{{ $summary->{$year}->{$field}->{'RUB'} < 0 ? 'text-danger' : 'text-success' }}">
                                         {{ \App\Models\CurrencyExchangeRate::format($summary->{$year}->{$field}->{'RUB'}, 'RUB') }}
                                     </span>
-                                        @elseif($field === 'contractor' || $field === 'provider')
+                                        @elseif($field === 'contractor' || $field === 'provider' || $field === 'service')
                                             <span class="text-danger">
                                         {{ \App\Models\CurrencyExchangeRate::format($summary->{$year}->{$field}->{'RUB'}, 'RUB', 0, true) }}
                                     </span>
@@ -110,7 +111,7 @@
                                                 {{ \App\Models\CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB') }}
                                             </span>
                                                 @endif
-                                            @elseif($field === 'contractor' || $field === 'provider')
+                                            @elseif($field === 'contractor' || $field === 'provider' || $field === 'service')
                                                 <span class="text-danger">
                                             {{ \App\Models\CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->{'RUB'}, 'RUB', 0, true) }}
                                         </span>

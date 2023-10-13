@@ -108,6 +108,7 @@ class PivotController extends Controller
 
         $contractorDebtsAmount = $object->getContractorDebtsAmount(true);
         $providerDebtsAmount = $object->getProviderDebtsAmount();
+        $serviceDebtsAmount = $object->getServiceDebtsAmount();
 
         $workSalaryDebt = $object->getWorkSalaryDebt();
         $ITRSalaryDebt = $object->getITRSalaryDebt();
@@ -118,6 +119,7 @@ class PivotController extends Controller
             $contractsTotal['avanses_acts_deposites_amount']['RUB'] +
             $contractorDebtsAmount +
             $providerDebtsAmount +
+            $serviceDebtsAmount +
             $ITRSalaryDebt +
             $workSalaryDebt;
 
@@ -134,6 +136,7 @@ class PivotController extends Controller
             $contractsTotal['avanses_acts_deposites_amount']['RUB'] +
             $contractorDebtsAmount +
             $providerDebtsAmount +
+            $serviceDebtsAmount +
             $ITRSalaryDebt +
             $workSalaryDebt +
             $contractsTotal['avanses_non_closes_amount']['RUB'] -
@@ -171,6 +174,7 @@ class PivotController extends Controller
             'general_costs_with_balance' => CurrencyExchangeRate::format($generalCosts + $balance, 'RUB'),
             'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
             'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),
+            'service_debts' => CurrencyExchangeRate::format($serviceDebtsAmount, 'RUB'),
             'workers_debts' => CurrencyExchangeRate::format($workSalaryDebt, 'RUB'),
             'customer_debts_rub' => CurrencyExchangeRate::format($customerDebtRUB, 'RUB'),
             'customer_debts_eur' => CurrencyExchangeRate::format($customerDebtEUR, 'EUR'),

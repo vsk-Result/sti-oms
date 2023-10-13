@@ -46,6 +46,7 @@ class Export implements WithMultipleSheets
                     'Долг гарантийного удержания' => 'contract_avanses_acts_deposites_amount',
                     'Долг подрядчикам' => 'contractor',
                     'Долг за материалы' => 'provider',
+                    'Долг за услуги' => 'service',
                     'Долг на зарплаты ИТР' => 'salary_itr',
                     'Долг на зарплаты рабочим' => 'salary_work',
                 ],

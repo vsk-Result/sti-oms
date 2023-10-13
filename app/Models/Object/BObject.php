@@ -304,6 +304,37 @@ class  BObject extends Model implements Audit
         return $result;
     }
 
+    public function getServiceDebts($forApi = false): array
+    {
+        $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
+        $debts = $this
+            ->debts()
+            ->where('import_id', $debt1CServiceImport?->id)
+            ->where('type_id', Debt::TYPE_SERVICE)
+            ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
+            ->with('organization')
+            ->orderBy('amount')
+            ->get();
+
+        $result = [];
+
+        foreach ($debts as $debt) {
+            $id = $debt->organization_id . '::' . $debt->organization->name;
+            if (! isset($result[$id])) {
+                $result[$id] = 0;
+            }
+            $result[$id] += $debt->amount;
+
+            if ($forApi) {
+                $result[$id] += $debt->avans;
+            }
+        }
+
+        asort($result);
+
+        return $result;
+    }
+
     public function getContractorDebtsAmount($forApi = false): float
     {
         return array_sum($this->getContractorDebts($forApi));
@@ -312,6 +343,11 @@ class  BObject extends Model implements Audit
     public function getProviderDebtsAmount(): float
     {
         return array_sum($this->getProviderDebts());
+    }
+
+    public function getServiceDebtsAmount(): float
+    {
+        return array_sum($this->getServiceDebts());
     }
 
     public function getEmployeesCount(): int

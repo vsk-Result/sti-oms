@@ -174,6 +174,10 @@ class MakeFinanceReportHistory extends Command
                         'RUB' => 0,
                         'EUR' => 0,
                     ],
+                    'service' => [
+                        'RUB' => 0,
+                        'EUR' => 0,
+                    ],
                     'salary_itr' => [
                         'RUB' => 0,
                         'EUR' => 0,
@@ -255,6 +259,7 @@ class MakeFinanceReportHistory extends Command
 
                     $total[$year][$object->code]['contractor']['RUB'] = $object->getContractorDebtsAmount(true);
                     $total[$year][$object->code]['provider']['RUB'] = $object->getProviderDebtsAmount();
+                    $total[$year][$object->code]['service']['RUB'] = $object->getServiceDebtsAmount();
 
                     $ITRSalaryObject = \App\Models\CRM\ItrSalary::where('kod', 'LIKE', '%' . $object->code . '%')->get();
                     $workSalaryObjectAmount = \App\Models\CRM\SalaryDebt::where('object_code', 'LIKE', '%' . $object->code . '%')->sum('amount');
@@ -270,6 +275,7 @@ class MakeFinanceReportHistory extends Command
                         $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['RUB'] +
                         $total[$year][$object->code]['contractor']['RUB'] +
                         $total[$year][$object->code]['provider']['RUB'] +
+                        $total[$year][$object->code]['service']['RUB'] +
                         $total[$year][$object->code]['salary_itr']['RUB'] +
                         $total[$year][$object->code]['salary_work']['RUB'] +
                         $object->writeoffs->sum('amount')
@@ -292,6 +298,7 @@ class MakeFinanceReportHistory extends Command
 
                     $summary[$year]['contractor']['RUB'] += $total[$year][$object->code]['contractor']['RUB'];
                     $summary[$year]['provider']['RUB'] += $total[$year][$object->code]['provider']['RUB'];
+                    $summary[$year]['service']['RUB'] += $total[$year][$object->code]['service']['RUB'];
                     $summary[$year]['salary_itr']['RUB'] += $total[$year][$object->code]['salary_itr']['RUB'];
                     $summary[$year]['salary_work']['RUB'] += $total[$year][$object->code]['salary_work']['RUB'];
                     $summary[$year]['interim_balance']['RUB'] += $total[$year][$object->code]['interim_balance']['RUB'];
@@ -322,6 +329,7 @@ class MakeFinanceReportHistory extends Command
             'Долг гарантийного удержания' => 'contract_avanses_acts_deposites_amount',
             'Долг подрядчикам' => 'contractor',
             'Долг за материалы' => 'provider',
+            'Долг за услуги' => 'service',
             'Долг на зарплаты ИТР' => 'salary_itr',
             'Долг на зарплаты рабочим' => 'salary_work',
         ];
