@@ -61,6 +61,7 @@
                                         <label class="form-label fw-bolder text-dark fs-6">Объект</label>
                                         <div class="position-relative mb-3">
                                             <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                <option value="null" {{ $ticket->object_id === null ? 'selected' : '' }}>Общее</option>
                                                 @foreach($objects as $object)
                                                     <option value="{{ $object->id }}" {{ $ticket->object_id === $object->id ? 'selected' : '' }}>{{ $object->getName() }}</option>
                                                 @endforeach

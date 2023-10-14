@@ -30,7 +30,11 @@ class TicketService
         }
 
         if (! empty($requestData['object_id'])) {
-            $query->whereIn('object_id', $requestData['object_id']);
+            if (in_array('general', $requestData['object_id'])) {
+                $query->whereNull('object_id');
+            } else {
+                $query->whereIn('object_id', $requestData['object_id']);
+            }
         }
 
         if (! empty($requestData['user_id'])) {
@@ -51,15 +55,22 @@ class TicketService
 
         $total['grouped_by_objects'] = [];
         foreach ((clone $totalQuery)->active()->get()->groupBy('object_id') as $objectId => $tickets) {
-            $object = BObject::find($objectId);
+            if ($objectId === '') {
+                $objectId = 'general';
+                $objectName = 'Общее';
+            } else {
+                $object = BObject::find($objectId);
 
-            if (!$object) {
-                continue;
+                if (!$object) {
+                    continue;
+                }
+
+                $objectName = $object->getName();
             }
 
             $total['grouped_by_objects'][] = [
                 'object_id' => $objectId,
-                'object_name' => $object->getName(),
+                'object_name' => $objectName,
                 'tickets_count' => $tickets->count(),
             ];
         }
@@ -95,7 +106,7 @@ class TicketService
     {
         $ticket = Ticket::create([
             'priority_id' => $requestData['priority_id'],
-            'object_id' => $requestData['object_id'],
+            'object_id' => $requestData['object_id'] === 'null' ? null : $requestData['object_id'],
             'title' => $requestData['title'],
             'content' => $requestData['content'],
             'status_id' => Status::STATUS_ACTIVE,
@@ -114,7 +125,7 @@ class TicketService
 
         foreach ($ticket->getFillable() as $fillable) {
             if (isset($requestData[$fillable])) {
-                $dataToUpdate[$fillable] = $requestData[$fillable];
+                $dataToUpdate[$fillable] = $requestData[$fillable] === 'null' ? null : $requestData[$fillable];
             }
         }
 
