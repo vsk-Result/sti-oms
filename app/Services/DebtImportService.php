@@ -221,7 +221,7 @@ class DebtImportService
                 'type_id' => Debt::TYPE_PROVIDER,
                 'company_id' => $import->company_id,
                 'object_id' => $object->id,
-                'object_worktype_id' => $row[15],
+                'object_worktype_id' => empty($row[15]) ? null : $row[15],
                 'organization_id' => $organization->id,
                 'date' => $import->date,
                 'amount' => -$row[12],
