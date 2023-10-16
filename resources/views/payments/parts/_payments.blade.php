@@ -131,7 +131,7 @@
                         <td>{{ $payment->getBankName() }}</td>
                         <td>
                             @if($payment->object && auth()->user()->can('show objects') && $payment->type_id === \App\Models\Payment::TYPE_OBJECT)
-                                <a href="{{ route('objects.show', $payment->object) }}" class="show-link">{{ $payment->getObject() }}</a>
+                                <a href="{{ route('objects.show', $payment->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</a>
                             @else
                                 {{ $payment->getObject() }}
                             @endif
