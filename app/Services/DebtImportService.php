@@ -20,6 +20,7 @@ class DebtImportService
     private UploadService $uploadService;
     private ObjectService $objectService;
     private OrganizationService $organizationService;
+    private PivotObjectDebtService $pivotObjectDebtService;
     private Sanitizer $sanitizer;
 
     private array $objects = [
@@ -93,6 +94,7 @@ class DebtImportService
         UploadService       $uploadService,
         ObjectService       $objectService,
         OrganizationService $organizationService,
+        PivotObjectDebtService $pivotObjectDebtService,
         Sanitizer $sanitizer
     )
     {
@@ -101,29 +103,31 @@ class DebtImportService
         $this->objectService = $objectService;
         $this->organizationService = $organizationService;
         $this->sanitizer = $sanitizer;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
     }
 
     public function createImport(array $requestData, string|null $type = null): null|string
     {
+        $status = 'ok';
         $importData = Excel::toArray(new Import(), $requestData['file']);
 
         if ($type === 'service') {
-            return $this->create1СExcelServiceImport($importData['TDSheet'], $requestData);
-        }
-
-        if (isset($importData['Для фин отчёта'])) {
-            return $this->createSupplyImport($importData, $requestData);
+            $status = $this->create1СExcelServiceImport($importData['TDSheet'], $requestData);
+        } elseif (isset($importData['Для фин отчёта'])) {
+            $status = $this->createSupplyImport($importData, $requestData);
         } elseif (isset($importData['ДТТЕРМО'])) {
-            return $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
+            $status = $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
         } elseif (isset($importData['TDSheet'])) {
-            return $this->create1СExcelContractorImport($importData['TDSheet'], $requestData);
+            $status = $this->create1СExcelContractorImport($importData['TDSheet'], $requestData);
         } elseif (isset($importData['ВЛАД СВОД'])) {
-            return $this->createObjectContractorsImport($importData['ВЛАД СВОД'], $requestData);
+            $status = $this->createObjectContractorsImport($importData['ВЛАД СВОД'], $requestData);
         } elseif (isset($importData['DT'])) {
-            return $this->createDTTermoV2Import($importData['DT'], $requestData);
+            $status = $this->createDTTermoV2Import($importData['DT'], $requestData);
         }
 
-        return 'ok';
+        $this->pivotObjectDebtService->updatePivotDebtForAllObjects();
+
+        return $status;
     }
 
     public function destroyImport(DebtImport $import): DebtImport

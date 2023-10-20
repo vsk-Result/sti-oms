@@ -13,15 +13,18 @@ use App\Models\Contract\Act;
 use App\Models\Guarantee;
 use App\Models\Object\BObject;
 use App\Models\Payment;
+use App\Services\PivotObjectDebtService;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class Export implements WithMultipleSheets
 {
     private BObject $object;
+    private PivotObjectDebtService $pivotObjectDebtService;
 
-    public function __construct(BObject $object)
+    public function __construct(BObject $object, PivotObjectDebtService $pivotObjectDebtService)
     {
         $this->object = $object;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
     }
 
     public function sheets(): array
@@ -47,7 +50,7 @@ class Export implements WithMultipleSheets
         return [
             new PaymentSheet('Оплаты', $paymentsQuery, (clone $paymentsQuery)->count()),
             new PaymentSheet('Касса', (clone $paymentsQuery)->where('payment_type_id', Payment::PAYMENT_TYPE_CASH), (clone $paymentsQuery)->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->count()),
-            new DebtsPivotSheet('Сводная по долгам', $this->object),
+            new DebtsPivotSheet('Сводная по долгам', $this->object, $this->pivotObjectDebtService),
             new DebtsSheet('Детализация по долгам', $this->object),
             new ActSheet('Акты', $actsQuery, (clone $actsQuery)->count()),
             new GuaranteeSheet('Гарантийные удержания', $guaranteesQuery, (clone $guaranteesQuery)->count()),

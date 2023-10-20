@@ -3,6 +3,7 @@
 namespace App\Exports\Debt\Sheets;
 
 use App\Models\Object\BObject;
+use App\Services\PivotObjectDebtService;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -16,10 +17,12 @@ class PivotSheet implements
     ShouldAutoSize
 {
     private BObject $object;
+    private PivotObjectDebtService $pivotObjectDebtService;
 
-    public function __construct(BObject $object)
+    public function __construct(BObject $object, PivotObjectDebtService $pivotObjectDebtService)
     {
         $this->object = $object;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
     }
 
     public function title(): string
@@ -29,6 +32,8 @@ class PivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
+        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($this->object->id);
+
         $THINStyleArray = [ 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => '0000000'],],],];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
@@ -60,13 +65,13 @@ class PivotSheet implements
         $sheet->getStyle('E1:F3')->getFont()->setBold(true);
         $sheet->getStyle('I1:J3')->getFont()->setBold(true);
 
-        $sheet->setCellValue('B1', $this->object->getContractorDebtsAmount());
-        $sheet->setCellValue('F1', $this->object->getProviderDebtsAmount());
-        $sheet->setCellValue('J1', $this->object->getServiceDebtsAmount());
+        $sheet->setCellValue('B1', $debts['contractor']->total_amount);
+        $sheet->setCellValue('F1', $debts['provider']->total_amount);
+        $sheet->setCellValue('J1', $debts['service']->total_amount);
 
         // Подрядчики
         $row = 4;
-        foreach ($this->object->getContractorDebts() as $organization => $amount) {
+        foreach ($debts['contractor']->debts as $organization => $amount) {
             $sheet->setCellValue('A' . $row, substr($organization, strpos($organization, '::') + 2));
             $sheet->setCellValue('B' . $row, $amount);
 
@@ -84,7 +89,7 @@ class PivotSheet implements
 
         // Поставщики
         $row = 4;
-        foreach ($this->object->getProviderDebts() as $organization => $amount) {
+        foreach ($debts['provider']->debts as $organization => $amount) {
             $sheet->setCellValue('E' . $row, substr($organization, strpos($organization, '::') + 2));
             $sheet->setCellValue('F' . $row, $amount);
 
@@ -102,7 +107,7 @@ class PivotSheet implements
 
         // Услуги
         $row = 4;
-        foreach ($this->object->getServiceDebts() as $organization => $amount) {
+        foreach ($debts['service']->debts as $organization => $amount) {
             $sheet->setCellValue('I' . $row, substr($organization, strpos($organization, '::') + 2));
             $sheet->setCellValue('J' . $row, $amount);
 

@@ -8,6 +8,7 @@ use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Services\Contract\ContractService;
 use App\Services\CurrencyExchangeRateService;
+use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,11 +17,16 @@ class PivotController extends Controller
 {
     private ContractService $contractService;
     private CurrencyExchangeRateService $rateService;
+    private PivotObjectDebtService $pivotObjectDebtService;
 
-    public function __construct(ContractService $contractService, CurrencyExchangeRateService $rateService)
-    {
+    public function __construct(
+        ContractService $contractService,
+        CurrencyExchangeRateService $rateService,
+        PivotObjectDebtService $pivotObjectDebtService
+    ) {
         $this->contractService = $contractService;
         $this->rateService = $rateService;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
     }
 
     public function index(Request $request): JsonResponse
@@ -106,9 +112,11 @@ class PivotController extends Controller
             $customerGUReceiveEUR = 0;
         }
 
-        $contractorDebtsAmount = $object->getContractorDebtsAmount(true);
-        $providerDebtsAmount = $object->getProviderDebtsAmount();
-        $serviceDebtsAmount = $object->getServiceDebtsAmount();
+        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
+
+        $contractorDebtsAmount = $debts['contractor']->total_amount;
+        $providerDebtsAmount = $debts['provider']->total_amount;
+        $serviceDebtsAmount = $debts['service']->total_amount;
 
         $workSalaryDebt = $object->getWorkSalaryDebt();
         $ITRSalaryDebt = $object->getITRSalaryDebt();

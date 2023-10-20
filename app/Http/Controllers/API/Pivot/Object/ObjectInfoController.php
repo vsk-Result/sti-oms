@@ -7,11 +7,20 @@ use App\Models\CurrencyExchangeRate;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
+use App\Services\PivotObjectDebtService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ObjectInfoController extends Controller
 {
+    private PivotObjectDebtService $pivotObjectDebtService;
+
+    public function __construct(
+        PivotObjectDebtService $pivotObjectDebtService
+    ) {
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
+    }
+
     public function index(Request $request): JsonResponse
     {
         if (! $request->has('verify_hash')) {
@@ -36,8 +45,10 @@ class ObjectInfoController extends Controller
         $objects = BObject::active()->orderBy('code')->get();
 
         foreach ($objects as $object) {
+            $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
+
             if ($object->code === '288') {
-                $contractorDebts = $object->getContractorDebts();
+                $contractorDebts = $debts['contractor']->debts;
                 $contractorDebtsAmount = 0;
 
                 foreach ($contractorDebts as $in) {
@@ -47,7 +58,7 @@ class ObjectInfoController extends Controller
                     $contractorDebtsAmount += $in['worktype'][7] ?? 0;
                 }
 
-                $providerDebts = $object->getProviderDebts();
+                $providerDebts = $debts['provider']->debts;
                 $providerDebtsAmount = 0;
 
                 foreach ($providerDebts as $in) {
@@ -73,7 +84,7 @@ class ObjectInfoController extends Controller
                 continue;
             }
 
-            $contractorDebtsAmount = $object->getContractorDebtsAmount();
+            $contractorDebtsAmount = $debts['contractor']->total_amount;
 
             $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
             $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
@@ -83,8 +94,8 @@ class ObjectInfoController extends Controller
                 $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans;
             }
 
-            $providerDebtsAmount = $object->getProviderDebtsAmount();
-            $serviceDebtsAmount = $object->getServiceDebtsAmount();
+            $providerDebtsAmount = $debts['provider']->total_amount;
+            $serviceDebtsAmount = $debts['service']->total_amount;
             $totalDebts = $contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount;
 
             $info['debts'][] = [

@@ -84,10 +84,12 @@
 
         <div class="d-flex flex-wrap justify-content-start">
             @inject('contractService', 'App\Services\Contract\ContractService')
+            @inject('pivotObjectDebtService', 'App\Services\PivotObjectDebtService')
 
             @php
-                $serviceDebtsAmount = $object->getServiceDebtsAmount();
-                $contractorDebtsAmount = $object->getContractorDebtsAmount();
+                $debts = $pivotObjectDebtService->getPivotDebtForObject($object->id);
+                $serviceDebtsAmount = $debts['service']->total_amount;
+                $contractorDebtsAmount = $debts['contractor']->total_amount;
 
                 $debtObjectImport = \App\Models\Debt\DebtImport::where('type_id', \App\Models\Debt\DebtImport::TYPE_OBJECT)->latest('date')->first();
                 $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
@@ -97,7 +99,7 @@
                     $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans;
                 }
 
-                $providerDebtsAmount = $object->getProviderDebtsAmount();
+                $providerDebtsAmount = $debts['provider']->total_amount;
                 $ITRSalaryDebt = $object->getITRSalaryDebt();
                 $workSalaryDebt = $object->getWorkSalaryDebt();
                 $workSalaryDebtDetails = $object->getWorkSalaryDebtDetails();

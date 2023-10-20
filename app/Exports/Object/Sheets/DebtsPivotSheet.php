@@ -3,6 +3,7 @@
 namespace App\Exports\Object\Sheets;
 
 use App\Models\Object\BObject;
+use App\Services\PivotObjectDebtService;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -16,13 +17,15 @@ class DebtsPivotSheet implements
     ShouldAutoSize
 {
     private BObject $object;
+    private PivotObjectDebtService $pivotObjectDebtService;
 
     private string $sheetName;
 
-    public function __construct(string $sheetName, BObject $object)
+    public function __construct(string $sheetName, BObject $object, PivotObjectDebtService $pivotObjectDebtService)
     {
         $this->object = $object;
         $this->sheetName = $sheetName;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
     }
 
     public function title(): string
@@ -32,6 +35,8 @@ class DebtsPivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
+        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($this->object->id);
+
         $THINStyleArray = [ 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => '0000000'],],],];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
@@ -44,24 +49,32 @@ class DebtsPivotSheet implements
         $sheet->setCellValue('E3', 'Контрагент');
         $sheet->setCellValue('F3', 'Сумма');
 
+        $sheet->setCellValue('I1', 'Долг за услуги');
+        $sheet->setCellValue('I3', 'Контрагент');
+        $sheet->setCellValue('J3', 'Сумма');
+
         $sheet->getRowDimension(1)->setRowHeight(35);
         $sheet->getRowDimension(3)->setRowHeight(40);
 
         $sheet->getColumnDimension('A')->setWidth(40);
         $sheet->getColumnDimension('E')->setWidth(40);
+        $sheet->getColumnDimension('I')->setWidth(40);
 
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(20);
+        $sheet->getColumnDimension('J')->setWidth(20);
 
         $sheet->getStyle('A1:B3')->getFont()->setBold(true);
         $sheet->getStyle('E1:F3')->getFont()->setBold(true);
+        $sheet->getStyle('I1:J3')->getFont()->setBold(true);
 
-        $sheet->setCellValue('B1', $this->object->getContractorDebtsAmount());
-        $sheet->setCellValue('F1', $this->object->getProviderDebtsAmount());
+        $sheet->setCellValue('B1', $debts['contractor']->total_amount);
+        $sheet->setCellValue('F1', $debts['provider']->total_amount);
+        $sheet->setCellValue('J1', $debts['service']->total_amount);
 
         // Подрядчики
         $row = 4;
-        foreach ($this->object->getContractorDebts() as $organization => $amount) {
+        foreach ($debts['contractor']->debts as $organization => $amount) {
             $sheet->setCellValue('A' . $row, substr($organization, strpos($organization, '::') + 2));
             $sheet->setCellValue('B' . $row, $amount);
 
@@ -79,7 +92,7 @@ class DebtsPivotSheet implements
 
         // Поставщики
         $row = 4;
-        foreach ($this->object->getProviderDebts() as $organization => $amount) {
+        foreach ($debts['provider']->debts as $organization => $amount) {
             $sheet->setCellValue('E' . $row, substr($organization, strpos($organization, '::') + 2));
             $sheet->setCellValue('F' . $row, $amount);
 
@@ -94,5 +107,23 @@ class DebtsPivotSheet implements
         $sheet->getStyle('F1:F1')->getFont()->setColor(new Color(Color::COLOR_RED));
         $sheet->getStyle('F4:F' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
         $sheet->getStyle('F1:F' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+
+        // Услуги
+        $row = 4;
+        foreach ($debts['service']->debts as $organization => $amount) {
+            $sheet->setCellValue('I' . $row, substr($organization, strpos($organization, '::') + 2));
+            $sheet->setCellValue('J' . $row, $amount);
+
+            $sheet->getRowDimension($row)->setRowHeight(25);
+            $row++;
+        }
+        $row--;
+
+        $sheet->getStyle('I1:J' . $row)->applyFromArray($THINStyleArray);
+        $sheet->getStyle('I1:I' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('J1:J' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('J1:J1')->getFont()->setColor(new Color(Color::COLOR_RED));
+        $sheet->getStyle('J4:J' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+        $sheet->getStyle('J1:J' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }

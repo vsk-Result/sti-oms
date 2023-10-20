@@ -14,6 +14,7 @@ use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
 use App\Services\FinanceReport\DepositService;
 use App\Services\FinanceReport\LoanService;
+use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +30,7 @@ class MakeFinanceReportHistory extends Command
     private LoanService $loanService;
     private DepositService $depositeService;
     private ContractService $contractService;
+    private PivotObjectDebtService $pivotObjectDebtService;
 
     public function __construct(
         AccountBalanceService $accountBalanceService,
@@ -36,7 +38,8 @@ class MakeFinanceReportHistory extends Command
         LoanService $loanService,
         DepositService $depositeService,
         ContractService $contractService,
-        CRONProcessService $CRONProcessService
+        CRONProcessService $CRONProcessService,
+        PivotObjectDebtService $pivotObjectDebtService
     ) {
         parent::__construct();
         $this->accountBalanceService = $accountBalanceService;
@@ -45,6 +48,7 @@ class MakeFinanceReportHistory extends Command
         $this->depositeService = $depositeService;
         $this->contractService = $contractService;
         $this->CRONProcessService = $CRONProcessService;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
@@ -257,9 +261,11 @@ class MakeFinanceReportHistory extends Command
                     $summary[$year]['contract_avanses_acts_deposites_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['RUB'];
                     $summary[$year]['contract_avanses_acts_deposites_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['EUR'];
 
-                    $total[$year][$object->code]['contractor']['RUB'] = $object->getContractorDebtsAmount(true);
-                    $total[$year][$object->code]['provider']['RUB'] = $object->getProviderDebtsAmount();
-                    $total[$year][$object->code]['service']['RUB'] = $object->getServiceDebtsAmount();
+                    $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
+
+                    $total[$year][$object->code]['contractor']['RUB'] = $debts['contractor']->total_amount;
+                    $total[$year][$object->code]['provider']['RUB'] = $debts['provider']->total_amount;
+                    $total[$year][$object->code]['service']['RUB'] = $debts['service']->total_amount;
 
                     $ITRSalaryObject = \App\Models\CRM\ItrSalary::where('kod', 'LIKE', '%' . $object->code . '%')->get();
                     $workSalaryObjectAmount = \App\Models\CRM\SalaryDebt::where('object_code', 'LIKE', '%' . $object->code . '%')->sum('amount');

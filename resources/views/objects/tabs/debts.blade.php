@@ -6,6 +6,11 @@
     @include('objects.modals.debt_manual_create')
     @include('objects.modals.debt_manual_edit')
     @include('objects.modals.debt_upload_manual')
+    @inject('pivotObjectDebtService', 'App\Services\PivotObjectDebtService')
+
+    @php
+        $debts = $pivotObjectDebtService->getPivotDebtForObject($object->id);
+    @endphp
 
     <div class="card border-0">
         <div class="card-header border-0 justify-content-end align-items-center p-0">
@@ -49,7 +54,7 @@
             @if ($object->code === '288')
 
                 @php
-                    $contractorDebts = $object->getContractorDebts();
+                    $contractorDebts = $debts['contractor']->debts;
 
                     $oneAmount = 0;
                     $twoFourAmount = 0;
@@ -247,11 +252,15 @@
 
                         <div class="card-toolbar justify-content-end" style="width: 100%">
                             @if ($hasObjectImport)
+                                @php
+                                    $ds = \App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
+                                @endphp
+
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                     <div class="d-flex align-items-center">
                                         <div class="fs-4 fw-bolder text-danger">
                                             <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee'), 2, ',', ' ') }}
+                                                {{ number_format($ds->sum('guarantee'), 2, ',', ' ') }}
                                             </a>
                                         </div>
                                     </div>
@@ -263,7 +272,7 @@
                                     <div class="d-flex align-items-center">
                                         <div class="fs-4 fw-bolder text-danger">
                                             <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format(\App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans'), 2, ',', ' ') }}
+                                                {{ number_format($ds->sum('avans'), 2, ',', ' ') }}
                                             </a>
                                         </div>
                                     </div>
@@ -275,7 +284,7 @@
                                     <div class="d-flex align-items-center">
                                         <div class="fs-4 fw-bolder text-danger">
                                             <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($object->getContractorDebtsAmount(), 2, ',', ' ') }}
+                                                {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
                                             </a>
                                         </div>
                                     </div>
@@ -300,15 +309,15 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($object->getContractorDebts() as $organization => $amount)
+                                @forelse($debts['contractor']->debts as $organization => $amount)
                                     @php
                                         $type = \App\Models\Debt\DebtManual::TYPE_CONTRACTOR;
                                         $organizationId = substr($organization, 0, strpos($organization, '::'));
                                         $organizationName = substr($organization, strpos($organization, '::') + 2);
                                         $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
 
-                                        $avans = \App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('avans');
-                                        $guarantee = \App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->where('organization_id', $organizationId)->sum('guarantee');
+                                        $avans = $ds->where('organization_id', $organizationId)->sum('avans');
+                                        $guarantee = $ds->where('organization_id', $organizationId)->sum('guarantee');
 
                                         $comment = '';
                                         if ($debtManual) {
@@ -405,7 +414,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
                                         <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
-                                            {{ number_format($object->getServiceDebtsAmount(), 2, ',', ' ') }}
+                                            {{ number_format($debts['service']->total_amount, 2, ',', ' ') }}
                                         </a>
                                     </div>
                                 </div>
@@ -423,7 +432,7 @@
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($object->getServiceDebts() as $organization => $amount)
+                                @forelse($debts['service']->debts as $organization => $amount)
                                     @php
                                         $organizationId = substr($organization, 0, strpos($organization, '::'));
                                         $organizationName = substr($organization, strpos($organization, '::') + 2);
@@ -457,7 +466,7 @@
             @if ($object->code === '288')
 
                 @php
-                    $providerDebts = $object->getProviderDebts();
+                    $providerDebts = $debts['provider']->debts;
 
                     $oneAmount = 0;
                     $twoFourAmount = 0;
@@ -640,7 +649,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder">
                                         <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                            {{ number_format($object->getProviderDebtsAmount(), 2, ',', ' ') }}
+                                            {{ number_format($debts['provider']->total_amount, 2, ',', ' ') }}
                                         </a>
                                     </div>
                                 </div>
@@ -658,7 +667,7 @@
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($object->getProviderDebts() as $organization => $amount)
+                                @forelse($debts['provider']->debts as $organization => $amount)
                                     @php
                                         $type = \App\Models\Debt\DebtManual::TYPE_PROVIDER;
                                         $organizationId = substr($organization, 0, strpos($organization, '::'));

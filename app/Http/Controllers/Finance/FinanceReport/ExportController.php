@@ -6,12 +6,6 @@ use App\Exports\Finance\FinanceReport\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\FinanceReportHistory;
-use App\Models\Loan;
-use App\Services\Contract\ContractService;
-use App\Services\FinanceReport\AccountBalanceService;
-use App\Services\FinanceReport\CreditService;
-use App\Services\FinanceReport\DepositService;
-use App\Services\FinanceReport\LoanService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -19,26 +13,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends Controller
 {
-    private AccountBalanceService $accountBalanceService;
-    private CreditService $creditService;
-    private LoanService $loanService;
-    private DepositService $depositeService;
-    private ContractService $contractService;
-
-    public function __construct(
-        AccountBalanceService $accountBalanceService,
-        CreditService $creditService,
-        LoanService $loanService,
-        DepositService $depositeService,
-        ContractService $contractService
-    ) {
-        $this->accountBalanceService = $accountBalanceService;
-        $this->creditService = $creditService;
-        $this->loanService = $loanService;
-        $this->depositeService = $depositeService;
-        $this->contractService = $contractService;
-    }
-
     public function store(Request $request): BinaryFileResponse
     {
         $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
