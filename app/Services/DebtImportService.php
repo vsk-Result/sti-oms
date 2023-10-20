@@ -496,24 +496,26 @@ class DebtImportService
             }
 
             $dueDate = null;
-            $comment = trim($row[17]);
-            if (is_numeric($row[14])) {
-                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[14]))->format('Y-m-d');
-            } else if (is_string($row[14])) {
+            $comment = trim($row[18]);
+            if (is_numeric($row[15])) {
+                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[15]))->format('Y-m-d');
+            } else if (is_string($row[15])) {
                 try {
-                    $dueDate = Carbon::parse($row[14])->format('Y-m-d');
+                    $dueDate = Carbon::parse($row[15])->format('Y-m-d');
                 } catch (\Exception $e) {
-                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[15];
                 }
             } else {
-                if (! empty($row[14])) {
-                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
+                if (! empty($row[15])) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[15];
                 }
             }
 
             if (! empty($row[16])) {
                 $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[16];
             }
+
+            $comment .= ' || Валюта: ' . $row[14];
 
             $invoiceAmount = $row[8] ?? 0;
             $invoiceAmount = (string)$invoiceAmount;
@@ -532,7 +534,7 @@ class DebtImportService
                 'amount' => -$row[13],
                 'amount_without_nds' => -($row[13] - ($row[13] / 6)),
                 'status_id' => Status::STATUS_ACTIVE,
-                'category' => trim($row[15]),
+                'category' => trim($row[16]),
                 'code' => trim($row[10]),
                 'invoice_number' => trim($row[6]) . ' от ' . $row[7],
                 'order_author' => trim($row[1]),
@@ -605,24 +607,26 @@ class DebtImportService
             }
 
             $dueDate = null;
-            $comment = trim($row[17]);
-            if (is_numeric($row[14])) {
-                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[14]))->format('Y-m-d');
-            } else if (is_string($row[14])) {
+            $comment = trim($row[18]);
+            if (is_numeric($row[15])) {
+                $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[15]))->format('Y-m-d');
+            } else if (is_string($row[15])) {
                 try {
-                    $dueDate = Carbon::parse($row[14])->format('Y-m-d');
+                    $dueDate = Carbon::parse($row[15])->format('Y-m-d');
                 } catch (\Exception $e) {
-                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[15];
                 }
             } else {
-                if (! empty($row[14])) {
-                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[14];
+                if (! empty($row[15])) {
+                    $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[15];
                 }
             }
 
-            if (! empty($row[16])) {
-                $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[16];
+            if (! empty($row[17])) {
+                $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[17];
             }
+
+            $comment .= ' || Валюта: ' . $row[14];
 
             $invoiceAmount = $row[8] ?? 0;
             $invoiceAmount = (string)$invoiceAmount;
@@ -641,7 +645,7 @@ class DebtImportService
                 'amount' => -$row[13],
                 'amount_without_nds' => -($row[13] - ($row[13] / 6)),
                 'status_id' => Status::STATUS_ACTIVE,
-                'category' => trim($row[15]),
+                'category' => trim($row[16]),
                 'code' => trim($row[10]),
                 'invoice_number' => trim($row[6]) . ' от ' . $row[7],
                 'order_author' => trim($row[1]),
