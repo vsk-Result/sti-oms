@@ -25,9 +25,9 @@ class PivotObjectDebtService
         $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
 
         return [
-            'contractor' => $pivot ? json_decode($pivot->contractor) : $emptyData,
-            'provider' => $pivot ? json_decode($pivot->provider) : $emptyData,
-            'service' => $pivot ? json_decode($pivot->service) : $emptyData,
+            'contractor' => $pivot ? json_decode($pivot->contractor) : collect($emptyData),
+            'provider' => $pivot ? json_decode($pivot->provider) : collect($emptyData),
+            'service' => $pivot ? json_decode($pivot->service) : collect($emptyData),
         ];
     }
 
