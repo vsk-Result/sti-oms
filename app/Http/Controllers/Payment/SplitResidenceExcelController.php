@@ -78,8 +78,8 @@ class SplitResidenceExcelController extends Controller
                 $groupedObjectAmount[$objectMainCode][$worktype] = 0;
             }
 
-            $groupedObjectAmount[$objectMainCode][$worktype] += $row[40];
-            $totalAmount += $row[40];
+            $groupedObjectAmount[$objectMainCode][$worktype] += $row[44];
+            $totalAmount += $row[44];
         }
 
         $paymentsTotalAmount = $payments->sum('amount');
