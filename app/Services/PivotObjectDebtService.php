@@ -24,6 +24,11 @@ class PivotObjectDebtService
         $date = Carbon::now()->format('Y-m-d');
         $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
 
+        if (!$pivot) {
+            $date = Carbon::now()->subDay()->format('Y-m-d');
+            $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
+        }
+
         return [
             'contractor' => $pivot ? json_decode($pivot->contractor) : collect($emptyData),
             'provider' => $pivot ? json_decode($pivot->provider) : collect($emptyData),
