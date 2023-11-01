@@ -74,10 +74,8 @@ class ActService
                 continue;
             }
 
-            if ($object->code !== '346') {
-                $guAmount['RUB'] -= $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-                $guAmount['EUR'] -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount');
-            }
+            $guAmount['RUB'] -= $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
+            $guAmount['EUR'] -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount');
 
             $pivot['entries'][] = [
                 'object' => [
