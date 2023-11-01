@@ -78,9 +78,9 @@
                                 <td class="ps-4">
                                     @if ($debt->object)
                                         @if(auth()->user()->can('show objects'))
-                                            <a href="{{ route('objects.show', $debt->object) }}" class="show-link">{{ $debt->getObject() }}</a>
+                                            <a href="{{ route('objects.show', $debt->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $debt->object->name }}">{{ $debt->getObject() }}</a>
                                         @else
-                                            {{ $debt->getObject() }}
+                                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $debt->object->name }}">{{ $debt->getObject() }}</span>
                                         @endif
                                     @else
                                         {{ $debt->object_id . ' не сущ.' }}

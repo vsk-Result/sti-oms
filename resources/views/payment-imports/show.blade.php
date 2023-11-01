@@ -65,7 +65,9 @@
                                 @forelse($import->payments as $payment)
                                     <tr>
                                         <td class="ps-4">{{ $payment->getDateFormatted() }}</td>
-                                        <td class="ps-4">{{ $payment->getObject() }}</td>
+                                        <td class="ps-4">
+                                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
+                                        </td>
                                         <td>{{ $payment->code }}</td>
                                         <td>
                                             @if ($payment->amount < 0)

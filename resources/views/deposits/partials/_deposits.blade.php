@@ -83,9 +83,9 @@
                 <tr>
                     <td class="ps-3">
                         @if(auth()->user()->can('show objects'))
-                            <a href="{{ route('objects.show', $deposit->object) }}" class="show-link">{{ $deposit->object->code }}</a>
+                            <a href="{{ route('objects.show', $deposit->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $deposit->object->name }}">{{ $deposit->object->code }}</a>
                         @else
-                            {{ $deposit->object->code }}
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $deposit->object->name }}">{{ $deposit->object->code }}</span>
                         @endif
                     </td>
                     <td>{{ $deposit->getStartDateFormatted() }}</td>

@@ -91,7 +91,9 @@
             </td>
             <td>{{ $payment->company->short_name }}</td>
             <td>{{ $payment->import->description ?? '' }}</td>
-            <td>{{ $payment->getObject() }}</td>
+            <td>
+                <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
+            </td>
             <td>{{ $payment->code }}</td>
             <td>
                 @if ($payment->amount < 0)

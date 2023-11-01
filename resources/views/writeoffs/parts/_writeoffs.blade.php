@@ -83,9 +83,13 @@
                             <td class="ps-3">{{ $writeoff->getDateFormatted() }}</td>
                             <td>
                                 @if($writeoff->object && auth()->user()->can('show objects'))
-                                    <a href="{{ route('objects.show', $writeoff->object) }}" class="show-link">{{ $writeoff->object->code }}</a>
+                                    <a href="{{ route('objects.show', $writeoff->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $writeoff->object->name }}">{{ $writeoff->object->code }}</a>
                                 @else
-                                    {{ $writeoff->object->code }}
+                                    @if ($writeoff->object)
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $writeoff->object->name }}">{{ $writeoff->object->code }}</span>
+                                    @else
+                                        Нет объекта
+                                    @endif
                                 @endif
                             </td>
                             <td>{!! $writeoff->company->getShortNameColored() !!}</td>

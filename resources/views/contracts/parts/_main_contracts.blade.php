@@ -187,9 +187,9 @@
                     <tr>
                         <td class="ps-4">
                             @if(auth()->user()->can('show objects'))
-                                <a href="{{ route('objects.contracts.index', $contract->object) }}" class="show-link">{{ $contract->object->code }}</a>
+                                <a href="{{ route('objects.contracts.index', $contract->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $contract->object->name }}">{{ $contract->object->code }}</a>
                             @else
-                                {{ $contract->object->code }}
+                                <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $contract->object->name }}">{{ $contract->object->code }}</span>
                             @endif
                         </td>
                         <td class="px-3">

@@ -133,9 +133,9 @@
                 <tr>
                     <td class="ps-3">
                         @if(auth()->user()->can('show objects'))
-                            <a href="{{ route('objects.show', $guarantee->object) }}" class="show-link">{{ $guarantee->object->code }}</a>
+                            <a href="{{ route('objects.show', $guarantee->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $guarantee->object->name }}">{{ $guarantee->object->code }}</a>
                         @else
-                            {{ $guarantee->object->code }}
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $guarantee->object->name }}">{{ $guarantee->object->code }}</span>
                         @endif
                     </td>
                     <td>{{ $guarantee->contract?->getName() }}</td>
