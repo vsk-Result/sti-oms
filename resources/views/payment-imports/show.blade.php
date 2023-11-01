@@ -66,7 +66,11 @@
                                     <tr>
                                         <td class="ps-4">{{ $payment->getDateFormatted() }}</td>
                                         <td class="ps-4">
-                                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
+                                            @if ($payment->object)
+                                                <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
+                                            @else
+                                                {{ $payment->getObject() }}
+                                            @endif
                                         </td>
                                         <td>{{ $payment->code }}</td>
                                         <td>
