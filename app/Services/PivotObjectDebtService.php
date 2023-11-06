@@ -9,6 +9,7 @@ use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\PivotObjectDebt;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class PivotObjectDebtService
 {
@@ -16,7 +17,7 @@ class PivotObjectDebtService
 
     public function getPivotDebtForObject(int $objectId): array
     {
-        $emptyData = [
+        $emptyData = (object) [
             'debts' => [],
             'total_amount' => 0,
         ];
@@ -29,10 +30,18 @@ class PivotObjectDebtService
             $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
         }
 
+        $emptyCollection = collect([
+            (object) [
+                'debts' => [],
+                'total_amount' => 0,
+            ]
+        ])[0];
+
+
         return [
-            'contractor' => $pivot ? json_decode($pivot->contractor) : collect($emptyData),
-            'provider' => $pivot ? json_decode($pivot->provider) : collect($emptyData),
-            'service' => $pivot ? json_decode($pivot->service) : collect($emptyData),
+            'contractor' => $pivot ? json_decode($pivot->contractor) : $emptyCollection,
+            'provider' => $pivot ? json_decode($pivot->provider) : $emptyCollection,
+            'service' => $pivot ? json_decode($pivot->service) : $emptyCollection,
         ];
     }
 
