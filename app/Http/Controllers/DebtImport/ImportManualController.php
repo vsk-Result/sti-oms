@@ -31,13 +31,13 @@ class ImportManualController extends Controller
         Storage::putFileAs('public/objects-debts', $file, $object->code . '.xlsx');
 
         //Если есть запись о загрузке подрядчиков, удалим
-        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->where('date', now()->format('Y-m-d'))->first();
-        if ($debtImport) {
-            $this->debtImportService->destroyImport($debtImport);
-        }
+//        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->where('date', now()->format('Y-m-d'))->first();
+//        if ($debtImport) {
+//            $this->debtImportService->destroyImport($debtImport);
+//        }
 
         // Запустим крон задачу на импорт долгов по подрядчикам
-        Artisan::call('oms-imports:objects-debts-from-excel');
+        Artisan::call('oms:objects-debts-from-excel');
 
         return redirect()->back();
     }
