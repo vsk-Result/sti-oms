@@ -228,7 +228,7 @@ class PaymentService
             'payment_type_id' => $requestData['payment_type_id'],
             'category' => $requestData['category'],
             'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
-            'description' => $this->sanitizer->set($requestData['description'])->upperCaseFirstWord()->get(),
+            'description' => $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get(),
             'date' => $requestData['date'],
             'amount' => $paymentCurrencyRate * $requestData['amount'],
             'parameters' => $requestData['parameters'] ?? [],
@@ -551,6 +551,7 @@ class PaymentService
         }
 
         if (array_key_exists('description', $requestData)) {
+            $requestData['description'] = $requestData['description'] ?? '';
             $isNeedSplit = $this->checkIsNeedSplitFromDescription($requestData['description']);
             $requestData['is_need_split'] = $isNeedSplit;
 
