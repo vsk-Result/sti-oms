@@ -34,30 +34,86 @@ class UpdateGeneralCosts extends Command
         Log::channel('custom_imports_log')->debug('[START] Обновляет общие затраты объектов');
 
         try {
+            $periods = [
+                [
+                    'start_date' => '2017-01-01',
+                    'end_date' => '2017-12-31',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2018-01-01',
+                    'end_date' => '2018-12-31',
+                    'bonus' => 21421114,
+                ],
+                [
+                    'start_date' => '2019-01-01',
+                    'end_date' => '2019-12-31',
+                    'bonus' => (39760000 + 692048),
+                ],
+                [
+                    'start_date' => '2020-01-01',
+                    'end_date' => '2020-12-31',
+                    'bonus' => (2000000 + 418000 + 1615000),
+                ],
+                [
+                    'start_date' => '2021-01-01',
+                    'end_date' => '2021-03-02',
+                    'bonus' => 600000,
+                ],
+                [
+                    'start_date' => '2021-03-03',
+                    'end_date' => '2021-12-31',
+                    'bonus' => (600000 + 68689966),
+                ],
+                [
+                    'start_date' => '2022-01-01',
+                    'end_date' => '2022-10-11',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2022-10-12',
+                    'end_date' => '2022-12-31',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2023-01-01',
+                    'end_date' => '2023-07-20',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2023-07-21',
+                    'end_date' => '2023-12-31',
+                    'bonus' => 0,
+                ]
+            ];
+
+
             $object27_1 = BObject::where('code', '27.1')->first();
             $object27_8 = BObject::where('code', '27.8')->first();
-            $general2017 = Payment::whereBetween('date', ['2017-01-01', '2017-12-31'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2017-01-01', '2017-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2017-01-01', '2017-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2018 = 21421114 + Payment::whereBetween('date', ['2018-01-01', '2018-12-31'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2018-01-01', '2018-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2018-01-01', '2018-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2019 = 39760000 + 692048 + Payment::whereBetween('date', ['2019-01-01', '2019-12-31'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2019-01-01', '2019-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2019-01-01', '2019-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2020 = 2000000 + 418000 + 1615000 + Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2021_1 = 600000 + Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2021_2 = 600000 + 68689966 + Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2022_1 = Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2022_2 = Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2023_1 = Payment::whereBetween('date', ['2023-01-01', '2023-07-20'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2023-01-01', '2023-07-20'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2023-01-01', '2023-07-20'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-            $general2023_2 = Payment::whereBetween('date', ['2023-07-21', '2023-12-31'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount') + Payment::whereBetween('date', ['2023-07-21', '2023-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (Payment::whereBetween('date', ['2023-07-21', '2023-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
 
-            $generalTotal = $general2017 + $general2018 + $general2019 + $general2020 + $general2021_1 + $general2021_2 + $general2022_1 + $general2022_2 + $general2023_1 + $general2023_2;
-            $info2017 = ObjectService::getGeneralCostsByPeriod('2017-01-01', '2017-12-31');
-            $info2018 = ObjectService::getGeneralCostsByPeriod('2018-01-01', '2018-12-31', 21421114);
-            $info2019 = ObjectService::getGeneralCostsByPeriod('2019-01-01', '2019-12-31', (39760000 + 692048));
-            $info2020 = ObjectService::getGeneralCostsByPeriod('2020-01-01', '2020-12-31', (2000000 + 418000 + 1615000));
-            $info2021_1 = ObjectService::getGeneralCostsByPeriod('2021-01-01', '2021-03-02', 600000);
-            $info2021_2 = ObjectService::getGeneralCostsByPeriod('2021-03-03', '2021-12-31', (600000 + 68689966));
-            $info2022_1 = ObjectService::getGeneralCostsByPeriod('2022-01-01', '2022-10-11');
-            $info2022_2 = ObjectService::getGeneralCostsByPeriod('2022-10-12', '2022-12-31');
-            $info2023_1 = ObjectService::getGeneralCostsByPeriod('2023-01-01', '2023-07-20');
-            $info2023_2 = ObjectService::getGeneralCostsByPeriod('2023-07-21', '2023-12-31');
+
+
+            $periods = array_reverse($periods);
+
+            $generalTotalAmount = 0;
+            $generalInfo = [];
+            foreach ($periods as $index => $period) {
+                $datesBetween = [$period['start_date'], $period['end_date']];
+                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->where('company_id', 1);
+                $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                    + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                    + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
+                    + $period['bonus'];
+
+                $generalInfo[$index] = [
+                    'start_date' => $period['start_date'],
+                    'end_date' => $period['end_date'],
+                    'general_amount' => $generalAmount,
+                    'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                ];
+
+                $generalTotalAmount += $generalAmount;
+            }
         } catch (\Exception $e) {
             $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
             Log::channel('custom_imports_log')->debug($errorMessage);

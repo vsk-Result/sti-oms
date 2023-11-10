@@ -160,6 +160,7 @@ class ObjectService
         $objects = $objectsQuery->with(['customers', 'payments' => function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
                 ->where('amount', '>=', 0)
+                ->where('company_id', 1)
                 ->whereBetween('date', [$startDate, $endDate]);
         }])->get();
 
@@ -217,9 +218,11 @@ class ObjectService
                 ->sum('amount');
             $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])
                 ->where('object_id', $object27_1->id)
+                ->where('company_id', 1)
                 ->sum('amount');
             $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])
                     ->where('object_id', $object27_8->id)
+                    ->where('company_id', 1)
                     ->sum('amount') * 0.7);
             $generalTotalAmount += $bonus;
 

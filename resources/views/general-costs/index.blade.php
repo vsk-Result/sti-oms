@@ -7,31 +7,81 @@
     @php
         $object27_1 = \App\Models\Object\BObject::where('code', '27.1')->first();
         $object27_8 = \App\Models\Object\BObject::where('code', '27.8')->first();
-        $general2017 = \App\Models\Payment::whereBetween('date', ['2017-01-01', '2017-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2017-01-01', '2017-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2017-01-01', '2017-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $general2018 = 21421114 + \App\Models\Payment::whereBetween('date', ['2018-01-01', '2018-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2018-01-01', '2018-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2018-01-01', '2018-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $general2019 = 39760000 + 692048 + \App\Models\Payment::whereBetween('date', ['2019-01-01', '2019-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2019-01-01', '2019-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2019-01-01', '2019-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $general2020 = 2000000 + 418000 + 1615000 + \App\Models\Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2020-01-01', '2020-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
 
-        $general2021_1 = 600000 + \App\Models\Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2021-01-01', '2021-03-02'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $general2021_2 = 600000 + 68689966 + \App\Models\Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2021-03-03', '2021-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
+        $periods = [
+            [
+                'start_date' => '2017-01-01',
+                'end_date' => '2017-12-31',
+                'bonus' => 0,
+            ],
+            [
+                'start_date' => '2018-01-01',
+                'end_date' => '2018-12-31',
+                'bonus' => 21421114,
+            ],
+            [
+                'start_date' => '2019-01-01',
+                'end_date' => '2019-12-31',
+                'bonus' => (39760000 + 692048),
+            ],
+            [
+                'start_date' => '2020-01-01',
+                'end_date' => '2020-12-31',
+                'bonus' => (2000000 + 418000 + 1615000),
+            ],
+            [
+                'start_date' => '2021-01-01',
+                'end_date' => '2021-03-02',
+                'bonus' => 600000,
+            ],
+            [
+                'start_date' => '2021-03-03',
+                'end_date' => '2021-12-31',
+                'bonus' => (600000 + 68689966),
+            ],
+            [
+                'start_date' => '2022-01-01',
+                'end_date' => '2022-10-11',
+                'bonus' => 0,
+            ],
+            [
+                'start_date' => '2022-10-12',
+                'end_date' => '2022-12-31',
+                'bonus' => 0,
+            ],
+            [
+                'start_date' => '2023-01-01',
+                'end_date' => '2023-07-20',
+                'bonus' => 0,
+            ],
+            [
+                'start_date' => '2023-07-21',
+                'end_date' => '2023-12-31',
+                'bonus' => 0,
+            ]
+        ];
 
-        $general2022_1 = \App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2022-01-01', '2022-10-11'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $general2022_2 = \App\Models\Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2022-10-12', '2022-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
+        $periods = array_reverse($periods);
 
-        $general2023_1 = \App\Models\Payment::whereBetween('date', ['2023-01-01', '2023-07-20'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2023-01-01', '2023-07-20'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2023-01-01', '2023-07-20'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
-        $general2023_2 = \App\Models\Payment::whereBetween('date', ['2023-07-21', '2023-12-31'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount') + \App\Models\Payment::whereBetween('date', ['2023-07-21', '2023-12-31'])->where('object_id', $object27_1->id)->sum('amount') + (\App\Models\Payment::whereBetween('date', ['2023-07-21', '2023-12-31'])->where('object_id', $object27_8->id)->sum('amount') * 0.7);
+        $generalTotalAmount = 0;
+        $generalInfo = [];
+        foreach ($periods as $index => $period) {
+            $datesBetween = [$period['start_date'], $period['end_date']];
+            $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->where('company_id', 1);
+            $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                            + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                            + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
+                            + $period['bonus'];
 
-        $generalTotal = $general2017 + $general2018 + $general2019 + $general2020 + $general2021_1 + $general2021_2 + $general2022_1 + $general2022_2 + $general2023_1 + $general2023_2;
-        $info2017 = \App\Services\ObjectService::getGeneralCostsByPeriod('2017-01-01', '2017-12-31');
-        $info2018 = \App\Services\ObjectService::getGeneralCostsByPeriod('2018-01-01', '2018-12-31', 21421114);
-        $info2019 = \App\Services\ObjectService::getGeneralCostsByPeriod('2019-01-01', '2019-12-31', (39760000 + 692048));
-        $info2020 = \App\Services\ObjectService::getGeneralCostsByPeriod('2020-01-01', '2020-12-31', (2000000 + 418000 + 1615000));
-        $info2021_1 = \App\Services\ObjectService::getGeneralCostsByPeriod('2021-01-01', '2021-03-02', 600000);
-        $info2021_2 = \App\Services\ObjectService::getGeneralCostsByPeriod('2021-03-03', '2021-12-31', (600000 + 68689966));
-        $info2022_1 = \App\Services\ObjectService::getGeneralCostsByPeriod('2022-01-01', '2022-10-11');
-        $info2022_2 = \App\Services\ObjectService::getGeneralCostsByPeriod('2022-10-12', '2022-12-31');
-        $info2023_1 = \App\Services\ObjectService::getGeneralCostsByPeriod('2023-01-01', '2023-07-20');
-        $info2023_2 = \App\Services\ObjectService::getGeneralCostsByPeriod('2023-07-21', '2023-12-31');
+            $generalInfo[$index] = [
+                'start_date' => $period['start_date'],
+                'end_date' => $period['end_date'],
+                'general_amount' => $generalAmount,
+                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+            ];
+
+            $generalTotalAmount += $generalAmount;
+        }
     @endphp
     <div class="card mb-5 mb-xl-8 p-0 border-0">
         <div class="card-header border-0 pt-6 pe-0">
@@ -68,47 +118,13 @@
 
                             <th class="min-w-125px bt bl hl">Итого</th>
                             <th class="bt bl hl percent" ></th>
-                            <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotal, 'RUB') }}</th>
+                            <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotalAmount, 'RUB') }}</th>
 
-                            <th class="min-w-125px bt">с 21.07.23 по 31.12.23</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2023_2, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt">с 01.01.23 по 20.07.23</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2023_1, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt">с 12.10.22 по 31.12.22</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022_2, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt">с 01.01.2022 по 11.10.22</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2022_1, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">с 03.03.21 по 31.12.21</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2021_2, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">с 01.01.2021 по 02.03.21</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2021_1, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">2020</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2020, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">2019</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2019, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">2018</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2018, 'RUB') }}</th>
-
-                            <th class="min-w-125px bt bl">2017</th>
-                            <th class="bt percent" ></th>
-                            <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($general2017, 'RUB') }}</th>
+                            @foreach($generalInfo as $info)
+                                <th class="min-w-125px bt">с {{ $info['start_date'] }} по {{ $info['end_date'] }}</th>
+                                <th class="bt percent" ></th>
+                                <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['general_amount'], 'RUB') }}</th>
+                            @endforeach
                         </tr>
                         <tr>
                             <th class="min-w-250px bl ps-2">Объект</th>
@@ -117,52 +133,16 @@
                             <th class="bl hl text-center percent" >%</th>
                             <th class="min-w-125px br hl text-center">Общие расходы</th>
 
-                            <th class="min-w-125px">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px">Получено</th>
-                            <th class="text-center percent">%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
-
-                            <th class="min-w-125px bl">Получено</th>
-                            <th class="text-center percent" >%</th>
-                            <th class="min-w-125px br">Общие расходы на объект</th>
+                            @foreach($generalInfo as $info)
+                                <th class="min-w-125px">Получено</th>
+                                <th class="text-center percent" >%</th>
+                                <th class="min-w-125px br">Общие расходы на объект</th>
+                            @endforeach
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-bold">
                         @php
                             $averagePercents = [];
-                            $periods = [$info2023_2, $info2023_1, $info2022_2, $info2022_1, $info2021_2, $info2021_1, $info2020, $info2019, $info2018, $info2017];
-
                             foreach($objects as $object) {
                                 $percentOneSum = 0;
                                 $percentOneCount = 0;
@@ -173,27 +153,27 @@
                                 $percentSum = 0;
                                 $percentCount = 0;
 
-                                foreach($periods as $period) {
+                                foreach($generalInfo as $info) {
                                     if ($object->code == 288) {
                                         $percentOne = 0;
                                         $percentTwo = 0;
 
-                                        if (isset($period[$object->id.'|1'])) {
-                                            $percentOne = ($period[$object->id.'|1']['cuming_amount'] > 0 ? abs($period[$object->id.'|1']['general_amount'] / $period[$object->id.'|1']['cuming_amount']) : 0) * 100;
+                                        if (isset($info['info'][$object->id.'|1'])) {
+                                            $percentOne = ($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100;
                                             $percentOneSum += $percent;
                                             $percentOneCount++;
                                         }
 
-                                        if (isset($period[$object->id.'|24'])) {
-                                            $percentTwo = ($period[$object->id.'|24']['cuming_amount'] > 0 ? abs($period[$object->id.'|24']['general_amount'] / $period[$object->id.'|24']['cuming_amount']) : 0) * 100;
+                                        if (isset($info['info'][$object->id.'|24'])) {
+                                            $percentTwo = ($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100;
                                             $percentTwoSum += $percent;
                                             $percentTwoCount++;
                                         }
                                     } else {
                                         $percent = 0;
 
-                                        if (isset($period[$object->id])) {
-                                            $percent = ($period[$object->id]['cuming_amount'] > 0 ? abs($period[$object->id]['general_amount'] / $period[$object->id]['cuming_amount']) : 0) * 100;
+                                        if (isset($info['info'][$object->id])) {
+                                            $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
                                             $percentSum += $percent;
                                             $percentCount++;
                                         }
@@ -215,8 +195,14 @@
                                     <td class="bl ps-2">{{ $object->getName() . ' | 1 (Строительство)' }}</td>
 
                                     @php
-                                        $totalCuming = ($info2017[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2018[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2019[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2020[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2022_1[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2022_2[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2023_1[$object->id.'|1']['cuming_amount'] ?? 0) + ($info2023_2[$object->id.'|1']['cuming_amount'] ?? 0);
-                                        $totalGeneral = ($info2017[$object->id.'|1']['general_amount'] ?? 0) + ($info2018[$object->id.'|1']['general_amount'] ?? 0) + ($info2019[$object->id.'|1']['general_amount'] ?? 0) + ($info2020[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_1[$object->id.'|1']['general_amount'] ?? 0) + ($info2021_2[$object->id.'|1']['general_amount'] ?? 0) + ($info2022_1[$object->id.'|1']['general_amount'] ?? 0) + ($info2022_2[$object->id.'|1']['general_amount'] ?? 0) + ($info2023_1[$object->id.'|1']['general_amount'] ?? 0) + ($info2023_2[$object->id.'|1']['general_amount'] ?? 0);
+                                        $totalCuming = 0;
+                                        $totalGeneral = 0;
+
+                                        foreach($generalInfo as $info) {
+                                            $totalCuming += ($info['info'][$object->id.'|1']['cuming_amount'] ?? 0);
+                                            $totalGeneral += ($info['info'][$object->id.'|1']['general_amount'] ?? 0);
+                                        }
+
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
@@ -224,112 +210,30 @@
                                     <td class="bl hl text-center percent" >{{ number_format($averagePercents[$object->id.'|1'], 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                    @if (isset ($info2023_2[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_2[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2023_2[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2023_2[$object->id.'|1']['general_amount'] / $info2023_2[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_2[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2023_1[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_1[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2023_1[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2023_1[$object->id.'|1']['general_amount'] / $info2023_1[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_1[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022_2[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2022_2[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2022_2[$object->id.'|1']['general_amount'] / $info2022_2[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022_1[$object->id.'|1']))
-                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2022_1[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2022_1[$object->id.'|1']['general_amount'] / $info2022_1[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_2[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2021_2[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2021_2[$object->id.'|1']['general_amount'] / $info2021_2[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_1[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2021_1[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2021_1[$object->id.'|1']['general_amount'] / $info2021_1[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2020[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2020[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2020[$object->id.'|1']['general_amount'] / $info2020[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2019[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2019[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2019[$object->id.'|1']['general_amount'] / $info2019[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2018[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2018[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2018[$object->id.'|1']['general_amount'] / $info2018[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2017[$object->id.'|1']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2017[$object->id.'|1']['cuming_amount'] > 0 ? abs($info2017[$object->id.'|1']['general_amount'] / $info2017[$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
+                                    @foreach($generalInfo as $info)
+                                        @if (isset ($info['info'][$object->id.'|1']))
+                                            <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                            <td class="text-center percent" >{{ number_format(($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                            <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
+                                        @else
+                                            <td class="bl">-</td>
+                                            <td>-</td>
+                                            <td class="br">-</td>
+                                        @endif
+                                    @endforeach
                                 </tr>
                                 <tr>
                                     <td class="bl ps-2">{{ $object->getName() . ' | 2+4 (Инженерия)' }}</td>
 
                                     @php
-                                        $totalCuming = ($info2017[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2018[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2019[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2020[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2021_1[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2021_2[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2022[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2023_1[$object->id.'|24']['cuming_amount'] ?? 0) + ($info2023_2[$object->id.'|24']['cuming_amount'] ?? 0);
-                                        $totalGeneral = ($info2017[$object->id.'|24']['general_amount'] ?? 0) + ($info2018[$object->id.'|24']['general_amount'] ?? 0) + ($info2019[$object->id.'|24']['general_amount'] ?? 0) + ($info2020[$object->id.'|24']['general_amount'] ?? 0) + ($info2021_1[$object->id.'|24']['general_amount'] ?? 0) + ($info2021_2[$object->id.'|24']['general_amount'] ?? 0) + ($info2022[$object->id.'|24']['general_amount'] ?? 0) + ($info2023_1[$object->id.'|24']['general_amount'] ?? 0) + ($info2023_2[$object->id.'|24']['general_amount'] ?? 0);
+                                        $totalCuming = 0;
+                                        $totalGeneral = 0;
+
+                                        foreach($generalInfo as $info) {
+                                            $totalCuming += ($info['info'][$object->id.'|24']['cuming_amount'] ?? 0);
+                                            $totalGeneral += ($info['info'][$object->id.'|24']['general_amount'] ?? 0);
+                                        }
+
                                         \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral, true, false);
                                     @endphp
 
@@ -337,219 +241,49 @@
                                     <td class="bl hl text-center" >{{ number_format($averagePercents[$object->id.'|24'], 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                    @if (isset ($info2023_2[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_2[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2023_2[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2023_2[$object->id.'|24']['general_amount'] / $info2023_2[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_2[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2023_1[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_1[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2023_1[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2023_1[$object->id.'|24']['general_amount'] / $info2023_1[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_1[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022_2[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2022_2[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2022_2[$object->id.'|24']['general_amount'] / $info2022_2[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022_1[$object->id.'|24']))
-                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2022_1[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2022_1[$object->id.'|24']['general_amount'] / $info2022_1[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_2[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2021_2[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2021_2[$object->id.'|24']['general_amount'] / $info2021_2[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_1[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2021_1[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2021_1[$object->id.'|24']['general_amount'] / $info2021_1[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2020[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2020[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2020[$object->id.'|24']['general_amount'] / $info2020[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2019[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2019[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2019[$object->id.'|24']['general_amount'] / $info2019[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2018[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2018[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2018[$object->id.'|24']['general_amount'] / $info2018[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2017[$object->id.'|24']))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2017[$object->id.'|24']['cuming_amount'] > 0 ? abs($info2017[$object->id.'|24']['general_amount'] / $info2017[$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
+                                    @foreach($generalInfo as $info)
+                                        @if (isset ($info['info'][$object->id.'|24']))
+                                            <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
+                                            <td class="text-center percent" >{{ number_format(($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                            <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
+                                        @else
+                                            <td class="bl">-</td>
+                                            <td>-</td>
+                                            <td class="br">-</td>
+                                        @endif
+                                    @endforeach
                                 </tr>
                             @else
                                 <tr>
                                     <td class="bl ps-2">{{ $object->getName() }}</td>
 
                                     @php
-                                        $totalCuming = ($info2017[$object->id]['cuming_amount'] ?? 0) + ($info2018[$object->id]['cuming_amount'] ?? 0) + ($info2019[$object->id]['cuming_amount'] ?? 0) + ($info2020[$object->id]['cuming_amount'] ?? 0) + ($info2021_1[$object->id]['cuming_amount'] ?? 0) + ($info2021_2[$object->id]['cuming_amount'] ?? 0) + ($info2022_1[$object->id]['cuming_amount'] ?? 0) + ($info2022_2[$object->id]['cuming_amount'] ?? 0) + ($info2023_1[$object->id]['cuming_amount'] ?? 0) + ($info2023_2[$object->id]['cuming_amount'] ?? 0);
-                                        $totalGeneral = ($info2017[$object->id]['general_amount'] ?? 0) + ($info2018[$object->id]['general_amount'] ?? 0) + ($info2019[$object->id]['general_amount'] ?? 0) + ($info2020[$object->id]['general_amount'] ?? 0) + ($info2021_1[$object->id]['general_amount'] ?? 0) + ($info2021_2[$object->id]['general_amount'] ?? 0) + ($info2022_1[$object->id]['general_amount'] ?? 0) + ($info2022_2[$object->id]['general_amount'] ?? 0) + ($info2023_1[$object->id]['general_amount'] ?? 0) + ($info2023_2[$object->id]['general_amount'] ?? 0);;
-                                        \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
+                                            $totalCuming = 0;
+                                            $totalGeneral = 0;
+
+                                            foreach($generalInfo as $info) {
+                                                $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
+                                                $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                                            }
+
+                                            \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
                                     <td class="bl hl text-center percent" >{{ number_format($averagePercents[$object->id], 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                    @if (isset ($info2023_2[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_2[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2023_2[$object->id]['cuming_amount'] > 0 ? abs($info2023_2[$object->id]['general_amount'] / $info2023_2[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_2[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2023_1[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_1[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2023_1[$object->id]['cuming_amount'] > 0 ? abs($info2023_1[$object->id]['general_amount'] / $info2023_1[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2023_1[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022_2[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2022_2[$object->id]['cuming_amount'] > 0 ? abs($info2022_2[$object->id]['general_amount'] / $info2022_2[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_2[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2022_1[$object->id]))
-                                        <td class="text-success text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2022_1[$object->id]['cuming_amount'] > 0 ? abs($info2022_1[$object->id]['general_amount'] / $info2022_1[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2022_1[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_2[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2021_2[$object->id]['cuming_amount'] > 0 ? abs($info2021_2[$object->id]['general_amount'] / $info2021_2[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_2[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2021_1[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2021_1[$object->id]['cuming_amount'] > 0 ? abs($info2021_1[$object->id]['general_amount'] / $info2021_1[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2021_1[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2020[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2020[$object->id]['cuming_amount'] > 0 ? abs($info2020[$object->id]['general_amount'] / $info2020[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2020[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2019[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2019[$object->id]['cuming_amount'] > 0 ? abs($info2019[$object->id]['general_amount'] / $info2019[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2019[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2018[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2018[$object->id]['cuming_amount'] > 0 ? abs($info2018[$object->id]['general_amount'] / $info2018[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2018[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
-
-                                    @if (isset ($info2017[$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info2017[$object->id]['cuming_amount'] > 0 ? abs($info2017[$object->id]['general_amount'] / $info2017[$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info2017[$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                    @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
-                                    @endif
+                                    @foreach($generalInfo as $info)
+                                        @if (isset ($info['info'][$object->id]))
+                                            <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                            <td class="text-center percent" >{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                            <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                        @else
+                                            <td class="bl">-</td>
+                                            <td>-</td>
+                                            <td class="br">-</td>
+                                        @endif
+                                    @endforeach
                                 </tr>
                             @endif
                         @endforeach
