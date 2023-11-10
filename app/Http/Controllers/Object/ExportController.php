@@ -9,7 +9,7 @@ use App\Services\PivotObjectDebtService;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class  ExportController extends Controller
+class ExportController extends Controller
 {
     private PivotObjectDebtService $pivotObjectDebtService;
 
