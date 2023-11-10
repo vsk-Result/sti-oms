@@ -6,6 +6,7 @@ use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -127,7 +128,7 @@ class PivotSheet implements
 
         $columnIndex = 0;
         foreach($generalInfo as $info) {
-            $sheet->setCellValue($columns[$columnIndex] . '1', 'С ' . $info['start_date'] . ' ПО ' .  $info['end_date']);
+            $sheet->setCellValue($columns[$columnIndex] . '1', 'С ' . Carbon::parse($info['start_date'])->format('d.m.Y') . ' ПО ' .  Carbon::parse($info['end_date'])->format('d.m.Y'));
             $sheet->setCellValue($columns[$columnIndex + 1] . '1', CurrencyExchangeRate::format($info['general_amount'], 'RUB', 0, true));
             $columnIndex += 2;
         }

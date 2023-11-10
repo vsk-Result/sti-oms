@@ -121,7 +121,7 @@
                             <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotalAmount, 'RUB') }}</th>
 
                             @foreach($generalInfo as $info)
-                                <th class="min-w-125px bt">с {{ $info['start_date'] }} по {{ $info['end_date'] }}</th>
+                                <th class="min-w-125px bt">с {{ \Carbon\Carbon::parse($info['start_date'])->format('d.m.Y') }} по {{ \Carbon\Carbon::parse($info['end_date'])->format('d.m.Y') }}</th>
                                 <th class="bt percent" ></th>
                                 <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['general_amount'], 'RUB') }}</th>
                             @endforeach
