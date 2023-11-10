@@ -71,7 +71,7 @@ class GuaranteeSheet implements
     public function map($row): array
     {
         return [
-            $row->contract->getName(),
+            $row->contract ? $row->contract->getName() : '',
             $row->customer->name ?? '',
             $row->currency,
             $row->amount,
