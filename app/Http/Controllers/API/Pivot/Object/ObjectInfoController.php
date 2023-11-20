@@ -52,20 +52,20 @@ class ObjectInfoController extends Controller
                 $contractorDebtsAmount = 0;
 
                 foreach ($contractorDebts as $in) {
-                    $contractorDebtsAmount += $in['worktype'][1] ?? 0;
-                    $contractorDebtsAmount += $in['worktype'][2] ?? 0;
-                    $contractorDebtsAmount += $in['worktype'][4] ?? 0;
-                    $contractorDebtsAmount += $in['worktype'][7] ?? 0;
+                    $contractorDebtsAmount += array($in->worktype)[1] ?? 0;
+                    $contractorDebtsAmount += array($in->worktype)[2] ?? 0;
+                    $contractorDebtsAmount += array($in->worktype)[4] ?? 0;
+                    $contractorDebtsAmount += array($in->worktype)[7] ?? 0;
                 }
 
                 $providerDebts = $debts['provider']->debts;
                 $providerDebtsAmount = 0;
 
                 foreach ($providerDebts as $in) {
-                    $providerDebtsAmount += $in['worktype'][1] ?? 0;
-                    $providerDebtsAmount += $in['worktype'][2] ?? 0;
-                    $providerDebtsAmount += $in['worktype'][4] ?? 0;
-                    $providerDebtsAmount += $in['worktype'][7] ?? 0;
+                    $providerDebtsAmount += array($in->worktype)[1] ?? 0;
+                    $providerDebtsAmount += array($in->worktype)[2] ?? 0;
+                    $providerDebtsAmount += array($in->worktype)[4] ?? 0;
+                    $providerDebtsAmount += array($in->worktype)[7] ?? 0;
                 }
 
                 $totalDebts = $contractorDebtsAmount + $providerDebtsAmount;
