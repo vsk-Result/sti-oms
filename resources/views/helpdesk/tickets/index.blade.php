@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="menu-item">
-                        <a href="{{ route('helpdesk.tickets.index') }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index') ? 'active' : '' }}">
+                        <a href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_ACTIVE]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_ACTIVE]]) ? 'active' : '' }}">
                             <span class="menu-title">Открытые</span>
                             <span class="menu-badge">{{ $openTicketsCount }}</span>
                         </a>

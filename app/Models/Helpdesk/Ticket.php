@@ -26,7 +26,7 @@ class Ticket extends Model implements Audit, HasMedia
 
     protected $fillable = [
         'execution_date', 'complete_date', 'title', 'created_by_user_id',
-        'updated_by_user_id', 'content', 'priority_id', 'object_id'
+        'updated_by_user_id', 'content', 'priority_id', 'object_id', 'status_id'
     ];
 
     const PREVIEW_TITLE_TEXT_LENGTH = 65;
@@ -35,6 +35,11 @@ class Ticket extends Model implements Audit, HasMedia
     public function answers(): HasMany
     {
         return $this->hasMany(Answer::class, 'ticket_id');
+    }
+
+    public function object(): BelongsTo
+    {
+        return $this->belongsTo(BObject::class, 'object_id');
     }
 
     public function getPriority(): object
@@ -74,5 +79,21 @@ class Ticket extends Model implements Audit, HasMedia
     public function scopeClosed($query)
     {
         return $query->where('status_id', Status::STATUS_BLOCKED);
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->status_id === Status::STATUS_BLOCKED;
+    }
+
+    public function isOpened(): bool
+    {
+        return $this->status_id === Status::STATUS_ACTIVE;
+    }
+
+    public function getObjectName(): string
+    {
+        $object = $this->object;
+        return $object ? $object->getName() : 'Общее';
     }
 }

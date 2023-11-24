@@ -26,7 +26,7 @@
 
                         <div class="menu-item menu-lg-down-accordion me-lg-1">
                             <span class="menu-link py-3">
-                                <a class="menu-title" href="{{ route('helpdesk.tickets.index') }}">Служба поддержки</a>
+                                <a class="menu-title" href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_ACTIVE]]) }}">Служба поддержки</a>
                             </span>
                         </div>
                     </div>

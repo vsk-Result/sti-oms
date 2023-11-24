@@ -2,14 +2,9 @@
 
 namespace App\Services\Helpdesk;
 
-use App\Models\BankGuarantee;
-use App\Models\Currency;
+use App\Events\Helpdesk\Ticket\Answer\AnswerCreated;
 use App\Models\Helpdesk\Answer;
-use App\Models\Helpdesk\Ticket;
 use App\Models\Status;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class AnswerService
 {
@@ -27,5 +22,7 @@ class AnswerService
                 $answer->addMedia($file)->toMediaCollection();
             }
         }
+
+        AnswerCreated::dispatch($answer);
     }
 }

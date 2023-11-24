@@ -2,14 +2,16 @@
 
 namespace App\Services\Helpdesk;
 
-use App\Models\BankGuarantee;
-use App\Models\Currency;
+use App\Events\Helpdesk\Ticket\TicketClosed;
+use App\Events\Helpdesk\Ticket\TicketCreated;
+use App\Events\Helpdesk\Ticket\TicketDeleted;
+use App\Events\Helpdesk\Ticket\TicketOpened;
+use App\Events\Helpdesk\Ticket\TicketUpdated;
 use App\Models\Helpdesk\Priority;
 use App\Models\Helpdesk\Ticket;
 use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -117,6 +119,8 @@ class TicketService
                 $ticket->addMedia($file)->toMediaCollection();
             }
         }
+
+        TicketCreated::dispatch($ticket);
     }
 
     public function updateTicket(Ticket $ticket, array $requestData): void
@@ -136,10 +140,32 @@ class TicketService
                 $ticket->addMedia($file)->toMediaCollection();
             }
         }
+
+        TicketUpdated::dispatch($ticket, auth()->user());
     }
 
     public function destroyTicket(Ticket $ticket): void
     {
+        TicketDeleted::dispatch($ticket, auth()->user());
+
         $ticket->delete();
+    }
+
+    public function openTicket(Ticket $ticket): void
+    {
+        $ticket->update([
+            'status_id' => Status::STATUS_ACTIVE
+        ]);
+
+        TicketOpened::dispatch($ticket, auth()->user());
+    }
+
+    public function closeTicket(Ticket $ticket): void
+    {
+        $ticket->update([
+            'status_id' => Status::STATUS_BLOCKED
+        ]);
+
+        TicketClosed::dispatch($ticket, auth()->user());
     }
 }

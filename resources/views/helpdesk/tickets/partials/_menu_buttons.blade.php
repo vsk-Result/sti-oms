@@ -10,6 +10,33 @@
                 <a href="{{ route('helpdesk.tickets.edit', $ticket) }}" class="menu-link px-3">Изменить</a>
             </div>
             <div class="menu-item px-3">
+                @if ($ticket->isClosed())
+                    <form action="{{ route('helpdesk.tickets.open', $ticket) }}" method="POST" class="hidden">
+                        @csrf
+                        <a
+                                href="#"
+                                class="menu-link px-3 text-success"
+                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите открыть обращение?')) {this.closest('form').submit();}"
+                        >
+                            Открыть
+                        </a>
+                    </form>
+                @endif
+
+                @if ($ticket->isOpened())
+                    <form action="{{ route('helpdesk.tickets.close', $ticket) }}" method="POST" class="hidden">
+                        @csrf
+                        <a
+                                href="#"
+                                class="menu-link px-3 text-warning"
+                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите закрыть обращение?')) {this.closest('form').submit();}"
+                        >
+                            Закрыть
+                        </a>
+                    </form>
+                @endif
+            </div>
+            <div class="menu-item px-3">
                 <form action="{{ route('helpdesk.tickets.destroy', $ticket) }}" method="POST" class="hidden">
                     @csrf
                     @method('DELETE')
