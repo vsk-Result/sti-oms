@@ -45,7 +45,7 @@
                         <div class="separator my-4"></div>
                     </li>
                     <li class="row">
-                        <div class="col-md-4 fw-bolder">PROM BALANS + NE ZAKRITI DOGOVOR</div>
+                        <div class="col-md-4 fw-bolder">ПРОГНОЗ БАЛАНС + NE ZAKRITI DOGOVOR</div>
                         <div class="col-md-8">Формула: Промежуточный баланс с текущими долгами и общими расходами компании + Остаток денег к получ. с учётом ГУ - Сумма аванса к получению</div>
                         <div class="separator my-4"></div>
                     </li>

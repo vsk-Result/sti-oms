@@ -9,7 +9,7 @@
             'Промежуточный баланс с текущими долгами и общими расходами компании' => 'interim_balance',
             'Общая сумма договоров' => 'contract_total_amount',
             'Остаток денег к получ. с учётом ГУ' => 'contract_avanses_non_closes_amount',
-            'PROM BALANS +  NE ZAKRITI DOGOVOR' => 'interim_balance_non_closes',
+            'ПРОГНОЗ БАЛАНС +  NE ZAKRITI DOGOVOR' => 'interim_balance_non_closes',
             'Сумма аванса к получению' => 'contract_avanses_left_amount',
             'Долг подписанных актов' => 'contract_avanses_acts_left_paid_amount',
             'Всего оплачено авансов' => 'contract_avanses_received_amount',
