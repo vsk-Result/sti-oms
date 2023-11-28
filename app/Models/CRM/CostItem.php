@@ -33,6 +33,10 @@ class CostItem extends Model
 
     public function getKostCode()
     {
+        if (!empty($this->new_cost_code)) {
+            return $this->new_cost_code;
+        }
+
         if ($this->kost) {
             return $this->kost->category_id . '.' . $this->kost->code;
         } else if ($this->kostCat) {
