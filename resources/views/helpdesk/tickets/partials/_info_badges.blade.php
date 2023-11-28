@@ -8,4 +8,10 @@
             <i class="fa fa-clock me-2"></i> {{ $ticket->getExecutionLeft() }}
         </div>
     @endif
+
+    @if ($ticket->haveUnreadUpdates() && isset($isPreview))
+        <div title="Есть непрочитанные изменения" class="fs-7 badge badge-success badge-light px-4 py-2 me-2 fw-bold">
+            Есть непрочитанные изменения
+        </div>
+    @endif
 </div>

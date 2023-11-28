@@ -2,15 +2,14 @@
 
 namespace App\Models\Helpdesk;
 
-use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Models\Status;
-use App\Traits\HasBank;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -95,5 +94,10 @@ class Ticket extends Model implements Audit, HasMedia
     {
         $object = $this->object;
         return $object ? $object->getName() : 'Общее';
+    }
+
+    public function haveUnreadUpdates(): bool
+    {
+        return TicketRead::where('ticket_id', $this->id)->where('receiver_user_id', auth()->id())->exists();
     }
 }

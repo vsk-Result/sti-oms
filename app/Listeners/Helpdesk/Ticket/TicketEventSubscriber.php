@@ -28,7 +28,7 @@ class TicketEventSubscriber
             Mail::send('emails.helpdesk.tickets.created', compact('ticket', 'ticketAuthor'), function ($m) use ($ticketAuthor, $emailSubject) {
                 $m->from('support@st-ing.com', 'OMS Helpdesk');
                 $m->to($this->assignTo);
-//                $m->cc($this->alwaysCopyTo);
+                $m->cc($this->alwaysCopyTo);
                 $m->cc($ticketAuthor->email)
                     ->subject($emailSubject);
             });

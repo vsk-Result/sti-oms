@@ -235,8 +235,13 @@ body, html {
 
 /* Выделить активный элемент header */
 .header .header-menu .menu>.menu-item.here>.menu-link .menu-title, .header .header-menu .menu>.menu-item.show>.menu-link .menu-title,
-.header .header-menu .menu>.menu-item .menu-link:hover:not(.disabled):not(.active) .menu-title, .header .header-menu .menu>.menu-item.hover>.menu-link:not(.disabled):not(.active) .menu-title {
+.header .header-menu .menu>.menu-item .menu-link:hover:not(.disabled):not(.active) .menu-title, .header .header-menu .menu>.menu-item.hover>.menu-link:not(.disabled):not(.active) .menu-title
+{
     color: #f15a22;
+}
+
+.helpdesk-menu-link a {
+    color: #f15a22 !important;
 }
 
 /* Выделить 1 раз новую строку в таблице */

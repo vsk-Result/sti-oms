@@ -97,9 +97,8 @@ class TicketService
             ];
         }
 
-
         $query->with( 'answers');
-        $query->orderByDesc('priority_id')->orderByDesc('execution_date');
+        $query->orderByDesc('created_at');
 
         return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }

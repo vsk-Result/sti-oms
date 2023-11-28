@@ -25,8 +25,17 @@
                         @include('headers.favourite-links.index')
 
                         <div class="menu-item menu-lg-down-accordion me-lg-1">
-                            <span class="menu-link py-3">
-                                <a class="menu-title" href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_ACTIVE]]) }}">Служба поддержки</a>
+                            <span class="helpdesk-menu-link menu-link py-3">
+                                @php
+                                    $haveUnreadUpdatesInHelpdesk = \App\Models\Helpdesk\TicketRead::haveUnreadUpdates();
+                                @endphp
+                                <a class="menu-title position-relative" href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_ACTIVE]]) }}">
+                                    Служба поддержки
+                                    @if ($haveUnreadUpdatesInHelpdesk)
+                                        <span class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink">
+            </span>
+                                    @endif
+                                </a>
                             </span>
                         </div>
                     </div>

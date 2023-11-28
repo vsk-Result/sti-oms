@@ -1,5 +1,5 @@
 <div class="ticket-preview">
-    @include('helpdesk.tickets.partials._info_badges', compact('ticket'))
+    @include('helpdesk.tickets.partials._info_badges', ['ticket' => $ticket, 'isPreview' => true])
 
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div class="w-100 d-flex flex-row justify-content-between">

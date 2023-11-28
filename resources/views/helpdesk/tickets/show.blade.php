@@ -91,11 +91,11 @@
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center py-1">
-                            <a href="#" class="btn btn-sm btn-flex btn-color-gray-500 btn-active-light me-1">
-                                Ответить
-                            </a>
-                        </div>
+{{--                        <div class="d-flex align-items-center py-1">--}}
+{{--                            <a href="#" class="btn btn-sm btn-flex btn-color-gray-500 btn-active-light me-1">--}}
+{{--                                Ответить--}}
+{{--                            </a>--}}
+{{--                        </div>--}}
                     </div>
 
                     <div class="fs-5 fw-normal text-gray-800">

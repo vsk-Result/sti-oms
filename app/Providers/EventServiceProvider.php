@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Listeners\Helpdesk\Ticket\AnswerEventSubscriber;
 use App\Listeners\Helpdesk\Ticket\TicketEventSubscriber;
+use App\Listeners\Helpdesk\Ticket\ViewNotificationSubscriber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -29,6 +30,7 @@ class EventServiceProvider extends ServiceProvider
     protected $subscribe = [
         TicketEventSubscriber::class,
         AnswerEventSubscriber::class,
+        ViewNotificationSubscriber::class,
     ];
 
     /**

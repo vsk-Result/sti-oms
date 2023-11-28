@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Helpdesk\StoreTicketRequest;
 use App\Models\Helpdesk\Priority;
 use App\Models\Helpdesk\Ticket;
+use App\Models\Helpdesk\TicketRead;
 use App\Models\Object\BObject;
 use App\Services\Helpdesk\TicketService;
 use Illuminate\Http\RedirectResponse;
@@ -64,6 +65,7 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket): View
     {
+        TicketRead::where('ticket_id', $ticket->id)->where('receiver_user_id', auth()->id())->delete();
         return view('helpdesk.tickets.show', compact('ticket'));
     }
 
