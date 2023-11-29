@@ -72,7 +72,11 @@ class ImportObjectDebtsFromExcel extends Command
         foreach ($availableCodes as $code) {
             Log::channel('custom_imports_log')->debug('[INFO] Загружается файл ' . $code . '.xlsx');
 
+            // Путь до файла с автоматической загрузкой
             $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xlsx';
+
+            //Путь до файла с ручной загрузкой
+            $importManualFilePath = storage_path() . '/app/public/public/objects-debts-manuals/' . $code . '.xlsx';
 
             if (! File::exists($importFilePath)) {
                 Log::channel('custom_imports_log')->debug('[INFO] Не загрузился файл ' . $code . '.xlsx, загружается файл ' . $code . '.xls');
@@ -84,6 +88,13 @@ class ImportObjectDebtsFromExcel extends Command
                     Log::channel('custom_imports_log')->debug($errorMessage);
                     $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
                     return 0;
+                }
+            }
+
+            // Самый новый файл будет являться актуальным при загрузке
+            if (File::exists($importManualFilePath)) {
+                if (File::lastModified($importManualFilePath) > File::lastModified($importFilePath)) {
+                    $importFilePath = $importManualFilePath;
                 }
             }
 

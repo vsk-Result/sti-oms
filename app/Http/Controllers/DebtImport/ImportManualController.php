@@ -27,8 +27,8 @@ class ImportManualController extends Controller
 
         $object = BObject::find($objectId);
 
-        // Заменим файл в папке
-        Storage::putFileAs('public/objects-debts', $file, $object->code . '.xlsx');
+        // Закинем в папку для ручных загрузок
+        Storage::putFileAs('public/objects-debts-manuals', $file, $object->code . '.xlsx');
 
         //Если есть запись о загрузке подрядчиков, удалим
 //        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->where('date', now()->format('Y-m-d'))->first();
