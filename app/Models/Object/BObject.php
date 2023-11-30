@@ -5,6 +5,7 @@ namespace App\Models\Object;
 use App\Models\BankGuarantee;
 use App\Models\Contract\Act;
 use App\Models\Contract\Contract;
+use App\Models\CRM\Avans;
 use App\Models\CRM\ItrSalary;
 use App\Models\CRM\SalaryDebt;
 use App\Models\CRM\SalaryPaidMonth;
@@ -246,6 +247,8 @@ class  BObject extends Model implements Audit
 
         $details['real']['amount'] = (clone $debtQuery)->sum('amount');
         $details['predict']['amount'] = -(clone $debtQuery)->sum('total_amount');
+
+        $details['predict']['amount'] -= -abs(Avans::where('code', 'LIKE', $this->code . '%')->where('date', Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('Y-m-d'))->where('type', 'Карты')->sum('value'));
 
         return $details;
     }
