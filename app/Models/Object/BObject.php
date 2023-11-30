@@ -248,7 +248,7 @@ class  BObject extends Model implements Audit
         $details['real']['amount'] = (clone $debtQuery)->sum('amount');
         $details['predict']['amount'] = -(clone $debtQuery)->sum('total_amount');
 
-        $details['predict']['amount'] -= abs(Avans::where('code', 'LIKE', $this->code . '%')->where('date', Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('Y-m'))->where('type', 'Карты')->sum('value'));
+        $details['predict']['amount'] += abs(Avans::where('code', 'LIKE', $this->code . '.%')->where('date', Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('Y-m'))->where('type', 'Карты')->sum('value'));
 
         if ($details['real']['amount'] > 0) {
             $details['real']['amount'] = 0;
