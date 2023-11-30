@@ -250,6 +250,15 @@ class  BObject extends Model implements Audit
 
         $details['predict']['amount'] -= -abs(Avans::where('code', 'LIKE', $this->code . '%')->where('date', Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('Y-m'))->where('type', 'Карты')->sum('value'));
 
+        if ($details['real']['amount'] > 0) {
+            $details['real']['amount'] = 0;
+        }
+
+        if ($details['predict']['amount'] > 0) {
+            $details['predict']['amount'] = 0;
+        }
+
+
         return $details;
     }
 
