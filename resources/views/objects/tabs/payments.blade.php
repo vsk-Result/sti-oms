@@ -112,7 +112,7 @@
                 },
                 {},
                 () => {
-                    KTApp.init();
+                    §
                     mainApp.init();
                     $('[name=return_url]').val(window.location.href);
                     $('#createPaymentModal').modal('show');

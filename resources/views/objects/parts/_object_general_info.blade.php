@@ -2,10 +2,16 @@
 
 <div class="d-flex flex-wrap flex-sm-nowrap mb-6">
     <div class="me-7 mb-4">
-        <div class="symbol symbol-150px">
-            <div class="symbol-label" style="background-image:url({{ $object->getPhoto() }})"></div>
-        </div>
+        <a class="d-block overlay w-150px" data-fslightbox="object-{{ $object->id }}" href="{{ $object->getPhoto() }}">
+            <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
+                 style="background-image:url({{ $object->getPhoto() }})">
+            </div>
+            <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow">
+                <i class="bi bi-eye-fill text-white fs-3x"></i>
+            </div>
+        </a>
     </div>
+
     <div class="flex-grow-1">
         <div class="d-flex justify-content-between align-items-start flex-wrap">
             <div class="d-flex flex-column">

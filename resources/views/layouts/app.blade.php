@@ -60,6 +60,7 @@
 <script src="{{ asset('js/scripts.bundle.js') }}"></script>
 <script src="{{ asset('vendor/freezeTable/freeze.min.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('vendor/fslightbox/fslightbox.bundle.js') }}"></script>
 @stack('scripts')
 
 </body>

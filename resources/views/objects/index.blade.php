@@ -99,6 +99,7 @@
                 {},
                 () => {
                     objectsContainerblockUI.release();
+                    refreshFsLightbox();
                 }
             )
         }
