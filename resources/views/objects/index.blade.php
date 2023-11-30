@@ -99,6 +99,7 @@
                 {},
                 () => {
                     objectsContainerblockUI.release();
+                    KTApp.init();
                     refreshFsLightbox();
                 }
             )
