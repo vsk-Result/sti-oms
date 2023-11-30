@@ -118,7 +118,53 @@ class PivotSheet implements
             $generalTotalAmount += $generalAmount;
         }
 
-        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
+        $averagePercents = [];
+        foreach($objects as $object) {
+            $percentOneSum = 0;
+            $percentOneCount = 0;
+
+            $percentTwoSum = 0;
+            $percentTwoCount = 0;
+
+            $percentSum = 0;
+            $percentCount = 0;
+
+            foreach($generalInfo as $info) {
+                if ($object->code == 288) {
+                    $percentOne = 0;
+                    $percentTwo = 0;
+
+                    if (isset($info['info'][$object->id.'|1'])) {
+                        $percentOne = ($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100;
+                        $percentOneSum += $percent;
+                        $percentOneCount++;
+                    }
+
+                    if (isset($info['info'][$object->id.'|24'])) {
+                        $percentTwo = ($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100;
+                        $percentTwoSum += $percent;
+                        $percentTwoCount++;
+                    }
+                } else {
+                    $percent = 0;
+
+                    if (isset($info['info'][$object->id])) {
+                        $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
+                        $percentSum += $percent;
+                        $percentCount++;
+                    }
+                }
+            }
+
+            if ($object->code == 288) {
+                $averagePercents[$object->id.'|1'] = $percentOneCount > 0 ? $percentOneSum / $percentOneCount : 0;
+                $averagePercents[$object->id.'|24'] = $percentTwoCount > 0 ? $percentTwoSum / $percentTwoCount : 0;
+            } else {
+                $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
+            }
+        }
+
+        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH'];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
@@ -129,42 +175,30 @@ class PivotSheet implements
         $columnIndex = 0;
         foreach($generalInfo as $info) {
             $sheet->setCellValue($columns[$columnIndex] . '1', 'С ' . Carbon::parse($info['start_date'])->format('d.m.Y') . ' ПО ' .  Carbon::parse($info['end_date'])->format('d.m.Y'));
-            $sheet->setCellValue($columns[$columnIndex + 1] . '1', CurrencyExchangeRate::format($info['general_amount'], 'RUB', 0, true));
-            $columnIndex += 2;
+            $sheet->setCellValue($columns[$columnIndex + 2] . '1', CurrencyExchangeRate::format($info['general_amount'], 'RUB', 0, true));
+            $columnIndex += 3;
         }
 
         $sheet->getStyle('D1')->getFont()->setColor(new Color($generalTotalAmount < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
-        $columnIndex = 1;
+        $columnIndex = 2;
         foreach($generalInfo as $info) {
             $sheet->getStyle($columns[$columnIndex] . '1')->getFont()->setColor(new Color($info['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $columnIndex += 2;
+            $columnIndex += 3;
         }
 
         $sheet->setCellValue('A2', 'Объект');
         $sheet->setCellValue('B2', 'Получено');
         $sheet->setCellValue('C2', '%');
         $sheet->setCellValue('D2', 'Общие расходы');
-        $sheet->setCellValue('E2', 'Получено');
-        $sheet->setCellValue('F2', 'Общие расходы на объект');
-        $sheet->setCellValue('G2', 'Получено');
-        $sheet->setCellValue('H2', 'Общие расходы на объект');
-        $sheet->setCellValue('I2', 'Получено');
-        $sheet->setCellValue('J2', 'Общие расходы на объект');
-        $sheet->setCellValue('K2', 'Получено');
-        $sheet->setCellValue('L2', 'Общие расходы на объект');
-        $sheet->setCellValue('M2', 'Получено');
-        $sheet->setCellValue('N2', 'Общие расходы на объект');
-        $sheet->setCellValue('O2', 'Получено');
-        $sheet->setCellValue('P2', 'Общие расходы на объект');
-        $sheet->setCellValue('Q2', 'Получено');
-        $sheet->setCellValue('R2', 'Общие расходы на объект');
-        $sheet->setCellValue('S2', 'Получено');
-        $sheet->setCellValue('T2', 'Общие расходы на объект');
-        $sheet->setCellValue('U2', 'Получено');
-        $sheet->setCellValue('V2', 'Общие расходы на объект');
-        $sheet->setCellValue('W2', 'Получено');
-        $sheet->setCellValue('X2', 'Общие расходы на объект');
+
+        $columnIndex = 0;
+        foreach($generalInfo as $info) {
+            $sheet->setCellValue($columns[$columnIndex] . '2', 'Получено');
+            $sheet->setCellValue($columns[$columnIndex + 1] . '2', '%');
+            $sheet->setCellValue($columns[$columnIndex + 2] . '2', 'Общие расходы на объект');
+            $columnIndex += 3;
+        }
 
         $row = 3;
         foreach($objects as $object) {
@@ -179,7 +213,7 @@ class PivotSheet implements
                 }
 
                 $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-                $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
+                $sheet->setCellValue('C' . $row, number_format($averagePercents[$object->id.'|1'], 2));
                 $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
 
                 $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -189,13 +223,14 @@ class PivotSheet implements
                 foreach($generalInfo as $info) {
                     if (isset ($info['info'][$object->id.'|1'])) {
                         $sheet->setCellValue($columns[$columnIndex] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|1']['cuming_amount'], 'RUB', 0, true));
-                        $sheet->setCellValue($columns[$columnIndex + 1] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|1']['general_amount'], 'RUB', 0, true));
+                        $sheet->setCellValue($columns[$columnIndex + 1] . $row, number_format(($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100, 2));
+                        $sheet->setCellValue($columns[$columnIndex + 2] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|1']['general_amount'], 'RUB', 0, true));
 
                         $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|1']['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                        $sheet->getStyle($columns[$columnIndex + 1] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|1']['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                        $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|1']['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                     }
 
-                    $columnIndex += 2;
+                    $columnIndex += 3;
                 }
 
                 $sheet->getRowDimension($row)->setRowHeight(50);
@@ -211,7 +246,7 @@ class PivotSheet implements
                 }
 
                 $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-                $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
+                $sheet->setCellValue('C' . $row, number_format($averagePercents[$object->id.'|24'], 2));
                 $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
 
                 $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -221,13 +256,14 @@ class PivotSheet implements
                 foreach($generalInfo as $info) {
                     if (isset ($info['info'][$object->id.'|24'])) {
                         $sheet->setCellValue($columns[$columnIndex] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|24']['cuming_amount'], 'RUB', 0, true));
-                        $sheet->setCellValue($columns[$columnIndex + 1] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|24']['general_amount'], 'RUB', 0, true));
+                        $sheet->setCellValue($columns[$columnIndex + 1] . $row, number_format(($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100, 2));
+                        $sheet->setCellValue($columns[$columnIndex + 2] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|24']['general_amount'], 'RUB', 0, true));
 
                         $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|24']['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                        $sheet->getStyle($columns[$columnIndex + 1] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|24']['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                        $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|24']['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                     }
 
-                    $columnIndex += 2;
+                    $columnIndex += 3;
                 }
 
                 $sheet->getRowDimension($row)->setRowHeight(50);
@@ -246,7 +282,7 @@ class PivotSheet implements
             }
 
             $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-            $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
+            $sheet->setCellValue('C' . $row, number_format($averagePercents[$object->id], 2));
             $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
 
             $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -256,13 +292,14 @@ class PivotSheet implements
             foreach($generalInfo as $info) {
                 if (isset ($info['info'][$object->id])) {
                     $sheet->setCellValue($columns[$columnIndex] . $row, CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true));
-                    $sheet->setCellValue($columns[$columnIndex + 1] . $row, CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true));
+                    $sheet->setCellValue($columns[$columnIndex + 1] . $row, number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2));
+                    $sheet->setCellValue($columns[$columnIndex + 2] . $row, CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true));
 
                     $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                    $sheet->getStyle($columns[$columnIndex + 1] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                    $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                 }
 
-                $columnIndex += 2;
+                $columnIndex += 3;
             }
 
             $sheet->getRowDimension($row)->setRowHeight(50);
@@ -277,51 +314,48 @@ class PivotSheet implements
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(20);
         $sheet->getColumnDimension('D')->setWidth(20);
-        $sheet->getColumnDimension('E')->setWidth(20);
-        $sheet->getColumnDimension('F')->setWidth(20);
-        $sheet->getColumnDimension('G')->setWidth(20);
-        $sheet->getColumnDimension('H')->setWidth(20);
-        $sheet->getColumnDimension('I')->setWidth(20);
-        $sheet->getColumnDimension('J')->setWidth(20);
-        $sheet->getColumnDimension('K')->setWidth(20);
-        $sheet->getColumnDimension('L')->setWidth(20);
-        $sheet->getColumnDimension('M')->setWidth(20);
-        $sheet->getColumnDimension('N')->setWidth(20);
-        $sheet->getColumnDimension('O')->setWidth(20);
-        $sheet->getColumnDimension('P')->setWidth(20);
-        $sheet->getColumnDimension('Q')->setWidth(20);
-        $sheet->getColumnDimension('R')->setWidth(20);
-        $sheet->getColumnDimension('S')->setWidth(20);
-        $sheet->getColumnDimension('T')->setWidth(20);
-        $sheet->getColumnDimension('U')->setWidth(20);
-        $sheet->getColumnDimension('V')->setWidth(20);
-        $sheet->getColumnDimension('W')->setWidth(20);
-        $sheet->getColumnDimension('X')->setWidth(20);
 
-        $sheet->getStyle('A1:X' . $row)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(true);
+        foreach($columns as $column) {
+            $sheet->getColumnDimension($column)->setWidth(20);
+        }
+
+        $sheet->getStyle('A1:AH' . $row)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(true);
 
         $sheet->getStyle('A1:A' . $row)->getAlignment()->setHorizontal('left');
         $sheet->getStyle('B1')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('E1')->getAlignment()->setHorizontal('left');
-        $sheet->getStyle('G1')->getAlignment()->setHorizontal('left');
-        $sheet->getStyle('I1')->getAlignment()->setHorizontal('left');
+        $sheet->getStyle('H1')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('K1')->getAlignment()->setHorizontal('left');
-        $sheet->getStyle('M1')->getAlignment()->setHorizontal('left');
-        $sheet->getStyle('O1')->getAlignment()->setHorizontal('left');
+        $sheet->getStyle('N1')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('Q1')->getAlignment()->setHorizontal('left');
-        $sheet->getStyle('S1')->getAlignment()->setHorizontal('left');
-        $sheet->getStyle('U1')->getAlignment()->setHorizontal('left');
+        $sheet->getStyle('T1')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('W1')->getAlignment()->setHorizontal('left');
-        $sheet->getStyle('B2:X2')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('Z1')->getAlignment()->setHorizontal('left');
+        $sheet->getStyle('AC1')->getAlignment()->setHorizontal('left');
+        $sheet->getStyle('AF1')->getAlignment()->setHorizontal('left');
+
+        $sheet->getStyle('F1:F' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('I1:I' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('L1:L' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('O1:O' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('R1:R' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('U1:U' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('T1:T' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('X1:X' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('AA1:AA' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('AD1:AD' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('AG1:AG' . $row)->getAlignment()->setHorizontal('center');
+
+        $sheet->getStyle('B2:AH2')->getAlignment()->setHorizontal('center');
         $sheet->getStyle('C3:C' . $row)->getAlignment()->setHorizontal('center');
 
-        $sheet->getStyle('A1:V1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:AH1')->getFont()->setBold(true);
         $sheet->getStyle('B1:D' . $row)->getFont()->setBold(true);
 
-        $sheet->getStyle('A1:X2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('A1:AH2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
         $sheet->getStyle('B1:D' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-        $sheet->getStyle('A1:X' . $row)->applyFromArray([
+        $sheet->getStyle('A1:AH' . $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'dddddd']]]
         ]);
 
@@ -329,43 +363,43 @@ class PivotSheet implements
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('E1:F' . $row)->applyFromArray([
+        $sheet->getStyle('E1:G' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('G1:H' . $row)->applyFromArray([
+        $sheet->getStyle('H1:J' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('I1:J' . $row)->applyFromArray([
+        $sheet->getStyle('K1:M' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('K1:L' . $row)->applyFromArray([
+        $sheet->getStyle('N1:P' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('M1:N' . $row)->applyFromArray([
+        $sheet->getStyle('Q1:S' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('O1:P' . $row)->applyFromArray([
+        $sheet->getStyle('T1:V' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('Q1:R' . $row)->applyFromArray([
+        $sheet->getStyle('W1:Y' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('S1:T' . $row)->applyFromArray([
+        $sheet->getStyle('Z1:AB' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('U1:V' . $row)->applyFromArray([
+        $sheet->getStyle('AC1:AE' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
 
-        $sheet->getStyle('W1:X' . $row)->applyFromArray([
+        $sheet->getStyle('AF1:AH' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
     }
