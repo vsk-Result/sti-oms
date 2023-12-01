@@ -75,6 +75,10 @@ class Act extends Model implements Audit, HasMedia
 
     public function getNeedPaidAmount(): string
     {
+        if (! empty($this->manual_left_paid_amount)) {
+            return $this->manual_left_paid_amount;
+        }
+
         return $this->amount_need_paid;
     }
 
@@ -89,6 +93,6 @@ class Act extends Model implements Audit, HasMedia
             return $this->manual_left_paid_amount;
         }
 
-        return $this->amount_need_paid - $this->payments->sum('amount');
+        return $this->getNeedPaidAmount() - $this->getPaidAmount();
     }
 }

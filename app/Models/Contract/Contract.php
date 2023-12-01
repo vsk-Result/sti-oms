@@ -235,7 +235,10 @@ class Contract extends Model implements HasMedia, Audit
 
     public function getActsNeedPaidAmount(string $currency = null): string|array
     {
-        $amount = $this->acts->sum('amount_need_paid');
+        $amount = 0;
+        foreach ($this->acts as $act) {
+            $amount += $act->getNeedPaidAmount();
+        }
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
         if ($this->isMain()) {
@@ -244,7 +247,9 @@ class Contract extends Model implements HasMedia, Audit
             }
 
             foreach ($this->children->where('currency', $currency) as $subContract) {
-                $amount += $subContract->acts->sum('amount_need_paid');
+                foreach ($subContract->acts as $act) {
+                    $amount += $act->getNeedPaidAmount();
+                }
             }
         }
 
@@ -293,11 +298,16 @@ class Contract extends Model implements HasMedia, Audit
             }
         }
 
-        $amount = $this->acts->sum('amount_need_paid');
+        $amount = 0;
+        foreach ($this->acts as $act) {
+            $amount += $act->getNeedPaidAmount();
+        }
 
         if ($this->isMain()) {
             foreach ($this->children->where('currency', $currency) as $subContract) {
-                $amount += $subContract->acts->sum('amount_need_paid');
+                foreach ($subContract->acts as $act) {
+                    $amount += $act->getNeedPaidAmount();
+                }
             }
         }
 

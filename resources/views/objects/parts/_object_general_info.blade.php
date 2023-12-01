@@ -112,6 +112,7 @@
                 $customerDebtInfo = [];
                 $contractService->filterContracts(['object_id' => [$object->id]], $customerDebtInfo);
                 $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
+
                 $contractsTotalAmount = $customerDebtInfo['amount']['RUB'];
                 $writeoffs = $object->writeoffs->sum('amount');
 
