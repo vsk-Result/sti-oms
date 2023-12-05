@@ -91,11 +91,11 @@ class PivotSheet implements
             ],
             [
                 'start_date' => '2023-07-21',
-                'end_date' => '2023-11-29',
+                'end_date' => '2023-11-28',
                 'bonus' => 0,
             ],
             [
-                'start_date' => '2023-11-30',
+                'start_date' => '2023-11-29',
                 'end_date' => '2023-12-31',
                 'bonus' => 0,
             ]
