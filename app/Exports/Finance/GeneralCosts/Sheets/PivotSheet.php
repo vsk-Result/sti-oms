@@ -91,6 +91,11 @@ class PivotSheet implements
             ],
             [
                 'start_date' => '2023-07-21',
+                'end_date' => '2023-11-29',
+                'bonus' => 0,
+            ],
+            [
+                'start_date' => '2023-11-30',
                 'end_date' => '2023-12-31',
                 'bonus' => 0,
             ]
@@ -160,7 +165,7 @@ class PivotSheet implements
             }
         }
 
-        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH'];
+        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM'];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
@@ -315,7 +320,7 @@ class PivotSheet implements
             $sheet->getColumnDimension($column)->setWidth(20);
         }
 
-        $sheet->getStyle('A1:AH' . $row)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(true);
+        $sheet->getStyle('A1:AK' . $row)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(true);
 
         $sheet->getStyle('A1:A' . $row)->getAlignment()->setHorizontal('left');
         $sheet->getStyle('B1')->getAlignment()->setHorizontal('left');
@@ -329,6 +334,7 @@ class PivotSheet implements
         $sheet->getStyle('Z1')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('AC1')->getAlignment()->setHorizontal('left');
         $sheet->getStyle('AF1')->getAlignment()->setHorizontal('left');
+        $sheet->getStyle('AI1')->getAlignment()->setHorizontal('left');
 
         $sheet->getStyle('F1:F' . $row)->getAlignment()->setHorizontal('center');
         $sheet->getStyle('I1:I' . $row)->getAlignment()->setHorizontal('center');
@@ -341,17 +347,18 @@ class PivotSheet implements
         $sheet->getStyle('AA1:AA' . $row)->getAlignment()->setHorizontal('center');
         $sheet->getStyle('AD1:AD' . $row)->getAlignment()->setHorizontal('center');
         $sheet->getStyle('AG1:AG' . $row)->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('AJ1:AJ' . $row)->getAlignment()->setHorizontal('center');
 
-        $sheet->getStyle('B2:AH2')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('B2:AK2')->getAlignment()->setHorizontal('center');
         $sheet->getStyle('C3:C' . $row)->getAlignment()->setHorizontal('center');
 
-        $sheet->getStyle('A1:AH1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:AK1')->getFont()->setBold(true);
         $sheet->getStyle('B1:D' . $row)->getFont()->setBold(true);
 
-        $sheet->getStyle('A1:AH2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('A1:AK2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
         $sheet->getStyle('B1:D' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-        $sheet->getStyle('A1:AH' . $row)->applyFromArray([
+        $sheet->getStyle('A1:AK' . $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'dddddd']]]
         ]);
 
@@ -396,6 +403,10 @@ class PivotSheet implements
         ]);
 
         $sheet->getStyle('AF1:AH' . $row)->applyFromArray([
+            'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
+        ]);
+
+        $sheet->getStyle('AI1:AK' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
     }
