@@ -155,23 +155,18 @@
 
                                 foreach($generalInfo as $info) {
                                     if ($object->code == 288) {
-                                        $percentOne = 0;
-                                        $percentTwo = 0;
-
                                         if (isset($info['info'][$object->id.'|1'])) {
                                             $percentOne = ($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100;
-                                            $percentOneSum += $percent;
+                                            $percentOneSum += $percentOne;
                                             $percentOneCount++;
                                         }
 
                                         if (isset($info['info'][$object->id.'|24'])) {
                                             $percentTwo = ($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100;
-                                            $percentTwoSum += $percent;
+                                            $percentTwoSum += $percentTwo;
                                             $percentTwoCount++;
                                         }
                                     } else {
-                                        $percent = 0;
-
                                         if (isset($info['info'][$object->id])) {
                                             $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
                                             $percentSum += $percent;
@@ -207,7 +202,7 @@
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="bl hl text-center percent" >{{ number_format($averagePercents[$object->id.'|1'], 2) }}%</td>
+                                    <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @foreach($generalInfo as $info)
@@ -238,7 +233,7 @@
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="bl hl text-center" >{{ number_format($averagePercents[$object->id.'|24'], 2) }}%</td>
+                                    <td class="bl hl text-center" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @foreach($generalInfo as $info)
@@ -270,7 +265,7 @@
                                     @endphp
 
                                     <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="bl hl text-center percent" >{{ number_format($averagePercents[$object->id], 2) }}%</td>
+                                    <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                     <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
                                     @foreach($generalInfo as $info)

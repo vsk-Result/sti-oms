@@ -131,23 +131,19 @@ class PivotSheet implements
 
             foreach($generalInfo as $info) {
                 if ($object->code == 288) {
-                    $percentOne = 0;
-                    $percentTwo = 0;
 
                     if (isset($info['info'][$object->id.'|1'])) {
                         $percentOne = ($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100;
-                        $percentOneSum += $percent;
+                        $percentOneSum += $percentOne;
                         $percentOneCount++;
                     }
 
                     if (isset($info['info'][$object->id.'|24'])) {
                         $percentTwo = ($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100;
-                        $percentTwoSum += $percent;
+                        $percentTwoSum += $percentTwo;
                         $percentTwoCount++;
                     }
                 } else {
-                    $percent = 0;
-
                     if (isset($info['info'][$object->id])) {
                         $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
                         $percentSum += $percent;
@@ -213,7 +209,7 @@ class PivotSheet implements
                 }
 
                 $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-                $sheet->setCellValue('C' . $row, number_format($averagePercents[$object->id.'|1'], 2));
+                $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
                 $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
 
                 $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -246,7 +242,7 @@ class PivotSheet implements
                 }
 
                 $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-                $sheet->setCellValue('C' . $row, number_format($averagePercents[$object->id.'|24'], 2));
+                $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
                 $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
 
                 $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -282,7 +278,7 @@ class PivotSheet implements
             }
 
             $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-            $sheet->setCellValue('C' . $row, number_format($averagePercents[$object->id], 2));
+            $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
             $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
 
             $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
