@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Company;
+use App\Models\Debt\Debt;
+use App\Models\Debt\DebtImport;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
 use App\Models\Object\BObject;
@@ -264,6 +266,16 @@ class MakeFinanceReportHistory extends Command
                     $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
                     $total[$year][$object->code]['contractor']['RUB'] = $debts['contractor']->total_amount;
+
+                    $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+                    $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+
+                    if ($objectExistInObjectImport) {
+                        $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
+                        $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
+                        $total[$year][$object->code]['contractor']['RUB'] += $contractorDebtsAvans + $contractorDebtsGU;
+                    }
+
                     $total[$year][$object->code]['provider']['RUB'] = $debts['provider']->total_amount;
                     $total[$year][$object->code]['service']['RUB'] = $debts['service']->total_amount;
 

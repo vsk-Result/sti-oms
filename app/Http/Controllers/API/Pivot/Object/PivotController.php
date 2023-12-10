@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Pivot\Object;
 
 use App\Http\Controllers\Controller;
 use App\Models\CurrencyExchangeRate;
+use App\Models\Debt\Debt;
+use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Services\Contract\ContractService;
@@ -115,50 +117,35 @@ class PivotController extends Controller
         $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
         $contractorDebtsAmount = $debts['contractor']->total_amount;
+
+        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+
+        if ($objectExistInObjectImport) {
+            $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
+            $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
+            $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
+        }
+
         $providerDebtsAmount = $debts['provider']->total_amount;
         $serviceDebtsAmount = $debts['service']->total_amount;
 
         $workSalaryDebt = $object->getWorkSalaryDebt();
         $ITRSalaryDebt = $object->getITRSalaryDebt();
 
-        $objectBalanceRUB = $generalCosts + $balance +
-            $contractsTotal['avanses_left_amount']['RUB'] +
-            $contractsTotal['avanses_acts_left_paid_amount']['RUB'] +
-            $contractsTotal['avanses_acts_deposites_amount']['RUB'] +
-            $contractorDebtsAmount +
-            $providerDebtsAmount +
-            $serviceDebtsAmount +
-            $ITRSalaryDebt +
-            $workSalaryDebt;
-
-        $objectBalanceEUR = $contractsTotal['avanses_left_amount']['EUR'] + $contractsTotal['avanses_acts_left_paid_amount']['EUR'] + $contractsTotal['avanses_acts_deposites_amount']['EUR'];
+        $dolgZakazchikovZaVipolnenieRaboti = $contractsTotal['avanses_acts_left_paid_amount']['RUB'];
+        $dolgFactUderjannogoGU = $contractsTotal['avanses_acts_deposites_amount']['RUB'];
+        $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_notwork_left_amount']['RUB'] - $contractsTotal['acts_amount']['RUB'];
+        $ostatokNeotrabotannogoAvansa = $contractsTotal['avanses_notwork_left_amount']['RUB'];
 
         if ($currentRate) {
-            $objectBalanceRUB = $objectBalanceRUB + $objectBalanceEUR * $currentRate->rate;
-            $objectBalanceEUR = 0;
-        }
+            $dolgZakazchikovZaVipolnenieRaboti += $contractsTotal['avanses_acts_left_paid_amount']['EUR'] * $currentRate->rate;
+            $dolgFactUderjannogoGU += $contractsTotal['avanses_acts_deposites_amount']['EUR'] * $currentRate->rate;
 
-        $promBalanceRUB = $balance + $generalCosts +
-            $contractsTotal['avanses_left_amount']['RUB'] +
-            $contractsTotal['avanses_acts_left_paid_amount']['RUB'] +
-            $contractsTotal['avanses_acts_deposites_amount']['RUB'] +
-            $contractorDebtsAmount +
-            $providerDebtsAmount +
-            $serviceDebtsAmount +
-            $ITRSalaryDebt +
-            $workSalaryDebt +
-            $contractsTotal['avanses_non_closes_amount']['RUB'] -
-            $contractsTotal['avanses_left_amount']['RUB'];
-
-        $promBalanceEUR = $contractsTotal['avanses_left_amount']['EUR'] +
-            $contractsTotal['avanses_acts_left_paid_amount']['EUR'] +
-            $contractsTotal['avanses_acts_deposites_amount']['EUR'] +
-            $contractsTotal['avanses_non_closes_amount']['EUR'] -
-            $contractsTotal['avanses_left_amount']['EUR'];
-
-        if ($currentRate) {
-            $promBalanceRUB = $promBalanceRUB + $promBalanceEUR * $currentRate->rate;
-            $promBalanceEUR = 0;
+            $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);
+            $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
+            $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['acts_amount']['EUR'] * $currentRate->rate);
+            $ostatokNeotrabotannogoAvansa += ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
         }
 
         $guRUB = $contractsTotal['avanses_non_closes_amount']['RUB'];
@@ -168,6 +155,17 @@ class PivotController extends Controller
             $guRUB = $guRUB + $guEUR * $currentRate->rate;
             $guEUR = 0;
         }
+
+        $objectBalanceRUB = $generalCosts + $balance +
+            $dolgZakazchikovZaVipolnenieRaboti +
+            $dolgFactUderjannogoGU +
+            $contractorDebtsAmount +
+            $providerDebtsAmount +
+            $serviceDebtsAmount +
+            $ITRSalaryDebt +
+            $workSalaryDebt;
+
+        $promBalanceRUB = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom;
 
         $info = [
             'name' => $object->getName(),
@@ -195,9 +193,9 @@ class PivotController extends Controller
             'customer_gu_receive_rub' => CurrencyExchangeRate::format($customerGUReceiveRUB, 'RUB'),
             'customer_gu_receive_eur' => CurrencyExchangeRate::format($customerGUReceiveEUR, 'EUR'),
             'object_balance_rub' => CurrencyExchangeRate::format($objectBalanceRUB, 'RUB'),
-            'object_balance_eur' => CurrencyExchangeRate::format($objectBalanceEUR, 'EUR'),
+            'object_balance_eur' => CurrencyExchangeRate::format(0, 'EUR'),
             'prom_balance_rub' => CurrencyExchangeRate::format($promBalanceRUB, 'RUB'),
-            'prom_balance_eur' => CurrencyExchangeRate::format($promBalanceEUR, 'EUR'),
+            'prom_balance_eur' => CurrencyExchangeRate::format(0, 'EUR'),
             'gu_rub' => CurrencyExchangeRate::format($guRUB, 'RUB'),
             'gu_eur' => CurrencyExchangeRate::format($guEUR, 'EUR'),
             'get_eur_rate' => (bool)$currentRate

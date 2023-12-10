@@ -91,7 +91,8 @@ class ObjectInfoController extends Controller
 
             if ($objectExistInObjectImport) {
                 $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-                $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans;
+                $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
+                $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
             }
 
             $providerDebtsAmount = $debts['provider']->total_amount;
