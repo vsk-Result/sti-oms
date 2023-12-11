@@ -198,7 +198,11 @@ class PivotController extends Controller
             'prom_balance_eur' => CurrencyExchangeRate::format(0, 'EUR'),
             'gu_rub' => CurrencyExchangeRate::format($guRUB, 'RUB'),
             'gu_eur' => CurrencyExchangeRate::format($guEUR, 'EUR'),
-            'get_eur_rate' => (bool)$currentRate
+            'get_eur_rate' => (bool)$currentRate,
+            'dolgZakazchikovZaVipolnenieRaboti_rub' => CurrencyExchangeRate::format($dolgZakazchikovZaVipolnenieRaboti, 'RUB'),
+            'dolgFactUderjannogoGU' => CurrencyExchangeRate::format($dolgFactUderjannogoGU, 'RUB'),
+            'ostatokNeotrabotannogoAvansa' => CurrencyExchangeRate::format($ostatokNeotrabotannogoAvansa, 'RUB'),
+            'ostatokPoDogovoruSZakazchikom' => CurrencyExchangeRate::format($ostatokPoDogovoruSZakazchikom, 'RUB'),
         ];
 
         return response()->json(compact('info'));
