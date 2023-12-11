@@ -134,13 +134,13 @@ class PivotController extends Controller
         $ITRSalaryDebt = $object->getITRSalaryDebt();
 
         $dolgZakazchikovZaVipolnenieRaboti = $contractsTotal['avanses_acts_left_paid_amount']['RUB'];
-        $dolgFactUderjannogoGU = $contractsTotal['avanses_acts_deposites_amount']['RUB'];
+        $dolgFactUderjannogoGU = $contractsTotal['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
         $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_notwork_left_amount']['RUB'] - $contractsTotal['acts_amount']['RUB'];
         $ostatokNeotrabotannogoAvansa = $contractsTotal['avanses_notwork_left_amount']['RUB'];
 
         if ($currentRate) {
             $dolgZakazchikovZaVipolnenieRaboti += $contractsTotal['avanses_acts_left_paid_amount']['EUR'] * $currentRate->rate;
-            $dolgFactUderjannogoGU += $contractsTotal['avanses_acts_deposites_amount']['EUR'] * $currentRate->rate;
+            $dolgFactUderjannogoGU += ($contractsTotal['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount')) * $currentRate->rate;
 
             $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);
             $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
