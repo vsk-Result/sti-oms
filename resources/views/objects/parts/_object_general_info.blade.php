@@ -142,6 +142,10 @@
                     $contractsTotalAmount += $customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate;
                 }
 
+                if (! empty($object->closing_date)) {
+                    $ostatokPoDogovoruSZakazchikom = 0;
+                }
+
                 $objectBalance = $object->total_with_general_balance +
                                 $dolgZakazchikovZaVipolnenieRaboti +
                                 $dolgFactUderjannogoGU +

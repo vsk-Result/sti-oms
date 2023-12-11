@@ -156,6 +156,10 @@ class PivotController extends Controller
             $guEUR = 0;
         }
 
+        if (! empty($object->closing_date)) {
+            $ostatokPoDogovoruSZakazchikom = 0;
+        }
+
         $objectBalanceRUB = $generalCosts + $balance +
             $dolgZakazchikovZaVipolnenieRaboti +
             $dolgFactUderjannogoGU +
