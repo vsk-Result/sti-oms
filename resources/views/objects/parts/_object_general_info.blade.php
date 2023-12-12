@@ -146,6 +146,10 @@
                     $ostatokPoDogovoruSZakazchikom = 0;
                 }
 
+                if ($object->code === '360') {
+                    $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_received_amount']['RUB'] - $customerDebtInfo['avanses_acts_paid_amount']['RUB'];
+                }
+
                 $objectBalance = $object->total_with_general_balance +
                                 $dolgZakazchikovZaVipolnenieRaboti +
                                 $dolgFactUderjannogoGU +

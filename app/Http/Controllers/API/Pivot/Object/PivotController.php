@@ -160,6 +160,10 @@ class PivotController extends Controller
             $ostatokPoDogovoruSZakazchikom = 0;
         }
 
+        if ($object->code === '360') {
+            $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
+        }
+
         $objectBalanceRUB = $generalCosts + $balance +
             $dolgZakazchikovZaVipolnenieRaboti +
             $dolgFactUderjannogoGU +
