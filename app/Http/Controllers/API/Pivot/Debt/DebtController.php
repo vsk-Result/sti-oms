@@ -37,7 +37,15 @@ class DebtController extends Controller
                 $objects[$object->id] = $object->getName();
             }
 
-            return response()->json(compact('objects'));
+            $closedObjects = [];
+            $closedObjectsId = [5, 7]; // ГЭС и Мост
+            $closedObjectList = BObject::whereIn('id', $closedObjectsId)->orderBy('code')->get();
+
+            foreach ($closedObjectList as $object) {
+                $closedObjects[$object->id] = $object->getName();
+            }
+
+            return response()->json(compact('objects', 'closedObjects'));
         }
 
         $pivot = $this->debtService->getPivot($request->object_id);
