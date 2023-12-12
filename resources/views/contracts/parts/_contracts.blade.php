@@ -21,7 +21,7 @@
     <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsNeedPaidAmount($currency), $currency) }}</a></td>
     <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsPaidAmount($currency), $currency) }}</a></td>
     <td><a href="{{ route('acts.index') }}?contract_id%5B%5D={{ $mainContract->id }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($mainContract->getActsLeftPaidAmount($currency), $currency) }}</a></td>
-    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getAvansesReceivedAmount($currency) - $mainContract->getActsAvasesAmount($currency), $currency) }}</td>
+    <td>{{ \App\Models\CurrencyExchangeRate::format($mainContract->getNotworkLeftAmount($currency), $currency) }}</td>
     <td>
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
             <span class="svg-icon svg-icon-5 m-0">

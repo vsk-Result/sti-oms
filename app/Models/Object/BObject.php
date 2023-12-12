@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
 
-class  BObject extends Model implements Audit
+class BObject extends Model implements Audit
 {
     use SoftDeletes, HasStatus, Auditable;
 

@@ -281,6 +281,29 @@ class Contract extends Model implements HasMedia, Audit
 
     public function getActsLeftPaidAmount(string $currency = null): string|array
     {
+        $manualReplaceConfigForGES2 = [
+            '75/П-2017/10' => -966856.55,
+            '75/П-2017/118/136-ОРСО' => 1280391.17,
+            '75/П-2017/126/233-ОРСО' => 340179.33,
+            '75/П-2017/59/4/232-ОРСО' => 220405.93,
+            '75/П-2017/68/193-ОРСО' =>-602912.06,
+            '4/П-2020/02/1-ОРСО' => 300000.00,
+            '09-17-МЗ' => 6000.00,
+            '4/П-2020/02-ОРСО' => 11155417.58,
+            'ДКС/УЗ/002/2021-ЭА' =>-8393162.91,
+        ];
+
+        if ($this->object_id === 5) {
+            foreach ($manualReplaceConfigForGES2 as $contractName => $amount) {
+                if ($this->name === $contractName) {
+                    return $amount;
+                }
+            }
+
+            return 0;
+        }
+
+
         $paid = 0;
         foreach ($this->acts as $act) {
             $paid += $act->payments->sum('amount');
@@ -316,6 +339,25 @@ class Contract extends Model implements HasMedia, Audit
         }
 
         return $amount - $paid;
+    }
+
+    public function getNotworkLeftAmount(string $currency = null): string|array
+    {
+        $manualReplaceConfigForGES2 = [
+            '4/П-2020/02-ОРСО' => 8404489.40
+        ];
+
+        if ($this->object_id === 5) {
+            foreach ($manualReplaceConfigForGES2 as $contractName => $amount) {
+                if ($this->name === $contractName) {
+                    return $amount;
+                }
+            }
+
+            return 0;
+        }
+
+        return $this->getAvansesReceivedAmount($currency) - $this->getActsAvasesAmount($currency);
     }
 
     public static function getTypes(): array

@@ -286,7 +286,7 @@
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency) - $contract->getActsAvasesAmount($currency), $currency) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftAmount($currency), $currency) }}
                                 <br>
                             @endforeach
                         </td>
