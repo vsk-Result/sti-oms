@@ -50,9 +50,22 @@ class PivotObjectDebtService
         $this->object = BObject::find($objectId);
 
         $contractorDebts = $this->getContractorDebts();
+
+        $contractorTotalAmount = array_sum($contractorDebts);
+
+        if ($this->object->code === '288') {
+            $contractorTotalAmount = 0;
+
+            foreach($contractorDebts as $organization) {
+                foreach ($organization['worktype'] as $amount) {
+                    $contractorTotalAmount += $amount;
+                }
+            }
+        }
+
         $contractorInfo = [
             'debts' => $contractorDebts,
-            'total_amount' => array_sum($contractorDebts)
+            'total_amount' => $contractorTotalAmount
         ];
 
         $providerDebts = $this->getProviderDebts();

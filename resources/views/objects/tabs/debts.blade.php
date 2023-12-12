@@ -55,14 +55,13 @@
 
                 @php
                     $contractorDebts = $debts['contractor']->debts;
-
                     $oneAmount = 0;
                     $twoFourAmount = 0;
                     foreach($contractorDebts as $organizationId => $organization) {
-                        $one = $organization['worktype'][1] ?? 0;
-                        $two = $organization['worktype'][2] ?? 0;
-                        $four = $organization['worktype'][4] ?? 0;
-                        $seven = $organization['worktype'][7] ?? 0;
+                        $one = $organization->worktype->{1} ?? 0;
+                        $two = $organization->worktype->{2} ?? 0;
+                        $four = $organization->worktype->{4} ?? 0;
+                        $seven = $organization->worktype->{7} ?? 0;
                         $total = $one + $two + $four;
                         $oneTotal = 0;
                         $twoFourTotal = 0;
@@ -113,10 +112,10 @@
                             <tbody class="text-gray-600 fw-bold">
                                 @forelse($contractorDebts as $organizationId => $organization)
                                     @php
-                                        $one = $organization['worktype'][1] ?? 0;
-                                        $two = $organization['worktype'][2] ?? 0;
-                                        $four = $organization['worktype'][4] ?? 0;
-                                        $seven = $organization['worktype'][7] ?? 0;
+                                        $one = $organization->worktype->{1} ?? 0;
+                                        $two = $organization->worktype->{2} ?? 0;
+                                        $four = $organization->worktype->{4} ?? 0;
+                                        $seven = $organization->worktype->{7} ?? 0;
                                         $total = $one + $two + $four;
                                         $oneTotal = 0;
                                         $twoFourTotal = 0;
@@ -130,7 +129,7 @@
 
                                     @if (($oneTotal * $seven + $one) < 0)
                                         <tr>
-                                            <td>{{ $organization['name'] }}</td>
+                                            <td>{{ $organization->name }}</td>
                                             <td class="text-danger">
                                                 <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=1">
                                                     {{ number_format($oneTotal * $seven + $one, 2, ',', ' ') }}
@@ -187,10 +186,10 @@
                             <tbody class="text-gray-600 fw-bold">
                                 @forelse($contractorDebts as $organizationId => $organization)
                                     @php
-                                        $one = $organization['worktype'][1] ?? 0;
-                                        $two = $organization['worktype'][2] ?? 0;
-                                        $four = $organization['worktype'][4] ?? 0;
-                                        $seven = $organization['worktype'][7] ?? 0;
+                                        $one = $organization->worktype->{1} ?? 0;
+                                        $two = $organization->worktype->{2} ?? 0;
+                                        $four = $organization->worktype->{4} ?? 0;
+                                        $seven = $organization->worktype->{7} ?? 0;
                                         $total = $one + $two + $four;
                                         $oneTotal = 0;
                                         $twoFourTotal = 0;
@@ -204,7 +203,7 @@
 
                                     @if (($twoFourTotal * $seven + $two + $four) < 0)
                                         <tr>
-                                            <td>{{ $organization['name'] }}</td>
+                                            <td>{{ $organization->name }}</td>
                                             <td class="text-danger">
                                                 <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
                                                     {{ number_format($twoFourTotal * $seven + $two + $four, 2, ',', ' ') }}
@@ -316,8 +315,12 @@
                                         $organizationName = substr($organization, strpos($organization, '::') + 2);
                                         $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
 
-                                        $avans = $ds->where('organization_id', $organizationId)->sum('avans');
-                                        $guarantee = $ds->where('organization_id', $organizationId)->sum('guarantee');
+                                        $avans = 0;
+                                        $guarantee = 0;
+                                        if ($hasObjectImport) {
+                                            $avans = $ds->where('organization_id', $organizationId)->sum('avans');
+                                            $guarantee = $ds->where('organization_id', $organizationId)->sum('guarantee');
+                                        }
 
                                         $comment = '';
                                         if ($debtManual) {
@@ -471,10 +474,10 @@
                     $oneAmount = 0;
                     $twoFourAmount = 0;
                     foreach($providerDebts as $organizationId => $organization) {
-                        $one = $organization['worktype'][1] ?? 0;
-                        $two = $organization['worktype'][2] ?? 0;
-                        $four = $organization['worktype'][4] ?? 0;
-                        $seven = $organization['worktype'][7] ?? 0;
+                        $one = $organization->worktype->{1} ?? 0;
+                        $two = $organization->worktype->{2} ?? 0;
+                        $four = $organization->worktype->{4} ?? 0;
+                        $seven = $organization->worktype->{7} ?? 0;
                         $total = $one + $two + $four;
                         $oneTotal = 0;
                         $twoFourTotal = 0;
@@ -525,10 +528,10 @@
                             <tbody class="text-gray-600 fw-bold">
                             @forelse($providerDebts as $organizationId => $organization)
                                 @php
-                                    $one = $organization['worktype'][1] ?? 0;
-                                    $two = $organization['worktype'][2] ?? 0;
-                                    $four = $organization['worktype'][4] ?? 0;
-                                    $seven = $organization['worktype'][7] ?? 0;
+                                    $one = $organization->worktype->{1} ?? 0;
+                                    $two = $organization->worktype->{2} ?? 0;
+                                    $four = $organization->worktype->{4} ?? 0;
+                                    $seven = $organization->worktype->{7} ?? 0;
                                     $total = $one + $two + $four;
                                     $oneTotal = 0;
                                     $twoFourTotal = 0;
@@ -542,7 +545,7 @@
 
                                 @if (($oneTotal * $seven + $one) < 0)
                                     <tr>
-                                        <td>{{ $organization['name'] }}</td>
+                                        <td>{{ $organization->name }}</td>
                                         <td class="text-danger">
                                             <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=1">
                                                 {{ number_format($oneTotal * $seven + $one, 2, ',', ' ') }}
@@ -599,10 +602,10 @@
                             <tbody class="text-gray-600 fw-bold">
                             @forelse($providerDebts as $organizationId => $organization)
                                 @php
-                                    $one = $organization['worktype'][1] ?? 0;
-                                    $two = $organization['worktype'][2] ?? 0;
-                                    $four = $organization['worktype'][4] ?? 0;
-                                    $seven = $organization['worktype'][7] ?? 0;
+                                    $one = $organization->worktype->{1} ?? 0;
+                                    $two = $organization->worktype->{2} ?? 0;
+                                    $four = $organization->worktype->{4} ?? 0;
+                                    $seven = $organization->worktype->{7} ?? 0;
                                     $total = $one + $two + $four;
                                     $oneTotal = 0;
                                     $twoFourTotal = 0;
@@ -616,7 +619,7 @@
 
                                 @if (($twoFourTotal * $seven + $two + $four) < 0)
                                     <tr>
-                                        <td>{{ $organization['name'] }}</td>
+                                        <td>{{ $organization->name }}</td>
                                         <td class="text-danger">
                                             <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
                                                 {{ number_format($twoFourTotal * $seven + $two + $four, 2, ',', ' ') }}
