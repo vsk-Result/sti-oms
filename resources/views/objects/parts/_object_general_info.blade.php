@@ -172,7 +172,7 @@
                                 $workSalaryDebt +
                                 $writeoffs;
 
-                $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom;
+                $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
             @endphp
 
             <div class="me-11">

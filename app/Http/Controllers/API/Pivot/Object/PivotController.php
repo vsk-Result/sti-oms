@@ -190,7 +190,7 @@ class PivotController extends Controller
             $ITRSalaryDebt +
             $workSalaryDebt;
 
-        $promBalanceRUB = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom;
+        $promBalanceRUB = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
 
         $info = [
             'name' => $object->getName(),
