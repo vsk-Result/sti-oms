@@ -217,6 +217,41 @@ class Contract extends Model implements HasMedia, Audit
 
     public function getActsDepositesAmount(string $currency = null): string|array
     {
+        $manualReplaceConfigForGES2 = [
+            '1/П-2019/01' => 905725.91,
+            '75/П-2017/105/117-ОРСО' => 1807507.62,
+            '75/П-2017/118/136-ОРСО' => 1408389.92,
+            '75/П-2017/123/166-ОРСО' => 304550.84,
+            '75/П-2017/126/233-ОРСО' => 274118.61,
+            '75/П-2017/139/219-ОРСО' => 13750.00,
+            '75/П-2017/140/210-ОРСО' => 553909.61,
+            '75/П-2017/146/231-ОРСО' => 2181818.03,
+            '75/П-2017/27/54' => 8880.69,
+            '75/П-2017/28/7/233-ОРСО' => 152048.54,
+            '75/П-2017/31' => 185566.34,
+            '75/П-2017/32' => 17158.57,
+            '75/П-2017/4/10/181-ОРСО' => 19598.31,
+            '75/П-2017/48/76' => 48638.10,
+            '75/П-2017/57/124-ОРСО' => 9058.46,
+            '75/П-2017/59/4/232-ОРСО' => 96445.42,
+            '75/П-2017/68/193-ОРСО' => 4851.48,
+            '75/П-2017/71/95' => 55869.27,
+            '75/П-2017/88/96' => 17857.16,
+            '435-30-03-16-КТ/68-ПТП' => 632880.14,
+            '4/П-2020/02-ОРСО' =>  3854025.13,
+        ];
+
+        if ($this->object_id === 5) {
+            foreach ($manualReplaceConfigForGES2 as $contractName => $amount) {
+                if ($this->name === $contractName) {
+                    return $amount;
+                }
+            }
+
+            return 0;
+        }
+
+
         $amount = $this->acts->sum('amount_deposit');
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
 
@@ -302,7 +337,6 @@ class Contract extends Model implements HasMedia, Audit
 
             return 0;
         }
-
 
         $paid = 0;
         foreach ($this->acts as $act) {
