@@ -173,12 +173,12 @@ class PivotController extends Controller
             $guEUR = 0;
         }
 
-        if (! empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
-            $ostatokPoDogovoruSZakazchikom = 0;
-        }
-
         if ($object->code === '288') {
             $dolgFactUderjannogoGU = $contractsTotal['avanses_acts_deposites_amount']['RUB'];
+        }
+
+        if (! empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
+            $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
         }
 
         $objectBalanceRUB = $generalCosts + $balance +

@@ -154,12 +154,12 @@
                     $contractsTotalAmount += $customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate;
                 }
 
-                if (! empty($object->closing_date) && $object->status_id === \App\Models\Status::STATUS_BLOCKED) {
-                    $ostatokPoDogovoruSZakazchikom = 0;
-                }
-
                 if ($object->code === '288') {
                     $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
+                }
+
+                if (! empty($object->closing_date) && $object->status_id === \App\Models\Status::STATUS_BLOCKED) {
+                    $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                 }
 
                 $objectBalance = $object->total_with_general_balance +
