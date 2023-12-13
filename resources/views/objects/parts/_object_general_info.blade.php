@@ -118,7 +118,13 @@
 
                 $dolgZakazchikovZaVipolnenieRaboti = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'];
                 $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-                $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_notwork_left_amount']['RUB'] - $customerDebtInfo['acts_amount']['RUB'];
+
+                // старая версия
+//                $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_notwork_left_amount']['RUB'] - $customerDebtInfo['acts_amount']['RUB'];
+
+                //новая версия
+                $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_received_amount']['RUB'] - $customerDebtInfo['avanses_acts_paid_amount']['RUB'];
+
                 $ostatokNeotrabotannogoAvansa = $customerDebtInfo['avanses_notwork_left_amount']['RUB'];
 
                 $writeoffs = $object->writeoffs->sum('amount');
@@ -128,11 +134,17 @@
                 if ($EURExchangeRate) {
                     $dolgZakazchikovZaVipolnenieRaboti += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
                     $dolgFactUderjannogoGU += ($customerDebtInfo['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount')) * $EURExchangeRate->rate;
-
-                    $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
-                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
-                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate);
                     $ostatokNeotrabotannogoAvansa += ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
+
+                    // старая версия
+//                    $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
+//                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
+//                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate);
+
+                    //новая версия
+                    $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
+                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_received_amount']['EUR'] * $EURExchangeRate->rate);
+                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_acts_paid_amount']['EUR'] * $EURExchangeRate->rate);
 
 //                    $customerDebt += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
 //                    $customerDebt += $customerDebtInfo['avanses_left_amount']['EUR'] * $EURExchangeRate->rate;
@@ -144,10 +156,6 @@
 
                 if (! empty($object->closing_date)) {
                     $ostatokPoDogovoruSZakazchikom = 0;
-                }
-
-                if ($object->code === '360') {
-                    $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_received_amount']['RUB'] - $customerDebtInfo['avanses_acts_paid_amount']['RUB'];
                 }
 
                 if ($object->code === '288') {
@@ -651,7 +659,7 @@
 
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Остаток к получ. по дог-рам с Заказчиком</div>
+                        <div class="text-gray-700 fw-semibold fs-7 me-2">Остаток к получ. от заказчика (в т.ч. ГУ)</div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $ostatokPoDogovoruSZakazchikom < 0 ? 'text-danger' : 'text-success' }}">
                             {{ \App\Models\CurrencyExchangeRate::format($ostatokPoDogovoruSZakazchikom, 'RUB') }}
                         </div>
