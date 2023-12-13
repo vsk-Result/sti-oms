@@ -8,6 +8,7 @@ use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
 use App\Models\Payment;
+use App\Models\Status;
 use App\Services\Contract\ContractService;
 use App\Services\CurrencyExchangeRateService;
 use App\Services\PivotObjectDebtService;
@@ -172,7 +173,7 @@ class PivotController extends Controller
             $guEUR = 0;
         }
 
-        if (! empty($object->closing_date)) {
+        if (! empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
             $ostatokPoDogovoruSZakazchikom = 0;
         }
 

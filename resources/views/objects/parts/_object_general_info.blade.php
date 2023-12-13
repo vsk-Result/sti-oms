@@ -154,7 +154,7 @@
                     $contractsTotalAmount += $customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate;
                 }
 
-                if (! empty($object->closing_date)) {
+                if (! empty($object->closing_date) && $object->status_id === \App\Models\Status::STATUS_BLOCKED) {
                     $ostatokPoDogovoruSZakazchikom = 0;
                 }
 
