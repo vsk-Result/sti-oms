@@ -34,15 +34,15 @@ class PivotController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (! $request->has('verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
-
-        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
+//        if (! $request->has('verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
+//
+//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
 
         if (empty($request->object_id)) {
             abort(404);
@@ -143,7 +143,7 @@ class PivotController extends Controller
         //новая версия
         $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
 
-        $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_notwork_left_amount']['RUB'] - $contractsTotal['acts_amount']['RUB'];
+        $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
 
 
         $ostatokNeotrabotannogoAvansa = $contractsTotal['avanses_notwork_left_amount']['RUB'];
@@ -181,6 +181,8 @@ class PivotController extends Controller
             $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
         }
 
+        $writeoffs = $object->writeoffs->sum('amount');
+
         $objectBalanceRUB = $generalCosts + $balance +
             $dolgZakazchikovZaVipolnenieRaboti +
             $dolgFactUderjannogoGU +
@@ -188,9 +190,10 @@ class PivotController extends Controller
             $providerDebtsAmount +
             $serviceDebtsAmount +
             $ITRSalaryDebt +
-            $workSalaryDebt;
+            $workSalaryDebt +
+            $writeoffs;
 
-        $promBalanceRUB = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
+        $prognozBalance = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
 
         $info = [
             'name' => $object->getName(),
@@ -219,7 +222,7 @@ class PivotController extends Controller
             'customer_gu_receive_eur' => CurrencyExchangeRate::format($customerGUReceiveEUR, 'EUR'),
             'object_balance_rub' => CurrencyExchangeRate::format($objectBalanceRUB, 'RUB'),
             'object_balance_eur' => CurrencyExchangeRate::format(0, 'EUR'),
-            'prom_balance_rub' => CurrencyExchangeRate::format($promBalanceRUB, 'RUB'),
+            'prom_balance_rub' => CurrencyExchangeRate::format($prognozBalance, 'RUB'),
             'prom_balance_eur' => CurrencyExchangeRate::format(0, 'EUR'),
             'gu_rub' => CurrencyExchangeRate::format($guRUB, 'RUB'),
             'gu_eur' => CurrencyExchangeRate::format($guEUR, 'EUR'),
