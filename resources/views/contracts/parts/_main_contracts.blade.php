@@ -1,36 +1,6 @@
 @inject('currencyExchangeService', 'App\Services\CurrencyExchangeRateService')
 <div class="card mb-5 mb-xl-8">
     <div class="card-header border-0 pt-6">
-        <div class="card-title">
-            <div>
-                <div
-                    class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4"
-                    data-bs-toggle="tooltip"
-                    data-bs-custom-class="tooltip-dark"
-                    data-bs-placement="right"
-                    title="Сумма договоров - сумма полученных авансов - сумма оплаченных актов - долг подписанных актов"
-                >
-                    <div class="d-flex flex-column align-items-left">
-                        <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['RUB'], 'RUB') }}</div>
-                        <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($total['avanses_non_closes_amount']['EUR'], 'EUR') }}</div>
-                        @php
-                            $totalSum = 0;
-                            $date = now();
-                            $EURExchangeRate = $currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'EUR');
-                            if ($EURExchangeRate) {
-                                $totalSum = $total['avanses_non_closes_amount']['RUB'] + ($total['avanses_non_closes_amount']['EUR'] * $EURExchangeRate->rate);
-                            }
-                        @endphp
-
-                        @if ($EURExchangeRate)
-                            <div style="height: 6px; margin-bottom: 4px; width: 100%; border-bottom: 1px dashed #ccc;"></div>
-                            <div class="fs-5 fw-bolder text-success">{{ \App\Models\CurrencyExchangeRate::format($totalSum, 'RUB') }}</div>
-                        @endif
-                    </div>
-                    <div class="fw-bold fs-7 text-gray-400">Остаток денег к получ. с учётом ГУ</div>
-                </div>
-            </div>
-        </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                 <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterContractModal">
