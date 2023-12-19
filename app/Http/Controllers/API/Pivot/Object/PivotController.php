@@ -181,6 +181,10 @@ class PivotController extends Controller
             $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
         }
 
+        if ($object->code === '346') {
+            $ostatokPoDogovoruSZakazchikom = 322295474;
+        }
+
         $writeoffs = $object->writeoffs->sum('amount');
 
         $objectBalanceRUB = $generalCosts + $balance +

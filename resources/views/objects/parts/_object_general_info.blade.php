@@ -162,6 +162,10 @@
                     $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                 }
 
+                if ($object->code === '346') {
+                    $ostatokPoDogovoruSZakazchikom = 322295474;
+                }
+
                 $objectBalance = $object->total_with_general_balance +
                                 $dolgZakazchikovZaVipolnenieRaboti +
                                 $dolgFactUderjannogoGU +
