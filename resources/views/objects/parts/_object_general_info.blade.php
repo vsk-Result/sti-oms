@@ -429,7 +429,7 @@
 
             <div class="me-11">
                 <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам (в т.ч. ГУ)</div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $contractorDebtsAmount < 0 ? 'text-danger' : 'text-success' }}">
                             {{ \App\Models\CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB') }}
@@ -448,7 +448,7 @@
                 <div class="separator separator-dashed my-3"></div>
 
                 <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг поставщикам</div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $providerDebtsAmount < 0 ? 'text-danger' : 'text-success' }}">
                             {{ \App\Models\CurrencyExchangeRate::format($providerDebtsAmount, 'RUB') }}
@@ -467,7 +467,7 @@
                 <div class="separator separator-dashed my-3"></div>
 
                 <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг за услуги</div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $serviceDebtsAmount < 0 ? 'text-danger' : 'text-success' }}">
                             {{ \App\Models\CurrencyExchangeRate::format($serviceDebtsAmount, 'RUB') }}

@@ -7,70 +7,112 @@ use App\Models\Debt\DebtImport;
 use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
 use App\Models\Organization;
-use App\Services\Contract\ContractService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class DebtService
 {
+    private PivotObjectDebtService $pivotObjectDebtService;
+
+    public function __construct(PivotObjectDebtService $pivotObjectDebtService)
+    {
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
+    }
+
     public function getPivot(int $id = null): array
     {
-        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
-        $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
-
-        $debtsObjectImport = $debtObjectImport->debts()->with('organization', 'object')->get();
-
-        $debtsQuery = Debt::whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id, $debt1CServiceImport?->id])->with('organization', 'object');
-
-        $objectsQuery = BObject::query();
-
-        if ($id) {
-            $objectsQuery->where('id', $id);
-            $debtsQuery->where('object_id', $id);
-        } else {
-            $objectsQuery->whereIn('id', (clone $debtsQuery)->groupBy('object_id')->pluck('object_id'));
-        }
-
-        $objects = $objectsQuery->orderByDesc('code')->get();
-
         $pivot = [
-            'objects' => $objects,
-            'organizations' => Organization::whereIn('id', (clone $debtsQuery)->groupBy('organization_id')->pluck('organization_id'))->orderBy('name')->get(),
             'entries' => [],
-            'manuals' => [],
             'total' => []
         ];
 
-        foreach ($pivot['objects'] as $object) {
-            $pivot['total'][$object->id] = 0;
-        }
+        $objects = $id !== null ? BObject::where('id', $id)->get() : BObject::orderByDesc('code')->get();
 
-        foreach ((clone $debtsQuery)->get()->groupBy('type_id') as $typeId => $debtsGroupedByType) {
-            foreach ($debtsGroupedByType->groupBy('organization_id') as $organizationId => $debtsGrouped) {
-                foreach ($debtsGrouped->groupBy('object_id') as $objectId => $debts) {
-                    $objectExistInObjectImport = $debtsObjectImport->where('object_id', $objectId)->first();
-                    $debtManuals = DebtManual::where('organization_id', $organizationId)->where('object_id', $objectId)->get();
+        $objectIds = [];
+        $organizationIds = [];
+        foreach ($objects as $object) {
+            $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
-                    if ($debtManuals->count() > 0) {
-                        $debtsAmount = $debtManuals->sum('amount');
-                    } else {
-                        if ($objectExistInObjectImport && $typeId === Debt::TYPE_CONTRACTOR) {
-                            $dQuery = $debtsObjectImport->where('organization_id', $organizationId)
-                                ->where('object_id', $objectId);
-                            $debtsAmount = $dQuery->sum('amount') + $dQuery->sum('avans');
-                        } else {
-                            $debtsAmount = $debts->sum('amount');
-                        }
+            $contractorDebts = $debts['contractor'];
+            $providerDebts = $debts['provider'];
+            $serviceDebts = $debts['service'];
+
+            $contractorDebtsAmount = $contractorDebts->total_amount;
+
+            $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+            $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+            $contractorDebtsImport = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
+
+            if ($objectExistInObjectImport) {
+                $contractorDebtsAvans = $contractorDebtsImport->sum('avans');
+                $contractorDebtsGU = $contractorDebtsImport->sum('guarantee');
+                $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
+            }
+
+            if (($contractorDebtsAmount + $providerDebts->total_amount + $serviceDebts->total_amount) === 0) {
+                continue;
+            }
+
+            if ($contractorDebtsAmount !== 0) {
+                $objectIds[] = $object->id;
+
+                if (!isset($pivot['total'][$object->id])) {
+                    $pivot['total'][$object->id] = 0;
+                }
+
+                foreach ($contractorDebts->debts as $organization => $amount) {
+                    $organizationId = substr($organization, 0, strpos($organization, '::'));
+                    $organizationIds[] = $organizationId;
+
+                    $pivot['entries'][$organizationId][$object->id] = $amount;
+
+                    if ($objectExistInObjectImport) {
+                        $pivot['entries'][$organizationId][$object->id] = $contractorDebtsImport->where('$organization_id', $organizationId)->sum('avans');
+                        $pivot['entries'][$organizationId][$object->id] = $contractorDebtsImport->where('$organization_id', $organizationId)->sum('guarantee');
                     }
 
-                    $pivot['entries'][$organizationId][$objectId] = $debtsAmount;
-                    $pivot['manuals'][$organizationId][$objectId] = $debtManuals->count() > 0;
-                    $pivot['total'][$objectId] += $pivot['entries'][$organizationId][$objectId];
+                    $pivot['total'][$object->id] += $pivot['entries'][$organizationId][$object->id];
+                }
+            }
+
+            if ($providerDebts->total_amount !== 0) {
+                $objectIds[] = $object->id;
+
+                if (!isset($pivot['total'][$object->id])) {
+                    $pivot['total'][$object->id] = 0;
+                }
+
+                foreach ($providerDebts->debts as $organization => $amount) {
+                    $organizationId = substr($organization, 0, strpos($organization, '::'));
+                    $organizationIds[] = $organizationId;
+
+                    $pivot['entries'][$organizationId][$object->id] = $amount;
+                    $pivot['total'][$object->id] += $pivot['entries'][$organizationId][$object->id];
+                }
+            }
+
+            if ($serviceDebts->total_amount !== 0) {
+                $objectIds[] = $object->id;
+
+                if (!isset($pivot['total'][$object->id])) {
+                    $pivot['total'][$object->id] = 0;
+                }
+
+                foreach ($serviceDebts->debts as $organization => $amount) {
+                    $organizationId = substr($organization, 0, strpos($organization, '::'));
+                    $organizationIds[] = $organizationId;
+
+                    $pivot['entries'][$organizationId][$object->id] = $amount;
+                    $pivot['total'][$object->id] += $pivot['entries'][$organizationId][$object->id];
                 }
             }
         }
+
+        $objectIds = array_unique($objectIds);
+        $organizationIds = array_unique($organizationIds);
+
+        $pivot['objects'] = BObject::whereIn('id', $objectIds)->orderByDesc('code')->get();
+        $pivot['organizations'] = Organization::whereIn('id', $organizationIds)->orderBy('name')->get();
+
         return $pivot;
     }
 
