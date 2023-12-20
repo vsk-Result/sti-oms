@@ -130,14 +130,14 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
-                        <div class="menu-item">
-                            <a class="menu-link py-2 {{ request()->is('pivots/debts*') ? 'active' : '' }}" href="{{ route('pivots.debts.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">От СТИ</span>
-                            </a>
-                        </div>
+{{--                        <div class="menu-item">--}}
+{{--                            <a class="menu-link py-2 {{ request()->is('pivots/debts*') ? 'active' : '' }}" href="{{ route('pivots.debts.index') }}">--}}
+{{--                                <span class="menu-bullet">--}}
+{{--                                    <span class="bullet bullet-dot"></span>--}}
+{{--                                </span>--}}
+{{--                                <span class="menu-title">От СТИ</span>--}}
+{{--                            </a>--}}
+{{--                        </div>--}}
                         <div class="menu-item">
                             <a class="menu-link py-2 {{ request()->is('pivots/acts*') ? 'active' : '' }}" href="{{ route('pivots.acts.index') }}">
                                 <span class="menu-bullet">
