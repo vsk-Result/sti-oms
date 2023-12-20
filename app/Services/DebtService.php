@@ -30,6 +30,7 @@ class DebtService
         $objectIds = [];
         $organizationIds = [];
         foreach ($objects as $object) {
+            if ($object->code === '288') continue;
             $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
             $contractorDebts = $debts['contractor'];
@@ -40,7 +41,7 @@ class DebtService
 
             $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
             $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-            $contractorDebtsImport = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
+            $contractorDebtsImport = $debtObjectImport->debts()->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
 
             if ($objectExistInObjectImport) {
                 $contractorDebtsAvans = $contractorDebtsImport->sum('avans');
@@ -63,14 +64,20 @@ class DebtService
                     $organizationId = substr($organization, 0, strpos($organization, '::'));
                     $organizationIds[] = $organizationId;
 
-                    $pivot['entries'][$organizationId][$object->id] = $amount;
-
-                    if ($objectExistInObjectImport) {
-                        $pivot['entries'][$organizationId][$object->id] = $contractorDebtsImport->where('$organization_id', $organizationId)->sum('avans');
-                        $pivot['entries'][$organizationId][$object->id] = $contractorDebtsImport->where('$organization_id', $organizationId)->sum('guarantee');
+                    if (!isset($pivot['entries'][$organizationId][$object->id])) {
+                        $pivot['entries'][$organizationId][$object->id] = 0;
                     }
 
-                    $pivot['total'][$object->id] += $pivot['entries'][$organizationId][$object->id];
+                    $newAmount = $amount;
+
+                    if ($objectExistInObjectImport) {
+                        $newAmount += $contractorDebtsImport->where('organization_id', $organizationId)->sum('avans');
+                        $newAmount += $contractorDebtsImport->where('organization_id', $organizationId)->sum('guarantee');
+                    }
+
+                    $pivot['entries'][$organizationId][$object->id] += $newAmount;
+
+                    $pivot['total'][$object->id] += $newAmount;
                 }
             }
 
@@ -85,8 +92,13 @@ class DebtService
                     $organizationId = substr($organization, 0, strpos($organization, '::'));
                     $organizationIds[] = $organizationId;
 
-                    $pivot['entries'][$organizationId][$object->id] = $amount;
-                    $pivot['total'][$object->id] += $pivot['entries'][$organizationId][$object->id];
+                    if (!isset($pivot['entries'][$organizationId][$object->id])) {
+                        $pivot['entries'][$organizationId][$object->id] = 0;
+                    }
+
+                    $pivot['entries'][$organizationId][$object->id] += $amount;
+
+                    $pivot['total'][$object->id] += $amount;
                 }
             }
 
@@ -101,8 +113,13 @@ class DebtService
                     $organizationId = substr($organization, 0, strpos($organization, '::'));
                     $organizationIds[] = $organizationId;
 
-                    $pivot['entries'][$organizationId][$object->id] = $amount;
-                    $pivot['total'][$object->id] += $pivot['entries'][$organizationId][$object->id];
+                    if (!isset($pivot['entries'][$organizationId][$object->id])) {
+                        $pivot['entries'][$organizationId][$object->id] = 0;
+                    }
+
+                    $pivot['entries'][$organizationId][$object->id] += $amount;
+
+                    $pivot['total'][$object->id] += $amount;
                 }
             }
         }
