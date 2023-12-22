@@ -34,15 +34,15 @@ class PivotController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-//        if (! $request->has('verify_hash')) {
-//            abort(403);
-//            return response()->json([], 403);
-//        }
-//
-//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-//            abort(403);
-//            return response()->json([], 403);
-//        }
+        if (! $request->has('verify_hash')) {
+            abort(403);
+            return response()->json([], 403);
+        }
+
+        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+            abort(403);
+            return response()->json([], 403);
+        }
 
         if (empty($request->object_id)) {
             abort(404);
@@ -141,10 +141,11 @@ class PivotController extends Controller
         // $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_notwork_left_amount']['RUB'] - $contractsTotal['acts_amount']['RUB'];
 
         //новая версия
-        $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
-
-        $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
-
+        if ($object->code === '346') {
+            $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
+        } else {
+            $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
+        }
 
         $ostatokNeotrabotannogoAvansa = $contractsTotal['avanses_notwork_left_amount']['RUB'];
 
@@ -157,10 +158,14 @@ class PivotController extends Controller
             // $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
             // $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['acts_amount']['EUR'] * $currentRate->rate);
 
-            //новая версия
-            $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);
-            $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_received_amount']['EUR'] * $currentRate->rate);
-            $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_acts_paid_amount']['EUR'] * $currentRate->rate);
+            if ($object->code === '346') {
+                $diff = $contractsTotal['amount']['EUR'] - $contractsTotal['avanses_received_amount']['EUR'] - $contractsTotal['avanses_acts_paid_amount']['EUR'];
+                $ostatokPoDogovoruSZakazchikom += $diff * $currentRate->rate;
+            } else {
+                $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);
+                $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_received_amount']['EUR'] * $currentRate->rate);
+                $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_acts_paid_amount']['EUR'] * $currentRate->rate);
+            }
 
             $ostatokNeotrabotannogoAvansa += ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
         }
