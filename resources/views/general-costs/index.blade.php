@@ -149,143 +149,53 @@
                         @php
                             $averagePercents = [];
                             foreach($objects as $object) {
-                                $percentOneSum = 0;
-                                $percentOneCount = 0;
-
-                                $percentTwoSum = 0;
-                                $percentTwoCount = 0;
-
                                 $percentSum = 0;
                                 $percentCount = 0;
 
                                 foreach($generalInfo as $info) {
-                                    if ($object->code == 288) {
-                                        if (isset($info['info'][$object->id.'|1'])) {
-                                            $percentOne = ($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100;
-                                            $percentOneSum += $percentOne;
-                                            $percentOneCount++;
-                                        }
-
-                                        if (isset($info['info'][$object->id.'|24'])) {
-                                            $percentTwo = ($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100;
-                                            $percentTwoSum += $percentTwo;
-                                            $percentTwoCount++;
-                                        }
-                                    } else {
-                                        if (isset($info['info'][$object->id])) {
-                                            $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
-                                            $percentSum += $percent;
-                                            $percentCount++;
-                                        }
+                                    if (isset($info['info'][$object->id])) {
+                                        $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
+                                        $percentSum += $percent;
+                                        $percentCount++;
                                     }
                                 }
 
-                                if ($object->code == 288) {
-                                    $averagePercents[$object->id.'|1'] = $percentOneCount > 0 ? $percentOneSum / $percentOneCount : 0;
-                                    $averagePercents[$object->id.'|24'] = $percentTwoCount > 0 ? $percentTwoSum / $percentTwoCount : 0;
-                                } else {
-                                    $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
-                                }
+                                $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
                             }
                         @endphp
 
                         @foreach($objects as $object)
-                            @if ($object->code == 288)
-                                <tr>
-                                    <td class="bl ps-2">{{ $object->getName() . ' | 1 (Строительство)' }}</td>
+                            <tr>
+                                <td class="bl ps-2">{{ $object->getName() }}</td>
 
-                                    @php
-                                        $totalCuming = 0;
-                                        $totalGeneral = 0;
+                                @php
+                                    $totalCuming = 0;
+                                    $totalGeneral = 0;
 
-                                        foreach($generalInfo as $info) {
-                                            $totalCuming += ($info['info'][$object->id.'|1']['cuming_amount'] ?? 0);
-                                            $totalGeneral += ($info['info'][$object->id.'|1']['general_amount'] ?? 0);
-                                        }
+                                    foreach($generalInfo as $info) {
+                                        $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
+                                        $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                                    }
 
-                                        \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
-                                    @endphp
+                                    \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
+                                @endphp
 
-                                    <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
-                                    <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+                                <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
+                                <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                    @foreach($generalInfo as $info)
-                                        @if (isset ($info['info'][$object->id.'|1']))
-                                            <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|1']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                            <td class="text-center percent" >{{ number_format(($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                            <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|1']['general_amount'], 'RUB', 0, true) }}</td>
-                                        @else
-                                            <td class="bl">-</td>
-                                            <td>-</td>
-                                            <td class="br">-</td>
-                                        @endif
-                                    @endforeach
-                                </tr>
-                                <tr>
-                                    <td class="bl ps-2">{{ $object->getName() . ' | 2+4 (Инженерия)' }}</td>
-
-                                    @php
-                                        $totalCuming = 0;
-                                        $totalGeneral = 0;
-
-                                        foreach($generalInfo as $info) {
-                                            $totalCuming += ($info['info'][$object->id.'|24']['cuming_amount'] ?? 0);
-                                            $totalGeneral += ($info['info'][$object->id.'|24']['general_amount'] ?? 0);
-                                        }
-
-                                        \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral, true, false);
-                                    @endphp
-
-                                    <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="bl hl text-center" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
-                                    <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
-
-                                    @foreach($generalInfo as $info)
-                                        @if (isset ($info['info'][$object->id.'|24']))
-                                            <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|24']['cuming_amount'], 'RUB', 0, true) }}</td>
-                                            <td class="text-center percent" >{{ number_format(($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                            <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id.'|24']['general_amount'], 'RUB', 0, true) }}</td>
-                                        @else
-                                            <td class="bl">-</td>
-                                            <td>-</td>
-                                            <td class="br">-</td>
-                                        @endif
-                                    @endforeach
-                                </tr>
-                            @else
-                                <tr>
-                                    <td class="bl ps-2">{{ $object->getName() }}</td>
-
-                                    @php
-                                            $totalCuming = 0;
-                                            $totalGeneral = 0;
-
-                                            foreach($generalInfo as $info) {
-                                                $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
-                                                $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
-                                            }
-
-                                            \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
-                                    @endphp
-
-                                    <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
-                                    <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
-                                    <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
-
-                                    @foreach($generalInfo as $info)
-                                        @if (isset ($info['info'][$object->id]))
-                                            <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                            <td class="text-center percent" >{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                            <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
-                                        @else
-                                            <td class="bl">-</td>
-                                            <td>-</td>
-                                            <td class="br">-</td>
-                                        @endif
-                                    @endforeach
-                                </tr>
-                            @endif
+                                @foreach($generalInfo as $info)
+                                    @if (isset ($info['info'][$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-center percent" >{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+                                @endforeach
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>

@@ -91,8 +91,6 @@ class UpdateGeneralCosts extends Command
             $object27_1 = BObject::where('code', '27.1')->first();
             $object27_8 = BObject::where('code', '27.8')->first();
 
-
-
             $periods = array_reverse($periods);
 
             $generalTotalAmount = 0;

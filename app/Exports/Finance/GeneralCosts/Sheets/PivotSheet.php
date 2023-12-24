@@ -125,44 +125,18 @@ class PivotSheet implements
 
         $averagePercents = [];
         foreach($objects as $object) {
-            $percentOneSum = 0;
-            $percentOneCount = 0;
-
-            $percentTwoSum = 0;
-            $percentTwoCount = 0;
-
             $percentSum = 0;
             $percentCount = 0;
 
             foreach($generalInfo as $info) {
-                if ($object->code == 288) {
-
-                    if (isset($info['info'][$object->id.'|1'])) {
-                        $percentOne = ($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100;
-                        $percentOneSum += $percentOne;
-                        $percentOneCount++;
-                    }
-
-                    if (isset($info['info'][$object->id.'|24'])) {
-                        $percentTwo = ($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100;
-                        $percentTwoSum += $percentTwo;
-                        $percentTwoCount++;
-                    }
-                } else {
-                    if (isset($info['info'][$object->id])) {
-                        $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
-                        $percentSum += $percent;
-                        $percentCount++;
-                    }
+                if (isset($info['info'][$object->id])) {
+                    $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
+                    $percentSum += $percent;
+                    $percentCount++;
                 }
             }
 
-            if ($object->code == 288) {
-                $averagePercents[$object->id.'|1'] = $percentOneCount > 0 ? $percentOneSum / $percentOneCount : 0;
-                $averagePercents[$object->id.'|24'] = $percentTwoCount > 0 ? $percentTwoSum / $percentTwoCount : 0;
-            } else {
-                $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
-            }
+            $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
         }
 
         $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM'];
@@ -203,76 +177,6 @@ class PivotSheet implements
 
         $row = 3;
         foreach($objects as $object) {
-            if ($object->code == 288) {
-                $sheet->setCellValue('A' . $row, $object->getName() . ' | 1 (Строительство)');
-
-                $totalCuming = 0;
-                $totalGeneral = 0;
-                foreach($generalInfo as $info) {
-                    $totalCuming += ($info['info'][$object->id.'|1']['cuming_amount'] ?? 0);
-                    $totalGeneral += ($info['info'][$object->id.'|1']['general_amount'] ?? 0);
-                }
-
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-                $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
-                $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
-
-                $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($totalGeneral < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-
-                $columnIndex = 0;
-                foreach($generalInfo as $info) {
-                    if (isset ($info['info'][$object->id.'|1'])) {
-                        $sheet->setCellValue($columns[$columnIndex] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|1']['cuming_amount'], 'RUB', 0, true));
-                        $sheet->setCellValue($columns[$columnIndex + 1] . $row, number_format(($info['info'][$object->id.'|1']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|1']['general_amount'] / $info['info'][$object->id.'|1']['cuming_amount']) : 0) * 100, 2));
-                        $sheet->setCellValue($columns[$columnIndex + 2] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|1']['general_amount'], 'RUB', 0, true));
-
-                        $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|1']['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                        $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|1']['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                    }
-
-                    $columnIndex += 3;
-                }
-
-                $sheet->getRowDimension($row)->setRowHeight(50);
-                $row++;
-
-                $sheet->setCellValue('A' . $row, $object->getName() . ' | 2+4 (Инженерия)');
-
-                $totalCuming = 0;
-                $totalGeneral = 0;
-                foreach($generalInfo as $info) {
-                    $totalCuming += ($info['info'][$object->id.'|24']['cuming_amount'] ?? 0);
-                    $totalGeneral += ($info['info'][$object->id.'|24']['general_amount'] ?? 0);
-                }
-
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-                $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
-                $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
-
-                $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($totalGeneral < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-
-                $columnIndex = 0;
-                foreach($generalInfo as $info) {
-                    if (isset ($info['info'][$object->id.'|24'])) {
-                        $sheet->setCellValue($columns[$columnIndex] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|24']['cuming_amount'], 'RUB', 0, true));
-                        $sheet->setCellValue($columns[$columnIndex + 1] . $row, number_format(($info['info'][$object->id.'|24']['cuming_amount'] > 0 ? abs($info['info'][$object->id.'|24']['general_amount'] / $info['info'][$object->id.'|24']['cuming_amount']) : 0) * 100, 2));
-                        $sheet->setCellValue($columns[$columnIndex + 2] . $row, CurrencyExchangeRate::format($info['info'][$object->id.'|24']['general_amount'], 'RUB', 0, true));
-
-                        $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|24']['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                        $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id.'|24']['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                    }
-
-                    $columnIndex += 3;
-                }
-
-                $sheet->getRowDimension($row)->setRowHeight(50);
-                $row++;
-
-                continue;
-            }
-
             $sheet->setCellValue('A' . $row, $object->getName());
 
             $totalCuming = 0;

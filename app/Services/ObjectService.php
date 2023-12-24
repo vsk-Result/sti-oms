@@ -81,11 +81,7 @@ class ObjectService
                     'cuming_amount' => 4054172657,
                     'general_amount' => -305789658,
                 ],
-                '5|1' => [
-                    'cuming_amount' => 0,
-                    'general_amount' => 0,
-                ],
-                '5|24' => [
+                5 => [
                     'cuming_amount' => 9853343,
                     'general_amount' => -743197.35220357,
                 ],
@@ -110,11 +106,7 @@ class ObjectService
                     'cuming_amount' => 7397515613,
                     'general_amount' => -568293784,
                 ],
-                '5|1' => [
-                    'cuming_amount' => 0,
-                    'general_amount' => 0,
-                ],
-                '5|24' => [
+                5 => [
                     'cuming_amount' => 22477253,
                     'general_amount' => -1726753.12028663,
                 ],
@@ -229,68 +221,23 @@ class ObjectService
             $sumCumings = 0;
             $cumings = [];
             foreach ($finalObjects as $object) {
+                $amount = $object->payments
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                    ->sum('amount');
 
-                if ($object->code == 288) {
-                    $amount = $object->payments
-                        ->whereIn('object_worktype_id', [1])
-                        ->whereBetween('date', [$startDate, $endDate])
-                        ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount');
+                if ($amount > 0) {
+                    $cumings[$object->id] = [
+                        'cuming' => $amount,
+                        'general_costs' => 0,
+                    ];
+                    $sumCumings += $amount;
 
-                    if ($amount > 0) {
-                        $cumings[$object->id.'|1'] = [
-                            'cuming' => $amount,
-                            'general_costs' => 0,
+                    if (! isset($result[$object->id])) {
+                        $result[$object->id] = [
+                            'cuming_amount' => 0,
+                            'general_amount' => 0
                         ];
-                        $sumCumings += $amount;
-
-                        if (! isset($result[$object->id.'|1'])) {
-                            $result[$object->id.'|1'] = [
-                                'cuming_amount' => 0,
-                                'general_amount' => 0
-                            ];
-                        }
-                    }
-
-                    $amount = $object->payments
-                        ->whereIn('object_worktype_id', [2, 4])
-                        ->whereBetween('date', [$startDate, $endDate])
-                        ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount');
-
-                    if ($amount > 0) {
-                        $cumings[$object->id.'|24'] = [
-                            'cuming' => $amount,
-                            'general_costs' => 0,
-                        ];
-                        $sumCumings += $amount;
-
-                        if (! isset($result[$object->id.'|24'])) {
-                            $result[$object->id.'|24'] = [
-                                'cuming_amount' => 0,
-                                'general_amount' => 0
-                            ];
-                        }
-                    }
-                } else {
-                    $amount = $object->payments
-                        ->whereBetween('date', [$startDate, $endDate])
-                        ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount');
-
-                    if ($amount > 0) {
-                        $cumings[$object->id] = [
-                            'cuming' => $amount,
-                            'general_costs' => 0,
-                        ];
-                        $sumCumings += $amount;
-
-                        if (! isset($result[$object->id])) {
-                            $result[$object->id] = [
-                                'cuming_amount' => 0,
-                                'general_amount' => 0
-                            ];
-                        }
                     }
                 }
             }
