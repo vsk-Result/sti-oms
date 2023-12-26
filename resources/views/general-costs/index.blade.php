@@ -164,8 +164,93 @@
                             }
                         @endphp
 
-                        @foreach($objects as $object)
+                        @php
+                            $activeObjects = [];
+                            $closedObjects = [];
+
+                            foreach ($objects as $object) {
+                                if ($object->isBlocked()) {
+                                    $closedObjects[] = $object;
+                                } else {
+                                    $activeObjects[] = $object;
+                                }
+                            }
+                        @endphp
+
+                        @foreach($activeObjects as $object)
                             <tr>
+                                <td class="bl ps-2">{{ $object->getName() }}</td>
+
+                                @php
+                                    $totalCuming = 0;
+                                    $totalGeneral = 0;
+
+                                    foreach($generalInfo as $info) {
+                                        $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
+                                        $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                                    }
+
+                                    \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
+                                @endphp
+
+                                <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
+                                <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
+                                <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
+
+                                @foreach($generalInfo as $info)
+                                    @if (isset ($info['info'][$object->id]))
+                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-center percent" >{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                    @else
+                                        <td class="bl">-</td>
+                                        <td>-</td>
+                                        <td class="br">-</td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                        @endforeach
+
+                        @php
+                            $closedInfo = [];
+                            foreach ($closedObjects as $object) {
+                                foreach($generalInfo as $index => $info) {
+                                    if (!isset($closedInfo[$index]['cuming_amount'])) {
+                                        $closedInfo[$index]['cuming_amount'] = 0;
+                                    }
+                                    if (!isset($closedInfo[$index]['general_amount'])) {
+                                        $closedInfo[$index]['general_amount'] = 0;
+                                    }
+                                    if (!isset($closedInfo['total']['cuming_amount'])) {
+                                        $closedInfo['total']['cuming_amount'] = 0;
+                                    }
+                                    if (!isset($closedInfo['total']['general_amount'])) {
+                                        $closedInfo['total']['general_amount'] = 0;
+                                    }
+                                    $closedInfo[$index]['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
+                                    $closedInfo[$index]['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
+
+                                    $closedInfo['total']['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
+                                    $closedInfo['total']['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
+                                }
+                            }
+                        @endphp
+
+                        <tr class="toggle-closed-object">
+                            <td class="bl ps-2">Закрытые объекты</td>
+                            <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo['total']['cuming_amount'], 'RUB', 0, true) }}</td>
+                            <td class="bl hl text-center percent" >{{ number_format(($closedInfo['total']['cuming_amount'] > 0 ? abs($closedInfo['total']['general_amount'] / $closedInfo['total']['cuming_amount']) : 0) * 100, 2) }}%</td>
+                            <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo['total']['general_amount'], 'RUB', 0, true) }}</td>
+
+                            @foreach($generalInfo as $index => $info)
+                                <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                <td class="text-center percent" >{{ number_format(($closedInfo[$index]['cuming_amount'] > 0 ? abs($closedInfo[$index]['general_amount'] / $closedInfo[$index]['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['general_amount'], 'RUB', 0, true) }}</td>
+                            @endforeach
+                        </tr>
+
+                        @foreach($closedObjects as $object)
+                            <tr class="closed-object" style="display: none;">
                                 <td class="bl ps-2">{{ $object->getName() }}</td>
 
                                 @php
@@ -209,6 +294,10 @@
         $(function() {
             mainApp.initFreezeTable(1);
         });
+
+        $('.toggle-closed-object').on('click', function () {
+            $('.closed-object').toggle();
+        });
     </script>
 @endpush
 
@@ -241,6 +330,21 @@
             min-width: 100px !important;
             width: 100px !important;
             text-align: center !important;
+        }
+
+        .toggle-closed-object {
+            cursor: pointer !important;
+            --bs-table-accent-bg: #f7f7f7 !important;
+            font-weight: bold !important;
+            border: 1px dashed #ccc !important;
+        }
+
+        .toggle-closed-object > td {
+            border: 1px dashed #ccc !important;
+        }
+
+        .toggle-closed-object > td:first-child {
+            color: red !important;
         }
     </style>
 @endpush
