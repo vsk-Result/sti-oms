@@ -13,6 +13,7 @@ use App\Models\Status;
 use App\Services\CRONProcessService;
 use App\Services\DebtService;
 use App\Services\OrganizationService;
+use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -29,9 +30,15 @@ class ImportObjectDebtsFromExcel extends Command
     private OrganizationService $organizationService;
     private Sanitizer $sanitizer;
     private DebtService $debtService;
+    private PivotObjectDebtService $pivotObjectDebtService;
 
-    public function __construct(OrganizationService $organizationService, Sanitizer $sanitizer, DebtService $debtService, CRONProcessService $CRONProcessService)
-    {
+    public function __construct(
+        OrganizationService $organizationService,
+        Sanitizer $sanitizer,
+        DebtService $debtService,
+        CRONProcessService $CRONProcessService,
+        PivotObjectDebtService $pivotObjectDebtService
+    ) {
         parent::__construct();
         $this->CRONProcessService = $CRONProcessService;
         $this->CRONProcessService->createProcess(
@@ -42,6 +49,7 @@ class ImportObjectDebtsFromExcel extends Command
         $this->organizationService = $organizationService;
         $this->sanitizer = $sanitizer;
         $this->debtService = $debtService;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
     }
 
     public function handle()
@@ -186,6 +194,8 @@ class ImportObjectDebtsFromExcel extends Command
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Импорт прошел успешно');
         $this->CRONProcessService->successProcess($this->signature);
+
+        $this->pivotObjectDebtService->updatePivotDebtForAllObjects();
 
         return 0;
     }
