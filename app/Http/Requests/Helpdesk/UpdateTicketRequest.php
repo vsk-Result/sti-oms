@@ -26,7 +26,6 @@ class UpdateTicketRequest extends FormRequest
         return [
             'title' => 'required|string|max:300',
             'content' => 'nullable|string|max:3000',
-            'priority_id' => 'required|integer',
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:10240',
         ];
     }
