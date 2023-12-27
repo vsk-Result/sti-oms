@@ -17,11 +17,19 @@ class ViewNotificationSubscriber
 
     public function handleCreateTicket($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $this->viewNotificationService->notificationForCreate($event->ticket);
     }
 
     public function handleUpdateTicket($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $this->viewNotificationService->notificationForUpdate($event->ticket);
     }
 

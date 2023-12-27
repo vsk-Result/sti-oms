@@ -11,6 +11,14 @@
         </div>
     </div>
 
+    @if (!empty($ticket->complete_date))
+        <div class="alert alert-dismissible bg-light-success d-flex flex-column flex-sm-row p-3 mb-10">
+            <div class="d-flex flex-column pe-0 pe-sm-10">
+                <span><strong class="fs-6">Выполнено: </strong>{{ \Carbon\Carbon::parse($ticket->complete_date)->format('d.m.Y H:i') }}</span>
+            </div>
+        </div>
+    @endif
+
     <div class="fs-base fw-normal text-gray-700 mb-4">
         {!! nl2br($ticket->getPreviewContent()) !!}
     </div>

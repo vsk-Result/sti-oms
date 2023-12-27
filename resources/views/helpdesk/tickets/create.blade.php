@@ -70,18 +70,39 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-10 fv-row">
-                                    <div class="mb-1">
-                                        <label class="form-label fw-bolder text-dark fs-6">Приоритет</label>
-                                        <div class="position-relative mb-3">
-                                            <select name="priority_id" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                @foreach($priorities as $priority)
-                                                    <option value="{{ $priority->id }}">{{ $priority->name }}</option>
-                                                @endforeach
-                                            </select>
+                                @if (auth()->user()->hasRole('super-admin'))
+                                    <div class="mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Приоритет</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="priority_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($priorities as $priority)
+                                                        <option value="{{ $priority->id }}">{{ $priority->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+
+                                    <div class="mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Время на выполнение</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('time_to_complete') ? 'is-invalid' : '' }}"
+                                                    type="text"
+                                                    name="time_to_complete"
+                                                    value="{{ old('time_to_complete') }}"
+                                                />
+                                            </div>
+                                            @if ($errors->has('time_to_complete'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('time_to_complete')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <div class="mb-10 fv-row">
                                     <div class="mb-1">

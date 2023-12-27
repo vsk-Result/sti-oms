@@ -13,6 +13,10 @@ class AnswerEventSubscriber
 
     public function handleCreateAnswer($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $answer = $event->answer;
         $ticket = $answer->ticket;
         $ticketAuthor = $ticket->createdBy()->first();

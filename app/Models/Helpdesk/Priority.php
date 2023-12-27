@@ -6,6 +6,8 @@ use Illuminate\Support\Collection;
 
 class Priority
 {
+    const NOT_SELECTED_ID = 4;
+
     private static array $priorities = [
         [
             'id' => 1,
@@ -21,6 +23,11 @@ class Priority
             'id' => 3,
             'name' => 'Высокий',
             'color' => 'danger'
+        ],
+        [
+            'id' => self::NOT_SELECTED_ID,
+            'name' => 'Не указан',
+            'color' => 'default'
         ],
     ];
 

@@ -20,6 +20,10 @@ class TicketEventSubscriber
 
     public function handleCreateTicket($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $ticket = $event->ticket;
         $ticketAuthor = $ticket->createdBy()->first();
         $emailSubject = 'Новое обращение: ' . $ticket->title;
@@ -39,6 +43,10 @@ class TicketEventSubscriber
 
     public function handleUpdateTicket($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $ticket = $event->ticket;
         $ticketAuthor = $ticket->createdBy()->first();
         $updatedBy = $event->updatedBy;
@@ -58,6 +66,10 @@ class TicketEventSubscriber
 
     public function handleDeleteTicket($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $ticket = $event->ticket;
         $ticketAuthor = $ticket->createdBy()->first();
         $deletedBy = $event->deletedBy;
@@ -77,6 +89,10 @@ class TicketEventSubscriber
 
     public function handleOpenTicket($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $ticket = $event->ticket;
         $ticketAuthor = $ticket->createdBy()->first();
         $openedBy = $event->openedBy;
@@ -96,6 +112,10 @@ class TicketEventSubscriber
 
     public function handleCloseTicket($event): void
     {
+        if (config('app.debug') === true) {
+            return;
+        }
+
         $ticket = $event->ticket;
         $ticketAuthor = $ticket->createdBy()->first();
         $closedBy = $event->closedBy;

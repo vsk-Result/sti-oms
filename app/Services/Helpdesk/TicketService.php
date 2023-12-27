@@ -12,6 +12,7 @@ use App\Models\Helpdesk\Ticket;
 use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -22,10 +23,10 @@ class TicketService
         $totalQuery = Ticket::query();
         $query = Ticket::query();
 
-        if (! auth()->user()->hasRole('super-admin')) {
-            $totalQuery->where('created_by_user_id', auth()->id());
-            $query->where('created_by_user_id', auth()->id());
-        }
+//        if (! auth()->user()->hasRole('super-admin')) {
+//            $totalQuery->where('created_by_user_id', auth()->id());
+//            $query->where('created_by_user_id', auth()->id());
+//        }
 
         if (! empty($requestData['priority_id'])) {
             $query->whereIn('priority_id', $requestData['priority_id']);
@@ -106,10 +107,11 @@ class TicketService
     public function createTicket(array $requestData): void
     {
         $ticket = Ticket::create([
-            'priority_id' => $requestData['priority_id'],
+            'priority_id' => $requestData['priority_id'] ?? Priority::NOT_SELECTED_ID,
             'object_id' => $requestData['object_id'] === 'null' ? null : $requestData['object_id'],
             'title' => $requestData['title'],
             'content' => $requestData['content'],
+            'time_to_complete' => $requestData['time_to_complete'] ?? null,
             'status_id' => Status::STATUS_ACTIVE,
         ]);
 
@@ -153,6 +155,7 @@ class TicketService
     public function openTicket(Ticket $ticket): void
     {
         $ticket->update([
+            'complete_date' => null,
             'status_id' => Status::STATUS_ACTIVE
         ]);
 
@@ -162,6 +165,7 @@ class TicketService
     public function closeTicket(Ticket $ticket): void
     {
         $ticket->update([
+            'complete_date' => Carbon::now(),
             'status_id' => Status::STATUS_BLOCKED
         ]);
 

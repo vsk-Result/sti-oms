@@ -24,11 +24,20 @@ class Ticket extends Model implements Audit, HasMedia
 
     protected $fillable = [
         'execution_date', 'complete_date', 'title', 'created_by_user_id',
-        'updated_by_user_id', 'content', 'priority_id', 'object_id', 'status_id'
+        'updated_by_user_id', 'content', 'priority_id', 'object_id', 'status_id', 'time_to_complete'
     ];
 
     const PREVIEW_TITLE_TEXT_LENGTH = 65;
     const PREVIEW_CONTENT_TEXT_LENGTH = 180;
+
+    private function getStatusesList(): array
+    {
+        return [
+            Status::STATUS_ACTIVE => 'Открыто',
+            Status::STATUS_BLOCKED => 'Закрыто',
+            Status::STATUS_DELETED => 'Удалено'
+        ];
+    }
 
     public function answers(): HasMany
     {
