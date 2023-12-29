@@ -124,7 +124,7 @@ class Contract extends Model implements HasMedia, Audit
                     : $amount + $subContract->amount;
             }
 
-            if ($this->id === 294) {
+            if ($this->id === 294 && $currency === 'RUB') {
                 $c = Contract::find(2993);
                 if ($c) {
                     $amount += $c->amount;
