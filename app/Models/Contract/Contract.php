@@ -118,16 +118,23 @@ class Contract extends Model implements HasMedia, Audit
                 return json_decode($this->params)[7] ?? 0;
             }
 
-            foreach ($this->children->where('currency', $currency) as $subContract) {
-                $amount = $subContract->isMainAmount()
-                    ? $subContract->amount
-                    : $amount + $subContract->amount;
-            }
-
-            if ($this->id === 294 && $currency === 'RUB') {
-                $c = Contract::find(2993);
-                if ($c) {
-                    $amount += $c->amount;
+            // Тинькоф
+            if ($this->object_id === 103 && $currency === 'RUB' && $this->id === 294) {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if ($subContract->isMainAmount()) {
+                        $amount = $subContract->amount;
+                    }
+                }
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if (!$subContract->isMainAmount()) {
+                        $amount += $subContract->amount;
+                    }
+                }
+            } else {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    $amount = $subContract->isMainAmount()
+                        ? $subContract->amount
+                        : $amount + $subContract->amount;
                 }
             }
         }
