@@ -123,6 +123,13 @@ class Contract extends Model implements HasMedia, Audit
                     ? $subContract->amount
                     : $amount + $subContract->amount;
             }
+
+            if ($this->id === 394) {
+                $c = Contract::find(2993);
+                if ($c) {
+                    $amount += $c->amount;
+                }
+            }
         }
 
         return $amount;
