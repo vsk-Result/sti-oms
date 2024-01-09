@@ -56,6 +56,10 @@ class Ticket extends Model implements Audit, HasMedia
 
     public function getPreviewContent(): string
     {
+        if (empty($this->content)) {
+            return '';
+        }
+
         return mb_strlen($this->content) > self::PREVIEW_CONTENT_TEXT_LENGTH
             ? mb_substr($this->content, 0, self::PREVIEW_CONTENT_TEXT_LENGTH) . '...'
             : $this->content;
