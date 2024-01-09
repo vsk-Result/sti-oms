@@ -8,84 +8,131 @@
         $object27_1 = \App\Models\Object\BObject::where('code', '27.1')->first();
         $object27_8 = \App\Models\Object\BObject::where('code', '27.8')->first();
 
-        $periods = [
-            [
-                'start_date' => '2017-01-01',
-                'end_date' => '2017-12-31',
-                'bonus' => 0,
+        $periodsByYears = [
+            '2017' => [
+                [
+                    'start_date' => '2017-01-01',
+                    'end_date' => '2017-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2018-01-01',
-                'end_date' => '2018-12-31',
-                'bonus' => 21421114,
+            '2018' => [
+                [
+                    'start_date' => '2018-01-01',
+                    'end_date' => '2018-12-31',
+                    'bonus' => 21421114,
+                ],
             ],
-            [
-                'start_date' => '2019-01-01',
-                'end_date' => '2019-12-31',
-                'bonus' => (39760000 + 692048),
+            '2019' => [
+                [
+                     'start_date' => '2019-01-01',
+                    'end_date' => '2019-12-31',
+                    'bonus' => (39760000 + 692048),
+                ],
             ],
-            [
-                'start_date' => '2020-01-01',
-                'end_date' => '2020-12-31',
-                'bonus' => (2000000 + 418000 + 1615000),
+            '2020' => [
+                [
+                    'start_date' => '2020-01-01',
+                    'end_date' => '2020-12-31',
+                    'bonus' => (2000000 + 418000 + 1615000),
+                ],
             ],
-            [
-                'start_date' => '2021-01-01',
-                'end_date' => '2021-03-02',
-                'bonus' => 600000,
+            '2021' => [
+                [
+                    'start_date' => '2021-01-01',
+                    'end_date' => '2021-03-02',
+                    'bonus' => 600000,
+                ],
+                [
+                    'start_date' => '2021-03-03',
+                    'end_date' => '2021-12-31',
+                    'bonus' => (600000 + 68689966),
+                ],
             ],
-            [
-                'start_date' => '2021-03-03',
-                'end_date' => '2021-12-31',
-                'bonus' => (600000 + 68689966),
+            '2022' => [
+                [
+                    'start_date' => '2022-01-01',
+                    'end_date' => '2022-10-11',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2022-10-12',
+                    'end_date' => '2022-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2022-01-01',
-                'end_date' => '2022-10-11',
-                'bonus' => 0,
+            '2023' => [
+                [
+                    'start_date' => '2023-01-01',
+                    'end_date' => '2023-07-20',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2023-07-21',
+                    'end_date' => '2023-11-28',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2023-11-29',
+                    'end_date' => '2023-12-31',
+                    'bonus' => 0,
+                ]
             ],
-            [
-                'start_date' => '2022-10-12',
-                'end_date' => '2022-12-31',
-                'bonus' => 0,
+            '2024' => [
+                [
+                    'start_date' => '2024-01-01',
+                    'end_date' => '2024-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2023-01-01',
-                'end_date' => '2023-07-20',
-                'bonus' => 0,
-            ],
-            [
-                'start_date' => '2023-07-21',
-                'end_date' => '2023-11-28',
-                'bonus' => 0,
-            ],
-            [
-                'start_date' => '2023-11-29',
-                'end_date' => '2023-12-31',
-                'bonus' => 0,
-            ]
         ];
 
-        $periods = array_reverse($periods);
+        $periodsByYears = array_reverse($periodsByYears, true);
 
         $generalTotalAmount = 0;
         $generalInfo = [];
-        foreach ($periods as $index => $period) {
-            $datesBetween = [$period['start_date'], $period['end_date']];
-            $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->where('company_id', 1);
-            $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                            + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
-                            + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
-                            + $period['bonus'];
 
-            $generalInfo[$index] = [
-                'start_date' => $period['start_date'],
-                'end_date' => $period['end_date'],
-                'general_amount' => $generalAmount,
-                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+        $groupedByYearsInfo = [];
+
+        foreach ($periodsByYears as $year => $periods) {
+            $groupedByYearsInfo[$year]['total'] = [
+                'cuming_amount' => 0,
+                'general_amount' => 0,
             ];
+            foreach ($periods as $index => $period) {
+                $datesBetween = [$period['start_date'], $period['end_date']];
+                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->where('company_id', 1);
+                $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                                + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
+                                + $period['bonus'];
 
-            $generalTotalAmount += $generalAmount;
+                $generalInfo[$year][$index] = [
+                    'start_date' => $period['start_date'],
+                    'end_date' => $period['end_date'],
+                    'general_amount' => $generalAmount,
+                    'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                ];
+
+                $generalTotalAmount += $generalAmount;
+
+                foreach ($generalInfo[$year][$index]['info'] as $objectId => $i) {
+                    if (!isset($groupedByYearsInfo[$year][$objectId]['cuming_amount'])) {
+                        $groupedByYearsInfo[$year][$objectId]['cuming_amount'] = 0;
+                    }
+                    if (!isset($groupedByYearsInfo[$year][$objectId]['general_amount'])) {
+                        $groupedByYearsInfo[$year][$objectId]['general_amount'] = 0;
+                    }
+
+                    $groupedByYearsInfo[$year][$objectId]['cuming_amount'] += $i['cuming_amount'];
+                    $groupedByYearsInfo[$year][$objectId]['general_amount'] += $i['general_amount'];
+                }
+
+                foreach ($generalInfo[$year][$index]['info'] as $i) {
+                    $groupedByYearsInfo[$year]['total']['cuming_amount'] += $i['cuming_amount'];
+                    $groupedByYearsInfo[$year]['total']['general_amount'] += $i['general_amount'];
+                }
+            }
         }
     @endphp
     <div class="card mb-5 mb-xl-8 p-0 border-0">
@@ -122,13 +169,18 @@
                             <th class="min-w-250px bt bl ps-2">Разбивка общих затрат по годам</th>
 
                             <th class="min-w-125px bt bl hl">Итого</th>
-                            <th class="bt bl hl percent" ></th>
+                            <th class="bt bl hl percent"></th>
                             <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotalAmount, 'RUB') }}</th>
 
-                            @foreach($generalInfo as $info)
-                                <th class="min-w-125px bt">с {{ \Carbon\Carbon::parse($info['start_date'])->format('d.m.Y') }} по {{ \Carbon\Carbon::parse($info['end_date'])->format('d.m.Y') }}</th>
-                                <th class="bt percent" ></th>
-                                <th class="min-w-125px text-danger bt br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['general_amount'], 'RUB') }}</th>
+                            @foreach($generalInfo as $year => $infoArray)
+                                <th class="min-w-125px bt grouped toggle-grouped-by-year" data-year="{{ $year }}">{{ $year }}</th>
+                                <th class="min-w-125px text-danger bt br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year]['total']['general_amount'], 'RUB') }}</th>
+
+                                @foreach($infoArray as $info)
+                                    <th style="display: none;" class="min-w-125px bt grouped-by-year" data-year="{{ $year }}">с {{ \Carbon\Carbon::parse($info['start_date'])->format('d.m.Y') }} по {{ \Carbon\Carbon::parse($info['end_date'])->format('d.m.Y') }}</th>
+                                    <th style="display: none;" class="bt percent grouped-by-year" data-year="{{ $year }}"></th>
+                                    <th style="display: none;" class="min-w-125px text-danger bt br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($info['general_amount'], 'RUB') }}</th>
+                                @endforeach
                             @endforeach
                         </tr>
                         <tr>
@@ -138,10 +190,15 @@
                             <th class="bl hl text-center percent" >%</th>
                             <th class="min-w-125px br hl text-center">Общие расходы</th>
 
-                            @foreach($generalInfo as $info)
-                                <th class="min-w-125px">Получено</th>
-                                <th class="text-center percent" >%</th>
-                                <th class="min-w-125px br">Общие расходы на объект</th>
+                            @foreach($generalInfo as $year => $infoArray)
+                                <th class="min-w-125px grouped">Получено</th>
+                                <th class="min-w-125px br grouped">Общие расходы</th>
+
+                                @foreach($infoArray as $objectId => $info)
+                                    <th style="display: none;" class="min-w-125px grouped-by-year" data-year="{{ $year }}">Получено</th>
+                                    <th style="display: none;" class="text-center percent grouped-by-year" data-year="{{ $year }}">%</th>
+                                    <th style="display: none;" class="min-w-125px br grouped-by-year" data-year="{{ $year }}">Общие расходы</th>
+                                @endforeach
                             @endforeach
                         </tr>
                     </thead>
@@ -185,9 +242,11 @@
                                     $totalCuming = 0;
                                     $totalGeneral = 0;
 
-                                    foreach($generalInfo as $info) {
-                                        $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
-                                        $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                                    foreach($generalInfo as $year => $infoArray) {
+                                        foreach($infoArray as $info) {
+                                            $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
+                                            $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                                        }
                                     }
 
                                     \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
@@ -197,16 +256,27 @@
                                 <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                 <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                @foreach($generalInfo as $info)
-                                    @if (isset ($info['info'][$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                @foreach($generalInfo as $year => $infoArray)
+                                    @if (isset($groupedByYearsInfo[$year][$object->id]))
+                                        <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
+                                        <td class="bl grouped">-</td>
+                                        <td class="br grouped">-</td>
                                     @endif
+
+
+                                    @foreach($infoArray as $info)
+                                        @if (isset ($info['info'][$object->id]))
+                                            <td style="display: none;" class="text-success bl text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                            <td style="display: none;" class="text-center percent grouped-by-year" data-year="{{ $year }}">{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                            <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                        @else
+                                            <td style="display: none;" class="bl grouped-by-year" data-year="{{ $year }}">-</td>
+                                            <td style="display: none;" class="grouped-by-year" data-year="{{ $year }}">-</td>
+                                            <td style="display: none;" class="br grouped-by-year" data-year="{{ $year }}">-</td>
+                                        @endif
+                                    @endforeach
                                 @endforeach
                             </tr>
                         @endforeach
@@ -214,24 +284,36 @@
                         @php
                             $closedInfo = [];
                             foreach ($closedObjects as $object) {
-                                foreach($generalInfo as $index => $info) {
-                                    if (!isset($closedInfo[$index]['cuming_amount'])) {
-                                        $closedInfo[$index]['cuming_amount'] = 0;
+                                foreach($generalInfo as $year => $infoArray) {
+                                    if (!isset($closedInfo[$year]['cuming_amount'])) {
+                                        $closedInfo[$year]['cuming_amount'] = 0;
                                     }
-                                    if (!isset($closedInfo[$index]['general_amount'])) {
-                                        $closedInfo[$index]['general_amount'] = 0;
+                                    if (!isset($closedInfo[$year]['general_amount'])) {
+                                        $closedInfo[$year]['general_amount'] = 0;
                                     }
-                                    if (!isset($closedInfo['total']['cuming_amount'])) {
-                                        $closedInfo['total']['cuming_amount'] = 0;
-                                    }
-                                    if (!isset($closedInfo['total']['general_amount'])) {
-                                        $closedInfo['total']['general_amount'] = 0;
-                                    }
-                                    $closedInfo[$index]['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
-                                    $closedInfo[$index]['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
 
-                                    $closedInfo['total']['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
-                                    $closedInfo['total']['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
+                                    foreach($infoArray as $index => $info) {
+                                        if (!isset($closedInfo[$index]['cuming_amount'])) {
+                                            $closedInfo[$index]['cuming_amount'] = 0;
+                                        }
+                                        if (!isset($closedInfo[$index]['general_amount'])) {
+                                            $closedInfo[$index]['general_amount'] = 0;
+                                        }
+                                        if (!isset($closedInfo['total']['cuming_amount'])) {
+                                            $closedInfo['total']['cuming_amount'] = 0;
+                                        }
+                                        if (!isset($closedInfo['total']['general_amount'])) {
+                                            $closedInfo['total']['general_amount'] = 0;
+                                        }
+                                        $closedInfo[$index]['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
+                                        $closedInfo[$index]['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
+
+                                        $closedInfo['total']['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
+                                        $closedInfo['total']['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
+
+                                         $closedInfo[$year]['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
+                                         $closedInfo[$year]['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
+                                    }
                                 }
                             }
                         @endphp
@@ -242,10 +324,15 @@
                             <td class="bl hl text-center percent" >{{ number_format(($closedInfo['total']['cuming_amount'] > 0 ? abs($closedInfo['total']['general_amount'] / $closedInfo['total']['cuming_amount']) : 0) * 100, 2) }}%</td>
                             <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo['total']['general_amount'], 'RUB', 0, true) }}</td>
 
-                            @foreach($generalInfo as $index => $info)
-                                <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                <td class="text-center percent" >{{ number_format(($closedInfo[$index]['cuming_amount'] > 0 ? abs($closedInfo[$index]['general_amount'] / $closedInfo[$index]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['general_amount'], 'RUB', 0, true) }}</td>
+                            @foreach($generalInfo as $year => $infoArray)
+                                <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$year]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$year]['general_amount'], 'RUB', 0, true) }}</td>
+
+                                @foreach($infoArray as $index => $info)
+                                    <td style="display: none;" class="text-success bl text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                    <td style="display: none;" class="text-center percent grouped-by-year" data-year="{{ $year }}">{{ number_format(($closedInfo[$index]['cuming_amount'] > 0 ? abs($closedInfo[$index]['general_amount'] / $closedInfo[$index]['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                    <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['general_amount'], 'RUB', 0, true) }}</td>
+                                @endforeach
                             @endforeach
                         </tr>
 
@@ -257,9 +344,11 @@
                                     $totalCuming = 0;
                                     $totalGeneral = 0;
 
-                                    foreach($generalInfo as $info) {
-                                        $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
-                                        $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                                    foreach($generalInfo as $year => $infoArray) {
+                                        foreach($infoArray as $info) {
+                                            $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
+                                            $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                                        }
                                     }
 
                                     \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
@@ -269,16 +358,26 @@
                                 <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                 <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                @foreach($generalInfo as $info)
-                                    @if (isset ($info['info'][$object->id]))
-                                        <td class="text-success bl text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-center percent" >{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td class="text-danger br text-right">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                @foreach($generalInfo as $year => $infoArray)
+                                    @if (isset($groupedByYearsInfo[$year][$object->id]))
+                                        <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
-                                        <td class="bl">-</td>
-                                        <td>-</td>
-                                        <td class="br">-</td>
+                                        <td class="bl grouped">-</td>
+                                        <td class="br grouped">-</td>
                                     @endif
+
+                                    @foreach($infoArray as $info)
+                                        @if (isset ($info['info'][$object->id]))
+                                            <td style="display: none;" class="text-success bl text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                            <td style="display: none;" class="text-center percent grouped-by-year" data-year="{{ $year }}">{{ number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2) }}%</td>
+                                            <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                        @else
+                                            <td style="display: none;" class="bl grouped-by-year" data-year="{{ $year }}">-</td>
+                                            <td style="display: none;" class="grouped-by-year" data-year="{{ $year }}">-</td>
+                                            <td style="display: none;" class="br grouped-by-year" data-year="{{ $year }}">-</td>
+                                        @endif
+                                    @endforeach
                                 @endforeach
                             </tr>
                         @endforeach
@@ -297,6 +396,11 @@
 
         $('.toggle-closed-object').on('click', function () {
             $('.closed-object').toggle();
+        });
+
+        $('.toggle-grouped-by-year').on('click', function () {
+            const year = $(this).data('year');
+            $(`.grouped-by-year[data-year=${year}]`).toggle();
         });
     </script>
 @endpush
@@ -319,6 +423,9 @@
             background-color: #f7f7f7 !important;
             font-weight: bold !important;
             border: 1px dashed #ccc !important;
+        }
+
+        .hl:not(.percent), .table tbody tr:last-child td.hl:not(.percent) {
             min-width: 150px !important;
         }
 
@@ -345,6 +452,15 @@
 
         .toggle-closed-object > td:first-child {
             color: red !important;
+        }
+
+        th.grouped, td.grouped {
+            background-color: #f7f7f799;
+        }
+
+        .toggle-grouped-by-year {
+            font-weight: bold !important;
+            cursor: pointer !important;
         }
     </style>
 @endpush

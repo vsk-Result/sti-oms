@@ -94,7 +94,7 @@
                     <th data-sort-by="company_id" class="sortable-row min-w-100px">Компания</th>
                     <th data-sort-by="bank_id" class="sortable-row min-w-125px">Банк</th>
                     <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>
-                    <th data-sort-by="code" class="sortable-row min-w-70px">Кост код</th>
+                    <th data-sort-by="code" class="sortable-row min-w-70px">Статья затрат</th>
                     <th data-sort-by="organization_receiver_id" class="sortable-row min-w-125px">Контрагент</th>
                     <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
                     <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>

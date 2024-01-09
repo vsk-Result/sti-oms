@@ -25,7 +25,7 @@ class HistoryController extends Controller
             'object_worktype_id' => 'Вид работ',
             'category' => 'Категория',
             'company_id' => 'Компания',
-            'code' => 'Кост код',
+            'code' => 'Статья затрат',
             'object_id' => 'Объект',
             'description' => 'Описание',
             'organization_sender_id' => 'Контрагент отправитель',

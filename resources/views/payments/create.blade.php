@@ -165,12 +165,13 @@
 
                                     <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Кост код</label>
+                                            <label class="form-label fw-bolder text-dark fs-6">Статья затрат</label>
                                             <div class="position-relative mb-3">
                                                 <input
                                                     class="form-control form-control-lg form-control-solid {{ $errors->has('code') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="code"
+                                                    required
                                                     value="{{ old('code') }}"
                                                 />
                                             </div>

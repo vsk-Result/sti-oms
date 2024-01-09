@@ -1,4 +1,4 @@
-<button id="kt_explore_toggle" class="explore-toggle btn btn-sm bg-body btn-color-gray-700 btn-active-primary shadow-sm position-fixed px-5 fw-bolder zindex-2 top-50 mt-10 end-0 transform-90 rounded-top-0" title="Таблица кост кодов" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-trigger="hover">
+<button id="kt_explore_toggle" class="explore-toggle btn btn-sm bg-body btn-color-gray-700 btn-active-primary shadow-sm position-fixed px-5 fw-bolder zindex-2 top-50 mt-10 end-0 transform-90 rounded-top-0" title="Таблица Статья затратов" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-trigger="hover">
     <span id="kt_explore_toggle_label">Статьи затрат компании СТИ</span>
 </button>
 <div id="kt_explore" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="explore" data-kt-drawer-activate="true" data-kt-drawer-overlay="false" data-kt-drawer-width="{default:'600px', 'lg': '600px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_explore_toggle" data-kt-drawer-close="#kt_explore_close">

@@ -17,11 +17,6 @@ class PivotObjectDebtService
 
     public function getPivotDebtForObject(int $objectId): array
     {
-        $emptyData = (object) [
-            'debts' => [],
-            'total_amount' => 0,
-        ];
-
         $date = Carbon::now()->format('Y-m-d');
         $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
 
@@ -37,11 +32,10 @@ class PivotObjectDebtService
             ]
         ])[0];
 
-
         return [
-            'contractor' => $pivot ? json_decode($pivot->contractor) : $emptyCollection,
-            'provider' => $pivot ? json_decode($pivot->provider) : $emptyCollection,
-            'service' => $pivot ? json_decode($pivot->service) : $emptyCollection,
+            'contractor' => $pivot ? $this->sortByOrganizationName(json_decode($pivot->contractor)) : $emptyCollection,
+            'provider' => $pivot ? $this->sortByOrganizationName(json_decode($pivot->provider)) : $emptyCollection,
+            'service' => $pivot ? $this->sortByOrganizationName(json_decode($pivot->service)) : $emptyCollection,
         ];
     }
 
@@ -193,7 +187,6 @@ class PivotObjectDebtService
             }
         }
 
-
         return $result;
     }
 
@@ -288,5 +281,34 @@ class PivotObjectDebtService
         asort($result);
 
         return $result;
+    }
+
+    private function sortByOrganizationName($pivotInfo)
+    {
+        $sortedDebts = [];
+        $debts = $pivotInfo->debts;
+        foreach ($debts as $organization => $amount) {
+            if (is_numeric($organization)) {
+                $organizationName = $amount->name;
+            } else {
+                $organizationName = substr($organization, strpos($organization, '::') + 2);
+            }
+
+            $sortedDebts[mb_strtoupper($organizationName)] = [
+                'key' => $organization,
+                'amount' => $amount
+            ];
+        }
+
+        ksort($sortedDebts, SORT_STRING);
+
+        $resultDebts = (object) [];
+        foreach ($sortedDebts as $debt) {
+            $resultDebts->{$debt['key']} = $debt['amount'];
+        }
+
+        $pivotInfo->debts = $resultDebts;
+
+        return $pivotInfo;
     }
 }

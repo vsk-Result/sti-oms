@@ -76,7 +76,7 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase">
                                 <th class="min-w-150px">Объект</th>
-                                <th class="min-w-70px">Кост код</th>
+                                <th class="min-w-70px">Статья затрат</th>
                                 <th class="min-w-100px">Контрагент</th>
                                 <th class="min-w-400px">Описание</th>
                                 <th class="min-w-150px">Сумма</th>
