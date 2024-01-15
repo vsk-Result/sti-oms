@@ -532,7 +532,7 @@
                                     data-bs-placement="top"
                                     data-bs-html="true"
                                     title="Детализация по долгу на зарплаты рабочим"
-                                    data-bs-content='@include('objects.parts.debts-detalis.workers_salary')'
+                                    data-bs-content='@include('objects.parts.debts-details.workers_salary')'
                             >
                                 Долг на зарплаты рабочим
                             </div>
