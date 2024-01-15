@@ -80,10 +80,10 @@
                 </div>
             @endcan
 
-            @canAny(['index payments', 'index writeoffs'])
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('payments*') || request()->is('writeoffs*')) ? 'hover show' : '' }}">
+            @canAny(['index payments', 'index writeoffs', 'index tax-plan'])
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('payments*') || request()->is('writeoffs*') || request()->is('tax-plan*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
-                        <span class="menu-title {{ (request()->is('payments*') || request()->is('writeoffs*')) ? 'fw-boldest' : '' }}">Оплаты</span>
+                        <span class="menu-title {{ (request()->is('payments*') || request()->is('writeoffs*') || request()->is('tax-plan*')) ? 'fw-boldest' : '' }}">Оплаты</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
@@ -116,6 +116,17 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">Списания</span>
+                                </a>
+                            </div>
+                        @endcan
+
+                        @can('index tax-plan')
+                            <div class="menu-item">
+                                <a class="menu-link py-2 {{ request()->is('tax-plan*') ? 'active' : '' }}" href="{{ route('tax_plan.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                    <span class="menu-title">План налогов к оплате</span>
                                 </a>
                             </div>
                         @endcan
