@@ -206,15 +206,15 @@ class ObjectService
         foreach ($periods as $startDate => $endDate) {
             $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])
                 ->where('type_id', Payment::TYPE_GENERAL)
-                ->where('company_id', 1)
+                ->whereIn('company_id', [1, 5])
                 ->sum('amount');
             $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])
                 ->where('object_id', $object27_1->id)
-                ->where('company_id', 1)
+                ->whereIn('company_id', [1, 5])
                 ->sum('amount');
             $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])
                     ->where('object_id', $object27_8->id)
-                    ->where('company_id', 1)
+                    ->whereIn('company_id', [1, 5])
                     ->sum('amount') * 0.7);
             $generalTotalAmount += $bonus;
 

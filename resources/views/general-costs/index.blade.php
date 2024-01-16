@@ -101,7 +101,7 @@
             ];
             foreach ($periods as $index => $period) {
                 $datesBetween = [$period['start_date'], $period['end_date']];
-                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->where('company_id', 1);
+                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
                 $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                                 + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
                                 + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
