@@ -437,18 +437,7 @@
             <div class="me-11">
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            <div
-                                    class="cursor-pointer"
-                                    data-bs-custom-class="contractor-detailing-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="Детализация по долгу подрядчикам"
-                                    data-bs-content='@include('objects.parts.debts-details.contractor')'
-                            >
-                                Долг подрядчикам (в т.ч. ГУ)
-                            </div>
+                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам (в т.ч. ГУ)</div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $contractorDebtsAmount < 0 ? 'text-danger' : 'text-success' }}">
                             {{ \App\Models\CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB') }}
                         </div>
