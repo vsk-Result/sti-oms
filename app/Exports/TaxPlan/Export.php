@@ -65,7 +65,7 @@ class Export implements
             $sheet->setCellValue('C' . $row, $item->due_date ? Date::dateTimeToExcel(Carbon::parse($item->due_date)) : '');
             $sheet->setCellValue('D' . $row, $item->period);
             $sheet->setCellValue('E' . $row, $item->in_one_c ? 'Да' : 'Нет');
-            $sheet->setCellValue('F' . $row,  $item->paid ? 'Не оплачено' : 'Оплачено');
+            $sheet->setCellValue('F' . $row,  $item->paid ? 'Оплачено' : 'Не оплачено');
             $sheet->getStyle('F' . $row)->getFont()->setColor(new Color(empty($item->payment_date) ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             $sheet->setCellValue('G' . $row, $item->payment_date ? Date::dateTimeToExcel(Carbon::parse($item->payment_date)) : '');
 
@@ -79,7 +79,7 @@ class Export implements
 
         $sheet->getRowDimension($row)->setRowHeight(30);
         $sheet->setCellValue('A' . $row, 'Итого');
-        $sheet->setCellValue('B' . $row, TaxPlanItem::whereNull('payment_date')->sum('amount'));
+        $sheet->setCellValue('B' . $row, TaxPlanItem::where('paid', false)->sum('amount'));
         $sheet->getStyle('A' . $row . ':B' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f1faff');
         $sheet->getStyle('A' . $row . ':B' . $row)->applyFromArray($THINStyleArray);
         $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);

@@ -12,7 +12,7 @@
                         <a href="javascript::void(0);">
                             <div class="d-flex align-items-center">
                                 <div class="fs-4 fw-bolder text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format(\App\Models\TaxPlanItem::whereNull('payment_date')->sum('amount'), 'RUB') }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(\App\Models\TaxPlanItem::where('paid', false)->sum('amount'), 'RUB') }}
                                 </div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Итого не оплачено</div>
@@ -89,9 +89,9 @@
                                 <td>{{ $item->in_one_c ? 'Да' : 'Нет' }}</td>
                                 <td>
                                     @if ($item->paid)
-                                        <span class="badge badge-danger fw-bolder">Не оплачено</span>
-                                    @else
                                         <span class="badge badge-success fw-bolder">Оплачено</span>
+                                    @else
+                                        <span class="badge badge-danger fw-bolder">Не оплачено</span>
                                     @endif
                                 </td>
                                 <td>{{ $item->getPaymentDateFormatted() }}</td>
