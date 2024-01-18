@@ -18,7 +18,7 @@ class TaxPlanItem extends Model implements Audit
 
     protected $fillable = [
         'created_by_user_id', 'updated_by_user_id', 'name', 'amount', 'due_date',
-        'period', 'in_one_c', 'payment_date', 'status_id',
+        'period', 'in_one_c', 'paid', 'payment_date', 'status_id',
     ];
 
     public function getDueDateFormatted(): string
@@ -28,7 +28,7 @@ class TaxPlanItem extends Model implements Audit
 
     public function getDueDateStatus(): array
     {
-        if (empty($this->due_date)) {
+        if (empty($this->due_date) || $this->paid) {
             return ['days' => '', 'status' => ''];
         }
 

@@ -88,7 +88,7 @@
                                 <td>{{ $item->period }}</td>
                                 <td>{{ $item->in_one_c ? 'Да' : 'Нет' }}</td>
                                 <td>
-                                    @if (empty($item->payment_date))
+                                    @if ($item->paid)
                                         <span class="badge badge-danger fw-bolder">Не оплачено</span>
                                     @else
                                         <span class="badge badge-success fw-bolder">Оплачено</span>

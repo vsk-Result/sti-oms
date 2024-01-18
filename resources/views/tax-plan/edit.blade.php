@@ -123,6 +123,22 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Статус</label>
+                                                <div class="position-relative mb-3">
+                                                    <select name="paid" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        @foreach(['Не оплачено', 'Оплачено'] as $index => $value)
+                                                            <option value="{{ $index }}" {{ $item->paid === $index ? 'selected' : '' }}>{{ $value }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-4">
                                         <div class="mb-10 fv-row">
                                             <div class="mb-1">

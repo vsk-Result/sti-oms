@@ -33,7 +33,8 @@ class CreateTaxPlanItemsTable extends Migration
             $table->decimal('amount', 19, 4)->default(0);
             $table->date('due_date')->nullable();
             $table->string('period', 30)->nullable();
-            $table->boolean('in_one_c', 30)->default(false);
+            $table->boolean('in_one_c')->default(false);
+            $table->boolean('paid')->default(false);
             $table->date('payment_date')->nullable();
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();

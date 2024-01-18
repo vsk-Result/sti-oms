@@ -65,7 +65,7 @@ class Export implements
             $sheet->setCellValue('C' . $row, $item->due_date ? Date::dateTimeToExcel(Carbon::parse($item->due_date)) : '');
             $sheet->setCellValue('D' . $row, $item->period);
             $sheet->setCellValue('E' . $row, $item->in_one_c ? 'Да' : 'Нет');
-            $sheet->setCellValue('F' . $row,  empty($item->payment_date) ? 'Не оплачено' : 'Оплачено');
+            $sheet->setCellValue('F' . $row,  $item->paid ? 'Не оплачено' : 'Оплачено');
             $sheet->getStyle('F' . $row)->getFont()->setColor(new Color(empty($item->payment_date) ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             $sheet->setCellValue('G' . $row, $item->payment_date ? Date::dateTimeToExcel(Carbon::parse($item->payment_date)) : '');
 
