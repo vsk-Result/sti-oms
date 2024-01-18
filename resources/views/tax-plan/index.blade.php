@@ -73,7 +73,7 @@
                         @foreach($items as $item)
                             <tr>
                                 <td>{{ $item->name }}</td>
-                                <td>{{ \App\Models\CurrencyExchangeRate::format($item->amount, 'RUB') }}</td>
+                                <td>{{ \App\Models\CurrencyExchangeRate::format($item->amount, 'RUB', 0, true) }}</td>
                                 <td>
                                     @if ($item->getDueDateStatus()['status'] === 'very-danger')
                                         <span class="border-bottom-dashed fw-boldest text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Просрочено на {{ $item->getDueDateStatus()['days'] }}">{{ $item->getDueDateFormatted() }}</span>

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
@@ -32,9 +33,12 @@ class TaxPlanItem extends Model implements Audit
             return ['days' => '', 'status' => ''];
         }
 
-        $diff = Carbon::now()->diff(Carbon::parse($this->due_date))->d + 1;
+        $date1 = new DateTime(Carbon::now()->format('Y-m-d'));
+        $date2 = new DateTime( Carbon::parse($this->due_date)->format('Y-m-d'));
+
+        $diff = $date1->diff($date2)->days;
         if (Carbon::now()->format('Y-m-d') > Carbon::parse($this->due_date)->format('Y-m-d')) {
-            $diff = -$diff + 1;
+            $diff = -$diff;
         }
 
         $days = abs($diff) . trans_choice(' день | дня | дней', abs($diff));
