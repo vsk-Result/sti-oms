@@ -3,8 +3,13 @@
 namespace App\Services;
 
 use App\Helpers\Sanitizer;
+use App\Models\BankGuarantee;
+use App\Models\Currency;
 use App\Models\Status;
 use App\Models\TaxPlanItem;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TaxPlanItemService
 {
@@ -13,6 +18,48 @@ class TaxPlanItemService
     public function __construct(Sanitizer $sanitizer)
     {
         $this->sanitizer = $sanitizer;
+    }
+
+    public function filterTaxPlan(array $requestData, array &$total = [], bool $needPaginate = true): LengthAwarePaginator|Collection
+    {
+        $query = TaxPlanItem::query();
+
+        if (! empty($requestData['due_date'])) {
+            $period = explode(' - ', $requestData['due_date']);
+            $query->whereBetween('due_date', [Carbon::parse($period[0]), Carbon::parse($period[1])]);
+        }
+
+        if (! empty($requestData['payment_date'])) {
+            $period = explode(' - ', $requestData['payment_date']);
+            $query->whereBetween('payment_date', [Carbon::parse($period[0]), Carbon::parse($period[1])]);
+        }
+
+        if (! empty($requestData['name'])) {
+            $query->where('name', 'LIKE', $requestData['name']);
+        }
+
+        if (! empty($requestData['period'])) {
+            $query->where('period', 'LIKE', $requestData['period']);
+        }
+
+        if (! empty($requestData['in_one_c'])) {
+            $query->whereIn('in_one_c', $requestData['in_one_c']);
+        }
+
+        if (! empty($requestData['paid'])) {
+            $query->whereIn('paid', $requestData['paid']);
+        }
+
+        $perPage = 30;
+        if (! empty($requestData['count_per_page'])) {
+            $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+        }
+
+        $query->orderByDesc('due_date');
+
+        $total['not_paid'] = $query->where('paid', false)->sum('amount');
+
+        return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
 
     public function createItem(array $requestData): void

@@ -3,17 +3,8 @@
 namespace App\Http\Controllers\TaxPlanItem;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bank;
 use App\Models\BankGuarantee;
-use App\Models\Company;
-use App\Models\Contract\Contract;
-use App\Models\Object\BObject;
-use App\Models\Object\WorkType;
-use App\Models\Organization;
-use App\Models\Payment;
-use App\Models\Status;
 use App\Models\TaxPlanItem;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,9 +20,10 @@ class HistoryController extends Controller
             'due_date' => 'Срок оплаты',
             'period' => 'Период',
             'in_one_c' => 'Платежка в 1С',
+            'paid' => 'Статус',
             'payment_date' => 'Дата оплаты',
         ];
-        $events = ['created' => 'Cоздание', 'updated' => 'Изменение', 'deleted' => 'Удаление'];
+        $events = ['created' => 'Создание', 'updated' => 'Изменение', 'deleted' => 'Удаление'];
 
         $auditables = [
             TaxPlanItem::class => 'План налогов к оплате'

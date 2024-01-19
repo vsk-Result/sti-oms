@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\TaxPlanItem\StoreTaxPlanItemRequest;
 use App\Http\Requests\TaxPlanItem\UpdateTaxPlanItemRequest;
+use Illuminate\Http\Request;
 
 class TaxPlanItemController extends Controller
 {
@@ -19,10 +20,12 @@ class TaxPlanItemController extends Controller
         $this->taxPlanItemService = $taxPlanItemService;
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $items = TaxPlanItem::with('createdBy')->orderBy('due_date')->get();
-        return view('tax-plan.index', compact('items'));
+        $total = [];
+        $items = $this->taxPlanItemService->filterTaxPlan($request->toArray(), $total);
+
+        return view('tax-plan.index', compact('items', 'total'));
     }
 
     public function create(): View
