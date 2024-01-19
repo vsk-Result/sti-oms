@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateTaxPlanItemsTable extends Migration
 {
     private array $permissions = [
-        'План налогов к оплате' => ['tax-plan' => ['index', 'show', 'create', 'edit']]
+        'План налогов к оплате' => ['tax_plan' => ['index', 'show', 'create', 'edit']]
     ];
 
     private PermissionService $permissionService;

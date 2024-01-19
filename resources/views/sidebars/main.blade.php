@@ -120,7 +120,7 @@
                             </div>
                         @endcan
 
-                        @can('index tax-plan')
+                        @can('index tax_plan')
                             <div class="menu-item">
                                 <a class="menu-link py-2 {{ request()->is('tax-plan*') ? 'active' : '' }}" href="{{ route('tax_plan.index') }}">
                                 <span class="menu-bullet">
