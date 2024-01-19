@@ -50,6 +50,7 @@ class TaxPlanItemService
             $query->whereIn('paid', $requestData['paid']);
         }
 
+
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
@@ -57,7 +58,7 @@ class TaxPlanItemService
 
         $query->orderByDesc('due_date');
 
-        $total['not_paid'] = $query->where('paid', false)->sum('amount');
+        $total['not_paid'] = (clone $query)->where('paid', false)->sum('amount');
 
         return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
@@ -70,6 +71,7 @@ class TaxPlanItemService
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
             'in_one_c' => $requestData['in_one_c'],
+            'paid' => $requestData['paid'],
             'payment_date' => $requestData['payment_date'],
             'status_id' => Status::STATUS_ACTIVE,
         ]);
@@ -83,6 +85,7 @@ class TaxPlanItemService
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
             'in_one_c' => $requestData['in_one_c'],
+            'paid' => $requestData['paid'],
             'payment_date' => $requestData['payment_date'],
             'status_id' => $requestData['status_id'],
         ]);
