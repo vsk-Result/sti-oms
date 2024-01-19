@@ -30,38 +30,38 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Платежка в 1С</label>
-                                <select
-                                        name="in_one_c"
-                                        class="form-select form-select-solid"
-                                        data-control="select2"
-                                        data-dropdown-parent="#filterTaxPlanModal"
-                                >
-                                    @foreach(['Нет', 'Да'] as $index => $value)
-                                        <option value="{{ $index }}" {{ $index === request()->input('contract_id', 0) ? 'selected' : '' }}>
-                                            {{ $value }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Платежка в 1С</label>
+                            <select
+                                name="in_one_c[]"
+                                class="form-select form-select-solid"
+                                data-control="select2"
+                                data-dropdown-parent="#filterTaxPlanModal"
+                                multiple
+                            >
+                                @foreach(['Нет', 'Да'] as $index => $value)
+                                    <option value="{{ $index }}" {{ in_array($index, request()->input('in_one_c', [])) ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label class="form-label">Статус</label>
-                                <select
-                                        name="paid"
-                                        class="form-select form-select-solid"
-                                        data-control="select2"
-                                        data-dropdown-parent="#filterTaxPlanModal"
-                                >
-                                    @foreach(['Не оплачено', 'Оплачено'] as $index => $value)
-                                        <option value="{{ $index }}" {{ $index === request()->input('paid', 0) ? 'selected' : '' }}>
-                                            {{ $value }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Статус</label>
+                            <select
+                                    name="paid[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterTaxPlanModal"
+                                    multiple
+                            >
+                                @foreach(['Не оплачено', 'Оплачено'] as $index => $value)
+                                    <option value="{{ $index }}" {{ in_array($index, request()->input('paid', [])) ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div class="col-md-4">
