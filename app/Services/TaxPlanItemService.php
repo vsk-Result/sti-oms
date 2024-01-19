@@ -56,7 +56,7 @@ class TaxPlanItemService
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $query->orderByDesc('due_date');
+        $query->orderBy('due_date');
 
         $total['not_paid'] = (clone $query)->where('paid', false)->sum('amount');
 
