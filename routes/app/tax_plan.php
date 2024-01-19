@@ -1,7 +1,12 @@
 <?php
 
 use App\Http\Controllers\TaxPlanItem\TaxPlanItemController;
+use App\Http\Controllers\TaxPlanItem\HistoryController;
 use App\Http\Controllers\TaxPlanItem\ExportController;
+
+// История оплат
+
+Route::get('tax-plan/history', [HistoryController::class, 'index'])->name('tax_plan.history.index');
 
 // Экспорт плана
 

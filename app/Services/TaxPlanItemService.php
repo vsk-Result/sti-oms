@@ -50,7 +50,6 @@ class TaxPlanItemService
             $query->whereIn('paid', $requestData['paid']);
         }
 
-
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);

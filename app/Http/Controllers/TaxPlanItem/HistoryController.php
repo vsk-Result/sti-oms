@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\TaxPlanItem;
 
 use App\Http\Controllers\Controller;
-use App\Models\BankGuarantee;
 use App\Models\TaxPlanItem;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -25,6 +25,8 @@ class HistoryController extends Controller
         ];
         $events = ['created' => 'Создание', 'updated' => 'Изменение', 'deleted' => 'Удаление'];
 
+        $users = User::orderBy('name')->get();
+
         $auditables = [
             TaxPlanItem::class => 'План налогов к оплате'
         ];
@@ -33,28 +35,38 @@ class HistoryController extends Controller
         $query = Audit::query();
         $requestData = $request->toArray();
 
-        if (! empty($requestData['bg_period'])) {
-            $period = str_replace('/', '.', $requestData['bg_period']);
-            $startDate = substr($period, 0, strpos($period, ' '));
-            $endDate = substr($period, strpos($period, ' ') + 3);
-
-            $query->whereBetween('start_date', [Carbon::parse($startDate), Carbon::parse($endDate)]);
+        if (! empty($requestData['edit_date'])) {
+            $period = explode(' - ', $requestData['edit_date']);
+            $query->whereBetween('created_at', [Carbon::parse($period[0]), Carbon::parse($period[1])]);
         }
 
-        if (! empty($requestData['deposit_period'])) {
-            $period = str_replace('/', '.', $requestData['deposit_period']);
-            $startDate = substr($period, 0, strpos($period, ' '));
-            $endDate = substr($period, strpos($period, ' ') + 3);
-
-            $query->whereBetween('start_date_deposit', [Carbon::parse($startDate), Carbon::parse($endDate)]);
+        if (! empty($requestData['payment_date'])) {
+            $period = explode(' - ', $requestData['payment_date']);
+            $query->whereBetween('payment_date', [Carbon::parse($period[0]), Carbon::parse($period[1])]);
         }
 
-        if (! empty($requestData['user'])) {
-            $query->whereIn('user_id', $requestData['user']);
+        if (! empty($requestData['name'])) {
+            $query->where('name', 'LIKE', $requestData['name']);
         }
 
-        if (! empty($requestData['bank_guarantees_id'])) {
-            $query->where('auditable_id', $requestData['bank_guarantees_id']);
+        if (! empty($requestData['period'])) {
+            $query->where('period', 'LIKE', $requestData['period']);
+        }
+
+        if (! empty($requestData['in_one_c'])) {
+            $query->whereIn('in_one_c', $requestData['in_one_c']);
+        }
+
+        if (! empty($requestData['paid'])) {
+            $query->whereIn('paid', $requestData['paid']);
+        }
+
+        if (! empty($requestData['user_id'])) {
+            $query->whereIn('user_id', $requestData['user_id']);
+        }
+
+        if (! empty($requestData['item_id'])) {
+            $query->where('auditable_id', $requestData['item_id']);
         }
 
         if (! empty($requestData['event'])) {
@@ -79,7 +91,7 @@ class HistoryController extends Controller
             }
         });
 
-        $query->where('auditable_type', BankGuarantee::class);
+        $query->where('auditable_type', TaxPlanItem::class);
 
         $perPage = 15;
         if (! empty($requestData['count_per_page'])) {
@@ -89,10 +101,9 @@ class HistoryController extends Controller
         $audits = $query->latest()->paginate($perPage)->withQueryString();
 
         return view(
-            'bank-guarantees.history.index',
+            'tax-plan.history.index',
             compact(
-                'audits', 'events', 'fields', 'objects', 'statuses', 'banks',
-                'companies', 'organizations', 'users', 'auditables', 'auditable', 'contracts'
+                'audits', 'events', 'fields', 'users', 'auditables', 'auditable'
             )
         );
     }

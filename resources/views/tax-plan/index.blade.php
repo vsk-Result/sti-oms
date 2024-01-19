@@ -120,6 +120,16 @@
                                                 <a href="{{ route('tax_plan.edit', $item) }}" class="menu-link px-3">Изменить</a>
                                             </div>
 
+                                            @if ($item->audits->count() > 0)
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('tax_plan.history.index') }}?item_id={{ $item->id }}" class="menu-link px-3">История</a>
+                                                </div>
+                                            @else
+                                                <div class="menu-item px-3" style="cursor:default !important;">
+                                                    <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
+                                                </div>
+                                            @endif
+
                                             <div class="menu-item px-3">
                                                 <form action="{{ route('tax_plan.destroy', $item) }}" method="POST" class="hidden">
                                                     @csrf
