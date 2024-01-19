@@ -51,7 +51,7 @@
                             </a>
                         </form>
 
-                        @can('create tax-plan')
+                        @can('create tax_plan')
                             <a href="{{ route('tax_plan.create') }}" class="btn btn-light-primary me-3">
                             <span class="svg-icon svg-icon-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -115,7 +115,7 @@
                                         </span>
                                     </a>
                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
-                                        @can('edit tax-plan')
+                                        @can('edit tax_plan')
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('tax_plan.edit', $item) }}" class="menu-link px-3">Изменить</a>
                                             </div>
