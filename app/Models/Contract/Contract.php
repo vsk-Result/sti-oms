@@ -337,10 +337,10 @@ class Contract extends Model implements HasMedia, Audit
 
         if ($this->object->code === '346') {
             if ($this->id === 296 && $currency === 'RUB') {
-                return 621116223;
+                return 725529769;
             }
             if ($this->id === 296 && $currency === 'EUR') {
-                return 2390158;
+                return 2648256;
             }
             foreach ($manualReplaceConfigForOktafarmaRUB as $contractName => $info) {
                 $contractFind = mb_strpos($this->name, $contractName . ' ') !== false;
@@ -435,10 +435,10 @@ class Contract extends Model implements HasMedia, Audit
 
         if ($this->object->code === '346') {
             if ($this->id === 296 && $currency === 'RUB') {
-                return 618116222;
+                return 699489769;
             }
             if ($this->id === 296 && $currency === 'EUR') {
-                return 2390158;
+                return 2648256;
             }
             foreach ($manualReplaceConfigForOktafarmaRUB as $contractName => $info) {
                 $contractFind = mb_strpos($this->name, $contractName . ' ') !== false;
