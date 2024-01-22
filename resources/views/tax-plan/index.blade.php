@@ -70,6 +70,7 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <th class="min-w-125px">Компания</th>
                             <th class="min-w-125px">Наименование</th>
                             <th class="min-w-125px">Сумма</th>
                             <th class="min-w-125px">Срок оплаты</th>
@@ -83,6 +84,7 @@
                     <tbody class="text-gray-600 fw-bold">
                         @foreach($items as $item)
                             <tr>
+                                <td>{!! $item->company?->getShortNameColored() !!}</td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ \App\Models\CurrencyExchangeRate::format($item->amount, 'RUB', 0, true) }}</td>
                                 <td>

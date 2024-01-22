@@ -20,26 +20,45 @@
 
                         <div class="row mb-5">
                             <div class="col-md-12 fv-row">
-                                <div class="mb-10 fv-row">
-                                    <div class="mb-1">
-                                        <label class="form-label fw-bolder text-dark fs-6">Наименование</label>
-                                        <div class="position-relative mb-3">
-                                            <input
-                                                class="form-control form-control-lg form-control-solid {{ $errors->has('name') ? 'is-invalid' : '' }}"
-                                                type="text"
-                                                name="name"
-                                                value="{{ old('name', $item->name) }}"
-                                                required
-                                                autofocus
-                                            />
-                                        </div>
-                                        @if ($errors->has('name'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div>{{ implode(' ', $errors->get('name')) }}</div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Компания</label>
+                                                <div class="position-relative mb-3">
+                                                    <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        @foreach($companies as $company)
+                                                            <option value="{{ $company->id }}" {{ $company->id === $item->company_id ? 'selected' : '' }}>{{ $company->short_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
-                                        @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Наименование</label>
+                                                <div class="position-relative mb-3">
+                                                    <input
+                                                            class="form-control form-control-lg form-control-solid {{ $errors->has('name') ? 'is-invalid' : '' }}"
+                                                            type="text"
+                                                            name="name"
+                                                            value="{{ old('name', $item->name) }}"
+                                                            required
+                                                            autofocus
+                                                    />
+                                                </div>
+                                                @if ($errors->has('name'))
+                                                    <div class="fv-plugins-message-container invalid-feedback">
+                                                        <div>{{ implode(' ', $errors->get('name')) }}</div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <div class="row">
                                     <div class="col-md-4 fv-row">

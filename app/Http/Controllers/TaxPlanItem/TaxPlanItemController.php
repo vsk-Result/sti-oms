@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\TaxPlanItem;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\TaxPlanItem;
 use App\Services\TaxPlanItemService;
 use Illuminate\Contracts\View\View;
@@ -23,14 +24,16 @@ class TaxPlanItemController extends Controller
     public function index(Request $request): View
     {
         $total = [];
+        $companies = Company::orderBy('name')->get();
         $items = $this->taxPlanItemService->filterTaxPlan($request->toArray(), $total);
 
-        return view('tax-plan.index', compact('items', 'total'));
+        return view('tax-plan.index', compact('items', 'total', 'companies'));
     }
 
     public function create(): View
     {
-        return view('tax-plan.create');
+        $companies = Company::orderBy('name')->get();
+        return view('tax-plan.create', compact('companies'));
     }
 
     public function store(StoreTaxPlanItemRequest $request): RedirectResponse
@@ -41,7 +44,8 @@ class TaxPlanItemController extends Controller
 
     public function edit(TaxPlanItem $item): View
     {
-        return view('tax-plan.edit', compact('item'));
+        $companies = Company::orderBy('name')->get();
+        return view('tax-plan.edit', compact('item', 'companies'));
     }
 
     public function update(TaxPlanItem $item, UpdateTaxPlanItemRequest $request): RedirectResponse

@@ -46,6 +46,10 @@ class TaxPlanItemService
             $query->whereIn('in_one_c', $requestData['in_one_c']);
         }
 
+        if (! empty($requestData['company_id'])) {
+            $query->whereIn('company_id', $requestData['company_id']);
+        }
+
         if (! empty($requestData['paid'])) {
             $query->whereIn('paid', $requestData['paid']);
         }
@@ -70,6 +74,7 @@ class TaxPlanItemService
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
             'in_one_c' => $requestData['in_one_c'],
+            'company_id' => $requestData['company_id'],
             'paid' => $requestData['paid'],
             'payment_date' => $requestData['payment_date'],
             'status_id' => Status::STATUS_ACTIVE,
@@ -84,6 +89,7 @@ class TaxPlanItemService
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
             'in_one_c' => $requestData['in_one_c'],
+            'company_id' => $requestData['company_id'],
             'paid' => $requestData['paid'],
             'payment_date' => $requestData['payment_date'],
             'status_id' => $requestData['status_id'],

@@ -7,6 +7,7 @@ use App\Traits\HasUser;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
@@ -19,8 +20,13 @@ class TaxPlanItem extends Model implements Audit
 
     protected $fillable = [
         'created_by_user_id', 'updated_by_user_id', 'name', 'amount', 'due_date',
-        'period', 'in_one_c', 'paid', 'payment_date', 'status_id',
+        'period', 'in_one_c', 'paid', 'payment_date', 'status_id', 'company_id'
     ];
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 
     public function getDueDateFormatted(): string
     {

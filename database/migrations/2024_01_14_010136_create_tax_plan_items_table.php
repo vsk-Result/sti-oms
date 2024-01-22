@@ -27,6 +27,7 @@ class CreateTaxPlanItemsTable extends Migration
     {
         Schema::create('tax_plan_items', function (Blueprint $table) {
             $table->id();
+            $table->unsignedTinyInteger('company_id');
             $table->unsignedTinyInteger('created_by_user_id');
             $table->unsignedTinyInteger('updated_by_user_id')->nullable();
             $table->string('name');

@@ -64,6 +64,22 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Компания</label>
+                                <select
+                                        name="company_id[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterTaxPlanModal"
+
+                                        multiple
+                                >
+                                    @foreach($companies as $company)
+                                        <option value="{{ $company->id }}" {{ in_array($company->id, request()->input('company_id', [])) ? 'selected' : '' }}>{{ $company->short_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
                         <div class="col-md-4">

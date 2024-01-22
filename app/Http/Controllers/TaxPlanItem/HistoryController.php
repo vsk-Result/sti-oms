@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\TaxPlanItem;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\TaxPlanItem;
 use App\Models\User;
 use Carbon\Carbon;
@@ -15,6 +16,7 @@ class HistoryController extends Controller
     public function index(Request $request): View
     {
         $fields = [
+            'company_id' => 'Компания',
             'name' => 'Наименование',
             'amount' => 'Сумма',
             'due_date' => 'Срок оплаты',
@@ -32,6 +34,7 @@ class HistoryController extends Controller
         ];
         $auditable = TaxPlanItem::class;
 
+        $companies = Company::pluck('short_name', 'id');
         $query = Audit::query();
         $requestData = $request->toArray();
 
@@ -103,7 +106,7 @@ class HistoryController extends Controller
         return view(
             'tax-plan.history.index',
             compact(
-                'audits', 'events', 'fields', 'users', 'auditables', 'auditable'
+                'audits', 'events', 'fields', 'users', 'auditables', 'auditable', 'companies'
             )
         );
     }

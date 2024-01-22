@@ -80,6 +80,8 @@
                                                         {{ $changes['old'] === 0 ? 'Нет' : 'Да' }}
                                                     @elseif ($fieldName === 'paid' && isset($changes['old']))
                                                         {{ $changes['old'] === 0 ? 'Не оплачено' : 'Оплачено' }}
+                                                    @elseif ($fieldName === 'company_id' && isset($changes['old']))
+                                                        {{ $companies[$changes['old']] ?? '' }}
                                                     @else
                                                         {{ $changes['old'] ?? '' }}
                                                     @endif
@@ -91,6 +93,8 @@
                                                         {{ $changes['new'] === 0 ? 'Нет' : 'Да' }}
                                                     @elseif ($fieldName === 'paid' && isset($changes['new']))
                                                         {{ $changes['new'] === 0 ? 'Не оплачено' : 'Оплачено' }}
+                                                    @elseif ($fieldName === 'company_id' && isset($changes['new']))
+                                                        {{ $companies[$changes['new']] ?? '' }}
                                                     @else
                                                         {{ $changes['new'] ?? '' }}
                                                     @endif
