@@ -176,13 +176,19 @@ class BalanceSheet implements
         $valueStyleArray = [ 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],];
 
         $sheet->setCellValue('E1', $object->code . ' | ' . $object->name);
-        $sheet->mergeCells('E1:X3');
+        $sheet->mergeCells('E1:U3');
         $sheet->getStyle('E1:X3')->getFont()->setColor(new Color('f25a21'));
-        $sheet->getStyle('E1:X3')->getAlignment()->setVertical('center')->setHorizontal('left');
-        $sheet->getStyle('E1:X3')->getFont()->setName('Calibri')->setSize(32);
-        $sheet->getStyle('E1:X3')->getFont()->setBold(true);
+        $sheet->getStyle('E1:U3')->getAlignment()->setVertical('center')->setHorizontal('left');
+        $sheet->getStyle('E1:U3')->getFont()->setName('Calibri')->setSize(32);
+        $sheet->getStyle('E1:U3')->getFont()->setBold(true);
 
-
+        $sheet->setCellValue('V1', 'Дата отчета');
+        $sheet->setCellValue('V2', Carbon::now()->format('d.m.Y'));
+        $sheet->mergeCells('V1:X1');
+        $sheet->mergeCells('V2:X2');
+        $sheet->getStyle('V1:X1')->getAlignment()->setVertical('bottom')->setHorizontal('right');
+        $sheet->getStyle('V2:X2')->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('V2:X2')->getFont()->setBold(true);
 
         $sheet->setCellValue('B4', 'Код объекта');
         $sheet->setCellValue('B5', 'Название объекта');
@@ -390,24 +396,31 @@ class BalanceSheet implements
         $otherSum = 0;
         $count = 0;
         $row = 18;
+
+        $sorted = [];
         foreach ($debts['contractor']->debts as $organization => $amount) {
             $organizationId = substr($organization, 0, strpos($organization, '::'));
-            $organizationName = substr($organization, strpos($organization, '::') + 2);
-
             $resultAmount = $amount;
-
             if ($objectExistInObjectImport) {
                 $resultAmount += $ds->where('organization_id', $organizationId)->sum('avans');
                 $resultAmount += $ds->where('organization_id', $organizationId)->sum('guarantee');
             }
 
+            $sorted[$organization] = $resultAmount;
+        }
+
+        asort($sorted);
+
+        foreach ($sorted as $organization => $amount) {
+            $organizationName = substr($organization, strpos($organization, '::') + 2);
+
             if ($count === 10) {
-                $otherSum += $resultAmount;
+                $otherSum += $amount;
                 continue;
             }
 
             $sheet->setCellValue('B' . $row, $organizationName);
-            $this->setValueEndColor($sheet, 'E' . $row, $resultAmount);
+            $this->setValueEndColor($sheet, 'E' . $row, $amount);
             $sheet->mergeCells('B' . $row . ':D' . $row);
             $sheet->mergeCells('E' . $row . ':F' . $row);
 
