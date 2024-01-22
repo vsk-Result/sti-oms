@@ -142,7 +142,7 @@ class PivotController extends Controller
 
         //новая версия
         if ($object->code === '346') {
-            $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
+            $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
         } else {
             $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
         }
@@ -160,6 +160,7 @@ class PivotController extends Controller
 
             if ($object->code === '346') {
                 $diff = $contractsTotal['amount']['EUR'] - $contractsTotal['avanses_received_amount']['EUR'] - $contractsTotal['avanses_acts_paid_amount']['EUR'];
+                $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $currentRate->rate;
                 $ostatokPoDogovoruSZakazchikom += $diff * $currentRate->rate;
             } else {
                 $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);

@@ -33,9 +33,9 @@ class PivotObjectDebtService
         ])[0];
 
         return [
-            'contractor' => $pivot ? $this->sortByOrganizationName(json_decode($pivot->contractor)) : $emptyCollection,
-            'provider' => $pivot ? $this->sortByOrganizationName(json_decode($pivot->provider)) : $emptyCollection,
-            'service' => $pivot ? $this->sortByOrganizationName(json_decode($pivot->service)) : $emptyCollection,
+            'contractor' => $pivot ? $this->sortByAmount(json_decode($pivot->contractor)) : $emptyCollection,
+            'provider' => $pivot ? $this->sortByAmount(json_decode($pivot->provider)) : $emptyCollection,
+            'service' => $pivot ? $this->sortByAmount(json_decode($pivot->service)) : $emptyCollection,
         ];
     }
 
@@ -283,7 +283,7 @@ class PivotObjectDebtService
         return $result;
     }
 
-    private function sortByOrganizationName($pivotInfo)
+    private function sortByAmount($pivotInfo)
     {
         $sortedDebts = [];
         $debts = $pivotInfo->debts;
@@ -294,13 +294,13 @@ class PivotObjectDebtService
                 $organizationName = substr($organization, strpos($organization, '::') + 2);
             }
 
-            $sortedDebts[mb_strtoupper($organizationName)] = [
+            $sortedDebts[$amount . "::" . $organizationName] = [
                 'key' => $organization,
                 'amount' => $amount
             ];
         }
 
-        ksort($sortedDebts, SORT_STRING);
+        ksort($sortedDebts, SORT_NUMERIC);
 
         $resultDebts = (object) [];
         foreach ($sortedDebts as $debt) {
