@@ -2,39 +2,22 @@
 
 namespace App\Http\Controllers\Object;
 
-use App\Exports\Object\Balance\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Object\BObject;
-use App\Services\Contract\ContractService;
-use App\Services\CurrencyExchangeRateService;
-use App\Services\PivotObjectDebtService;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Services\ObjectBalanceExportService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends Controller
 {
-    private PivotObjectDebtService $pivotObjectDebtService;
-    private CurrencyExchangeRateService $currencyExchangeRateService;
-    private ContractService $contractService;
+    private ObjectBalanceExportService $balanceExportService;
 
-    public function __construct(
-        PivotObjectDebtService $pivotObjectDebtService,
-        CurrencyExchangeRateService $currencyExchangeRateService,
-        ContractService $contractService,
-    ) {
-        $this->pivotObjectDebtService = $pivotObjectDebtService;
-        $this->currencyExchangeRateService = $currencyExchangeRateService;
-        $this->contractService = $contractService;
+    public function __construct(ObjectBalanceExportService $balanceExportService)
+    {
+        $this->balanceExportService = $balanceExportService;
     }
 
     public function store(BObject $object): BinaryFileResponse
     {
-        $exportFileName = 'Баланс объекта ' . $object->getName() . '.xlsx';
-        return Excel::download(new Export(
-            $object,
-            $this->pivotObjectDebtService,
-            $this->currencyExchangeRateService,
-            $this->contractService
-        ), $exportFileName);
+        return $this->balanceExportService->download($object);
     }
 }
