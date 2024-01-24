@@ -51,11 +51,10 @@ class NotifyToEmailAboutObjectBalance extends Command
         ];
 
         $now = Carbon::now()->format('d.m.Y');
-        $object = BObject::where('code', '346')->first();
-        $filepath = $this->balanceExportService->store($object);
 
         foreach ($notificationConfig as $objectCode => $receivers) {
             $object = BObject::where('code', $objectCode)->first();
+            $filepath = $this->balanceExportService->store($object);
 
             try {
                 Mail::send('emails.objects.balance', compact('now', 'object'), function ($m) use ($now, $object, $receivers, $alwaysInCopy, $filepath) {
