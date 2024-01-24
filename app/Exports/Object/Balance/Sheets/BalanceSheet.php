@@ -19,6 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class BalanceSheet implements
@@ -160,13 +161,22 @@ class BalanceSheet implements
 
         // -------------------------------------------------------------------------------------------------------------------
 
+        $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, 24, 29);
+        $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+        $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(0);
         $sheet->setShowGridlines(false);
-        $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
+        $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $columns = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
+        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
         foreach ($columns as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(false);
             $sheet->getColumnDimension($column)->setWidth(10);
         }
+
+        $sheet->getColumnDimension('A')->setWidth(4);
+        $sheet->getColumnDimension('T')->setWidth(12);
 
         for ($row = 1; $row < 30; $row++) {
             $sheet->getRowDimension($row)->setRowHeight(28);
