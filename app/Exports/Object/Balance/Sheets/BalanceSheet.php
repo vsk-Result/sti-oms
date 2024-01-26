@@ -249,7 +249,7 @@ class BalanceSheet implements
         $this->setValueEndColor($sheet, 'E13', $object->total_with_general_balance - $object->total_balance);
         $this->setValueEndColor($sheet, 'E14', $object->total_with_general_balance);
 
-        if ($object->total_receive === 0) {
+        if ($object->total_receive == 0) {
             $sheet->setCellValue('G13', 0 . ' %');
         } else {
             $sheet->setCellValue('G13', number_format(($object->total_with_general_balance - $object->total_balance) / $object->total_receive * 100, 2) . ' %');
