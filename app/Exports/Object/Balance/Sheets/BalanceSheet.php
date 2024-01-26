@@ -268,11 +268,11 @@ class BalanceSheet implements
 
 
 
-        $sheet->setCellValue('H10', 'Долг подрядчикам (в т.ч. ГУ)');
-        $sheet->setCellValue('H11', 'Долг поставщикам');
-        $sheet->setCellValue('H12', 'Долг за услуги');
-        $sheet->setCellValue('H13', 'Долг на зарплаты ИТР');
-        $sheet->setCellValue('H14', 'Долг на зарплаты рабочим');
+        $sheet->setCellValue('H10', 'Долг подрядчикам');
+        $sheet->setCellValue('H11', 'Долг подрядчикам за ГУ');
+        $sheet->setCellValue('H12', 'Долг поставщикам');
+        $sheet->setCellValue('H13', 'Долг за услуги');
+        $sheet->setCellValue('H14', 'Долг на зарплаты ИТР');
         $sheet->mergeCells('H10:J10');
         $sheet->mergeCells('H11:J11');
         $sheet->mergeCells('H12:J12');
@@ -282,11 +282,15 @@ class BalanceSheet implements
         $sheet->getStyle('H10:J14')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('H10:J14')->getAlignment()->setVertical('center')->setHorizontal('left');
 
-        $this->setValueEndColor($sheet, 'K10', $contractorDebtsAmount);
-        $this->setValueEndColor($sheet, 'K11', $providerDebtsAmount);
-        $this->setValueEndColor($sheet, 'K12', $serviceDebtsAmount);
-        $this->setValueEndColor($sheet, 'K13', 0);
-        $this->setValueEndColor($sheet, 'K14', $workSalaryDebt);
+        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+        $guaranteeSum = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
+
+        $this->setValueEndColor($sheet, 'K10', $objectExistInObjectImport ? $contractorDebtsAmount - $guaranteeSum : $contractorDebtsAmount);
+        $this->setValueEndColor($sheet, 'K11', $objectExistInObjectImport ? $guaranteeSum : 0);
+        $this->setValueEndColor($sheet, 'K12', $providerDebtsAmount);
+        $this->setValueEndColor($sheet, 'K13', $serviceDebtsAmount);
+        $this->setValueEndColor($sheet, 'K14', 0);
         $sheet->mergeCells('K10:L10');
         $sheet->mergeCells('K11:L11');
         $sheet->mergeCells('K12:L12');
@@ -298,25 +302,29 @@ class BalanceSheet implements
 
 
 
-        $sheet->setCellValue('N10', 'Долг Заказчика за выпол.работы');
-        $sheet->setCellValue('N11', 'Долг Заказчика за ГУ (фактич.удерж.)');
-        $sheet->setCellValue('N12', 'Текущий Баланс объекта');
+        $sheet->setCellValue('N10', 'Долг на зарплаты рабочим');
+        $sheet->setCellValue('N11', 'Долг Заказчика за выпол.работы');
+        $sheet->setCellValue('N12', 'Долг Заказчика за ГУ (фактич.удерж.)');
+        $sheet->setCellValue('N13', 'Текущий Баланс объекта');
         $sheet->mergeCells('N10:P10');
         $sheet->mergeCells('N11:P11');
         $sheet->mergeCells('N12:P12');
-        $sheet->getStyle('N10:P12')->applyFromArray($titleStyleArray);
-        $sheet->getStyle('N10:P12')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
-        $sheet->getStyle('N10:P12')->getAlignment()->setVertical('center')->setHorizontal('left');
+        $sheet->mergeCells('N13:P13');
+        $sheet->getStyle('N10:P13')->applyFromArray($titleStyleArray);
+        $sheet->getStyle('N10:P13')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
+        $sheet->getStyle('N10:P13')->getAlignment()->setVertical('center')->setHorizontal('left');
 
-        $this->setValueEndColor($sheet, 'Q10', $dolgZakazchikovZaVipolnenieRaboti);
-        $this->setValueEndColor($sheet, 'Q11', $dolgFactUderjannogoGU);
-        $this->setValueEndColor($sheet, 'Q12', $objectBalance);
+        $this->setValueEndColor($sheet, 'Q10', $workSalaryDebt);
+        $this->setValueEndColor($sheet, 'Q11', $dolgZakazchikovZaVipolnenieRaboti);
+        $this->setValueEndColor($sheet, 'Q12', $dolgFactUderjannogoGU);
+        $this->setValueEndColor($sheet, 'Q13', $objectBalance);
         $sheet->mergeCells('Q10:R10');
         $sheet->mergeCells('Q11:R11');
         $sheet->mergeCells('Q12:R12');
-        $sheet->getStyle('Q10:R12')->applyFromArray($valueStyleArray);
-        $sheet->getStyle('Q10:R12')->getAlignment()->setVertical('center')->setHorizontal('right');
-        $sheet->getStyle('Q10:R12')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->mergeCells('Q13:R13');
+        $sheet->getStyle('Q10:R13')->applyFromArray($valueStyleArray);
+        $sheet->getStyle('Q10:R13')->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('Q10:R13')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
 
