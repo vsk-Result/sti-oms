@@ -4,5 +4,5 @@
 <hr>
 <p style="color: #aaa; font-size: 12px;">Данное письмо создано автоматически и не требует ответа.</p>
 <p>
-    <img src="{{ asset('images/logo.png') }}" alt="Логотип компании СТИ" />
+    <img width="90" src="{{ asset('images/logo.png') }}" alt="Логотип компании СТИ" />
 </p>
