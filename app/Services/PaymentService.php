@@ -517,6 +517,8 @@ class PaymentService
             $requestData['object_worktype_id'] = null;
             $requestData['type_id'] = Payment::TYPE_NONE;
 
+            $requestData['object_code'] = str_replace(',', '.', $requestData['object_code']);
+
             if ($requestData['object_code'] === 'Трансфер') {
                 $requestData['type_id'] = Payment::TYPE_TRANSFER;
             } else if ($requestData['object_code'] === 'Общее') {
