@@ -32,6 +32,14 @@ class PivotObjectDebtService
             ]
         ])[0];
 
+        if ($objectId === 5) {
+            return [
+                'contractor' => $pivot ? json_decode($pivot->contractor) : $emptyCollection,
+                'provider' => $pivot ? json_decode($pivot->provider) : $emptyCollection,
+                'service' => $pivot ? json_decode($pivot->service) : $emptyCollection,
+            ];
+        }
+
         return [
             'contractor' => $pivot ? $this->sortByAmount(json_decode($pivot->contractor)) : $emptyCollection,
             'provider' => $pivot ? $this->sortByAmount(json_decode($pivot->provider)) : $emptyCollection,
