@@ -110,7 +110,11 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($contractorDebts as $organizationId => $organization)
+                                @php
+                                    $sortedDebts = [];
+                                @endphp
+
+                                @foreach($contractorDebts as $organizationId => $organization)
                                     @php
                                         $one = $organization->worktype->{1} ?? 0;
                                         $two = $organization->worktype->{2} ?? 0;
@@ -125,18 +129,26 @@
                                         } elseif ($total === 0 && $seven !== 0) {
                                             $twoFourTotal = 1;
                                         }
-                                    @endphp
 
-                                    @if (($oneTotal * $seven + $one) < 0)
-                                        <tr>
-                                            <td>{{ $organization->name }}</td>
-                                            <td class="text-danger">
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=1">
-                                                    {{ number_format($oneTotal * $seven + $one, 2, ',', ' ') }}
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endif
+                                        if (($oneTotal * $seven + $one) < 0) {
+                                            $sortedDebts[$oneTotal * $seven + $one] = ['name' => $organization->name, 'id' => $organizationId];
+                                        }
+                                    @endphp
+                                @endforeach
+
+                                @php
+                                    ksort($sortedDebts, SORT_NUMERIC);
+                                @endphp
+
+                                @forelse($sortedDebts as $amount => $info)
+                                    <tr>
+                                        <td>{{ $info['name'] }}</td>
+                                        <td class="text-danger">
+                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=1">
+                                                {{ number_format($amount, 2, ',', ' ') }}
+                                            </a>
+                                        </td>
+                                    </tr>
                                 @empty
                                     <tr>
                                         <td colspan="2">
@@ -184,7 +196,11 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($contractorDebts as $organizationId => $organization)
+                                @php
+                                    $sortedDebts = [];
+                                @endphp
+
+                                @foreach($contractorDebts as $organizationId => $organization)
                                     @php
                                         $one = $organization->worktype->{1} ?? 0;
                                         $two = $organization->worktype->{2} ?? 0;
@@ -199,18 +215,26 @@
                                         } elseif ($total === 0 && $seven !== 0) {
                                             $twoFourTotal = 1;
                                         }
-                                    @endphp
 
-                                    @if (($twoFourTotal * $seven + $two + $four) < 0)
-                                        <tr>
-                                            <td>{{ $organization->name }}</td>
-                                            <td class="text-danger">
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
-                                                    {{ number_format($twoFourTotal * $seven + $two + $four, 2, ',', ' ') }}
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endif
+                                        if (($twoFourTotal * $seven + $two + $four) < 0) {
+                                            $sortedDebts[$twoFourTotal * $seven + $two + $four] = ['name' => $organization->name, 'id' => $organizationId];
+                                        }
+                                    @endphp
+                                @endforeach
+
+                                @php
+                                    ksort($sortedDebts, SORT_NUMERIC);
+                                @endphp
+
+                                @forelse($sortedDebts as $amount => $info)
+                                    <tr>
+                                        <td>{{ $info['name'] }}</td>
+                                        <td class="text-danger">
+                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
+                                                {{ number_format($amount, 2, ',', ' ') }}
+                                            </a>
+                                        </td>
+                                    </tr>
                                 @empty
                                     <tr>
                                         <td colspan="2">

@@ -32,18 +32,10 @@ class PivotObjectDebtService
             ]
         ])[0];
 
-        if ($objectId === 5) {
-            return [
-                'contractor' => $pivot ? json_decode($pivot->contractor) : $emptyCollection,
-                'provider' => $pivot ? json_decode($pivot->provider) : $emptyCollection,
-                'service' => $pivot ? json_decode($pivot->service) : $emptyCollection,
-            ];
-        }
-
         return [
-            'contractor' => $pivot ? $this->sortByAmount(json_decode($pivot->contractor)) : $emptyCollection,
-            'provider' => $pivot ? $this->sortByAmount(json_decode($pivot->provider)) : $emptyCollection,
-            'service' => $pivot ? $this->sortByAmount(json_decode($pivot->service)) : $emptyCollection,
+            'contractor' => $pivot ? $this->sortByAmount(json_decode($pivot->contractor), $objectId) : $emptyCollection,
+            'provider' => $pivot ? $this->sortByAmount(json_decode($pivot->provider), $objectId) : $emptyCollection,
+            'service' => $pivot ? $this->sortByAmount(json_decode($pivot->service), $objectId) : $emptyCollection,
         ];
     }
 
@@ -291,8 +283,12 @@ class PivotObjectDebtService
         return $result;
     }
 
-    private function sortByAmount($pivotInfo)
+    private function sortByAmount($pivotInfo, $objectId)
     {
+        if ($objectId === 5) {
+            return $pivotInfo;
+        }
+
         $sortedDebts = [];
         $debts = $pivotInfo->debts;
         foreach ($debts as $organization => $amount) {
