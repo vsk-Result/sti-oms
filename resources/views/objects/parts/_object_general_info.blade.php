@@ -104,11 +104,9 @@
                 if ($objectExistInObjectImport) {
                     $contractorDebtsAvans = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
                     $contractorDebtsGU = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
-                    $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans;
+                    $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
                     $contractorGuaranteeDebtsAmount = $contractorDebtsGU;
                 }
-
-
 
                 $providerDebtsAmount = $debts['provider']->total_amount;
                 $ITRSalaryDebt = $object->getITRSalaryDebt();
@@ -443,10 +441,10 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $contractorDebtsAmount < 0 ? 'text-danger' : 'text-success' }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB') }}
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ ($contractorDebtsAmount - $contractorGuaranteeDebtsAmount) < 0 ? 'text-danger' : 'text-success' }}">
+                            {{ \App\Models\CurrencyExchangeRate::format(($contractorDebtsAmount - $contractorGuaranteeDebtsAmount), 'RUB') }}
                         </div>
-                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $contractorDebtsAmount }}">
+                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ ($contractorDebtsAmount - $contractorGuaranteeDebtsAmount) }}">
                                         <span class="svg-icon svg-icon-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                                 <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>

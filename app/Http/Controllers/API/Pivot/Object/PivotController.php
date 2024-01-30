@@ -118,6 +118,7 @@ class PivotController extends Controller
         $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
         $contractorDebtsAmount = $debts['contractor']->total_amount;
+        $contractorDebtsGU = 0;
 
         $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
         $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
@@ -212,7 +213,8 @@ class PivotController extends Controller
             'balance' => CurrencyExchangeRate::format($balance, 'RUB'),
             'general_costs' => CurrencyExchangeRate::format($generalCosts, 'RUB'),
             'general_costs_with_balance' => CurrencyExchangeRate::format($generalCosts + $balance, 'RUB'),
-            'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
+            'contractors_debts_without_gu' => CurrencyExchangeRate::format($contractorDebtsAmount - $contractorDebtsGU, 'RUB'),
+            'contractors_debts_gu' => CurrencyExchangeRate::format($contractorDebtsGU, 'RUB'),
             'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),
             'service_debts' => CurrencyExchangeRate::format($serviceDebtsAmount, 'RUB'),
             'workers_debts' => CurrencyExchangeRate::format($workSalaryDebt, 'RUB'),
