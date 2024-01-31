@@ -49,19 +49,7 @@ class ObjectController extends Controller
             $query->whereIn('id', auth()->user()->objects->pluck('id'));
         }
 
-        $paymentQuery = Payment::select('object_id', 'amount');
         $objects = $query->orderByRaw('CONVERT(code, SIGNED) desc')->paginate(10)->withQueryString();
-
-        foreach ($objects as $object) {
-            $object->total_pay = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');
-            $object->total_receive = (clone $paymentQuery)->where('object_id', $object->id)->sum('amount') - $object->total_pay;
-            $object->total_balance = $object->total_pay + $object->total_receive;
-            $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount');
-            if ($object->code === '288') {
-                $object->general_balance_1 = $object->generalCosts()->where('is_pinned', false)->sum('amount');
-                $object->general_balance_24 = $object->generalCosts()->where('is_pinned', true)->sum('amount');
-            }
-        }
 
         return response()->json([
             'status' => 'success',

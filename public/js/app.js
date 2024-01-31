@@ -518,3 +518,16 @@ function copyToClipboard(element) {
 
     $temp.remove();
 }
+
+$(document).on('click', '.check-nds', function(e) {
+    const checked = this.checked;
+    const target = $(this).data('target');
+
+    $(`.${target}`).each(function() {
+        if (checked) {
+            $(this).text($(this).data('amount-nds'));
+        } else {
+            $(this).text($(this).data('amount-without-nds'));
+        }
+    });
+});
