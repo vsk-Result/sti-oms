@@ -42,8 +42,8 @@ class TaxPlanItemService
             $query->where('period', 'LIKE', $requestData['period']);
         }
 
-        if (! empty($requestData['in_one_c'])) {
-            $query->whereIn('in_one_c', $requestData['in_one_c']);
+        if (! empty($requestData['object_id'])) {
+            $query->whereIn('object_id', $requestData['object_id']);
         }
 
         if (! empty($requestData['company_id'])) {
@@ -73,8 +73,9 @@ class TaxPlanItemService
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
-            'in_one_c' => $requestData['in_one_c'],
+            'in_one_c' => 0,
             'company_id' => $requestData['company_id'],
+            'object_id' => $requestData['object_id'],
             'paid' => $requestData['paid'],
             'payment_date' => $requestData['payment_date'],
             'status_id' => Status::STATUS_ACTIVE,
@@ -88,8 +89,9 @@ class TaxPlanItemService
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
-            'in_one_c' => $requestData['in_one_c'],
+            'in_one_c' => 0,
             'company_id' => $requestData['company_id'],
+            'object_id' => $requestData['object_id'],
             'paid' => $requestData['paid'],
             'payment_date' => $requestData['payment_date'],
             'status_id' => $requestData['status_id'],

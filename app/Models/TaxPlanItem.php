@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
 use Carbon\Carbon;
@@ -20,12 +21,17 @@ class TaxPlanItem extends Model implements Audit
 
     protected $fillable = [
         'created_by_user_id', 'updated_by_user_id', 'name', 'amount', 'due_date',
-        'period', 'in_one_c', 'paid', 'payment_date', 'status_id', 'company_id'
+        'period', 'in_one_c', 'paid', 'payment_date', 'status_id', 'company_id', 'object_id'
     ];
 
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function object(): BelongsTo
+    {
+        return $this->belongsTo(BObject::class, 'object_id');
     }
 
     public function getDueDateFormatted(): string

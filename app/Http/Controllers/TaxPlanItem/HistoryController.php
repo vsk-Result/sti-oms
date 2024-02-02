@@ -4,6 +4,7 @@ namespace App\Http\Controllers\TaxPlanItem;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Object\BObject;
 use App\Models\TaxPlanItem;
 use App\Models\User;
 use Carbon\Carbon;
@@ -17,6 +18,7 @@ class HistoryController extends Controller
     {
         $fields = [
             'company_id' => 'Компания',
+            'object_id' => 'Объект',
             'name' => 'Наименование',
             'amount' => 'Сумма',
             'due_date' => 'Срок оплаты',
@@ -35,6 +37,8 @@ class HistoryController extends Controller
         $auditable = TaxPlanItem::class;
 
         $companies = Company::pluck('short_name', 'id');
+        $objects = BObject::pluck('code', 'id');
+
         $query = Audit::query();
         $requestData = $request->toArray();
 
@@ -58,6 +62,10 @@ class HistoryController extends Controller
 
         if (! empty($requestData['in_one_c'])) {
             $query->whereIn('in_one_c', $requestData['in_one_c']);
+        }
+
+        if (! empty($requestData['object_id'])) {
+            $query->whereIn('object_id', $requestData['object_id']);
         }
 
         if (! empty($requestData['paid'])) {
@@ -106,7 +114,7 @@ class HistoryController extends Controller
         return view(
             'tax-plan.history.index',
             compact(
-                'audits', 'events', 'fields', 'users', 'auditables', 'auditable', 'companies'
+                'audits', 'events', 'fields', 'users', 'auditables', 'auditable', 'companies', 'objects'
             )
         );
     }

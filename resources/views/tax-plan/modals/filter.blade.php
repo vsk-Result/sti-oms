@@ -32,18 +32,16 @@
 
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label class="form-label">Платежка в 1С</label>
+                                <label class="form-label">Объект</label>
                                 <select
-                                    name="in_one_c[]"
-                                    class="form-select form-select-solid"
-                                    data-control="select2"
-                                    data-dropdown-parent="#filterTaxPlanModal"
-                                    multiple
+                                        name="object_id[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterTaxPlanModal"
+                                        multiple
                                 >
-                                    @foreach(['Нет', 'Да'] as $index => $value)
-                                        <option value="{{ $index }}" {{ in_array($index, request()->input('in_one_c', [])) ? 'selected' : '' }}>
-                                            {{ $value }}
-                                        </option>
+                                    @foreach($objects as $obj)
+                                        <option value="{{ $obj->id }}" {{ (in_array($obj->id, request()->input('object_id', [])) || (isset($object) && $obj->id === $object->id)) ? 'selected' : '' }}>{{ $obj->code . ' ' . $obj->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

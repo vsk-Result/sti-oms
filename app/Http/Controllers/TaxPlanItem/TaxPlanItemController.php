@@ -4,6 +4,7 @@ namespace App\Http\Controllers\TaxPlanItem;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Object\BObject;
 use App\Models\TaxPlanItem;
 use App\Services\TaxPlanItemService;
 use Illuminate\Contracts\View\View;
@@ -24,16 +25,18 @@ class TaxPlanItemController extends Controller
     public function index(Request $request): View
     {
         $total = [];
+        $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('name')->get();
         $items = $this->taxPlanItemService->filterTaxPlan($request->toArray(), $total);
 
-        return view('tax-plan.index', compact('items', 'total', 'companies'));
+        return view('tax-plan.index', compact('items', 'total', 'companies', 'objects'));
     }
 
     public function create(): View
     {
         $companies = Company::orderBy('name')->get();
-        return view('tax-plan.create', compact('companies'));
+        $objects = BObject::orderBy('code')->get();
+        return view('tax-plan.create', compact('companies', 'objects'));
     }
 
     public function store(StoreTaxPlanItemRequest $request): RedirectResponse
@@ -45,7 +48,8 @@ class TaxPlanItemController extends Controller
     public function edit(TaxPlanItem $item): View
     {
         $companies = Company::orderBy('name')->get();
-        return view('tax-plan.edit', compact('item', 'companies'));
+        $objects = BObject::orderBy('code')->get();
+        return view('tax-plan.edit', compact('item', 'companies', 'objects'));
     }
 
     public function update(TaxPlanItem $item, UpdateTaxPlanItemRequest $request): RedirectResponse

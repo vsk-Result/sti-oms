@@ -29,7 +29,6 @@ class StoreTaxPlanItemRequest extends FormRequest
             'due_date' => 'nullable|date_format:Y-m-d',
             'payment_date' => 'nullable|date_format:Y-m-d',
             'period' => 'nullable|string|max:30',
-            'in_one_c' => 'required|integer',
         ];
     }
 }

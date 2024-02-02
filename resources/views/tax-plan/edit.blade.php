@@ -131,11 +131,12 @@
                                     <div class="col-md-4">
                                         <div class="mb-10 fv-row">
                                             <div class="mb-1">
-                                                <label class="form-label fw-bolder text-dark fs-6">Платежка в 1С</label>
+                                                <label class="form-label fw-bolder text-dark fs-6">Объект</label>
                                                 <div class="position-relative mb-3">
-                                                    <select name="in_one_c" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                        @foreach(['Нет', 'Да'] as $index => $value)
-                                                            <option value="{{ $index }}" {{ $item->in_one_c === $index ? 'selected' : '' }}>{{ $value }}</option>
+                                                    <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        <option value="{{ null }}" {{ null == $item->object_id ? 'selected' : '' }}>Не указан</option>
+                                                        @foreach($objects as $object)
+                                                            <option value="{{ $object->id }}" {{ $object->id == $item->object_id ? 'selected' : '' }}>{{ $object->getName() }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>

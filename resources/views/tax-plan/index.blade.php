@@ -71,11 +71,11 @@
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="min-w-125px">Компания</th>
+                            <th class="min-w-125px">Объект</th>
                             <th class="min-w-125px">Наименование</th>
                             <th class="min-w-125px">Сумма</th>
                             <th class="min-w-125px">Срок оплаты</th>
                             <th class="min-w-125px">Период</th>
-                            <th class="min-w-125px">Платежка в 1С</th>
                             <th class="min-w-125px">Статус</th>
                             <th class="min-w-125px">Дата оплаты</th>
                             <th class="text-end min-w-100px">Действия</th>
@@ -85,6 +85,11 @@
                         @foreach($items as $item)
                             <tr>
                                 <td>{!! $item->company?->getShortNameColored() !!}</td>
+                                <td>
+                                    @if ($item->object)
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $item->object->name }}">{{ $item->object->code }}</span>
+                                    @endif
+                                </td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ \App\Models\CurrencyExchangeRate::format($item->amount, 'RUB', 0, true) }}</td>
                                 <td>
@@ -99,7 +104,6 @@
                                     @endif
                                 </td>
                                 <td>{{ $item->period }}</td>
-                                <td>{{ $item->in_one_c ? 'Да' : 'Нет' }}</td>
                                 <td>
                                     @if ($item->paid)
                                         <span class="badge badge-success fw-bolder">Оплачено</span>
