@@ -8,6 +8,7 @@ use App\Models\Helpdesk\Priority;
 use App\Models\Helpdesk\Ticket;
 use App\Models\Helpdesk\TicketRead;
 use App\Models\Object\BObject;
+use App\Models\User;
 use App\Services\Helpdesk\TicketService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,13 +49,14 @@ class TicketController extends Controller
 
     public function create(): View
     {
+        $assigners = User::whereIn('email', ['result007@yandex.ru', 'dmitry.samsonov@dttermo.ru'])->get();
         $priorities = Priority::getPriorities();
         $objects = BObject::orderBy('code')->get();
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
-        return view('helpdesk.tickets.create', compact('priorities', 'objects'));
+        return view('helpdesk.tickets.create', compact('priorities', 'objects', 'assigners'));
     }
 
     public function store(StoreTicketRequest $request): RedirectResponse
@@ -71,13 +73,14 @@ class TicketController extends Controller
 
     public function edit(Ticket $ticket): View
     {
+        $assigners = User::whereIn('email', ['result007@yandex.ru', 'dmitry.samsonov@dttermo.ru'])->get();
         $priorities = Priority::getPriorities();
         $objects = BObject::orderBy('code')->get();
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
-        return view('helpdesk.tickets.edit', compact('ticket', 'priorities', 'objects'));
+        return view('helpdesk.tickets.edit', compact('ticket', 'priorities', 'objects', 'assigners'));
     }
 
     public function update(Ticket $ticket, Request $request): RedirectResponse

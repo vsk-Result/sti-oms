@@ -107,6 +107,7 @@ class TicketService
     public function createTicket(array $requestData): void
     {
         $ticket = Ticket::create([
+            'assign_user_id' => $requestData['assign_user_id'],
             'priority_id' => $requestData['priority_id'] ?? Priority::NOT_SELECTED_ID,
             'object_id' => $requestData['object_id'] === 'null' ? null : $requestData['object_id'],
             'title' => $requestData['title'],

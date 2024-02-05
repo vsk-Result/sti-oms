@@ -9,6 +9,12 @@
         </div>
     @endif
 
+    @if ($ticket->assignTo)
+        <div title="Назначенный исполнитель" class="fs-7 badge badge-outline badge-light px-4 py-2 me-2 fw-bold text-dark">
+            {{ $ticket->assignTo->name }}
+        </div>
+    @endif
+
     @if ($ticket->haveUnreadUpdates() && isset($isPreview))
         <div title="Есть непрочитанные изменения" class="fs-7 badge badge-success badge-light px-4 py-2 me-2 fw-bold">
             Есть непрочитанные изменения

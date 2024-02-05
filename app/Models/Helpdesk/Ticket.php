@@ -4,6 +4,7 @@ namespace App\Models\Helpdesk;
 
 use App\Models\Object\BObject;
 use App\Models\Status;
+use App\Models\User;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
 use Carbon\Carbon;
@@ -24,7 +25,8 @@ class Ticket extends Model implements Audit, HasMedia
 
     protected $fillable = [
         'execution_date', 'complete_date', 'title', 'created_by_user_id',
-        'updated_by_user_id', 'content', 'priority_id', 'object_id', 'status_id', 'time_to_complete'
+        'updated_by_user_id', 'content', 'priority_id', 'object_id', 'status_id', 'time_to_complete',
+        'assign_user_id'
     ];
 
     const PREVIEW_TITLE_TEXT_LENGTH = 65;
@@ -37,6 +39,11 @@ class Ticket extends Model implements Audit, HasMedia
             Status::STATUS_BLOCKED => 'Закрыто',
             Status::STATUS_DELETED => 'Удалено'
         ];
+    }
+
+    public function assignTo(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assign_user_id');
     }
 
     public function answers(): HasMany

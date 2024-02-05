@@ -103,6 +103,20 @@
                                         </div>
                                     </div>
 
+                                    <div class="mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Назначить исполнителя</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="assign_user_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    <option value="{{ null }}" {{ $ticket->assign_user_id === null ? 'selected' : '' }}>Не назначен</option>
+                                                    @foreach($assigners as $assign)
+                                                        <option value="{{ $assign->id }}" {{ $ticket->assign_user_id === $assign->id ? 'selected' : '' }}>{{ $assign->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
 {{--                                    <div class="mb-10 fv-row">--}}
 {{--                                        <div class="mb-1">--}}
 {{--                                            <label class="form-label fw-bolder text-dark fs-6">Срок исполнения</label>--}}

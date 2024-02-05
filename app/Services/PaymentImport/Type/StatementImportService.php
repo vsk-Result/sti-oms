@@ -144,6 +144,9 @@ class StatementImportService
                 $payment['object_id'] = $object->id;
             }
 
+            $category = $this->paymentService->findCategoryFromDescription($payment['description']);
+            $category = is_null($category) ? $payment['category'] : $category;
+
             $payment = $this->paymentService->createPayment([
                 'company_id' => $import->company_id,
                 'bank_id' => $import->bank_id,
@@ -155,7 +158,7 @@ class StatementImportService
                 'type_id' => $payment['type_id'],
                 'payment_type_id' => is_null($import->bank_id) ? Payment::PAYMENT_TYPE_CASH : Payment::PAYMENT_TYPE_NON_CASH,
                 'code' => $payment['code'] ?? null,
-                'category' => $this->paymentService->findCategoryFromDescription($payment['description']),
+                'category' => $category,
                 'description' => $payment['description'],
                 'date' => ($import->company->short_name === 'БАМС' || is_null($import->bank_id)) ? $payment['date'] : $import->date,
                 'amount' => $amount,
@@ -252,6 +255,7 @@ class StatementImportService
                 if (str_contains($comment, '/')) {
                     $additionInfo[$description]['object'] = substr($comment, 0 , strpos($comment, '/'));
                     $additionInfo[$description]['code'] = substr($comment, strpos($comment, '/') + 1);
+                    $additionInfo[$description]['category'] = isset($rowData[2]) ? trim($rowData[2]) : '';
                 }
             }
         }
@@ -282,10 +286,13 @@ class StatementImportService
             $object = $rowData[0];
             $object = str_replace(',', '.', $object);
             $code = $rowData[1];
+            $category = '';
 
             if ($isNotEmptyAdditionInfo) {
                 $cleanDescription = str_replace(' ', '', $description);
                 if (array_key_exists($cleanDescription, $additionInfo)) {
+                    $category = $additionInfo[$cleanDescription]['category'];
+
                     if (empty($object)) {
                         $object = $additionInfo[$cleanDescription]['object'];
                     }
@@ -311,6 +318,7 @@ class StatementImportService
                 'organization_name' => $this->cleanValue($rowData[3]),
                 'organization_inn' => $inn,
                 'description' => $description,
+                'category' => $category,
             ];
         }
 
