@@ -291,7 +291,7 @@ class StatementImportService
             if ($isNotEmptyAdditionInfo) {
                 $cleanDescription = str_replace(' ', '', $description);
                 if (array_key_exists($cleanDescription, $additionInfo)) {
-                    $category = $additionInfo[$cleanDescription]['category'];
+                    $category = $additionInfo[$cleanDescription]['category'] ?? '';
 
                     if (empty($object)) {
                         $object = $additionInfo[$cleanDescription]['object'];
