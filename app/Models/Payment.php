@@ -40,6 +40,8 @@ class Payment extends Model implements Audit
     const CATEGORY_MATERIAL = 'Поставщики';
     const CATEGORY_SALARY = 'Зарплата';
     const CATEGORY_TAX = 'Налоги';
+    const CATEGORY_CUSTOMERS = 'Заказчики';
+    const CATEGORY_TRANSFER = 'Трансфер';
 
     const PAYMENT_TYPE_CASH = 0;
     const PAYMENT_TYPE_NON_CASH = 1;
@@ -87,10 +89,12 @@ class Payment extends Model implements Audit
     public static function getCategories(): array
     {
         return [
+            self::CATEGORY_CUSTOMERS => 'Заказчики',
             self::CATEGORY_SALARY => 'Зарплата',
             self::CATEGORY_TAX => 'Налоги',
             self::CATEGORY_RAD => 'Подрядчики',
             self::CATEGORY_MATERIAL => 'Поставщики',
+            self::CATEGORY_TRANSFER => 'Трансфер',
             self::CATEGORY_OPSTE => 'Услуги',
         ];
     }

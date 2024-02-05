@@ -28,6 +28,8 @@ class PaymentService
     private array $materialList;
     private array $salaryList;
     private array $taxList;
+    private array $customerList;
+    private array $transferList;
     private string $error = '';
 
     public function __construct(
@@ -47,6 +49,8 @@ class PaymentService
         $this->materialList = include base_path('resources/categories/material.php');
         $this->salaryList = include base_path('resources/categories/salary.php');
         $this->taxList = include base_path('resources/categories/tax.php');
+        $this->customerList = include base_path('resources/categories/customers.php');
+        $this->transferList = include base_path('resources/categories/transfer.php');
     }
 
     public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Builder|LengthAwarePaginator
@@ -467,6 +471,18 @@ class PaymentService
         foreach ($this->taxList as $taxValue) {
             if (str_contains($description, $taxValue)) {
                 return Payment::CATEGORY_TAX;
+            }
+        }
+
+        foreach ($this->customerList as $customerValue) {
+            if (str_contains($description, $customerValue)) {
+                return Payment::CATEGORY_CUSTOMERS;
+            }
+        }
+
+        foreach ($this->transferList as $transferValue) {
+            if (str_contains($description, $transferValue)) {
+                return Payment::CATEGORY_TRANSFER;
             }
         }
 
