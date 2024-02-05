@@ -26,6 +26,8 @@ class PaymentService
     private array $opsteList;
     private array $radList;
     private array $materialList;
+    private array $salaryList;
+    private array $taxList;
     private string $error = '';
 
     public function __construct(
@@ -43,6 +45,8 @@ class PaymentService
         $this->opsteList = include base_path('resources/categories/opste.php');
         $this->radList = include base_path('resources/categories/rad.php');
         $this->materialList = include base_path('resources/categories/material.php');
+        $this->salaryList = include base_path('resources/categories/salary.php');
+        $this->taxList = include base_path('resources/categories/tax.php');
     }
 
     public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Builder|LengthAwarePaginator
@@ -451,6 +455,18 @@ class PaymentService
         foreach ($this->materialList as $materialValue) {
             if (str_contains($description, $materialValue)) {
                 return Payment::CATEGORY_MATERIAL;
+            }
+        }
+
+        foreach ($this->salaryList as $salaryValue) {
+            if (str_contains($description, $salaryValue)) {
+                return Payment::CATEGORY_SALARY;
+            }
+        }
+
+        foreach ($this->taxList as $taxValue) {
+            if (str_contains($description, $taxValue)) {
+                return Payment::CATEGORY_TAX;
             }
         }
 
