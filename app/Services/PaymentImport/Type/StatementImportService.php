@@ -144,8 +144,8 @@ class StatementImportService
                 $payment['object_id'] = $object->id;
             }
 
-            $category = $this->paymentService->findCategoryFromDescription($payment['description']);
-            $category = is_null($category) ? $payment['category'] : $category;
+            $category = $payment['category'];
+            $category = empty($category) ? $this->paymentService->findCategoryFromDescription($payment['description']) : '';
 
             $payment = $this->paymentService->createPayment([
                 'company_id' => $import->company_id,
