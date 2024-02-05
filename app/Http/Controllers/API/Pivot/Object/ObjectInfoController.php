@@ -71,6 +71,7 @@ class ObjectInfoController extends Controller
                 $totalDebts = $contractorDebtsAmount + $providerDebtsAmount;
 
                 $info['debts'][] = [
+                    'id' => $object->id,
                     'object_name' => $object->getName(),
                     'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
                     'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),
@@ -100,6 +101,7 @@ class ObjectInfoController extends Controller
             $totalDebts = $contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount;
 
             $info['debts'][] = [
+                'id' => $object->id,
                 'object_name' => $object->getName(),
                 'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
                 'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),

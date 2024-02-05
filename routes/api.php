@@ -13,6 +13,7 @@ use App\Http\Controllers\API\Pivot\Payment\PaymentController;
 use App\Http\Controllers\API\Pivot\Bank\BankController;
 use App\Http\Controllers\API\Object\DebtController as ODebtController;
 use App\Http\Controllers\API\Object\DebtV2Controller;
+use App\Http\Controllers\API\Object\BalanceController;
 use App\Http\Controllers\API\Debt\OrganizationController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,7 @@ Route::get('pivots/objects/pivot', [PivotController::class, 'index']);
 
 Route::get('objects/debts', [ODebtController::class, 'index']);
 Route::get('objects/debts-v2', [DebtV2Controller::class, 'index']);
+Route::get('objects/balance', [BalanceController::class, 'index']);
 
 Route::get('debts/organizations', [OrganizationController::class, 'index']);
 
