@@ -45,6 +45,7 @@ class NotifyToEmailAboutObjectBalance extends Command
             '360' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Тинькоф
             '361' => ['kseniya.boltisheva@st-ing.com'], // Кемерово
             '363' => ['natalya.vorotnikova@st-ing.com', 'ekaterina.dulesova@st-ing.ru'], // Камчатка
+            '364' => ['galina.strutinskaya@st-ing.com'], // Гольф-клуб Завидово
             '365' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Аэрофлот
             '366' => ['kseniya.boltisheva@st-ing.com'], // Валента
             '367' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Офис Веспер
