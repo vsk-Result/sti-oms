@@ -277,4 +277,9 @@ class BObject extends Model implements Audit
         $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());
         return $query->whereNotIn('code', $exceptObjectsWithCodes);
     }
+
+    public static function getCodesForContractorImportDebts()
+    {
+        return ['346', '349', '353', '358', '359', '360', '361', '363', '366'];
+    }
 }

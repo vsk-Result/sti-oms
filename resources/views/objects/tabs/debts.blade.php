@@ -256,7 +256,7 @@
                                 <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
                             </div>
 
-                            @if ($hasObjectImport)
+                            @if (in_array($object->code, App\Models\Object\BObject::getCodesForContractorImportDebts()))
                                 <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
                                         <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
@@ -266,9 +266,11 @@
                                     <div class="menu-item px-3">
                                         <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal" class="menu-link px-3">Загрузить долги вручную</a>
                                     </div>
-                                    <div class="menu-item px-3">
-                                        <a href="{{ route('files.download', ['file' => base64_encode($hasObjectImportLink)]) }}" class="menu-link px-3 text-primary">Скачать детализацию долгов</a>
-                                    </div>
+                                    @if ($hasObjectImportLink)
+                                        <div class="menu-item px-3">
+                                            <a href="{{ route('files.download', ['file' => base64_encode($hasObjectImportLink)]) }}" class="menu-link px-3 text-primary">Скачать детализацию долгов</a>
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
                         </div>
