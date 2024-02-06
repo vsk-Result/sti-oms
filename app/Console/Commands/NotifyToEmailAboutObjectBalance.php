@@ -58,7 +58,7 @@ class NotifyToEmailAboutObjectBalance extends Command
             $filepath = $this->balanceExportService->store($object);
 
             try {
-                Mail::send('emails.objects.balance', compact('now', 'object'), function ($m) use ($now, $object, $receivers, $alwaysInCopy, $filepath) {
+                Mail::send('emails.objects.balance', compact('now', 'object'), function ($m) use ($now, $object, $receivers, $filepath) {
                     $m->from('support@st-ing.com', 'OMS Support');
                     $m->subject('OMS. ' . $now . ' Отчет о балансе объекта ' . $object->getName());
                     $m->attach($filepath);
@@ -66,14 +66,29 @@ class NotifyToEmailAboutObjectBalance extends Command
                     foreach ($receivers as $receiver) {
                         $m->to($receiver);
                     }
-
-                    foreach ($alwaysInCopy as $receiver) {
-                        $m->cc($receiver);
-                    }
                 });
             } catch(Exception $e){
                 Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на email: "' . $e->getMessage());
             }
+        }
+
+        try {
+            Mail::send('emails.objects.balance', compact('now', 'object'), function ($m) use ($now, $alwaysInCopy, $notificationConfig) {
+                $m->from('support@st-ing.com', 'OMS Support');
+                $m->subject('OMS. ' . $now . ' Отчет о балансе объектов');
+
+                foreach ($notificationConfig as $objectCode => $receivers) {
+                    $object = BObject::where('code', $objectCode)->first();
+                    $filepath = $this->balanceExportService->store($object);
+                    $m->attach($filepath);
+                }
+
+                foreach ($alwaysInCopy as $receiver) {
+                    $m->to($receiver);
+                }
+            });
+        } catch(Exception $e){
+            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить общее уведомление на email: "' . $e->getMessage());
         }
 
         $this->CRONProcessService->successProcess($this->signature);
