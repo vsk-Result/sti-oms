@@ -30,7 +30,7 @@
                             <span class="form-check-label fw-semibold text-muted me-2">
                                 без НДС
                             </span>
-                            <input class="form-check-input check-nds" type="checkbox" value="1" checked="checked" data-target="object-nds-{{ $object->id }}">
+                            <input class="form-check-input check-nds" type="checkbox" value="1" checked="checked" data-target="object-nds-{{ $object->id }}" style="height: 1.5em; width: 2.75em;">
                             <span class="form-check-label fw-semibold text-muted">
                                 с НДС
                             </span>

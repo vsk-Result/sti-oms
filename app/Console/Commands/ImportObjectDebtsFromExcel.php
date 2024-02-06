@@ -92,17 +92,23 @@ class ImportObjectDebtsFromExcel extends Command
                 $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xls';
 
                 if (! File::exists($importFilePath)) {
-                    $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден';
-                    Log::channel('custom_imports_log')->debug($errorMessage);
-                    $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-                    return 0;
+                    if (! File::exists($importManualFilePath)) {
+                        $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден';
+                        Log::channel('custom_imports_log')->debug($errorMessage);
+                        $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                        return 0;
+                    }
                 }
             }
 
             // Самый новый файл будет являться актуальным при загрузке
-            if (File::exists($importManualFilePath)) {
-                if (File::lastModified($importManualFilePath) > File::lastModified($importFilePath)) {
-                    $importFilePath = $importManualFilePath;
+            if (! File::exists($importFilePath)) {
+                $importFilePath = $importManualFilePath;
+            } else {
+                if (File::exists($importManualFilePath)) {
+                    if (File::lastModified($importManualFilePath) > File::lastModified($importFilePath)) {
+                        $importFilePath = $importManualFilePath;
+                    }
                 }
             }
 
