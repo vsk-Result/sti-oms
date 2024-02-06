@@ -92,6 +92,9 @@ class ImportObjectDebtsFromExcel extends Command
                 $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xls';
 
                 if (! File::exists($importFilePath)) {
+                    $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл ' . $code . '.xlsx';
+                    Log::channel('custom_imports_log')->debug($errorMessage);
+
                     if (! File::exists($importManualFilePath)) {
                         $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден';
                         Log::channel('custom_imports_log')->debug($errorMessage);

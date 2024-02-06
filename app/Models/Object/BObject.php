@@ -280,6 +280,6 @@ class BObject extends Model implements Audit
 
     public static function getCodesForContractorImportDebts()
     {
-        return ['346', '349', '353', '358', '359', '360', '361', '363', '366'];
+        return ['366'];
     }
 }
