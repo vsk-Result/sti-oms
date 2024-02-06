@@ -35,9 +35,10 @@ class Ticket extends Model implements Audit, HasMedia
     private function getStatusesList(): array
     {
         return [
-            Status::STATUS_ACTIVE => 'Открыто',
-            Status::STATUS_BLOCKED => 'Закрыто',
-            Status::STATUS_DELETED => 'Удалено'
+            Status::STATUS_ACTIVE => 'В разработке',
+            Status::STATUS_BLOCKED => 'Выполнено',
+            Status::STATUS_DELETED => 'Удалено',
+            Status::STATUS_WAITING => 'В ожидании',
         ];
     }
 
@@ -59,6 +60,11 @@ class Ticket extends Model implements Audit, HasMedia
     public function getPriority(): object
     {
         return Priority::getPriority($this->priority_id);
+    }
+
+    public function hasPriority(): bool
+    {
+        return $this->priority_id !== Priority::NOT_SELECTED_ID;
     }
 
     public function getPreviewContent(): string
@@ -99,7 +105,12 @@ class Ticket extends Model implements Audit, HasMedia
         return $query->where('status_id', Status::STATUS_BLOCKED);
     }
 
-    public function isClosed(): bool
+    public function scopeWaiting($query)
+    {
+        return $query->where('status_id', Status::STATUS_WAITING);
+    }
+
+    public function isDone(): bool
     {
         return $this->status_id === Status::STATUS_BLOCKED;
     }
@@ -107,6 +118,11 @@ class Ticket extends Model implements Audit, HasMedia
     public function isOpened(): bool
     {
         return $this->status_id === Status::STATUS_ACTIVE;
+    }
+
+    public function isWaiting(): bool
+    {
+        return $this->status_id === Status::STATUS_WAITING;
     }
 
     public function getObjectName(): string

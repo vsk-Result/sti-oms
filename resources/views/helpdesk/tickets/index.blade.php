@@ -21,14 +21,21 @@
 
                     <div class="menu-item">
                         <a href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_ACTIVE]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_ACTIVE]]) ? 'active' : '' }}">
-                            <span class="menu-title">Открытые</span>
+                            <span class="menu-title">В разработке</span>
                             <span class="menu-badge">{{ $openTicketsCount }}</span>
                         </a>
                     </div>
 
                     <div class="menu-item">
+                        <a href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_WAITING]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_WAITING]]) ? 'active' : '' }}">
+                            <span class="menu-title">В ожидании</span>
+                            <span class="menu-badge">{{ $waitingTicketsCount }}</span>
+                        </a>
+                    </div>
+
+                    <div class="menu-item">
                         <a href="{{ route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_BLOCKED]]) }}" class="menu-link {{ request()->fullUrl() === route('helpdesk.tickets.index', ['status_id' => [\App\Models\Status::STATUS_BLOCKED]]) ? 'active' : '' }}">
-                            <span class="menu-title">Закрытые</span>
+                            <span class="menu-title">Выполненные</span>
                             <span class="menu-badge">{{ $closeTicketsCount }}</span>
                         </a>
                     </div>

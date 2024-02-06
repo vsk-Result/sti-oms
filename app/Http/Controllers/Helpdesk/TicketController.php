@@ -30,6 +30,7 @@ class TicketController extends Controller
 
         $openTicketsCount = $total['open_tickets_count'];
         $closeTicketsCount = $total['close_tickets_count'];
+        $waitingTicketsCount = $total['waiting_tickets_count'];
         $groupedByPriorities = $total['grouped_by_priorities'];
         $groupedByObjects = $total['grouped_by_objects'];
         $groupedByUsers = $total['grouped_by_users'];
@@ -40,6 +41,7 @@ class TicketController extends Controller
                 'tickets',
                 'openTicketsCount',
                 'closeTicketsCount',
+                'waitingTicketsCount',
                 'groupedByPriorities',
                 'groupedByObjects',
                 'groupedByUsers',

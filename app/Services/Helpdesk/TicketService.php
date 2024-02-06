@@ -7,6 +7,7 @@ use App\Events\Helpdesk\Ticket\TicketCreated;
 use App\Events\Helpdesk\Ticket\TicketDeleted;
 use App\Events\Helpdesk\Ticket\TicketOpened;
 use App\Events\Helpdesk\Ticket\TicketUpdated;
+use App\Events\Helpdesk\Ticket\TicketWaiting;
 use App\Models\Helpdesk\Priority;
 use App\Models\Helpdesk\Ticket;
 use App\Models\Object\BObject;
@@ -55,6 +56,7 @@ class TicketService
 
         $total['open_tickets_count'] = (clone $totalQuery)->active()->count();
         $total['close_tickets_count'] = (clone $totalQuery)->closed()->count();
+        $total['waiting_tickets_count'] = (clone $totalQuery)->waiting()->count();
 
         $total['grouped_by_objects'] = [];
         foreach ((clone $totalQuery)->active()->get()->groupBy('object_id') as $objectId => $tickets) {
@@ -88,7 +90,7 @@ class TicketService
         }
 
         $total['grouped_by_users'] = [];
-        foreach (Ticket::get()->groupBy('created_by_user_id') as $userId => $tickets) {
+        foreach (Ticket::active()->get()->groupBy('created_by_user_id') as $userId => $tickets) {
             $user = User::find($userId);
 
             $total['grouped_by_users'][] = [
@@ -171,5 +173,15 @@ class TicketService
         ]);
 
         TicketClosed::dispatch($ticket, auth()->user());
+    }
+
+    public function waitingTicket(Ticket $ticket): void
+    {
+        $ticket->update([
+            'complete_date' => Carbon::now(),
+            'status_id' => Status::STATUS_WAITING
+        ]);
+
+        TicketWaiting::dispatch($ticket, auth()->user());
     }
 }

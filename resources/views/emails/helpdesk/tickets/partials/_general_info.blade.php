@@ -3,6 +3,9 @@
 <p>Создал(а): {{ $ticketAuthor->name }} (<a href="mailto: {{ $ticketAuthor->email }}">{{ $ticketAuthor->email }}</a>)</p>
 <p>Объект: {{ $ticket->getObjectName() }}</p>
 <p>Приоритет: {{ $ticket->getPriority()->name }}</p>
+@if ($ticket->assignTo)
+    <p>Назначенный исполнитель: {{ $ticketAuthor->assignTo->name }} (<a href="mailto: {{ $ticketAuthor->assignTo->email }}">{{ $ticketAuthor->assignTo->email }}</a>)</p>
+@endif
 
 @if (! isset($deletedBy))
     <p><a href="{{ route('helpdesk.tickets.show', $ticket) }}">Перейдите по ссылке, чтобы посмотреть полную информацию</a></p>

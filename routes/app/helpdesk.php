@@ -3,6 +3,7 @@
 use App\Http\Controllers\Helpdesk\TicketController;
 use App\Http\Controllers\Helpdesk\TicketCloseController;
 use App\Http\Controllers\Helpdesk\TicketOpenController;
+use App\Http\Controllers\Helpdesk\TicketWaitingController;
 use App\Http\Controllers\Helpdesk\AnswerController;
 
 // Обращения
@@ -19,6 +20,7 @@ Route::delete('helpdesk/tickets/{ticket}', [TicketController::class, 'destroy'])
 
 Route::post('helpdesk/tickets/{ticket}/close', [TicketCloseController::class, 'store'])->name('helpdesk.tickets.close');
 Route::post('helpdesk/tickets/{ticket}/open', [TicketOpenController::class, 'store'])->name('helpdesk.tickets.open');
+Route::post('helpdesk/tickets/{ticket}/waiting', [TicketWaitingController::class, 'store'])->name('helpdesk.tickets.waiting');
 
 // Обращения - ответы
 

@@ -7,6 +7,7 @@ class Status
     const STATUS_ACTIVE = 0;
     const STATUS_BLOCKED = 1;
     const STATUS_DELETED = 2;
+    const STATUS_WAITING = 3;
 
     public static function getStatuses(): array
     {
