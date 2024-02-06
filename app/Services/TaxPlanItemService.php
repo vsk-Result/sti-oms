@@ -35,11 +35,11 @@ class TaxPlanItemService
         }
 
         if (! empty($requestData['name'])) {
-            $query->where('name', 'LIKE', $requestData['name']);
+            $query->where('name', 'LIKE', '%' . $requestData['name'] . '%');
         }
 
         if (! empty($requestData['period'])) {
-            $query->where('period', 'LIKE', $requestData['period']);
+            $query->where('period', 'LIKE', '%' . $requestData['period'] . '%');
         }
 
         if (! empty($requestData['object_id'])) {
