@@ -42,7 +42,7 @@ class TaxPlanItemController extends Controller
     public function store(StoreTaxPlanItemRequest $request): RedirectResponse
     {
         $this->taxPlanItemService->createItem($request->toArray());
-        return redirect()->route('tax_plan.index');
+        return redirect($request->get('return_url') ?? route('tax_plan.index'));
     }
 
     public function edit(TaxPlanItem $item): View
@@ -55,7 +55,7 @@ class TaxPlanItemController extends Controller
     public function update(TaxPlanItem $item, UpdateTaxPlanItemRequest $request): RedirectResponse
     {
         $this->taxPlanItemService->updateItem($item, $request->toArray());
-        return redirect()->route('tax_plan.index');
+        return redirect($request->get('return_url') ?? route('tax_plan.index'));
     }
 
     public function destroy(TaxPlanItem $item): RedirectResponse
