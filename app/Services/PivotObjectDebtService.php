@@ -8,6 +8,7 @@ use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\PivotObjectDebt;
+use App\Models\TaxPlanItem;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -276,6 +277,11 @@ class PivotObjectDebtService
             if ($forApi) {
                 $result[$id] += $debt->avans;
             }
+        }
+
+        $komissiyaServiceAmount = TaxPlanItem::where('object_id', $this->object->id)->where('paid', 0)->sum('amount');
+        if ($komissiyaServiceAmount != 0) {
+            $result['null::Комиссия'] = -$komissiyaServiceAmount;
         }
 
         asort($result);
