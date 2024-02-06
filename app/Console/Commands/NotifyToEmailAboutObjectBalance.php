@@ -73,7 +73,7 @@ class NotifyToEmailAboutObjectBalance extends Command
         }
 
         try {
-            Mail::send('emails.objects.balance', compact('now', 'object'), function ($m) use ($now, $alwaysInCopy, $notificationConfig) {
+            Mail::send('emails.objects.general_balance', compact('now'), function ($m) use ($now, $alwaysInCopy, $notificationConfig) {
                 $m->from('support@st-ing.com', 'OMS Support');
                 $m->subject('OMS. ' . $now . ' Отчет о балансе объектов');
 
