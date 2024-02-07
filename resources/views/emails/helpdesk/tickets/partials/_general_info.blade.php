@@ -4,7 +4,7 @@
 <p>Объект: {{ $ticket->getObjectName() }}</p>
 <p>Приоритет: {{ $ticket->getPriority()->name }}</p>
 @if ($ticket->assignTo)
-    <p>Назначенный исполнитель: {{ $ticketAuthor->assignTo->name }} (<a href="mailto: {{ $ticketAuthor->assignTo->email }}">{{ $ticketAuthor->assignTo->email }}</a>)</p>
+    <p>Назначенный исполнитель: {{ $ticket->assignTo->name }} (<a href="mailto: {{ $ticket->assignTo->email }}">{{ $ticket->assignTo->email }}</a>)</p>
 @endif
 
 @if (! isset($deletedBy))
