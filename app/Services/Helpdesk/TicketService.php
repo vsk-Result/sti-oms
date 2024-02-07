@@ -47,6 +47,8 @@ class TicketService
 
         if (! empty($requestData['status_id'])) {
             $query->whereIn('status_id', $requestData['status_id']);
+        } else {
+            $query->where('status_id', Status::STATUS_ACTIVE);
         }
 
         $perPage = 30;
@@ -115,7 +117,7 @@ class TicketService
             'title' => $requestData['title'],
             'content' => $requestData['content'],
             'time_to_complete' => $requestData['time_to_complete'] ?? null,
-            'status_id' => Status::STATUS_ACTIVE,
+            'status_id' => Status::STATUS_WAITING,
         ]);
 
         if (! empty($requestData['files'])) {
