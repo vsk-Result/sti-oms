@@ -390,7 +390,7 @@ class PaymentService
                 'type_id' => Payment::TYPE_OBJECT,
                 'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
                 'code' => $costCode,
-                'category' => Payment::CATEGORY_RAD,
+                'category' => Payment::CATEGORY_SALARY,
                 'description' => $payment->description,
                 'date' => $import->date,
                 'amount' => (float) -$amount,
