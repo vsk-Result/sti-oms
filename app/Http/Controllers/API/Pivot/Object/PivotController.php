@@ -142,11 +142,7 @@ class PivotController extends Controller
         // $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_notwork_left_amount']['RUB'] - $contractsTotal['acts_amount']['RUB'];
 
         //новая версия
-        if ($object->code === '346') {
-            $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-        } else {
-            $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'];
-        }
+        $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
 
         $ostatokNeotrabotannogoAvansa = $contractsTotal['avanses_notwork_left_amount']['RUB'];
 
@@ -167,6 +163,7 @@ class PivotController extends Controller
                 $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);
                 $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_received_amount']['EUR'] * $currentRate->rate);
                 $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_acts_paid_amount']['EUR'] * $currentRate->rate);
+                $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $currentRate->rate;
             }
 
             $ostatokNeotrabotannogoAvansa += ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
