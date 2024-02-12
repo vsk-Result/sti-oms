@@ -8,7 +8,6 @@ use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
-use App\Services\ObjectService;
 use App\Services\OrganizationService;
 use App\Services\PaymentService;
 use App\Services\UploadService;
@@ -23,21 +22,18 @@ class StatementImportService
     private PaymentService $paymentService;
     private OrganizationService $organizationService;
     private UploadService $uploadService;
-    private ObjectService $objectService;
     private CurrencyExchangeRateService $rateService;
 
     public function __construct(
         PaymentService $paymentService,
         UploadService $uploadService,
         OrganizationService $organizationService,
-        ObjectService $objectService,
         CurrencyExchangeRateService $rateService
     ) {
         $this->error = '';
         $this->paymentService = $paymentService;
         $this->uploadService = $uploadService;
         $this->organizationService = $organizationService;
-        $this->objectService = $objectService;
         $this->rateService = $rateService;
     }
 
