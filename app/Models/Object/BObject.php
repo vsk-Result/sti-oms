@@ -212,53 +212,62 @@ class BObject extends Model implements Audit
 
     public function getWorkSalaryDebt(): float
     {
+        $amount = 0;
         $details = $this->getWorkSalaryDebtDetails();
 
-        return $details['real']['amount'] + $details['predict']['amount'];
+        foreach ($details as $detail) {
+            $amount += $detail['amount'];
+        }
+
+        return $amount;
     }
 
     public function getWorkSalaryDebtDetails(): array
     {
-        $details = [
-            'real' => [
-                'date' => '---',
-                'amount' => 0,
-            ],
-            'predict' => [
-                'date' => '---',
-                'amount' => 0,
-            ]
-        ];
-
         if (isset(self::getCodesWithoutWorktype()[$this->code])) {
-            return $details;
+            return [];
         }
 
-        $lastPaidMonth = SalaryPaidMonth::where('is_paid', 1)->orderBy('month', 'desc')->first();
+        $lastNotPaid = SalaryPaidMonth::where('is_paid', 0)->orderBy('month', 'asc')->first();
 
-        if (!$lastPaidMonth) {
-            return $details;
+        if (!$lastNotPaid) {
+            return [];
         }
 
-        $details['real']['date'] = Carbon::parse($lastPaidMonth->month . '-01')->format('F Y');
-        $details['predict']['date'] = Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('F Y');
+        $lastImported = SalaryPaidMonth::where('is_imported', 1)->orderBy('month', 'desc')->first();
+        $predictAmount = - SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', $lastImported->month)->sum('total_amount');
 
-        $debtQuery = SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', $lastPaidMonth->month);
-        $predictDebtQuery = SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', Carbon::parse($lastPaidMonth->month . '-01')->addMonthNoOverflow()->format('Y-m'));
+        $details = [];
+        $lastNotPaidMonth = $lastNotPaid->month;
 
-        $details['real']['amount'] = (clone $debtQuery)->sum('amount');
-        $details['predict']['amount'] = -(clone $debtQuery)->sum('total_amount');
+        $now = Carbon::now()->format('Y-m');
+        for ($i = 0; $i < 10; $i++) {
+            if ($lastNotPaidMonth === $now && Carbon::now()->day < 15) {
+                break;
+            }
 
-        $details['predict']['amount'] += abs((clone $predictDebtQuery)->sum('card'));
+            if ($lastNotPaidMonth > $now) {
+                break;
+            }
 
-        if ($details['real']['amount'] > 0) {
-            $details['real']['amount'] = 0;
+            $salaryPaidMonth = SalaryPaidMonth::where('month', $lastNotPaidMonth)->first();
+
+            $detail = [
+                'date' => Carbon::parse($lastNotPaidMonth . '-01')->format('F Y'),
+                'is_real' => $salaryPaidMonth->is_imported
+            ];
+
+            $salaryQuery = SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', $salaryPaidMonth);
+
+            if ($salaryPaidMonth->is_imported) {
+                $detail['amount'] = (clone $salaryQuery)->sum('amount');
+            } else {
+                $detail['amount'] = $predictAmount + abs((clone $salaryQuery)->sum('card'));
+            }
+
+            $details[] = $detail;
+            $lastNotPaidMonth = Carbon::parse($lastNotPaidMonth . '-01')->addMonthNoOverflow()->format('Y-m');
         }
-
-        if ($details['predict']['amount'] > 0) {
-            $details['predict']['amount'] = 0;
-        }
-
 
         return $details;
     }
