@@ -257,7 +257,7 @@ class BObject extends Model implements Audit
                 'is_real' => $salaryPaidMonth->is_imported
             ];
 
-            $salaryQuery = SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', $salaryPaidMonth);
+            $salaryQuery = SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', $lastNotPaidMonth);
 
             if ($salaryPaidMonth->is_imported) {
                 $detail['amount'] = (clone $salaryQuery)->sum('amount');
