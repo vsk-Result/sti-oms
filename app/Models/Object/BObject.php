@@ -265,6 +265,10 @@ class BObject extends Model implements Audit
                 $detail['amount'] = $predictAmount + abs((clone $salaryQuery)->sum('card'));
             }
 
+            if ($detail['amount'] > 0) {
+                $detail['amount'] = 0;
+            }
+
             $details[] = $detail;
             $lastNotPaidMonth = Carbon::parse($lastNotPaidMonth . '-01')->addMonthNoOverflow()->format('Y-m');
         }
