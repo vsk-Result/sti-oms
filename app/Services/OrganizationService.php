@@ -21,26 +21,23 @@ class OrganizationService
         $requestData['inn'] = $this->sanitizer->set($requestData['inn'])->toNumber()->get();
         $requestData['kpp'] = $this->sanitizer->set($requestData['kpp'])->toNumber()->get();
 
+        $organizationByName = Organization::where('name', $requestData['name'])->first();
+        $organizationByINN = Organization::where('inn', $requestData['inn'])->first();
+
         if (empty($requestData['inn'])) {
-            $organization = Organization::where('name', $requestData['name'])->first();
-
-            return $organization ?: $this->createOrganization($requestData);
+            return $organizationByName ?: $this->createOrganization($requestData);
         }
 
-        $organization = Organization::where('inn', $requestData['inn'])->first();
-
-        if ($organization) {
-            return $organization;
+        if ($organizationByINN) {
+            return $organizationByINN;
         }
 
-        $organization = Organization::where('name', $requestData['name'])->first();
-
-        if ($organization) {
-            $organization->update([
+        if ($organizationByName) {
+            $organizationByName->update([
                 'inn' => $requestData['inn'],
             ]);
 
-            return $organization;
+            return $organizationByName;
         }
 
         return $this->createOrganization($requestData);
