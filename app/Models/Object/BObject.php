@@ -219,7 +219,7 @@ class BObject extends Model implements Audit
             $amount += $detail['amount'];
         }
 
-        return $amount;
+        return min($amount, 0);
     }
 
     public function getWorkSalaryDebtDetails(): array
@@ -263,10 +263,6 @@ class BObject extends Model implements Audit
                 $detail['amount'] = (clone $salaryQuery)->sum('amount');
             } else {
                 $detail['amount'] = $predictAmount + abs((clone $salaryQuery)->sum('card'));
-            }
-
-            if ($detail['amount'] > 0) {
-                $detail['amount'] = 0;
             }
 
             $details[] = $detail;
