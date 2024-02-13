@@ -32,7 +32,7 @@ class ExportController extends Controller
         $creditsInfo = json_decode($financeReportHistory->credits);
         $loansInfo = json_decode($financeReportHistory->loans);
         $depositsInfo = json_decode($financeReportHistory->deposits);
-        $objectsInfo = json_decode($financeReportHistory->objects);
+        $objectsInfo = json_decode($financeReportHistory->objects_new);
 
         return Excel::download(
             new Export(

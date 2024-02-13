@@ -21,18 +21,20 @@
                                 <td>{{ \Carbon\Carbon::parse($financeReportHistoryItem->date)->format('d.m.Y') }}</td>
                                 <td>{{ $financeReportHistoryItem->updated_at->format('d.m.Y H:i') }}</td>
                                 <td class="text-end d-flex flex-row gap-2 justify-content-end">
-                                    <a href="{{ route('finance_report.index', ['balance_date' => $financeReportHistoryItem->date]) }}" class="btn btn-light-dark">Посмотреть</a>
+                                    @if ($financeReportHistoryItem->objects === '[]')
+                                        <a href="{{ route('finance_report.index', ['balance_date' => $financeReportHistoryItem->date]) }}" class="btn btn-light-dark">Посмотреть</a>
 
-                                    <form action="{{ route('finance_report.exports.store', $financeReportHistoryItem->date) }}" method="POST" class="hidden">
-                                        @csrf
-                                        <a
-                                                href="javascript:void(0);"
-                                                class="btn btn-light-primary"
-                                                onclick="event.preventDefault(); this.closest('form').submit();"
-                                        >
-                                            Экспорт в Excel
-                                        </a>
-                                    </form>
+                                        <form action="{{ route('finance_report.exports.store', $financeReportHistoryItem->date) }}" method="POST" class="hidden">
+                                            @csrf
+                                            <a
+                                                    href="javascript:void(0);"
+                                                    class="btn btn-light-primary"
+                                                    onclick="event.preventDefault(); this.closest('form').submit();"
+                                            >
+                                                Экспорт в Excel
+                                            </a>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

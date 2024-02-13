@@ -75,53 +75,14 @@ class ObjectPivotSheet implements
         foreach($infos as $info => $field) {
             $sheet->setCellValue('A' . $row, $info);
 
-            if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24') {
-                continue;
-            }
-            if (in_array($field, ['payment_total_balance', 'general_costs_amount'])) {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB'));
-            } elseif ($field === 'contractor' || $field === 'provider' || $field === 'service') {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true));
-            } elseif ($field === 'salary_itr' || $field === 'salary_work') {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true));
-            } else {
-                $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}->RUB, 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($summary->{$year}->{$field}->EUR, 'EUR', 0, true));
-            }
-
-            $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($summary->{$year}->{$field}->RUB < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($summary->{$year}->{$field}, 'RUB'));
+            $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($summary->{$year}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
             $columnIndex = 3;
             foreach($objects as $object) {
                 $column = $this->getColumnWord($columnIndex);
-                if (in_array($field, ['payment_total_balance', 'general_costs_amount', 'general_costs_amount_1', 'general_costs_amount_24'])) {
-                    if ($object->code == 288) {
-                        if ($field === 'general_costs_amount') {
-                            $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{'general_costs_amount_1'}, 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($total->{$year}->{$object->code}->{'general_costs_amount_24'}, 'RUB', 0, true));
-                            $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{'general_costs_amount_1'} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-
-                            $columnIndex++;
-                            continue;
-                        }
-                        if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24') {
-                            continue;
-                        } else {
-                            $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB', 0, true));
-                            $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                        }
-                    } else {
-                        if ($field === 'general_costs_amount_1' || $field === 'general_costs_amount_24') {
-                            continue;
-                        }
-                        $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB', 0, true));
-                        $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                    }
-                } else if (in_array($field, ['contractor', 'provider', 'service', 'salary_itr', 'salary_work'])) {
-                    $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->RUB, 'RUB', 0, true));
-                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field}->RUB < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                } else {
-                    $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->RUB, 'RUB', 0, true) . "\n" . CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}->EUR, 'RUB', 0, true));
-                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field}->RUB < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                }
+                $sheet->setCellValue($column . $row, CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB', 0, true));
+                $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
                 $columnIndex++;
             }

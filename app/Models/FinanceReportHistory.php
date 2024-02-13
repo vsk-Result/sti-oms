@@ -12,6 +12,6 @@ class FinanceReportHistory extends Model
     protected $table = 'finance_report_history';
 
     protected $fillable = [
-        'date', 'balances', 'credits', 'loans', 'deposits', 'objects'
+        'date', 'balances', 'credits', 'loans', 'deposits', 'objects', 'objects_new'
     ];
 }

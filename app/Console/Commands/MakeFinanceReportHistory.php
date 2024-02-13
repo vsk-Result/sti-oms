@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Services\Contract\ContractService;
 use App\Services\CRONProcessService;
+use App\Services\CurrencyExchangeRateService;
 use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
 use App\Services\FinanceReport\DepositService;
@@ -31,26 +32,29 @@ class MakeFinanceReportHistory extends Command
     private CreditService $creditService;
     private LoanService $loanService;
     private DepositService $depositeService;
-    private ContractService $contractService;
     private PivotObjectDebtService $pivotObjectDebtService;
+    private CurrencyExchangeRateService $currencyExchangeRateService;
+    private ContractService $contractService;
 
     public function __construct(
         AccountBalanceService $accountBalanceService,
         CreditService $creditService,
         LoanService $loanService,
         DepositService $depositeService,
-        ContractService $contractService,
         CRONProcessService $CRONProcessService,
-        PivotObjectDebtService $pivotObjectDebtService
+        PivotObjectDebtService $pivotObjectDebtService,
+        CurrencyExchangeRateService $currencyExchangeService,
+        ContractService $contractService,
     ) {
         parent::__construct();
         $this->accountBalanceService = $accountBalanceService;
         $this->creditService = $creditService;
         $this->loanService = $loanService;
         $this->depositeService = $depositeService;
+        $this->pivotObjectDebtService = $pivotObjectDebtService;
+        $this->currencyExchangeService = $currencyExchangeService;
         $this->contractService = $contractService;
         $this->CRONProcessService = $CRONProcessService;
-        $this->pivotObjectDebtService = $pivotObjectDebtService;
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
@@ -75,7 +79,6 @@ class MakeFinanceReportHistory extends Command
 
         try {
             $currentDate = Carbon::now();
-            $date = $currentDate->format('Y-m-d');
 
             // Балансы
             $balancesFromService = $this->accountBalanceService->getBalances($currentDate, $company);
@@ -101,7 +104,6 @@ class MakeFinanceReportHistory extends Command
 
             $total = [];
 
-            $paymentQuery = Payment::select('object_id', 'amount');
             $objects = BObject::withoutGeneral()
                 ->select(['id', 'code', 'name', 'closing_date', 'status_id'])
                 ->orderByDesc('code')
@@ -128,201 +130,155 @@ class MakeFinanceReportHistory extends Command
 
             foreach ($years as $year => $objects) {
                 $summary[$year] = [
-                    'payment_total_balance' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'general_costs_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'general_costs_with_balance_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_total_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_avanses_non_closes_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_avanses_left_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_avanses_acts_left_paid_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_avanses_received_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_avanses_acts_paid_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_avanses_notwork_left_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contract_avanses_acts_deposites_amount' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'contractor' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'provider' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'service' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'salary_itr' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'salary_work' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'interim_balance' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
-                    'interim_balance_non_closes' => [
-                        'RUB' => 0,
-                        'EUR' => 0,
-                    ],
+                    'receive' => 0,
+                    'pay' => 0,
+                    'balance' => 0,
+                    'general_balance' => 0,
+                    'balance_with_general_balance' => 0,
+                    'contractor_debt' => 0,
+                    'contractor_debt_gu' => 0,
+                    'provider_debt' => 0,
+                    'service_debt' => 0,
+                    'itr_salary_debt' => 0,
+                    'workers_salary_debt' => 0,
+                    'dolgZakazchikovZaVipolnenieRaboti' => 0,
+                    'dolgFactUderjannogoGU' => 0,
+                    'objectBalance' => 0,
+                    'contractsTotalAmount' => 0,
+                    'ostatokNeotrabotannogoAvansa' => 0,
+                    'ostatokPoDogovoruSZakazchikom' => 0,
+                    'prognozBalance' => 0,
                 ];
             }
+
+            $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
+
             foreach ($years as $year => $objects) {
                 foreach ($objects as $object) {
-                    $total[$year][$object->code]['payment_total_pay'] = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');
-                    $total[$year][$object->code]['payment_total_receive'] = (clone $paymentQuery)->where('object_id', $object->id)->sum('amount') - $total[$year][$object->code]['payment_total_pay'];
-                    $total[$year][$object->code]['payment_total_balance'] = $total[$year][$object->code]['payment_total_pay'] + $total[$year][$object->code]['payment_total_receive'];
-                    if ($object->code == 288) {
-                        $total[$year][$object->code]['general_costs_amount_1'] = $object->generalCosts()->where('is_pinned', false)->sum('amount');
-                        $total[$year][$object->code]['general_costs_amount_24'] = $object->generalCosts()->where('is_pinned', true)->sum('amount');
-                    }
 
-                    $total[$year][$object->code]['general_costs_amount'] = $object->generalCosts()->sum('amount');
-                    // $total[$object->code]['general_costs_with_balance_amount'] = $total[$object->code]['payment_total_balance'] +  $total[$object->code]['general_costs_amount'];
+                    $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
 
-
-                    $summary[$year]['payment_total_balance']['RUB'] += $total[$year][$object->code]['payment_total_balance'];
-                    $summary[$year]['general_costs_amount']['RUB'] += $total[$year][$object->code]['general_costs_amount'];
-                    // $summary['general_costs_with_balance_amount']['RUB'] += $total[$object->code]['general_costs_with_balance_amount'];
-
-                    $totalInfo = [];
-                    $contracts = $this->contractService->filterContracts(['object_id' => [$object->id]], $totalInfo);
-
-                    $total[$year][$object->code]['contract_total_amount']['RUB'] = $totalInfo['amount']['RUB'];
-                    $total[$year][$object->code]['contract_total_amount']['EUR'] = $totalInfo['amount']['EUR'];
-                    $summary[$year]['contract_total_amount']['RUB'] += $total[$year][$object->code]['contract_total_amount']['RUB'];
-                    $summary[$year]['contract_total_amount']['EUR'] += $total[$year][$object->code]['contract_total_amount']['EUR'];
-
-                    $total[$year][$object->code]['contract_avanses_non_closes_amount']['RUB'] = $totalInfo['avanses_non_closes_amount']['RUB'];
-                    $total[$year][$object->code]['contract_avanses_non_closes_amount']['EUR'] = $totalInfo['avanses_non_closes_amount']['EUR'];
-                    $summary[$year]['contract_avanses_non_closes_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_non_closes_amount']['RUB'];
-                    $summary[$year]['contract_avanses_non_closes_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_non_closes_amount']['EUR'];
-
-                    $total[$year][$object->code]['contract_avanses_left_amount']['RUB'] = $totalInfo['avanses_left_amount']['RUB'];
-                    $total[$year][$object->code]['contract_avanses_left_amount']['EUR'] = $totalInfo['avanses_left_amount']['EUR'];
-                    $summary[$year]['contract_avanses_left_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_left_amount']['RUB'];
-                    $summary[$year]['contract_avanses_left_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_left_amount']['EUR'];
-
-                    $total[$year][$object->code]['contract_avanses_acts_left_paid_amount']['RUB'] = $totalInfo['avanses_acts_left_paid_amount']['RUB'];
-                    $total[$year][$object->code]['contract_avanses_acts_left_paid_amount']['EUR'] = $totalInfo['avanses_acts_left_paid_amount']['EUR'];
-                    $summary[$year]['contract_avanses_acts_left_paid_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_acts_left_paid_amount']['RUB'];
-                    $summary[$year]['contract_avanses_acts_left_paid_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_acts_left_paid_amount']['EUR'];
-
-                    $total[$year][$object->code]['contract_avanses_received_amount']['RUB'] = $totalInfo['avanses_received_amount']['RUB'];
-                    $total[$year][$object->code]['contract_avanses_received_amount']['EUR'] = $totalInfo['avanses_received_amount']['EUR'];
-                    $summary[$year]['contract_avanses_received_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_received_amount']['RUB'];
-                    $summary[$year]['contract_avanses_received_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_received_amount']['EUR'];
-
-                    $total[$year][$object->code]['contract_avanses_acts_paid_amount']['RUB'] = $totalInfo['avanses_acts_paid_amount']['RUB'];
-                    $total[$year][$object->code]['contract_avanses_acts_paid_amount']['EUR'] = $totalInfo['avanses_acts_paid_amount']['EUR'];
-                    $summary[$year]['contract_avanses_acts_paid_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_acts_paid_amount']['RUB'];
-                    $summary[$year]['contract_avanses_acts_paid_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_acts_paid_amount']['EUR'];
-
-                    $total[$year][$object->code]['contract_avanses_notwork_left_amount']['RUB'] = $totalInfo['avanses_notwork_left_amount']['RUB'];
-                    $total[$year][$object->code]['contract_avanses_notwork_left_amount']['EUR'] = $totalInfo['avanses_notwork_left_amount']['EUR'];
-                    $summary[$year]['contract_avanses_notwork_left_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_notwork_left_amount']['RUB'];
-                    $summary[$year]['contract_avanses_notwork_left_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_notwork_left_amount']['EUR'];
-
-                    $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['RUB'] = $totalInfo['avanses_acts_deposites_amount']['RUB'];
-                    $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['EUR'] = $totalInfo['avanses_acts_deposites_amount']['EUR'];
-                    $summary[$year]['contract_avanses_acts_deposites_amount']['RUB'] += $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['RUB'];
-                    $summary[$year]['contract_avanses_acts_deposites_amount']['EUR'] += $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['EUR'];
+                    $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
+                    $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
+                    $object->total_balance = $object->total_pay + $object->total_receive;
+                    $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount');
+                    $object->general_balance = $object->total_with_general_balance - $object->total_balance;
 
                     $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
+                    $serviceDebtsAmount = $debts['service']->total_amount;
+                    $contractorDebtsAmount = $debts['contractor']->total_amount;
+                    $contractorGuaranteeDebtsAmount = 0;
 
-                    $total[$year][$object->code]['contractor']['RUB'] = $debts['contractor']->total_amount;
-
-                    $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+                    $debtObjectImport = \App\Models\Debt\DebtImport::where('type_id', \App\Models\Debt\DebtImport::TYPE_OBJECT)->latest('date')->first();
                     $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
 
                     if ($objectExistInObjectImport) {
-                        $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-                        $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
-                        $total[$year][$object->code]['contractor']['RUB'] += $contractorDebtsAvans + $contractorDebtsGU;
+                        $contractorDebtsAvans = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
+                        $contractorDebtsGU = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
+                        $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
+                        $contractorGuaranteeDebtsAmount = $contractorDebtsGU;
                     }
 
-                    $total[$year][$object->code]['provider']['RUB'] = $debts['provider']->total_amount;
-                    $total[$year][$object->code]['service']['RUB'] = $debts['service']->total_amount;
+                    $providerDebtsAmount = $debts['provider']->total_amount;
+                    $ITRSalaryDebt = $object->getITRSalaryDebt();
+                    $workSalaryDebt = $object->getWorkSalaryDebt();
+                    $workSalaryDebtDetails = $object->getWorkSalaryDebtDetails();
+                    $customerDebtInfo = [];
+                    $this->contractService->filterContracts(['object_id' => [$object->id]], $customerDebtInfo);
+//                $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
 
-                    $ITRSalaryObject = \App\Models\CRM\ItrSalary::where('kod', 'LIKE', '%' . $object->code . '%')->get();
-                    $workSalaryObjectAmount = \App\Models\CRM\SalaryDebt::where('object_code', 'LIKE', '%' . $object->code . '%')->sum('amount');
+                    $contractsTotalAmount = $customerDebtInfo['amount']['RUB'];
 
-                    $total[$year][$object->code]['salary_itr']['RUB'] = $ITRSalaryObject->sum('paid') - $ITRSalaryObject->sum('total');
-                    $total[$year][$object->code]['salary_work']['RUB'] = $workSalaryObjectAmount;
+                    $dolgZakazchikovZaVipolnenieRaboti = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'];
+                    $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
 
-                    $total[$year][$object->code]['interim_balance']['RUB'] =
-                        $total[$year][$object->code]['payment_total_balance'] +
-                        $total[$year][$object->code]['general_costs_amount'] +
-                        $total[$year][$object->code]['contract_avanses_left_amount']['RUB'] +
-                        $total[$year][$object->code]['contract_avanses_acts_left_paid_amount']['RUB'] +
-                        $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['RUB'] +
-                        $total[$year][$object->code]['contractor']['RUB'] +
-                        $total[$year][$object->code]['provider']['RUB'] +
-                        $total[$year][$object->code]['service']['RUB'] +
-                        $total[$year][$object->code]['salary_itr']['RUB'] +
-                        $total[$year][$object->code]['salary_work']['RUB'] +
-                        $object->writeoffs->sum('amount')
-                    ;
+                    // старая версия
+//                $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_notwork_left_amount']['RUB'] - $customerDebtInfo['acts_amount']['RUB'];
 
-                    $total[$year][$object->code]['interim_balance']['EUR'] =
-                        $total[$year][$object->code]['contract_avanses_left_amount']['EUR'] +
-                        $total[$year][$object->code]['contract_avanses_acts_left_paid_amount']['EUR'] +
-                        $total[$year][$object->code]['contract_avanses_acts_deposites_amount']['EUR'];
+                    //новая версия
+                    $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_received_amount']['RUB'] - $customerDebtInfo['avanses_acts_paid_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
 
-                    $total[$year][$object->code]['interim_balance_non_closes']['RUB'] =
-                        $total[$year][$object->code]['interim_balance']['RUB'] +
-                        $total[$year][$object->code]['contract_avanses_non_closes_amount']['RUB'] -
-                        $total[$year][$object->code]['contract_avanses_left_amount']['RUB'];
+                    $ostatokNeotrabotannogoAvansa = $customerDebtInfo['avanses_notwork_left_amount']['RUB'];
 
-                    $total[$year][$object->code]['interim_balance_non_closes']['EUR'] =
-                        $total[$year][$object->code]['interim_balance']['EUR'] +
-                        $total[$year][$object->code]['contract_avanses_non_closes_amount']['EUR'] -
-                        $total[$year][$object->code]['contract_avanses_left_amount']['EUR'];
+                    $writeoffs = $object->writeoffs->sum('amount');
 
-                    $summary[$year]['contractor']['RUB'] += $total[$year][$object->code]['contractor']['RUB'];
-                    $summary[$year]['provider']['RUB'] += $total[$year][$object->code]['provider']['RUB'];
-                    $summary[$year]['service']['RUB'] += $total[$year][$object->code]['service']['RUB'];
-                    $summary[$year]['salary_itr']['RUB'] += $total[$year][$object->code]['salary_itr']['RUB'];
-                    $summary[$year]['salary_work']['RUB'] += $total[$year][$object->code]['salary_work']['RUB'];
-                    $summary[$year]['interim_balance']['RUB'] += $total[$year][$object->code]['interim_balance']['RUB'];
-                    $summary[$year]['interim_balance']['EUR'] += $total[$year][$object->code]['interim_balance']['EUR'];
-                    $summary[$year]['interim_balance_non_closes']['RUB'] += $total[$year][$object->code]['interim_balance_non_closes']['RUB'];
-                    $summary[$year]['interim_balance_non_closes']['EUR'] += $total[$year][$object->code]['interim_balance_non_closes']['EUR'];
+                    $date = now();
+                    $EURExchangeRate = $this->currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'EUR');
+                    if ($EURExchangeRate) {
+                        $dolgZakazchikovZaVipolnenieRaboti += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
+                        $dolgFactUderjannogoGU += ($customerDebtInfo['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount')) * $EURExchangeRate->rate;
+                        $ostatokNeotrabotannogoAvansa += ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
+
+                        // старая версия
+//                    $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
+//                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
+//                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate);
+
+                        //новая версия
+
+
+                        if ($object->code === '346') {
+                            $diff = $customerDebtInfo['amount']['EUR'] - $customerDebtInfo['avanses_received_amount']['EUR'] - $customerDebtInfo['avanses_acts_paid_amount']['EUR'];
+                            $ostatokPoDogovoruSZakazchikom += $diff * $EURExchangeRate->rate;
+                            $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
+                        } else {
+                            $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
+                            $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_received_amount']['EUR'] * $EURExchangeRate->rate);
+                            $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_acts_paid_amount']['EUR'] * $EURExchangeRate->rate);
+                            $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
+                        }
+
+//                    $customerDebt += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
+//                    $customerDebt += $customerDebtInfo['avanses_left_amount']['EUR'] * $EURExchangeRate->rate;
+//                    $customerDebt += $customerDebtInfo['avanses_acts_deposites_amount']['EUR'] * $EURExchangeRate->rate;
+//                    $customerDebt -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount')  * $EURExchangeRate->rate;
+
+                        $contractsTotalAmount += $customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate;
+                    }
+
+                    if ($object->code === '288') {
+                        $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
+                    }
+
+                    if (! empty($object->closing_date) && $object->status_id === \App\Models\Status::STATUS_BLOCKED) {
+                        $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
+                    }
+
+                    $objectBalance = $object->total_with_general_balance +
+                        $dolgZakazchikovZaVipolnenieRaboti +
+                        $dolgFactUderjannogoGU +
+                        $contractorDebtsAmount +
+                        $providerDebtsAmount +
+                        $serviceDebtsAmount +
+                        $ITRSalaryDebt +
+                        $workSalaryDebt +
+                        $writeoffs;
+
+                    $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
+
+                    $total[$year][$object->code]['pay'] = $object->total_pay;
+                    $total[$year][$object->code]['receive'] = $object->total_receive;
+                    $total[$year][$object->code]['balance'] = $object->total_balance;
+                    $total[$year][$object->code]['general_balance'] = $object->general_balance;
+                    $total[$year][$object->code]['balance_with_general_balance'] = $object->total_with_general_balance;
+
+                    $total[$year][$object->code]['contractor_debt'] = $contractorDebtsAmount - $contractorGuaranteeDebtsAmount;
+                    $total[$year][$object->code]['contractor_debt_gu'] = $contractorGuaranteeDebtsAmount;
+                    $total[$year][$object->code]['provider_debt'] = $providerDebtsAmount;
+                    $total[$year][$object->code]['service_debt'] = $serviceDebtsAmount;
+                    $total[$year][$object->code]['itr_salary_debt'] = $ITRSalaryDebt;
+                    $total[$year][$object->code]['workers_salary_debt'] = $workSalaryDebt;
+                    $total[$year][$object->code]['dolgZakazchikovZaVipolnenieRaboti'] = $dolgZakazchikovZaVipolnenieRaboti;
+                    $total[$year][$object->code]['dolgFactUderjannogoGU'] = $dolgFactUderjannogoGU;
+                    $total[$year][$object->code]['objectBalance'] = $objectBalance;
+                    $total[$year][$object->code]['contractsTotalAmount'] = $contractsTotalAmount;
+                    $total[$year][$object->code]['ostatokNeotrabotannogoAvansa'] = $ostatokNeotrabotannogoAvansa;
+                    $total[$year][$object->code]['ostatokPoDogovoruSZakazchikom'] = $ostatokPoDogovoruSZakazchikom;
+                    $total[$year][$object->code]['prognozBalance'] = $prognozBalance;
+
+                    foreach ($total[$year][$object->code] as $key => $value) {
+                        $summary[$year][$key] += $value;
+                    }
                 }
             }
         } catch (\Exception $e) {
@@ -333,37 +289,39 @@ class MakeFinanceReportHistory extends Command
         }
 
         $infos = [
-            'Текущее сальдо' => 'payment_total_balance',
-            'Общие затраты' => 'general_costs_amount',
-            'Промежуточный баланс с текущими долгами и общими расходами компании' => 'interim_balance',
-            'Общая сумма договоров' => 'contract_total_amount',
-            'Остаток денег к получ. с учётом ГУ' => 'contract_avanses_non_closes_amount',
-            'ПРОГНОЗ БАЛАНС +  NE ZAKRITI DOGOVOR' => 'interim_balance_non_closes',
-            'Сумма аванса к получению' => 'contract_avanses_left_amount',
-            'Долг подписанных актов' => 'contract_avanses_acts_left_paid_amount',
-            'Всего оплачено авансов' => 'contract_avanses_received_amount',
-            'Всего оплачено по актам' => 'contract_avanses_acts_paid_amount',
-            'Не закрытый аванс' => 'contract_avanses_notwork_left_amount',
-            'Долг гарантийного удержания' => 'contract_avanses_acts_deposites_amount',
-            'Долг подрядчикам' => 'contractor',
-            'Долг за материалы' => 'provider',
-            'Долг за услуги' => 'service',
-            'Долг на зарплаты ИТР' => 'salary_itr',
-            'Долг на зарплаты рабочим' => 'salary_work',
+            'Приходы' => 'receive',
+            'Расходы' => 'pay',
+            'Сальдо без общ. Расходов' => 'balance',
+            'Общие расходы' => 'general_balance',
+            'Сальдо c общ. Расходами' => 'balance_with_general_balance',
+            'Долг подрядчикам' => 'contractor_debt',
+            'Долг подрядчикам за ГУ' => 'contractor_debt_gu',
+            'Долг поставщикам' => 'provider_debt',
+            'Долг за услуги' => 'service_debt',
+            'Долг на зарплаты ИТР' => 'itr_salary_debt',
+            'Долг на зарплаты рабочим' => 'workers_salary_debt',
+            'Долг Заказчика за выпол.работы' => 'dolgZakazchikovZaVipolnenieRaboti',
+            'Долг Заказчика за ГУ (фактич.удерж.)' => 'dolgFactUderjannogoGU',
+            'Текущий Баланс объекта' => 'objectBalance',
+            'Сумма договоров с Заказчиком' => 'contractsTotalAmount',
+            'Остаток неотработанного аванса' => 'ostatokNeotrabotannogoAvansa',
+            'Остаток к получ. от заказчика (в т.ч. ГУ)' => 'ostatokPoDogovoruSZakazchikom',
+            'Прогнозируемый Баланс объекта' => 'prognozBalance',
         ];
 
-        $objects = json_encode(compact('total', 'infos', 'summary', 'objects', 'years'));
+        $objects_new = json_encode(compact('total', 'infos', 'summary', 'objects', 'years'));
+        $objects = json_encode([]);
 
+        $date = Carbon::now()->format('Y-m-d');
         $financeReportHistory = FinanceReportHistory::where('date', $date)->first();
-
         // В этом месте можно будет регулировать, сохранять ли каждый раз новую копию, или перезаписывать существующую на один и тот же день
         if ($financeReportHistory) {
             $financeReportHistory->update(
-                compact('balances', 'credits', 'loans', 'deposits', 'objects')
+                compact('balances', 'credits', 'loans', 'deposits', 'objects', 'objects_new')
             );
         } else {
             FinanceReportHistory::create(
-                compact('date', 'balances', 'credits', 'loans', 'deposits', 'objects')
+                compact('date', 'balances', 'credits', 'loans', 'deposits', 'objects', 'objects_new')
             );
         }
 
