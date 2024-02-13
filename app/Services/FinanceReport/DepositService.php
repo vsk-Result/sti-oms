@@ -21,10 +21,10 @@ class DepositService
     public function getDeposites(string|Carbon $date, Company $company): array
     {
         $bgDepositsRUB = BankGuarantee::where('status_id', Status::STATUS_ACTIVE)->where('end_date_deposit', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount_deposit');
-        $bgDepositsEUR = BankGuarantee::where('status_id', Status::STATUS_ACTIVE)->where('end_date_deposit', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount_deposit');
+        $bgDepositsEUR = BankGuarantee::where('status_id', Status::STATUS_ACTIVE)->where('end_date_deposit', '>=', Carbon::now())->where('currency', 'EUR')->sum('amount_deposit');
 
         $depositsRUB = Deposit::where('status_id', Status::STATUS_ACTIVE)->where('end_date', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount');
-        $depositsEUR = Deposit::where('status_id', Status::STATUS_ACTIVE)->where('end_date', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount');
+        $depositsEUR = Deposit::where('status_id', Status::STATUS_ACTIVE)->where('end_date', '>=', Carbon::now())->where('currency', 'EUR')->sum('amount');
 
         $deposites = [
             'RUB' => $bgDepositsRUB + $depositsRUB,
