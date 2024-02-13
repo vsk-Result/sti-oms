@@ -82,7 +82,7 @@
 
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label class="form-label">Дата оплаты</label>
+                                <label class="form-label">Оплачено</label>
                                 <input
                                     name="payment_date"
                                     class="form-control form-control-solid date-range-picker"

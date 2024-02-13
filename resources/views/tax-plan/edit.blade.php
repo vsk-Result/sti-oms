@@ -162,7 +162,7 @@
                                     <div class="col-md-4">
                                         <div class="mb-10 fv-row">
                                             <div class="mb-1">
-                                                <label class="form-label fw-bolder text-dark fs-6">Дата оплаты</label>
+                                                <label class="form-label fw-bolder text-dark fs-6">Оплачено</label>
                                                 <div class="position-relative mb-3">
                                                     <input
                                                         class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('payment_date') ? 'is-invalid' : '' }}"

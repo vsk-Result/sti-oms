@@ -25,7 +25,7 @@ class HistoryController extends Controller
             'period' => 'Период',
             'in_one_c' => 'Платежка в 1С',
             'paid' => 'Статус',
-            'payment_date' => 'Дата оплаты',
+            'payment_date' => 'Оплачено',
         ];
         $events = ['created' => 'Создание', 'updated' => 'Изменение', 'deleted' => 'Удаление'];
 

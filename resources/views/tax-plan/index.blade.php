@@ -77,7 +77,7 @@
                             <th class="min-w-125px">Срок оплаты</th>
                             <th class="min-w-125px">Период</th>
                             <th class="min-w-125px">Статус</th>
-                            <th class="min-w-125px">Дата оплаты</th>
+                            <th class="min-w-125px">Оплачено</th>
                             <th class="text-end min-w-100px">Действия</th>
                         </tr>
                     </thead>

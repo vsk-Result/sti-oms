@@ -45,7 +45,7 @@ class Export implements
         $sheet->setCellValue('E1', 'Срок оплаты');
         $sheet->setCellValue('F1', 'Период');
         $sheet->setCellValue('G1', 'Статус');
-        $sheet->setCellValue('H1', 'Дата оплаты');
+        $sheet->setCellValue('H1', 'Оплачено');
         $sheet->setCellValue('I1', 'ID записи в OMS');
 
         $sheet->getRowDimension(1)->setRowHeight(25);
