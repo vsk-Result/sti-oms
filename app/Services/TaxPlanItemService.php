@@ -74,7 +74,15 @@ class TaxPlanItemService
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $query->orderByRaw('ISNULL(due_date), due_date ASC');
+        if (! empty($requestData['filter'])) {
+            if ($requestData['filter'] === 'current') {
+                $query->orderByRaw('ISNULL(due_date), paid ASC');
+            } else {
+                $query->orderByRaw('ISNULL(due_date), due_date ASC');
+            }
+        } else {
+            $query->orderByRaw('ISNULL(due_date), due_date ASC');
+        }
 
         $total['not_paid'] = (clone $query)->where('paid', false)->sum('amount');
 
