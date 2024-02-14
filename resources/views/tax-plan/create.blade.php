@@ -27,8 +27,14 @@
                                                 <label class="form-label fw-bolder text-dark fs-6">Компания</label>
                                                 <div class="position-relative mb-3">
                                                     <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        @php
+                                                            $selectedCompanyId = 1;
+                                                            if ($copyItem) {
+                                                                $selectedCompanyId = $copyItem->company_id;
+                                                            }
+                                                        @endphp
                                                         @foreach($companies as $company)
-                                                            <option value="{{ $company->id }}" {{ $company->id === 1 ? 'selected' : '' }}>{{ $company->short_name }}</option>
+                                                            <option value="{{ $company->id }}" {{ $selectedCompanyId === $company->id ? 'selected' : ''}}>{{ $company->short_name }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -44,7 +50,7 @@
                                                         class="form-control form-control-lg form-control-solid {{ $errors->has('name') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="name"
-                                                        value="{{ old('name') }}"
+                                                        value="{{ old('name', $copyItem ? $copyItem->name : '') }}"
                                                         required
                                                         autofocus
                                                     />
@@ -70,7 +76,7 @@
                                                         class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="amount"
-                                                        value="{{ old('amount') }}"
+                                                        value="{{ old('amount', $copyItem ? $copyItem->amount : '') }}"
                                                         required
                                                     />
                                                 </div>
@@ -92,7 +98,7 @@
                                                         class="form-control form-control-lg form-control-solid {{ $errors->has('period') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="period"
-                                                        value="{{ old('period') }}"
+                                                        value="{{ old('period', $copyItem ? $copyItem->period : '') }}"
                                                     />
                                                 </div>
                                                 @if ($errors->has('period'))
@@ -113,7 +119,7 @@
                                                         class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('due_date') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="due_date"
-                                                        value="{{ old('due_date') }}"
+                                                        value="{{ old('due_date', $copyItem ? $copyItem->due_date : '') }}"
                                                         readonly
                                                     />
                                                 </div>
@@ -134,9 +140,16 @@
                                                 <label class="form-label fw-bolder text-dark fs-6">Объект</label>
                                                 <div class="position-relative mb-3">
                                                     <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                        <option value="{{ null }}" selected>Не указан</option>
+                                                        @php
+                                                            $selectedObjectId = null;
+                                                            if ($copyItem) {
+                                                                $selectedObjectId = $copyItem->object_id;
+                                                            }
+                                                        @endphp
+
+                                                        <option value="{{ null }}" {{ is_null($selectedObjectId) ? 'selected' : '' }}>Не указан</option>
                                                         @foreach($objects as $object)
-                                                            <option value="{{ $object->id }}">{{ $object->getName() }}</option>
+                                                            <option value="{{ $object->id }}" {{ $selectedObjectId === $object->id ? 'selected' : '' }}>{{ $object->getName() }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -150,8 +163,15 @@
                                                 <label class="form-label fw-bolder text-dark fs-6">Статус</label>
                                                 <div class="position-relative mb-3">
                                                     <select name="paid" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        @php
+                                                            $selectedPaid = 0;
+                                                            if ($copyItem) {
+                                                                $selectedPaid = $copyItem->paid;
+                                                            }
+                                                        @endphp
+
                                                         @foreach(['Не оплачено', 'Оплачено'] as $index => $value)
-                                                            <option value="{{ $index }}">{{ $value }}</option>
+                                                            <option value="{{ $index }}" {{ $selectedPaid === $index ? 'selected' : '' }}>{{ $value }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -168,7 +188,7 @@
                                                         class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('payment_date') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="payment_date"
-                                                        value="{{ old('payment_date') }}"
+                                                        value="{{ old('payment_date', $copyItem ? $copyItem->payment_date : '') }}"
                                                         readonly
                                                     />
                                                 </div>

@@ -126,6 +126,10 @@
                                                 <a href="{{ route('tax_plan.edit', $item) }}" class="menu-link px-3">Изменить</a>
                                             </div>
 
+                                            <div class="menu-item px-3">
+                                                <a href="{{ route('tax_plan.create', ['copy-item-id' => $item->id]) }}" class="menu-link px-3">Сделать копию</a>
+                                            </div>
+
                                             @if ($item->audits->count() > 0)
                                                 <div class="menu-item px-3">
                                                     <a href="{{ route('tax_plan.history.index') }}?item_id={{ $item->id }}" class="menu-link px-3">История</a>

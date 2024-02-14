@@ -32,11 +32,17 @@ class TaxPlanItemController extends Controller
         return view('tax-plan.index', compact('items', 'total', 'companies', 'objects'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
+        $copyItem = null;
+
+        if ($request->has('copy-item-id')) {
+            $copyItem = TaxPlanItem::find($request->get('copy-item-id'));
+        }
+
         $companies = Company::orderBy('name')->get();
         $objects = BObject::orderBy('code')->get();
-        return view('tax-plan.create', compact('companies', 'objects'));
+        return view('tax-plan.create', compact('companies', 'objects', 'copyItem'));
     }
 
     public function store(StoreTaxPlanItemRequest $request): RedirectResponse
