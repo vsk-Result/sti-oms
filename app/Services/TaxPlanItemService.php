@@ -63,6 +63,8 @@ class TaxPlanItemService
 
         $total['not_paid'] = (clone $query)->where('paid', false)->sum('amount');
 
+        $query->with('object');
+
         return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
 

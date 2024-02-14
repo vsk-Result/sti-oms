@@ -40,6 +40,7 @@
                                         data-dropdown-parent="#filterTaxPlanModal"
                                         multiple
                                 >
+                                    <option value="{{ 0 }}" {{ (in_array(0, request()->input('object_id', [])) || (isset($object) && 0 === $object->id)) ? 'selected' : '' }}>Общее</option>
                                     @foreach($objects as $obj)
                                         <option value="{{ $obj->id }}" {{ (in_array($obj->id, request()->input('object_id', [])) || (isset($object) && $obj->id === $object->id)) ? 'selected' : '' }}>{{ $obj->code . ' ' . $obj->name }}</option>
                                     @endforeach

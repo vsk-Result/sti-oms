@@ -86,8 +86,8 @@
                             <tr>
                                 <td>{!! $item->company?->getShortNameColored() !!}</td>
                                 <td>
-                                    @if ($item->object)
-                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $item->object->name }}">{{ $item->object->code }}</span>
+                                    @if ($item->hasObject())
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $item->getObjectName() }}">{{ $item->getObjectCode() }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $item->name }}</td>

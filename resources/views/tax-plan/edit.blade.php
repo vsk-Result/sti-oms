@@ -135,6 +135,7 @@
                                                 <div class="position-relative mb-3">
                                                     <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                         <option value="{{ null }}" {{ null == $item->object_id ? 'selected' : '' }}>Не указан</option>
+                                                        <option value="{{ 0 }}" {{ $item->object_id === 0 ? 'selected' : '' }}>Общее</option>
                                                         @foreach($objects as $object)
                                                             <option value="{{ $object->id }}" {{ $object->id == $item->object_id ? 'selected' : '' }}>{{ $object->getName() }}</option>
                                                         @endforeach

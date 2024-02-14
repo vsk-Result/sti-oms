@@ -65,7 +65,7 @@ class Export implements
         $row = 2;
         foreach ($this->items as $item) {
             $sheet->setCellValue('A' . $row, $item->company?->short_name);
-            $sheet->setCellValue('B' . $row, $item->object?->code);
+            $sheet->setCellValue('B' . $row, $item->hasObject() ? $item->getObjectCode() : '');
             $sheet->setCellValue('C' . $row, $item->name);
             $sheet->setCellValue('D' . $row, $item->amount);
             $sheet->setCellValue('E' . $row, $item->due_date ? Date::dateTimeToExcel(Carbon::parse($item->due_date)) : '');

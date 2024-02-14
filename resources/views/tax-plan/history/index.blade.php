@@ -83,7 +83,7 @@
                                                     @elseif ($fieldName === 'company_id' && isset($changes['old']))
                                                         {{ $companies[$changes['old']] ?? '' }}
                                                     @elseif ($fieldName === 'object_id' && isset($changes['old']))
-                                                        {{ $objects[$changes['old']] ?? '' }}
+                                                        {{ $changes['old'] === 0 ? 'Общее' : $objects[$changes['old']] ?? '' }}
                                                     @else
                                                         {{ $changes['old'] ?? '' }}
                                                     @endif
@@ -98,7 +98,7 @@
                                                     @elseif ($fieldName === 'company_id' && isset($changes['new']))
                                                         {{ $companies[$changes['new']] ?? '' }}
                                                     @elseif ($fieldName === 'object_id' && isset($changes['new']))
-                                                        {{ $objects[$changes['new']] ?? '' }}
+                                                        {{ $changes['new'] === 0 ? 'Общее' : $objects[$changes['new']] ?? '' }}
                                                     @else
                                                         {{ $changes['new'] ?? '' }}
                                                     @endif

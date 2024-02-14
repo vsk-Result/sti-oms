@@ -148,6 +148,7 @@
                                                         @endphp
 
                                                         <option value="{{ null }}" {{ is_null($selectedObjectId) ? 'selected' : '' }}>Не указан</option>
+                                                        <option value="{{ 0 }}" {{ $selectedObjectId === 0 ? 'selected' : '' }}>Общее</option>
                                                         @foreach($objects as $object)
                                                             <option value="{{ $object->id }}" {{ $selectedObjectId === $object->id ? 'selected' : '' }}>{{ $object->getName() }}</option>
                                                         @endforeach

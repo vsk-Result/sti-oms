@@ -74,4 +74,31 @@ class TaxPlanItem extends Model implements Audit
     {
         return $this->payment_date ? Carbon::parse($this->payment_date)->format('d.m.Y') : '';
     }
+
+    public function hasObject(): bool
+    {
+        if ($this->object_id === 0) {
+            return true;
+        }
+
+        return (bool)$this->object;
+    }
+
+    public function getObjectName(): string
+    {
+        if ($this->object_id === 0) {
+            return 'Общее';
+        }
+
+        return $this->object->name;
+    }
+
+    public function getObjectCode(): string
+    {
+        if ($this->object_id === 0) {
+            return 'Общее';
+        }
+
+        return $this->object->code;
+    }
 }
