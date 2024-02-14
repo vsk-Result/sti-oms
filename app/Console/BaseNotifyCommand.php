@@ -30,6 +30,6 @@ class BaseNotifyCommand extends Command
     public function sendSuccessNotification(string $message): void
     {
         $this->logChannel->debug('[SUCCESS] ' . $message);
-        Notification::send([$this->botId], new SchedulerExecuted($this->commandName, '✅', $message));
+//        Notification::send([$this->botId], new SchedulerExecuted($this->commandName, '✅', $message));
     }
 }

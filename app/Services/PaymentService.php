@@ -67,7 +67,12 @@ class PaymentService
         }
 
         if (! empty($requestData['description'])) {
-            $paymentQuery->where('description', 'LIKE', '%' . $requestData['description'] . '%');
+            $descriptionTags = explode('%%', $requestData['description']);
+            $paymentQuery->where(function($q) use ($descriptionTags) {
+                foreach ($descriptionTags as $tag) {
+                    $q->orWhere('description', 'LIKE', '%' . $tag . '%');
+                }
+            });
         }
 
         if (! empty($requestData['company_id'])) {
