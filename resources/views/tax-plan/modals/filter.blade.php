@@ -6,6 +6,8 @@
             </div>
 
             <form action="{{ request()->url() }}" method="GET">
+                <input name="filter" type="hidden" value="{{ request()->get('filter', 'current') }}" />
+
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4">
@@ -107,7 +109,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light float-left" data-bs-dismiss="modal">Закрыть</button>
-                    <a href="{{ request()->url() }}" class="btn btn-light">Сбросить</a>
+                    <a href="{{ route('tax_plan.index', ['filter' => 'current']) }}" class="btn btn-light">Сбросить</a>
                     <button id="filter-taxPlan-submit" type="submit" class="btn btn-primary">Применить</button>
                 </div>
             </form>

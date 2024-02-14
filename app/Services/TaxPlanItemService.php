@@ -54,12 +54,27 @@ class TaxPlanItemService
             $query->whereIn('paid', $requestData['paid']);
         }
 
+        if (! empty($requestData['filter'])) {
+            if ($requestData['filter'] !== 'all') {
+                if ($requestData['filter'] === 'current') {
+                    $period = [Carbon::now()->subMonthNoOverflow(), Carbon::now()->addMonthNoOverflow()];
+                    $query->whereBetween('due_date', $period);
+                } else if ($requestData['filter'] == '2024') {
+                    $period = ['2024-01-01', '2024-12-31'];
+                    $query->whereBetween('due_date', $period);
+                }else if ($requestData['filter'] == '2023') {
+                    $period = ['2023-01-01', '2023-12-31'];
+                    $query->whereBetween('due_date', $period);
+                }
+            }
+        }
+
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
         }
 
-        $query->orderBy('due_date');
+        $query->orderByRaw('ISNULL(due_date), due_date ASC');
 
         $total['not_paid'] = (clone $query)->where('paid', false)->sum('amount');
 

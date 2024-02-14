@@ -5,7 +5,7 @@ use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
 Breadcrumbs::for('tax_plan.index', function (BreadcrumbTrail $trail) {
-    $route = auth()->user()->can('index tax_plan') ? route('tax_plan.index') : null;
+    $route = auth()->user()->can('index tax_plan') ? route('tax_plan.index', ['filter' => 'current']) : null;
     $trail->parent('home');
     $trail->push('План налогов к оплате', $route);
 });

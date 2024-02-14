@@ -122,7 +122,7 @@
 
                         @can('index tax_plan')
                             <div class="menu-item">
-                                <a class="menu-link py-2 {{ request()->is('tax-plan*') ? 'active' : '' }}" href="{{ route('tax_plan.index') }}">
+                                <a class="menu-link py-2 {{ request()->is('tax-plan*') ? 'active' : '' }}" href="{{ route('tax_plan.index', ['filter' => 'current']) }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
