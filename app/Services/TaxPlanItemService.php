@@ -76,7 +76,7 @@ class TaxPlanItemService
 
         if (! empty($requestData['filter'])) {
             if ($requestData['filter'] === 'current') {
-                $query->orderByRaw('ISNULL(due_date), paid ASC');
+                $query->orderByRaw('ISNULL(due_date), paid ASC')->orderByRaw('due_date ASC');
             } else {
                 $query->orderByRaw('ISNULL(due_date), due_date ASC');
             }
