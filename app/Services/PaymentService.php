@@ -70,20 +70,20 @@ class PaymentService
             $descriptionORTags = explode('%%', $requestData['description']);
             $descriptionANDTags = explode('^^', $requestData['description']);
 
-            if (count($descriptionORTags) > 0) {
+            if (count($descriptionORTags) > 1) {
                 $paymentQuery->where(function($q) use ($descriptionORTags) {
                     foreach ($descriptionORTags as $tag) {
                         $q->orWhere('description', 'LIKE', '%' . $tag . '%');
                     }
                 });
-            }
-
-            if (count($descriptionANDTags) > 0) {
+            } else if (count($descriptionANDTags) > 1) {
                 $paymentQuery->where(function($q) use ($descriptionANDTags) {
                     foreach ($descriptionANDTags as $tag) {
                         $q->where('description', 'LIKE', '%' . $tag . '%');
                     }
                 });
+            } else {
+                $paymentQuery->where('description', 'LIKE', '%' . $descriptionORTags[0] . '%');
             }
         }
 
