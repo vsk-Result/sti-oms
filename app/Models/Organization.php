@@ -19,7 +19,7 @@ class Organization extends Model implements Audit
 
     protected $table = 'organizations';
 
-    protected $fillable = ['company_id', 'name', 'inn', 'kpp', 'status_id', 'nds_status_id'];
+    protected $fillable = ['company_id', 'name', 'inn', 'kpp', 'status_id', 'nds_status_id', 'category'];
 
     const NDS_STATUS_AUTO = 0;
     const NDS_STATUS_ALWAYS = 1;
@@ -72,6 +72,14 @@ class Organization extends Model implements Audit
             self::NDS_STATUS_ALWAYS => 'Всегда',
             self::NDS_STATUS_NEVER => 'Никогда'
         ];
+    }
+
+    public function getNDSStatus(): string
+    {
+        if (is_null($this->nds_status_id)) {
+            return '';
+        }
+        return self::getNDSStatuses()[$this->nds_status_id];
     }
 
     public function isNDSAuto(): bool

@@ -50,6 +50,7 @@ class OrganizationService
         }
         $organization = Organization::create([
             'company_id' => $requestData['company_id'],
+            'category' => $requestData['category'] ?? '',
             'name' => $this->sanitizer->set($requestData['name'])->get(),
             'inn' => $this->sanitizer->set($requestData['inn'])->toNumber()->get(),
             'kpp' => $this->sanitizer->set($requestData['kpp'])->toNumber()->get(),
@@ -67,6 +68,7 @@ class OrganizationService
         }
         $organization->update([
             'company_id' => $requestData['company_id'],
+            'category' => $requestData['category'] ?? '',
             'name' => $this->sanitizer->set($requestData['name'])->get(),
             'inn' => $this->sanitizer->set($requestData['inn'])->toNumber()->get(),
             'kpp' => $this->sanitizer->set($requestData['kpp'])->toNumber()->get(),

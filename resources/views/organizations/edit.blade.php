@@ -34,7 +34,7 @@
 
                                     <div class="mb-10 fv-row" data-kt-password-meter="true">
                                         <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Название</label>
+                                            <label class="form-label fw-bolder text-dark fs-6">Наименование</label>
                                             <div class="position-relative mb-3">
                                                 <input
                                                     class="form-control form-control-lg form-control-solid {{ $errors->has('name') ? 'is-invalid' : '' }}"
@@ -88,6 +88,18 @@
                                             <select name="nds_status_id" data-control="select2" class="form-select form-select-solid form-select-lg">
                                                 @foreach($NDSStatuses as $statusId => $status)
                                                     <option value="{{ $statusId }}" {{ $statusId === $organization->nds_status_id ? 'selected' : '' }}>{{ $status }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-10 fv-row">
+                                        <label class="form-label fw-bolder text-dark fs-6">Категория</label>
+                                        <div class="position-relative mb-3">
+                                            <select name="category" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                <option value="" {{ is_null($organization->category) ? 'selected' : '' }}>Не указана</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{ $category }}" {{ $category === $organization->category ? 'selected' : '' }}>{{ $category }}</option>
                                                 @endforeach
                                             </select>
                                         </div>

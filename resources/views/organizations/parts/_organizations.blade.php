@@ -1,9 +1,11 @@
 <table class="table table-hover align-middle table-row-dashed fs-6 gy-5">
     <thead>
     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-        <th class="min-w-125px">Контрагент</th>
+        <th class="min-w-125px">Наименование</th>
         <th class="min-w-125px">ИНН</th>
         <th class="min-w-125px">КПП</th>
+        <th class="min-w-125px">Тип расчета НДС</th>
+        <th class="min-w-125px">Категория</th>
         <th class="min-w-125px">Статус</th>
         <th class="text-end min-w-100px">Действия</th>
     </tr>
@@ -14,6 +16,8 @@
                 <td>{{ $organization->name }}</td>
                 <td>{{ $organization->inn }}</td>
                 <td>{{ $organization->kpp }}</td>
+                <td>{{ $organization->getNDSStatus() }}</td>
+                <td>{{ $organization->category }}</td>
                 <td>@include('partials.status', ['status' => $organization->getStatus()])</td>
                 <td class="text-end">
                     <a href="javascript:void(0)" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия

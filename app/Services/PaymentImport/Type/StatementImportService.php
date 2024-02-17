@@ -88,6 +88,7 @@ class StatementImportService
                     'kpp' => null
                 ]);
                 $organizationReceiver = $companyOrganization;
+                $organizationCategory = $organizationSender->category;
             } else {
                 $amount = $payment['pay_amount'];
                 $organizationSender = $companyOrganization;
@@ -97,6 +98,7 @@ class StatementImportService
                     'company_id' => null,
                     'kpp' => null
                 ]);
+                $organizationCategory = $organizationReceiver->category;
             }
 
             $nds = $this->paymentService->checkHasNDSFromDescription($payment['description'])
@@ -141,6 +143,7 @@ class StatementImportService
             }
 
             $category = $payment['category'];
+            $category = empty($category) ? $organizationCategory : $category;
             $category = empty($category) ? $this->paymentService->findCategoryFromDescription($payment['description']) : $category;
 
             $payment = $this->paymentService->createPayment([
