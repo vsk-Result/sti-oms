@@ -4,7 +4,6 @@ namespace App\Exports\Payment\Sheets;
 
 use App\Models\KostCode;
 use App\Models\Object\BObject;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -21,10 +20,13 @@ class KostCodePivot implements
 
     private Builder $payments;
 
-    public function __construct(string $sheetName, Builder $payments)
+    private BObject | null $object;
+
+    public function __construct(string $sheetName, Builder $payments, BObject | null $object)
     {
         $this->sheetName = $sheetName;
         $this->payments = $payments;
+        $this->object = $object;
     }
 
     public function title(): string
@@ -37,24 +39,33 @@ class KostCodePivot implements
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
         $sheet->setCellValue('A1', 'Статья');
-        $sheet->setCellValue('B1', 'Объект');
-        $sheet->setCellValue('C1', 'Приходы');
-        $sheet->setCellValue('D1', 'Расходы');
-        $sheet->setCellValue('E1', 'Общая сумма');
+        $sheet->setCellValue('B1', 'Приходы');
+        $sheet->setCellValue('C1', 'Расходы');
+        $sheet->setCellValue('D1', 'Общая сумма');
+        if (!$this->object) {
+            $sheet->setCellValue('E1', 'Объект');
+        }
 
         $sheet->getRowDimension(1)->setRowHeight(30);
 
         $sheet->getColumnDimension('A')->setWidth(65);
-        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(22);
         $sheet->getColumnDimension('C')->setWidth(22);
         $sheet->getColumnDimension('D')->setWidth(22);
-        $sheet->getColumnDimension('E')->setWidth(22);
+        if (!$this->object) {
+            $sheet->getColumnDimension('E')->setWidth(15);
+        }
 
-        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+        $lastColumn = $this->object ? 'D' : 'E';
+
+        $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
 
         $row = 2;
         $codes = KostCode::getCodes();
         $groupedByCodePayments = (clone $this->payments)->get()->sortBy('code')->groupBy('code');
+
+        $sumPay = 0;
+        $sumReceive = 0;
 
         foreach ($groupedByCodePayments as $code => $codePayments) {
             foreach ($codePayments->groupBy('object_id') as $objectId => $objectPayments) {
@@ -62,32 +73,53 @@ class KostCodePivot implements
 
                 $total = $objectPayments->sum('amount');
 
-                $sheet->setCellValue('A' . $row, KostCode::getTitleByCode($code));
-                $sheet->setCellValue('B' . $row, $object->code ?? '');
-                $sheet->setCellValue('C' . $row, $objectPayments->where('amount', '>=', 0)->sum('amount'));
-                $sheet->setCellValue('D' . $row, $objectPayments->where('amount', '<', 0)->sum('amount'));
-                $sheet->setCellValue('E' . $row, $total);
+                $receive = $objectPayments->where('amount', '>=', 0)->sum('amount');
+                $pay = $objectPayments->where('amount', '<', 0)->sum('amount');
 
-                $sheet->getStyle('E' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                $sheet->setCellValue('A' . $row, KostCode::getTitleByCode($code));
+                $sheet->setCellValue('B' . $row, $pay);
+                $sheet->setCellValue('C' . $row, $receive);
+                $sheet->setCellValue('D' . $row, $total);
+
+                $sumPay += $pay;
+                $sumReceive += $receive;
+
+                if (!$this->object) {
+                    $sheet->setCellValue('E' . $row, $object->code ?? '');
+                }
+
+                $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
                 $sheet->getRowDimension($row)->setRowHeight(30);
                 $row++;
             }
         }
 
-        $row--;
+        $sheet->getRowDimension($row)->setRowHeight(30);
+        $sheet->setCellValue('A' . $row, 'Итого');
+        $sheet->setCellValue('B' . $row, $sumReceive);
+        $sheet->setCellValue('C' . $row, $sumPay);
+        $sheet->setCellValue('D' . $row, $sumReceive + $sumPay);
 
-        $sheet->getStyle('C2:C' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
-        $sheet->getStyle('D2:D' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+        $sheet->getStyle('D' . $row)->getFont()->setColor(new Color(($sumReceive + $sumPay) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
-        $sheet->getStyle('A1:E' . $row)->applyFromArray([
+        $sheet->getStyle('B2:B' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
+        $sheet->getStyle('C2:C' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+
+        $sheet->getStyle('A1:' . $lastColumn . $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
-        $sheet->getStyle('A1:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('B1:E' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_MEDIUM]]
+        ]);
 
-        $sheet->getStyle('C2:E' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
+
+        $sheet->getStyle('A1:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('B1:' . $lastColumn . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+
+        $sheet->getStyle('B2:D' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
     }
 }

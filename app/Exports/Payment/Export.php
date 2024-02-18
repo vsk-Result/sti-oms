@@ -21,15 +21,17 @@ class Export implements WithMultipleSheets
     public function sheets(): array
     {
         $object = null;
-        $objectIds = (clone $this->payments)->pluck('object_id')->unique('object_id');
+        $objectName = null;
+        $objectIds = array_unique((clone $this->payments)->pluck('object_id')->toArray());
         if (count($objectIds) === 1) {
             $object = BObject::find($objectIds[0]);
-            $object = $object ? $object->getName() : '';
+            $objectName = $object ? $object->getName() : '';
         }
+
         return [
-            new PivotSheet('Сводная', (clone $this->payments), $object),
+            new PivotSheet('Сводная', (clone $this->payments), $objectName),
             new PaymentSheet('Таблица оплат', (clone $this->payments), $this->payments->count()),
-            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments))
+            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments), $object)
         ];
     }
 }
