@@ -69,6 +69,12 @@ class ImportObjectDebtsFromExcel extends Command
             return 0;
         }
 
+        $prevImport = DebtImport::where('date', Carbon::now()->format('Y-m-d'))
+            ->where('type_id', DebtImport::TYPE_OBJECT)
+            ->where('company_id', $company->id)
+            ->where('status_id', Status::STATUS_ACTIVE)
+            ->first();
+
         $import = DebtImport::create([
             'type_id' => DebtImport::TYPE_OBJECT,
             'company_id' => $company->id,
@@ -123,7 +129,7 @@ class ImportObjectDebtsFromExcel extends Command
                     $errorMessage = '[ERROR] В загружаемом файле отсутствует лист OMS';
                     Log::channel('custom_imports_log')->debug($errorMessage);
                     $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-                    return 0;
+                    continue;
                 }
 
                 foreach ($importData['OMS'] as $row) {
@@ -185,7 +191,7 @@ class ImportObjectDebtsFromExcel extends Command
                 $errorMessage = '[ERROR] Не удалось загрузить файл: "' . $e->getMessage();
                 Log::channel('custom_imports_log')->debug($errorMessage);
                 $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-                return 0;
+                continue;
             }
 
             try {
@@ -195,7 +201,7 @@ class ImportObjectDebtsFromExcel extends Command
                 $errorMessage = '[ERROR] Не удалось сохранить файл: "' . $e->getMessage();
                 Log::channel('custom_imports_log')->debug($errorMessage);
                 $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-                return 0;
+                continue;
             }
         }
 
@@ -204,6 +210,11 @@ class ImportObjectDebtsFromExcel extends Command
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Импорт прошел успешно');
         $this->CRONProcessService->successProcess($this->signature);
+
+
+        if ($prevImport) {
+            $prevImport->delete();
+        }
 
         $this->pivotObjectDebtService->updatePivotDebtForAllObjects();
 
