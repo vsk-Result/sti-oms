@@ -117,6 +117,8 @@ class CRMCostClosureImportService
                     $organizationReceiver = $companyOrganization;
                 }
 
+                $category = $this->getCategoryFromKostCode($item->getKostCode());
+
                 $this->paymentService->createPayment([
                     'company_id' => $import->company_id,
                     'bank_id' => $import->bank_id,
@@ -128,7 +130,7 @@ class CRMCostClosureImportService
                     'type_id' => $typeId,
                     'payment_type_id' => Payment::PAYMENT_TYPE_CASH,
                     'code' => $item->getKostCode(),
-                    'category' => Payment::CATEGORY_RAD,
+                    'category' => $category,
                     'description' => $item->avans ? ($item->information . ' - ' . $item->avans->employee->getFullName()) : $item->information,
                     'date' => $item->date,
                     'amount' => (float) $item->sum,
@@ -157,5 +159,30 @@ class CRMCostClosureImportService
     public function hasError(): bool
     {
         return ! empty($this->error);
+    }
+
+    private function getCategoryFromKostCode($code)
+    {
+        $salary = ['7.17', '7.18', '7.26'];
+        $provider = [
+            '1.1.6', '1.1.7', '1.2.4', '2.1.1', '2.1.10', '2.1.2', '2.1.7', '2.2', '2.2.4', '3', '3.1.2',
+            '3.2.2', '4.2', '5.10', '5.2', '7.10', '7.29', '7.32', '7.33', '7.6', '7.7'];
+        $transfer = ['7.15'];
+        $service = ['5.5', '7.11', '7.21', '7.22', '7.23', '7.24', '7.27', '7.30', '7.31', '7.5', '7.8', '7.7',];
+
+        if (in_array($code, $salary)) {
+            return Payment::CATEGORY_SALARY;
+        }
+        if (in_array($code, $provider)) {
+            return Payment::CATEGORY_MATERIAL;
+        }
+        if (in_array($code, $transfer)) {
+            return Payment::CATEGORY_TRANSFER;
+        }
+        if (in_array($code, $service)) {
+            return Payment::CATEGORY_OPSTE;
+        }
+
+        return Payment::CATEGORY_RAD;
     }
 }
