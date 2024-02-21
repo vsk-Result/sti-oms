@@ -101,6 +101,12 @@ class Bank
             'logo' => '/images/banks/vtb.png',
             'visible' => true
         ],
+        [
+            'id' => 17,
+            'name' => 'АО "Газпромбанк"',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
     ];
 
     public static function getBanks(): array
