@@ -21,7 +21,7 @@ class Export implements WithMultipleSheets
     public function sheets(): array
     {
         $total = $this->info['objectsInfo']->total;
-        $years = array_reverse(collect($this->info['objectsInfo']->years)->toArray(), true);
+        $years = collect($this->info['objectsInfo']->years)->toArray();
         $summary = $this->info['objectsInfo']->summary;
 
         $sheets = [

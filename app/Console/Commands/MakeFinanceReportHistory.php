@@ -114,11 +114,13 @@ class MakeFinanceReportHistory extends Command
 
             foreach ($objects as $object) {
                 if ($object->status_id === \App\Models\Status::STATUS_BLOCKED && !empty($object->closing_date)) {
-                    $year = \Carbon\Carbon::parse($object->closing_date)->format('Y');
-
-                    $years[$year][] = $object;
+//                    $year = \Carbon\Carbon::parse($object->closing_date)->format('Y');
+//
+//                    $years[$year][] = $object;
+                    $years['Закрытые'][] = $object;
                 } else if ($object->status_id === \App\Models\Status::STATUS_BLOCKED && empty($object->closing_date)) {
-                    $years['Закрыты, дата не указана'][] = $object;
+//                    $years['Закрыты, дата не указана'][] = $object;
+                    $years['Закрытые'][] = $object;
                 } else {
                     if ($object->status_id !== \App\Models\Status::STATUS_DELETED) {
                         $years['Активные'][] = $object;

@@ -1,6 +1,6 @@
 @php
     $total = $objectsInfo->total;
-    $years = array_reverse(collect($objectsInfo->years)->toArray(), true);
+    $years = collect($objectsInfo->years)->toArray();
     $objects = $objectsInfo->objects;
     $summary = $objectsInfo->summary;
     $infos = [
