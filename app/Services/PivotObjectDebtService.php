@@ -285,9 +285,9 @@ class PivotObjectDebtService
 
         $komissiyaServiceItems = TaxPlanItem::where('object_id', $this->object->id)->where('paid', 0)->where('name', 'LIKE', '%комис%')->get();
         foreach ($komissiyaServiceItems as $item) {
-            if (mb_strpos($item, 'БГ') > 0) {
+            if (mb_strpos($item->name, 'БГ') > 0 || mb_strpos($item->name, 'бг') > 0) {
 
-                if (mb_strpos($item, 'гу') > 0) {
+                if (mb_strpos($item->name, 'гу') > 0 || mb_strpos($item->name, 'ГУ') > 0) {
                     $komissiyaBG_GU_ServiceAmount += $item->amount;
                     continue;
                 }
