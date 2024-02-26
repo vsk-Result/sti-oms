@@ -279,9 +279,34 @@ class PivotObjectDebtService
             }
         }
 
-        $komissiyaServiceAmount = TaxPlanItem::where('object_id', $this->object->id)->where('paid', 0)->sum('amount');
+        $komissiyaServiceAmount = 0;
+        $komissiyaBGServiceAmount = 0;
+        $komissiyaBG_GU_ServiceAmount = 0;
+
+        $komissiyaServiceItems = TaxPlanItem::where('object_id', $this->object->id)->where('paid', 0)->where('name', 'LIKE', '%комис%')->get();
+        foreach ($komissiyaServiceItems as $item) {
+            if (mb_strpos($item, 'БГ') > 0) {
+
+                if (mb_strpos($item, 'гу') > 0) {
+                    $komissiyaBG_GU_ServiceAmount += $item->amount;
+                    continue;
+                }
+
+                $komissiyaBGServiceAmount += $item->amount;
+                continue;
+            }
+
+            $komissiyaServiceAmount += $item->amount;
+        }
+
         if ($komissiyaServiceAmount != 0) {
             $result['null::Комиссия'] = -$komissiyaServiceAmount;
+        }
+        if ($komissiyaBGServiceAmount != 0) {
+            $result['null::Комиссия за БГ'] = -$komissiyaBGServiceAmount;
+        }
+        if ($komissiyaBG_GU_ServiceAmount != 0) {
+            $result['null::Комиссия за БГ (г/у)'] = -$komissiyaBG_GU_ServiceAmount;
         }
 
         asort($result);
