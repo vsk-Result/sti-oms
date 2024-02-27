@@ -25,7 +25,7 @@
                         <span class="badge badge-light-danger">Удален</span>
                     @endif
 
-                    @if(auth()->user()->hasRole('super-admin'))
+                    @if(auth()->user()->hasRole('super-admin') || auth()->id() === 16)
                         <label class="form-check form-switch form-check-custom form-check-solid ms-5">
                             <span class="form-check-label fw-semibold text-muted me-2">
                                 без НДС
