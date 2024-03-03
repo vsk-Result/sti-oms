@@ -5,6 +5,7 @@ namespace App\Exports\Payment;
 use App\Exports\Payment\Sheets\KostCodePivot;
 use App\Exports\Payment\Sheets\PaymentSheet;
 use App\Exports\Payment\Sheets\PivotSheet;
+use App\Exports\Payment\Sheets\CategoryPivot;
 use App\Models\Object\BObject;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
@@ -31,7 +32,8 @@ class Export implements WithMultipleSheets
         return [
             new PivotSheet('Сводная', (clone $this->payments), $objectName),
             new PaymentSheet('Таблица оплат', (clone $this->payments), $this->payments->count()),
-            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments), $object)
+            new KostCodePivot('Сводная по статьям затрат', (clone $this->payments), $object),
+            new CategoryPivot('Сводная по категориям', (clone $this->payments))
         ];
     }
 }

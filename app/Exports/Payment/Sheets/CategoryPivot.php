@@ -12,7 +12,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class KostCodePivot implements
+class CategoryPivot implements
     WithTitle,
     WithStyles
 {
@@ -20,13 +20,10 @@ class KostCodePivot implements
 
     private Builder $payments;
 
-    private BObject | null $object;
-
-    public function __construct(string $sheetName, Builder $payments, BObject | null $object)
+    public function __construct(string $sheetName, Builder $payments)
     {
         $this->sheetName = $sheetName;
         $this->payments = $payments;
-        $this->object = $object;
     }
 
     public function title(): string
@@ -38,13 +35,10 @@ class KostCodePivot implements
     {
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Статья');
+        $sheet->setCellValue('A1', 'Категория/Статья затрат');
         $sheet->setCellValue('B1', 'Приходы');
         $sheet->setCellValue('C1', 'Расходы');
         $sheet->setCellValue('D1', 'Общая сумма');
-        if (!$this->object) {
-            $sheet->setCellValue('E1', 'Объект');
-        }
 
         $sheet->getRowDimension(1)->setRowHeight(30);
 
@@ -52,41 +46,48 @@ class KostCodePivot implements
         $sheet->getColumnDimension('B')->setWidth(22);
         $sheet->getColumnDimension('C')->setWidth(22);
         $sheet->getColumnDimension('D')->setWidth(22);
-        if (!$this->object) {
-            $sheet->getColumnDimension('E')->setWidth(15);
-        }
 
-        $lastColumn = $this->object ? 'D' : 'E';
+        $lastColumn = 'D';
 
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
 
         $row = 2;
-        $codes = KostCode::getCodes();
-        $groupedByCodePayments = (clone $this->payments)->get()->sortBy('code')->groupBy('code');
+        $groupedByCategoryPayments = (clone $this->payments)->get()->sortBy('category')->groupBy('category');
 
         $sumPay = 0;
         $sumReceive = 0;
 
-        foreach ($groupedByCodePayments as $code => $codePayments) {
-            foreach ($codePayments->groupBy('object_id') as $objectId => $objectPayments) {
-                $object = BObject::find($objectId);
+        foreach ($groupedByCategoryPayments as $category => $categoryPayments) {
 
-                $total = $objectPayments->sum('amount');
+            $total = $categoryPayments->sum('amount');
 
-                $receive = $objectPayments->where('amount', '>=', 0)->sum('amount');
-                $pay = $objectPayments->where('amount', '<', 0)->sum('amount');
+            $receive = $categoryPayments->where('amount', '>=', 0)->sum('amount');
+            $pay = $categoryPayments->where('amount', '<', 0)->sum('amount');
 
-                $sheet->setCellValue('A' . $row, KostCode::getTitleByCode($code));
-                $sheet->setCellValue('B' . $row, $receive);
-                $sheet->setCellValue('C' . $row, $pay);
+            $sheet->setCellValue('A' . $row, $category);
+            $sheet->setCellValue('B' . $row, $pay);
+            $sheet->setCellValue('C' . $row, $receive);
+            $sheet->setCellValue('D' . $row, $total);
+
+            $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getRowDimension($row)->setRowHeight(30);
+            $row++;
+
+            $sumPay += $pay;
+            $sumReceive += $receive;
+
+            $groupedByCodePayments = $categoryPayments->sortBy('code')->groupBy('code');
+
+            foreach ($groupedByCodePayments as $code => $codePayments) {
+                $total = $codePayments->sum('amount');
+
+                $receive = $codePayments->where('amount', '>=', 0)->sum('amount');
+                $pay = $codePayments->where('amount', '<', 0)->sum('amount');
+
+                $sheet->setCellValue('A' . $row, '    ' . KostCode::getTitleByCode($code));
+                $sheet->setCellValue('B' . $row, $pay);
+                $sheet->setCellValue('C' . $row, $receive);
                 $sheet->setCellValue('D' . $row, $total);
-
-                $sumPay += $pay;
-                $sumReceive += $receive;
-
-                if (!$this->object) {
-                    $sheet->setCellValue('E' . $row, $object->code ?? '');
-                }
 
                 $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
@@ -120,6 +121,5 @@ class KostCodePivot implements
         $sheet->getStyle('B1:' . $lastColumn . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
 
         $sheet->getStyle('B2:D' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
     }
 }
