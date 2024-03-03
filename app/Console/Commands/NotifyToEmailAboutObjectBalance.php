@@ -33,6 +33,10 @@ class NotifyToEmailAboutObjectBalance extends Command
 
     public function handle()
     {
+        if (Carbon::now()->isSaturday() || Carbon::now()->isSunday()) {
+            return 0;
+        }
+
         Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
         Log::channel('custom_imports_log')->debug('[START] Отправка на почту сотрудникам информацию о балансе объектов');
