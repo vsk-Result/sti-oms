@@ -10,6 +10,7 @@ use App\Models\Organization;
 use App\Services\DebtService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class OrganizationController extends Controller
 {
@@ -22,15 +23,15 @@ class OrganizationController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (! $request->has('verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
-
-        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
+//        if (! $request->has('verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
+//
+//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
 
         if (isset($request->organization_id)) {
             $organization = Organization::find($request->organization_id);
@@ -40,7 +41,11 @@ class OrganizationController extends Controller
                 return response()->json([], 404);
             }
 
-            $pivot = $this->debtService->getPivot();
+            $debtService = $this->debtService;
+
+            $pivot = Cache::get('object_debts_pivot', function() use ($debtService) {
+                return $debtService->getPivot();
+            });
 
             $result = 0;
             $objects = [];
@@ -48,9 +53,22 @@ class OrganizationController extends Controller
             foreach ($pivot['entries'] as $organizationId => $orgEntries) {
                 if ($organizationId == $request->organization_id) {
                     foreach ($orgEntries as $objectId => $amount) {
+                        if (isset($request->object_id)) {
+                            if ($request->object_id === $objectId) {
+                                $objects[BObject::find($objectId)->name] = $amount;
+                                $result += $amount;
+
+                                break;
+                            }
+
+                            continue;
+                        }
+
                         $objects[BObject::find($objectId)->name] = $amount;
                         $result += $amount;
                     }
+
+                    break;
                 }
             }
 
