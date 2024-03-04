@@ -70,7 +70,8 @@ class CategoryPivot implements
             $sheet->setCellValue('D' . $row, $total);
 
             $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $sheet->getRowDimension($row)->setRowHeight(30);
+            $sheet->getRowDimension($row)->setRowHeight(50);
+            $sheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
             $row++;
 
             $sumPay += $pay;
