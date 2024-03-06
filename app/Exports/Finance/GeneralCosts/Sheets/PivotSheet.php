@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PivotSheet implements
@@ -135,7 +136,7 @@ class PivotSheet implements
 
             foreach($generalInfo as $info) {
                 if (isset($info['info'][$object->id])) {
-                    $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
+                    $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0);
                     $percentSum += $percent;
                     $percentCount++;
                 }
@@ -150,12 +151,12 @@ class PivotSheet implements
 
         $sheet->setCellValue('A1', 'РАЗБИВКА ОБЩИХ ЗАТРАТ ПО ГОДАМ');
         $sheet->setCellValue('B1', 'ИТОГО');
-        $sheet->setCellValue('D1', CurrencyExchangeRate::format($generalTotalAmount, 'RUB', 0, true));
+        $sheet->setCellValue('D1', $generalTotalAmount);
 
         $columnIndex = 0;
         foreach($generalInfo as $info) {
             $sheet->setCellValue($columns[$columnIndex] . '1', 'С ' . Carbon::parse($info['start_date'])->format('d.m.Y') . ' ПО ' .  Carbon::parse($info['end_date'])->format('d.m.Y'));
-            $sheet->setCellValue($columns[$columnIndex + 2] . '1', CurrencyExchangeRate::format($info['general_amount'], 'RUB', 0, true));
+            $sheet->setCellValue($columns[$columnIndex + 2] . '1', $info['general_amount']);
             $columnIndex += 3;
         }
 
@@ -191,9 +192,9 @@ class PivotSheet implements
                 $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
             }
 
-            $sheet->setCellValue('B' . $row, CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true));
-            $sheet->setCellValue('C' . $row, number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2));
-            $sheet->setCellValue('D' . $row, CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true));
+            $sheet->setCellValue('B' . $row,$totalCuming);
+            $sheet->setCellValue('C' . $row, $totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0);
+            $sheet->setCellValue('D' . $row, $totalGeneral);
 
             $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($totalCuming < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($totalGeneral < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -201,9 +202,9 @@ class PivotSheet implements
             $columnIndex = 0;
             foreach($generalInfo as $info) {
                 if (isset ($info['info'][$object->id])) {
-                    $sheet->setCellValue($columns[$columnIndex] . $row, CurrencyExchangeRate::format($info['info'][$object->id]['cuming_amount'], 'RUB', 0, true));
-                    $sheet->setCellValue($columns[$columnIndex + 1] . $row, number_format(($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100, 2));
-                    $sheet->setCellValue($columns[$columnIndex + 2] . $row, CurrencyExchangeRate::format($info['info'][$object->id]['general_amount'], 'RUB', 0, true));
+                    $sheet->setCellValue($columns[$columnIndex] . $row, $info['info'][$object->id]['cuming_amount']);
+                    $sheet->setCellValue($columns[$columnIndex + 1] . $row, $info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0);
+                    $sheet->setCellValue($columns[$columnIndex + 2] . $row, $info['info'][$object->id]['general_amount']);
 
                     $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                     $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -324,6 +325,22 @@ class PivotSheet implements
         $sheet->getStyle('AL1:AN' . $row)->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'f15a22']]]
         ]);
+
+
+        $sheet->getStyle('B1:AN' . $row)->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('C3:C' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('F3:F' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('I3:I' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('L3:L' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('O3:O' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('R3:R' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('U3:U' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('X3:X' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('AA3:AA' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('AD3:AD' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('AG3:AG' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('AJ3:AJ' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle('AM3:AM' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
     }
 
     public function registerEvents(): array
