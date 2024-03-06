@@ -86,26 +86,26 @@
 @push('styles')
     <style>
         .objects-table td, .objects-table th, .table>:not(:last-child)>:last-child>* {
-            border: 1px solid #f15a2238;
+            border: 1px solid #eff2f5;
         }
         .table tbody tr:last-child td {
-            border-bottom: 1px solid #f15a2238 !important;
+            border-bottom: 1px solid #eff2f5 !important;
         }
         .objects-table th {
             vertical-align: middle !important;
             text-align: center !important;
         }
         .bl {
-            border-left: 1px dashed #f15a22 !important;
+            border-left: 1px solid #e3e6e9 !important;
         }
         .br {
-            border-right: 1px dashed #f15a22 !important;
+            border-right: 1px solid #e3e6e9 !important;
         }
 
         .hl, .table tbody tr:last-child td.hl {
-            background-color: #f7f7f7 !important;
+            background-color: #f7f7f780 !important;
             font-weight: bold !important;
-            border: 1px dashed #f15a22 !important;
+            border: 1px solid #e3e6e9 !important;
             min-width: 150px !important;
         }
 

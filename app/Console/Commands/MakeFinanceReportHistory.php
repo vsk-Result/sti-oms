@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Company;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\FinanceReport;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
 use App\Models\Object\BObject;
@@ -136,6 +137,7 @@ class MakeFinanceReportHistory extends Command
                     'pay' => 0,
                     'balance' => 0,
                     'general_balance' => 0,
+                    'general_balance_to_receive_percentage' => 0,
                     'balance_with_general_balance' => 0,
                     'contractor_debt' => 0,
                     'contractor_debt_gu' => 0,
@@ -258,10 +260,13 @@ class MakeFinanceReportHistory extends Command
 
                     $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
 
+                    $generalBalanceToReceivePercentage = $object->total_receive == 0 ? 0 : $object->general_balance / $object->total_receive * 100;
+
                     $total[$year][$object->code]['pay'] = $object->total_pay;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
                     $total[$year][$object->code]['balance'] = $object->total_balance;
                     $total[$year][$object->code]['general_balance'] = $object->general_balance;
+                    $total[$year][$object->code]['general_balance_to_receive_percentage'] = $generalBalanceToReceivePercentage;
                     $total[$year][$object->code]['balance_with_general_balance'] = $object->total_with_general_balance;
 
                     $total[$year][$object->code]['contractor_debt'] = $contractorDebtsAmount - $contractorGuaranteeDebtsAmount;
@@ -282,7 +287,10 @@ class MakeFinanceReportHistory extends Command
                         $summary[$year][$key] += $value;
                     }
                 }
+
+                $summary[$year]['general_balance_to_receive_percentage'] = $summary[$year]['receive'] == 0 ? 0 : $summary[$year]['general_balance'] / $summary[$year]['receive'] * 100;
             }
+
         } catch (\Exception $e) {
             $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
             Log::channel('custom_imports_log')->debug($errorMessage);
@@ -290,26 +298,7 @@ class MakeFinanceReportHistory extends Command
             return 0;
         }
 
-        $infos = [
-            'Приходы' => 'receive',
-            'Расходы' => 'pay',
-            'Сальдо без общ. Расходов' => 'balance',
-            'Общие расходы' => 'general_balance',
-            'Сальдо c общ. Расходами' => 'balance_with_general_balance',
-            'Долг подрядчикам' => 'contractor_debt',
-            'Долг подрядчикам за ГУ' => 'contractor_debt_gu',
-            'Долг поставщикам' => 'provider_debt',
-            'Долг за услуги' => 'service_debt',
-            'Долг на зарплаты ИТР' => 'itr_salary_debt',
-            'Долг на зарплаты рабочим' => 'workers_salary_debt',
-            'Долг Заказчика за выпол.работы' => 'dolgZakazchikovZaVipolnenieRaboti',
-            'Долг Заказчика за ГУ (фактич.удерж.)' => 'dolgFactUderjannogoGU',
-            'Текущий Баланс объекта' => 'objectBalance',
-            'Сумма договоров с Заказчиком' => 'contractsTotalAmount',
-            'Остаток неотработанного аванса' => 'ostatokNeotrabotannogoAvansa',
-            'Остаток к получ. от заказчика (в т.ч. ГУ)' => 'ostatokPoDogovoruSZakazchikom',
-            'Прогнозируемый Баланс объекта' => 'prognozBalance',
-        ];
+        $infos = FinanceReport::getInfoFields();
 
         $objects_new = json_encode(compact('total', 'infos', 'summary', 'objects', 'years'));
         $objects = json_encode([]);

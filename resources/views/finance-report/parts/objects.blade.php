@@ -3,26 +3,10 @@
     $years = collect($objectsInfo->years)->toArray();
     $objects = $objectsInfo->objects;
     $summary = $objectsInfo->summary;
-    $infos = [
-            'Приходы' => 'receive',
-            'Расходы' => 'pay',
-            'Сальдо без общ. Расходов' => 'balance',
-            'Общие расходы' => 'general_balance',
-            'Сальдо c общ. Расходами' => 'balance_with_general_balance',
-            'Долг подрядчикам' => 'contractor_debt',
-            'Долг подрядчикам за ГУ' => 'contractor_debt_gu',
-            'Долг поставщикам' => 'provider_debt',
-            'Долг за услуги' => 'service_debt',
-            'Долг на зарплаты ИТР' => 'itr_salary_debt',
-            'Долг на зарплаты рабочим' => 'workers_salary_debt',
-            'Долг Заказчика за выпол.работы' => 'dolgZakazchikovZaVipolnenieRaboti',
-            'Долг Заказчика за ГУ (фактич.удерж.)' => 'dolgFactUderjannogoGU',
-            'Текущий Баланс объекта' => 'objectBalance',
-            'Сумма договоров с Заказчиком' => 'contractsTotalAmount',
-            'Остаток неотработанного аванса' => 'ostatokNeotrabotannogoAvansa',
-            'Остаток к получ. от заказчика (в т.ч. ГУ)' => 'ostatokPoDogovoruSZakazchikom',
-            'Прогнозируемый Баланс объекта' => 'prognozBalance',
-        ];
+    $infos = App\Models\FinanceReport::getInfoFields();
+
+    $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
+    $percentField = 'general_balance_to_receive_percentage';
 @endphp
 
 <div class="card mt-5">
@@ -52,23 +36,35 @@
                             </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                            @foreach($infos as $info => $field)
-                                <tr>
-                                    <td class="br ps-2">{{ $info }}</td>
-                                    <td class="fw-bolder hl text-right">
-                                        <span class="{{ $summary->{$year}->{$field} < 0 ? 'text-danger' : 'text-success' }}">
-                                            {{ \App\Models\CurrencyExchangeRate::format($summary->{$year}->{$field}, 'RUB') }}
-                                        </span>
-                                    </td>
-                                    @foreach($objects as $object)
-                                        <td class="text-right {{ $loop->first ? 'bl' : '' }} {{ $loop->last ? 'pe-4' : '' }}">
-                                            <span class="{{ $total->{$year}->{$object->code}->{$field} < 0 ? 'text-danger' : 'text-success' }}">
-                                                {{ \App\Models\CurrencyExchangeRate::format($total->{$year}->{$object->code}->{$field}, 'RUB') }}
+                                @foreach($infos as $info => $field)
+                                    @php
+                                        $sumValue = $summary->{$year}->{$field};
+                                        $isSpecialField = in_array($field, $specialFields);
+                                    @endphp
+                                    <tr>
+                                        <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }}">{{ $info }}</td>
+                                        <td class="fw-bolder hl text-right">
+                                            <span class="{{ $isSpecialField ? $sumValue < 0 ? 'text-danger' : 'text-success' : '' }}">
+                                                @if ($percentField === $field)
+                                                    {{ number_format($sumValue, 2) . '%' }}
+                                                @else
+                                                    {{ \App\Models\CurrencyExchangeRate::format($sumValue, 'RUB') }}
+                                                @endif
                                             </span>
                                         </td>
-                                    @endforeach
-                                </tr>
-                            @endforeach
+                                        @foreach($objects as $object)
+                                            @php
+                                                if ($percentField === $field) continue;
+                                                $value = $total->{$year}->{$object->code}->{$field};
+                                            @endphp
+                                            <td class="text-right {{ $loop->first ? 'bl' : '' }} {{ $loop->last ? 'pe-4' : '' }}">
+                                                <span class="{{ $isSpecialField ? $value < 0 ? 'text-danger' : 'text-success' : '' }}">
+                                                    {{ $value === 0 ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
+                                                </span>
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

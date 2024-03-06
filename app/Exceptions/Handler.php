@@ -34,12 +34,12 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-//    public function register()
-//    {
-//        $this->reportable(function (Throwable $e) {
-//            if (config('app.debug') === false) {
-//                Notification::send([config('services.telegram-bot-api.channel_id_for_errors')], new ErrorOccurred($e));
-//            }
-//        });
-//    }
+    public function register()
+    {
+        $this->reportable(function (Throwable $e) {
+            if (config('app.debug') === false) {
+                Notification::send([config('services.telegram-bot-api.channel_id_for_errors')], new ErrorOccurred($e));
+            }
+        });
+    }
 }

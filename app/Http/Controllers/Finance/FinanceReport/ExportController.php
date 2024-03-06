@@ -34,6 +34,8 @@ class ExportController extends Controller
         $depositsInfo = json_decode($financeReportHistory->deposits);
         $objectsInfo = json_decode($financeReportHistory->objects_new);
 
+        $fileName = 'Финансовый отчет ' . now()->format('d.m.Y') . '.xlsx';
+
         return Excel::download(
             new Export(
                 [
@@ -44,7 +46,7 @@ class ExportController extends Controller
                     'objectsInfo' => $objectsInfo
                 ]
             ),
-            'Финансовый отчет.xlsx'
+            $fileName
         );
     }
 }

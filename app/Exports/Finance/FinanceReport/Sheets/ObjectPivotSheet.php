@@ -16,6 +16,8 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ObjectPivotSheet implements
@@ -56,82 +58,94 @@ class ObjectPivotSheet implements
         $objects = $this->pivotInfo['objects'];
         $summary = $this->pivotInfo['pivot_info']['summary'];
         $total = $this->pivotInfo['pivot_info']['total'];
-        $row = 1;
-        $rowTitle = $row;
 
-        $sheet->setCellValue('A' . $rowTitle, 'Сводка');
-        $sheet->setCellValue('B' . $rowTitle, 'Итого');
+        $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
+        $percentField = 'general_balance_to_receive_percentage';
+
+        $lastRow = count($infos) + 1;
+        $lastColumnIndex = 2 + count($objects);
+        $lastColumn = $this->getColumnWord($lastColumnIndex);
+
+        $sheet->getRowDimension(1)->setRowHeight(50);
+        $sheet->getColumnDimension('A')->setWidth(40);
+        $sheet->getColumnDimension('B')->setWidth(23);
+        $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:A' . $lastRow)->getFont()->setSize(14);
+        $sheet->getStyle('B1:B' . $lastRow)->getFont()->setSize(14)->setBold(true);
+        $sheet->getStyle('B2:' . $lastColumn . $lastRow)->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('A1:' . $lastColumn . '1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+        $sheet->getStyle('A2:A' . $lastRow)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('B2:' . $lastColumn . $lastRow)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(true);
+
+        $sheet->getStyle('B1:B' . $lastRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('C1:' . $lastColumn . '1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f15a22');
+        $sheet->getStyle('A1:' . $lastColumn . $lastRow)->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]]
+        ]);
+        $sheet->getStyle('B1:B' . $lastRow)->applyFromArray([
+            'borders' => ['allBorders' => ['bordedrStyle' => Border::BORDER_DASHED, 'color' => ['rgb' => '000000']]]
+        ]);
+        $sheet->getStyle('C1:' . $lastColumn . '1')->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'ffffff']]]
+        ]);
+        $sheet->getStyle('C1:' . $lastColumn . '1')->getFont()->setColor(new Color(Color::COLOR_WHITE));
+
+        $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, $lastColumnIndex, $lastRow);
+        $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+        $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(0);
+
+        $sheet->setCellValue('A1', 'Сводка');
+        $sheet->setCellValue('B1', 'Итого');
 
         $columnIndex = 3;
         foreach($objects as $object) {
             $column = $this->getColumnWord($columnIndex);
-            $sheet->setCellValue($column . $rowTitle, $object->code . ' | '  . $object->name);
+            $sheet->setCellValue($column . '1', $object->code . ' | '  . $object->name);
             $sheet->getColumnDimension($column)->setWidth(17);
             $columnIndex++;
         }
 
-        $row++;
+        $row = 2;
         foreach($infos as $info => $field) {
-            if ($row === 6) {
-                $sheet->setCellValue('A' . $row, 'Общие расходы / приходы %');
-                $sheet->setCellValue('B' . $row, number_format($summary->{$year}->{'general_balance'} / $summary->{$year}->{'receive'} * -100, 2, ',', ' ') . '%');
-                $sheet->getRowDimension($row)->setRowHeight(50);
-                $row++;
-            }
-            $sheet->setCellValue('A' . $row, $info);
+            $sumValue = $summary->{$year}->{$field};
+            $isSpecialField = in_array($field, $specialFields);
 
-            $sheet->setCellValue('B' . $row, $summary->{$year}->{$field});
-            if ($row === 7 || $row === 16 || $row === 20) {
-                $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($summary->{$year}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->setCellValue('A' . $row, $info);
+            $sheet->setCellValue('B' . $row, $sumValue);
+
+            if ($isSpecialField) {
+                $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+                $sheet->getStyle('A' . $row . ':B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+                $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($sumValue < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             }
+
+            if ($percentField === $field) {
+                $sheet->setCellValue('B' . $row, $sumValue / 100);
+                $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+            }
+
             $columnIndex = 3;
             foreach($objects as $object) {
+                if ($percentField === $field) continue;
+
+                $value = $total->{$year}->{$object->code}->{$field};
                 $column = $this->getColumnWord($columnIndex);
-                $sheet->setCellValue($column . $row, $total->{$year}->{$object->code}->{$field} === 0 ? '-' : $total->{$year}->{$object->code}->{$field});
-                if ($total->{$year}->{$object->code}->{$field} !== 0) {
-                    $sheet->getStyle($column . $row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+                $sheet->setCellValue($column . $row, $value === 0 ? '-' : $value);
+
+                if ($isSpecialField) {
+                    $sheet->getStyle($column . $row)->getFont()->setSize(12);
+                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($value < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                 }
-                if ($row === 7 || $row === 16 ||$row === 20) {
-                    $sheet->getStyle($column . $row)->getFont()->setColor(new Color($total->{$year}->{$object->code}->{$field} < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                }
+
                 $columnIndex++;
             }
 
             $sheet->getRowDimension($row)->setRowHeight(50);
             $row++;
         }
-
-        $row--;
-
-        $lastColumn = $this->getColumnWord(2 + count($objects));
-
-        $sheet->getRowDimension($rowTitle)->setRowHeight(50);
-        $sheet->getColumnDimension('A')->setWidth(40);
-        $sheet->getColumnDimension('B')->setWidth(23);
-        $sheet->getStyle('A' . $rowTitle . ':' . $lastColumn . $rowTitle)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $rowTitle . ':A' . $row)->getFont()->setSize(14);
-        $sheet->getStyle('B' . $rowTitle . ':B' . $row)->getFont()->setSize(14)->setBold(true);
-        $sheet->getStyle('B' . $rowTitle . ':B' . $row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-        $sheet->getStyle('A' . $rowTitle . ':' . $lastColumn . $rowTitle)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-        $sheet->getStyle('A' . ($rowTitle + 1) . ':A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('B' . ($rowTitle + 1) . ':' . $lastColumn . $row)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(true);
-        $sheet->getStyle('A7:' . $lastColumn . '7')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-        $sheet->getStyle('A16:' . $lastColumn . '16')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-        $sheet->getStyle('A20:' . $lastColumn . '20')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-        $sheet->getStyle('B' . $rowTitle . ':B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-
-        $sheet->getStyle('B' . $rowTitle . ':B' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-        $sheet->getStyle('C' . $rowTitle . ':' . $lastColumn . $rowTitle)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f15a22');
-        $sheet->getStyle('A' . $rowTitle . ':' . $lastColumn . $row)->applyFromArray([
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]]
-        ]);
-        $sheet->getStyle('B' . $rowTitle . ':B' . $row)->applyFromArray([
-            'borders' => ['allBorders' => ['bordedrStyle' => Border::BORDER_DASHED, 'color' => ['rgb' => '000000']]]
-        ]);
-        $sheet->getStyle('C' . $rowTitle . ':' . $lastColumn . $rowTitle)->applyFromArray([
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'ffffff']]]
-        ]);
-        $sheet->getStyle('C' . $rowTitle . ':' . $lastColumn . $rowTitle)->getFont()->setColor(new Color(Color::COLOR_WHITE));
     }
 
     private function getColumnWord($n) {
