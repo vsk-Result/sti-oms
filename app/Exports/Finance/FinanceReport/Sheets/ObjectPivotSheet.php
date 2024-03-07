@@ -60,6 +60,7 @@ class ObjectPivotSheet implements
         $total = $this->pivotInfo['pivot_info']['total'];
 
         $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
+        $prognozFields = ['prognoz_zp_worker', 'prognoz_zp_itr', 'prognoz_material', 'prognoz_podryad', 'prognoz_general', 'prognoz_service', 'prognoz_consalting'];
         $percentField = 'general_balance_to_receive_percentage';
 
         $lastRow = count($infos) + 1;
@@ -111,6 +112,7 @@ class ObjectPivotSheet implements
         foreach($infos as $info => $field) {
             $sumValue = $summary->{$year}->{$field};
             $isSpecialField = in_array($field, $specialFields);
+            $isPrognozField = in_array($field, $prognozFields);
 
             $sheet->setCellValue('A' . $row, $info);
             $sheet->setCellValue('B' . $row, $sumValue);
@@ -126,6 +128,12 @@ class ObjectPivotSheet implements
                 $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
             }
 
+            if ($isPrognozField) {
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(false);
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setSize(11);
+            }
+
             $columnIndex = 3;
             foreach($objects as $object) {
                 if ($percentField === $field) continue;
@@ -138,6 +146,16 @@ class ObjectPivotSheet implements
                 if ($isSpecialField) {
                     $sheet->getStyle($column . $row)->getFont()->setSize(12);
                     $sheet->getStyle($column . $row)->getFont()->setColor(new Color($value < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                }
+
+                if ($isPrognozField) {
+                    $sheet->getStyle($column . $row)->getFont()->setSize(11);
+                    $sheet->getStyle($column . $row)->getFont()->setItalic(true);
+                }
+
+                if ($field === 'prognoz_total') {
+                    $sheet->getStyle($column . $row)->getFont()->setSize(12);
+                    $sheet->getStyle($column . $row)->getFont()->setBold(true);
                 }
 
                 $columnIndex++;

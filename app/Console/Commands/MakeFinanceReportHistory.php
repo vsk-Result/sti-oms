@@ -34,7 +34,7 @@ class MakeFinanceReportHistory extends Command
     private LoanService $loanService;
     private DepositService $depositeService;
     private PivotObjectDebtService $pivotObjectDebtService;
-    private CurrencyExchangeRateService $currencyExchangeRateService;
+    private CurrencyExchangeRateService $currencyExchangeService;
     private ContractService $contractService;
 
     public function __construct(
@@ -151,6 +151,14 @@ class MakeFinanceReportHistory extends Command
                     'contractsTotalAmount' => 0,
                     'ostatokNeotrabotannogoAvansa' => 0,
                     'ostatokPoDogovoruSZakazchikom' => 0,
+                    'prognoz_total' => 0,
+                    'prognoz_zp_worker' => 0,
+                    'prognoz_zp_itr' => 0,
+                    'prognoz_material' => 0,
+                    'prognoz_podryad' => 0,
+                    'prognoz_general' => 0,
+                    'prognoz_service' => 0,
+                    'prognoz_consalting' => 0,
                     'prognozBalance' => 0,
                 ];
             }
@@ -258,9 +266,18 @@ class MakeFinanceReportHistory extends Command
                         $workSalaryDebt +
                         $writeoffs;
 
-                    $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
-
                     $generalBalanceToReceivePercentage = $object->total_receive == 0 ? 0 : $object->general_balance / $object->total_receive * 100;
+
+                    $prognozZpWorker = -$ostatokPoDogovoruSZakazchikom * 0.118;
+                    $prognozZpITR = -$ostatokPoDogovoruSZakazchikom * 0.066;
+                    $prognozMaterial = 0;
+                    $prognozPodryad = 0;
+                    $prognozGeneral = -$ostatokPoDogovoruSZakazchikom * 0.082;
+                    $prognozService = -$ostatokPoDogovoruSZakazchikom * 0.05;
+                    $prognozConsalting = $object->code === '361' ? (-$ostatokPoDogovoruSZakazchikom * 0.1139) : 0;
+                    $prognozTotal = $prognozZpWorker + $prognozZpITR + $prognozMaterial + $prognozPodryad + $prognozGeneral + $prognozService + $prognozConsalting;
+
+                    $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
 
                     $total[$year][$object->code]['pay'] = $object->total_pay;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
@@ -281,6 +298,14 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['contractsTotalAmount'] = $contractsTotalAmount;
                     $total[$year][$object->code]['ostatokNeotrabotannogoAvansa'] = $ostatokNeotrabotannogoAvansa;
                     $total[$year][$object->code]['ostatokPoDogovoruSZakazchikom'] = $ostatokPoDogovoruSZakazchikom;
+                    $total[$year][$object->code]['prognoz_total'] = $prognozTotal;
+                    $total[$year][$object->code]['prognoz_zp_worker'] = $prognozZpWorker;
+                    $total[$year][$object->code]['prognoz_zp_itr'] = $prognozZpITR;
+                    $total[$year][$object->code]['prognoz_material'] = $prognozMaterial;
+                    $total[$year][$object->code]['prognoz_podryad'] = $prognozPodryad;
+                    $total[$year][$object->code]['prognoz_general'] = $prognozGeneral;
+                    $total[$year][$object->code]['prognoz_service'] = $prognozService;
+                    $total[$year][$object->code]['prognoz_consalting'] = $prognozConsalting;
                     $total[$year][$object->code]['prognozBalance'] = $prognozBalance;
 
                     foreach ($total[$year][$object->code] as $key => $value) {

@@ -197,7 +197,16 @@ class PivotController extends Controller
             $workSalaryDebt +
             $writeoffs;
 
-        $prognozBalance = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
+        $prognozZpWorker = -$ostatokPoDogovoruSZakazchikom * 0.118;
+        $prognozZpITR = -$ostatokPoDogovoruSZakazchikom * 0.066;
+        $prognozMaterial = 0;
+        $prognozPodryad = 0;
+        $prognozGeneral = -$ostatokPoDogovoruSZakazchikom * 0.082;
+        $prognozService = -$ostatokPoDogovoruSZakazchikom * 0.05;
+        $prognozConsalting = $object->code === '361' ? (-$ostatokPoDogovoruSZakazchikom * 0.1139) : 0;
+        $prognozTotal = $prognozZpWorker + $prognozZpITR + $prognozMaterial + $prognozPodryad + $prognozGeneral + $prognozService + $prognozConsalting;
+
+        $prognozBalance = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
 
         $info = [
             'name' => $object->getName(),
@@ -236,6 +245,14 @@ class PivotController extends Controller
             'dolgFactUderjannogoGU' => CurrencyExchangeRate::format($dolgFactUderjannogoGU, 'RUB'),
             'ostatokNeotrabotannogoAvansa' => CurrencyExchangeRate::format($ostatokNeotrabotannogoAvansa, 'RUB'),
             'ostatokPoDogovoruSZakazchikom' => CurrencyExchangeRate::format($ostatokPoDogovoruSZakazchikom, 'RUB'),
+            'prognoz_total' => CurrencyExchangeRate::format($prognozTotal, 'RUB'),
+            'prognoz_zp_worker' => CurrencyExchangeRate::format($prognozZpWorker, 'RUB'),
+            'prognoz_zp_itr' => CurrencyExchangeRate::format($prognozZpITR, 'RUB'),
+            'prognoz_material' => CurrencyExchangeRate::format($prognozMaterial, 'RUB'),
+            'prognoz_podryad' => CurrencyExchangeRate::format($prognozPodryad, 'RUB'),
+            'prognoz_general' => CurrencyExchangeRate::format($prognozGeneral, 'RUB'),
+            'prognoz_service' => CurrencyExchangeRate::format($prognozService, 'RUB'),
+            'prognoz_consalting' => CurrencyExchangeRate::format($prognozConsalting, 'RUB'),
         ];
 
         return response()->json(compact('info'));

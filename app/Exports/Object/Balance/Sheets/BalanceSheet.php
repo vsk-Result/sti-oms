@@ -153,7 +153,16 @@ class BalanceSheet implements
             $workSalaryDebt +
             $writeoffs;
 
-        $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU;
+        $prognozZpWorker = -$ostatokPoDogovoruSZakazchikom * 0.118;
+        $prognozZpITR = -$ostatokPoDogovoruSZakazchikom * 0.066;
+        $prognozMaterial = 0;
+        $prognozPodryad = 0;
+        $prognozGeneral = -$ostatokPoDogovoruSZakazchikom * 0.082;
+        $prognozService = -$ostatokPoDogovoruSZakazchikom * 0.05;
+        $prognozConsalting = $object->code === '361' ? (-$ostatokPoDogovoruSZakazchikom * 0.1139) : 0;
+        $prognozTotal = $prognozZpWorker + $prognozZpITR + $prognozMaterial + $prognozPodryad + $prognozGeneral + $prognozService + $prognozConsalting;
+
+        $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
 
         // -------------------------------------------------------------------------------------------------------------------
 
@@ -302,25 +311,29 @@ class BalanceSheet implements
         $sheet->setCellValue('N11', 'Долг Заказчика за выпол.работы');
         $sheet->setCellValue('N12', 'Долг Заказчика за ГУ (фактич.удерж.)');
         $sheet->setCellValue('N13', 'Текущий Баланс объекта');
+        $sheet->setCellValue('N14', 'Прогнозируемые затраты');
         $sheet->mergeCells('N10:P10');
         $sheet->mergeCells('N11:P11');
         $sheet->mergeCells('N12:P12');
         $sheet->mergeCells('N13:P13');
-        $sheet->getStyle('N10:P13')->applyFromArray($titleStyleArray);
-        $sheet->getStyle('N10:P13')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
-        $sheet->getStyle('N10:P13')->getAlignment()->setVertical('center')->setHorizontal('left');
+        $sheet->mergeCells('N14:P14');
+        $sheet->getStyle('N10:P14')->applyFromArray($titleStyleArray);
+        $sheet->getStyle('N10:P14')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
+        $sheet->getStyle('N10:P14')->getAlignment()->setVertical('center')->setHorizontal('left');
 
         $this->setValueEndColor($sheet, 'Q10', $workSalaryDebt);
         $this->setValueEndColor($sheet, 'Q11', $dolgZakazchikovZaVipolnenieRaboti);
         $this->setValueEndColor($sheet, 'Q12', $dolgFactUderjannogoGU);
         $this->setValueEndColor($sheet, 'Q13', $objectBalance);
+        $this->setValueEndColor($sheet, 'Q14', $prognozTotal);
         $sheet->mergeCells('Q10:R10');
         $sheet->mergeCells('Q11:R11');
         $sheet->mergeCells('Q12:R12');
         $sheet->mergeCells('Q13:R13');
-        $sheet->getStyle('Q10:R13')->applyFromArray($valueStyleArray);
-        $sheet->getStyle('Q10:R13')->getAlignment()->setVertical('center')->setHorizontal('right');
-        $sheet->getStyle('Q10:R13')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->mergeCells('Q14:R14');
+        $sheet->getStyle('Q10:R14')->applyFromArray($valueStyleArray);
+        $sheet->getStyle('Q10:R14')->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('Q10:R14')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
 

@@ -6,6 +6,7 @@
     $infos = App\Models\FinanceReport::getInfoFields();
 
     $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
+    $prognozFields = ['prognoz_zp_worker', 'prognoz_zp_itr', 'prognoz_material', 'prognoz_podryad', 'prognoz_general', 'prognoz_service', 'prognoz_consalting'];
     $percentField = 'general_balance_to_receive_percentage';
 @endphp
 
@@ -40,11 +41,12 @@
                                     @php
                                         $sumValue = $summary->{$year}->{$field};
                                         $isSpecialField = in_array($field, $specialFields);
+                                        $isPrognozField = in_array($field, $prognozFields);
                                     @endphp
                                     <tr>
-                                        <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }}">{{ $info }}</td>
+                                        <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">{{ $info }}</td>
                                         <td class="fw-bolder hl text-right">
-                                            <span class="{{ $isSpecialField ? $sumValue < 0 ? 'text-danger' : 'text-success' : '' }}">
+                                            <span class="{{ $isSpecialField ? $sumValue < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">
                                                 @if ($percentField === $field)
                                                     {{ number_format($sumValue, 2) . '%' }}
                                                 @else
@@ -58,7 +60,7 @@
                                                 $value = $total->{$year}->{$object->code}->{$field};
                                             @endphp
                                             <td class="text-right {{ $loop->first ? 'bl' : '' }} {{ $loop->last ? 'pe-4' : '' }}">
-                                                <span class="{{ $isSpecialField ? $value < 0 ? 'text-danger' : 'text-success' : '' }}">
+                                                <span class="{{ $isSpecialField ? $value < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }} {{ $field === 'prognoz_total' ? 'fw-boldest' : '' }}">
                                                     {{ $value === 0 ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
                                                 </span>
                                             </td>
