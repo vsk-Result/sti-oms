@@ -25,11 +25,15 @@ class TaxPlanItemController extends Controller
     public function index(Request $request): View
     {
         $total = [];
-        $objects = BObject::orderBy('code')->get();
-        $companies = Company::orderBy('name')->get();
+        $names = TaxPlanItem::select('name')->distinct()->orderBy('name', 'ASC')->pluck('name')->toArray();
+        $company_ids = TaxPlanItem::select('company_id')->distinct()->pluck('company_id')->toArray();
+        $companies = Company::whereIn('id', $company_ids)->orderBy('name')->get();
+        $object_ids = TaxPlanItem::select('object_id')->distinct()->pluck('object_id')->toArray();
+        $objects = BObject::whereIn('id', $object_ids)->orderBy('code')->get();
+
         $items = $this->taxPlanItemService->filterTaxPlan($request->toArray(), $total);
 
-        return view('tax-plan.index', compact('items', 'total', 'companies', 'objects'));
+        return view('tax-plan.index', compact('items', 'total', 'companies', 'objects', 'names'));
     }
 
     public function create(Request $request): View
