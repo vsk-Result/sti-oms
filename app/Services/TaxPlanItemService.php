@@ -35,7 +35,7 @@ class TaxPlanItemService
         }
 
         if (! empty($requestData['name'])) {
-            $query->where('name', 'LIKE', '%' . $requestData['name'] . '%');
+            $query->whereIn('name', $requestData['name']);
         }
 
         if (! empty($requestData['period'])) {

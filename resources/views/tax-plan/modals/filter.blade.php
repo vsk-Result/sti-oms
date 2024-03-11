@@ -6,6 +6,7 @@
             </div>
 
             <form action="{{ request()->url() }}" method="GET">
+
                 <input name="filter" type="hidden" value="{{ request()->get('filter', 'current') }}" />
 
                 <div class="modal-body">
@@ -13,7 +14,17 @@
                         <div class="col-md-4">
                             <div class="form-group mb-3">
                                 <label class="form-label">Наименование</label>
-                                <input name="name" class="form-control form-control-solid" value="{{ request()->input('name', '') }}" autocomplete="off" />
+                                <select
+                                        name="name[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterTaxPlanModal"
+                                        multiple
+                                >
+                                    @foreach($names as $key => $name)
+                                        <option value="{{ $name }}" {{ in_array($name, request()->input('name', [])) ? 'selected' : '' }}>{{ $name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="form-group mb-3">
