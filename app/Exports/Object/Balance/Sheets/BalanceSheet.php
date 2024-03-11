@@ -369,11 +369,13 @@ class BalanceSheet implements
         $sheet->getStyle('B17:X17')->getFont()->setName('Calibri')->setSize(14);
 
         $sheet->setCellValue('B16', 'Долг подрядчикам');
-        $sheet->setCellValue('H16', 'Долг поставщикам');
-        $sheet->setCellValue('N16', 'Долг за услуги');
+        $sheet->setCellValue('H16', 'Долг подрядчикам за ГУ');
+        $sheet->setCellValue('N16', 'Долг поставщикам');
+        $sheet->setCellValue('T16', 'Долг за услуги');
         $sheet->mergeCells('B16:F16');
         $sheet->mergeCells('H16:L16');
         $sheet->mergeCells('N16:R16');
+        $sheet->mergeCells('T16:X16');
         $sheet->getStyle('B16:X16')->getAlignment()->setVertical('center')->setHorizontal('left');
         $sheet->getStyle('B16:X16')->getFont()->setColor(new Color('f25a21'));
         $sheet->getStyle('B16:X17')->getFont()->setBold(true);
@@ -420,10 +422,25 @@ class BalanceSheet implements
         $sheet->getStyle('Q17:R29')->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('N28:R29')->getFont()->setBold(true);
 
+        $sheet->setCellValue('T17', 'Контрагент');
+        $sheet->setCellValue('W17', 'Сумма долга');
+        $sheet->setCellValue('T28', 'ОСТАЛЬНЫЕ');
+        $sheet->setCellValue('T29', 'ИТОГО');
+        $sheet->mergeCells('T17:V17');
+        $sheet->mergeCells('W17:X17');
+        $sheet->mergeCells('T28:V28');
+        $sheet->mergeCells('T29:V29');
+        $sheet->mergeCells('W28:X28');
+        $sheet->mergeCells('W29:X29');
+        $sheet->getStyle('T17:V29')->getAlignment()->setVertical('center')->setHorizontal('left');
+        $sheet->getStyle('W17:X29')->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('T28:X29')->getFont()->setBold(true);
+
         $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
         $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
         $ds = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
 
+        $totalSum = 0;
         $otherSum = 0;
         $count = 0;
         $row = 18;
@@ -434,7 +451,7 @@ class BalanceSheet implements
             $resultAmount = $amount;
             if ($objectExistInObjectImport) {
                 $resultAmount += $ds->where('organization_id', $organizationId)->sum('avans');
-                $resultAmount += $ds->where('organization_id', $organizationId)->sum('guarantee');
+                $totalSum += $resultAmount;
             }
 
             $sorted[$organization] = $resultAmount;
@@ -444,6 +461,10 @@ class BalanceSheet implements
 
         foreach ($sorted as $organization => $amount) {
             $organizationName = substr($organization, strpos($organization, '::') + 2);
+
+            if ($amount < 1 && $amount > -1) {
+                continue;
+            }
 
             if ($count === 10) {
                 $otherSum += $amount;
@@ -460,24 +481,43 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'E28', $otherSum);
-        $this->setValueEndColor($sheet, 'E29', $contractorDebtsAmount);
+        $this->setValueEndColor($sheet, 'E29', $totalSum);
         $sheet->getStyle('B17:F28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('B17:F17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('B29:F29')->applyFromArray($titleStyleArray);
         $sheet->getStyle('B29:F29')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('E18:F29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-
+        $totalSum = 0;
         $otherSum = 0;
         $count = 0;
         $row = 18;
-        foreach ($debts['provider']->debts as $organization => $amount) {
+
+        $sorted = [];
+        foreach ($debts['contractor']->debts as $organization => $amount) {
+            $organizationId = substr($organization, 0, strpos($organization, '::'));
+            $resultAmount = 0;
+            if ($objectExistInObjectImport) {
+                $resultAmount += $ds->where('organization_id', $organizationId)->sum('guarantee');
+                $totalSum += $resultAmount;
+            }
+
+            $sorted[$organization] = $resultAmount;
+        }
+
+        asort($sorted);
+
+        foreach ($sorted as $organization => $amount) {
+            $organizationName = substr($organization, strpos($organization, '::') + 2);
+
+            if ($amount < 1 && $amount > -1) {
+                continue;
+            }
+
             if ($count === 10) {
                 $otherSum += $amount;
                 continue;
             }
-
-            $organizationName = substr($organization, strpos($organization, '::') + 2);
 
             $sheet->setCellValue('H' . $row, $organizationName);
             $this->setValueEndColor($sheet, 'K' . $row, $amount);
@@ -489,7 +529,7 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'K28', $otherSum);
-        $this->setValueEndColor($sheet, 'K29', $providerDebtsAmount);
+        $this->setValueEndColor($sheet, 'K29', $totalSum);
         $sheet->getStyle('H17:L28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('H17:L17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('H29:L29')->applyFromArray($titleStyleArray);
@@ -500,7 +540,7 @@ class BalanceSheet implements
         $otherSum = 0;
         $count = 0;
         $row = 18;
-        foreach ($debts['service']->debts as $organization => $amount) {
+        foreach ($debts['provider']->debts as $organization => $amount) {
             if ($count === 10) {
                 $otherSum += $amount;
                 continue;
@@ -518,12 +558,41 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'Q28', $otherSum);
-        $this->setValueEndColor($sheet, 'Q29', $serviceDebtsAmount);
+        $this->setValueEndColor($sheet, 'Q29', $providerDebtsAmount);
         $sheet->getStyle('N17:R28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('N17:R17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('N29:R29')->applyFromArray($titleStyleArray);
         $sheet->getStyle('N29:R29')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('Q18:R29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+
+        $otherSum = 0;
+        $count = 0;
+        $row = 18;
+        foreach ($debts['service']->debts as $organization => $amount) {
+            if ($count === 10) {
+                $otherSum += $amount;
+                continue;
+            }
+
+            $organizationName = substr($organization, strpos($organization, '::') + 2);
+
+            $sheet->setCellValue('T' . $row, $organizationName);
+            $this->setValueEndColor($sheet, 'W' . $row, $amount);
+            $sheet->mergeCells('T' . $row . ':V' . $row);
+            $sheet->mergeCells('W' . $row . ':X' . $row);
+
+            $row++;
+            $count++;
+        }
+
+        $this->setValueEndColor($sheet, 'W28', $otherSum);
+        $this->setValueEndColor($sheet, 'W29', $serviceDebtsAmount);
+        $sheet->getStyle('T17:X28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
+        $sheet->getStyle('T17:X17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
+        $sheet->getStyle('T29:X29')->applyFromArray($titleStyleArray);
+        $sheet->getStyle('T29:X29')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
+        $sheet->getStyle('W18:X29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
     }
 
     public function drawings()
