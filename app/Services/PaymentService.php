@@ -102,42 +102,52 @@ class PaymentService
             });
         }
         if (! empty($requestData['object_id'])) {
-
+            $type_array = [];
             $hasGeneral = in_array('Общее', $requestData['object_id']);
             $hasTransfer = in_array('Трансфер', $requestData['object_id']);
 
             if ($hasGeneral) {
+                $type_array[] = Payment::TYPE_GENERAL;
                 unset($requestData['object_id'][array_search('Общее', $requestData['object_id'])]);
             }
 
             if ($hasTransfer) {
+                $type_array[] = Payment::TYPE_TRANSFER;
                 unset($requestData['object_id'][array_search('Трансфер', $requestData['object_id'])]);
             }
 
             if (! empty($requestData['object_id'])) {
+                $type_array[] = Payment::TYPE_OBJECT;
+                $paymentQuery->whereIn('object_id', $requestData['object_id'])
+                    ->orWhere(function($q) use ($hasGeneral, $hasTransfer) {
+                        if ($hasGeneral || $hasTransfer) {
+                            $q->whereNull('object_id');
+                        }
+                    });
+            } else {
                 if ($hasGeneral || $hasTransfer) {
-                    $requestData['object_id'][] = null;
+                    $paymentQuery->whereNull('object_id');
                 }
-                $paymentQuery->whereIn('object_id', $requestData['object_id']);
             }
-
-            if ($hasGeneral || $hasTransfer) {
-                unset($requestData['object_id'][array_search(null, $requestData['object_id'])]);
-                $paymentQuery->where(function($q) use($hasGeneral, $hasTransfer, $requestData) {
-
-                    if (! empty($requestData['object_id'])) {
-                        $q->orWhere('type_id', Payment::TYPE_OBJECT);
-                    }
-
-                    if ($hasGeneral) {
-                        $q->orWhere('type_id', Payment::TYPE_GENERAL);
-                    }
-
-                    if ($hasTransfer) {
-                        $q->orWhere('type_id', Payment::TYPE_TRANSFER);
-                    }
-                });
-            }
+            $paymentQuery->whereIn('type_id', $type_array);
+//            whereIn('type_id', $ar)
+//            if ($hasGeneral || $hasTransfer) {
+//                unset($requestData['object_id'][array_search(null, $requestData['object_id'])]);
+//                $paymentQuery->where(function($q) use($hasGeneral, $hasTransfer, $requestData) {
+//
+//                    if (! empty($requestData['object_id'])) {
+//                        $q->orWhere('type_id', Payment::TYPE_OBJECT);
+//                    }
+//
+//                    if ($hasGeneral) {
+//                        $q->orWhere('type_id', Payment::TYPE_GENERAL);
+//                    }
+//
+//                    if ($hasTransfer) {
+//                        $q->orWhere('type_id', Payment::TYPE_TRANSFER);
+//                    }
+//                });
+//            }
         } else {
             if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
                 $paymentQuery->whereIn('object_id', auth()->user()->objects->pluck('id'));
