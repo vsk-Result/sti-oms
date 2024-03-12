@@ -118,12 +118,14 @@ class PaymentService
 
             if (! empty($requestData['object_id'])) {
                 $type_array[] = Payment::TYPE_OBJECT;
-                $paymentQuery->whereIn('object_id', $requestData['object_id'])
-                    ->orWhere(function($q) use ($hasGeneral, $hasTransfer) {
-                        if ($hasGeneral || $hasTransfer) {
-                            $q->whereNull('object_id');
-                        }
-                    });
+                $paymentQuery->where(function($q) use ($hasGeneral, $hasTransfer, $requestData) {
+                    if (! empty($requestData['object_id'])) {
+                        $q->orWhereIn('object_id', $requestData['object_id']);
+                    }
+                    if ($hasGeneral || $hasTransfer) {
+                        $q->orWhereNull('object_id');
+                    }
+                });
             } else {
                 if ($hasGeneral || $hasTransfer) {
                     $paymentQuery->whereNull('object_id');
