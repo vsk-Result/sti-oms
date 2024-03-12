@@ -6,7 +6,7 @@
     $infos = App\Models\FinanceReport::getInfoFields();
 
     $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
-    $prognozFields = ['prognoz_zp_worker', 'prognoz_zp_itr', 'prognoz_material', 'prognoz_podryad', 'prognoz_general', 'prognoz_service', 'prognoz_consalting'];
+    $prognozFields = array_values(\App\Models\FinanceReport::getPrognozFields());
     $percentField = 'general_balance_to_receive_percentage';
 @endphp
 

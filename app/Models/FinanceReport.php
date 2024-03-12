@@ -4,9 +4,41 @@ namespace App\Models;
 
 class FinanceReport
 {
-    public static function getInfoFields(): array
+    public static function getPrognozFields(): array
     {
         return [
+            'Зарплата и налоги для рабочих (11,8%)' => 'prognoz_zp_worker',
+            'Зарплата и налоги для ИТР (6,6%)' => 'prognoz_zp_itr',
+            'Покупка материала' => 'prognoz_material',
+            'Оплата подрядчиков' => 'prognoz_podryad',
+            'Общие расходы (8,20%)' => 'prognoz_general',
+            'Услуги (5%)' => 'prognoz_service',
+            'Консалтинг (Кемерово 11,39%)' => 'prognoz_consalting',
+        ];
+    }
+
+    public static function getPercentForField(string $field): float
+    {
+        return [
+            'prognoz_zp_worker' => 0.118,
+            'prognoz_zp_itr' => 0.066,
+            'prognoz_material' => 0,
+            'prognoz_podryad' => 0,
+            'prognoz_general' => 0.082,
+            'prognoz_service' => 0.05,
+            'prognoz_consalting' => 0.1139
+        ][$field];
+    }
+
+    public static function getNameForField(string $field): string
+    {
+        return array_search($field, self::getPrognozFields());
+    }
+
+    public static function getInfoFields(): array
+    {
+        $prognozFields = self::getPrognozFields();
+        $infoFields = [
             'Приходы' => 'receive',
             'Расходы' => 'pay',
             'Сальдо без общ. Расходов' => 'balance',
@@ -26,14 +58,8 @@ class FinanceReport
             'Остаток неотработанного аванса' => 'ostatokNeotrabotannogoAvansa',
             'Остаток к получ. от заказчика (в т.ч. ГУ)' => 'ostatokPoDogovoruSZakazchikom',
             'Прогнозируемые затраты ИТОГО' => 'prognoz_total',
-            'Прогнозируемые затраты на з/п и налоги для рабочих (11,8%)' => 'prognoz_zp_worker',
-            'Прогнозируемые затраты на з/п и налоги для ИТР (6,6%)' => 'prognoz_zp_itr',
-            'Прогнозируемые затраты на покупку материала' => 'prognoz_material',
-            'Прогнозируемые затраты на оплату подрядчиков' => 'prognoz_podryad',
-            'Прогнозируемые общие расходы (8,20%)' => 'prognoz_general',
-            'Прогнозируемые затраты на услуги (5%)' => 'prognoz_service',
-            'Прогнозируемые затраты на консалтинг (Кемерово 11,39%)' => 'prognoz_consalting',
-            'Прогнозируемый Баланс объекта' => 'prognozBalance',
         ];
+
+        return array_merge($infoFields, $prognozFields, ['Прогнозируемый Баланс объекта' => 'prognozBalance']);
     }
 }

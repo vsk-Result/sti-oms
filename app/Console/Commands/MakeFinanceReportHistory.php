@@ -11,6 +11,7 @@ use App\Models\Loan;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\PaymentImport;
+use App\Models\Status;
 use App\Services\Contract\ContractService;
 use App\Services\CRONProcessService;
 use App\Services\CurrencyExchangeRateService;
@@ -18,6 +19,7 @@ use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
 use App\Services\FinanceReport\DepositService;
 use App\Services\FinanceReport\LoanService;
+use App\Services\ObjectPlanPaymentService;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -36,6 +38,7 @@ class MakeFinanceReportHistory extends Command
     private PivotObjectDebtService $pivotObjectDebtService;
     private CurrencyExchangeRateService $currencyExchangeService;
     private ContractService $contractService;
+    private ObjectPlanPaymentService $objectPlanPaymentService;
 
     public function __construct(
         AccountBalanceService $accountBalanceService,
@@ -46,6 +49,7 @@ class MakeFinanceReportHistory extends Command
         PivotObjectDebtService $pivotObjectDebtService,
         CurrencyExchangeRateService $currencyExchangeService,
         ContractService $contractService,
+        ObjectPlanPaymentService $objectPlanPaymentService,
     ) {
         parent::__construct();
         $this->accountBalanceService = $accountBalanceService;
@@ -55,6 +59,7 @@ class MakeFinanceReportHistory extends Command
         $this->pivotObjectDebtService = $pivotObjectDebtService;
         $this->currencyExchangeService = $currencyExchangeService;
         $this->contractService = $contractService;
+        $this->objectPlanPaymentService = $objectPlanPaymentService;
         $this->CRONProcessService = $CRONProcessService;
         $this->CRONProcessService->createProcess(
             $this->signature,
@@ -114,16 +119,16 @@ class MakeFinanceReportHistory extends Command
             $years = [];
 
             foreach ($objects as $object) {
-                if ($object->status_id === \App\Models\Status::STATUS_BLOCKED && !empty($object->closing_date)) {
+                if ($object->status_id === Status::STATUS_BLOCKED && !empty($object->closing_date)) {
 //                    $year = \Carbon\Carbon::parse($object->closing_date)->format('Y');
 //
 //                    $years[$year][] = $object;
                     $years['Закрытые'][] = $object;
-                } else if ($object->status_id === \App\Models\Status::STATUS_BLOCKED && empty($object->closing_date)) {
+                } else if ($object->status_id === Status::STATUS_BLOCKED && empty($object->closing_date)) {
 //                    $years['Закрыты, дата не указана'][] = $object;
                     $years['Закрытые'][] = $object;
                 } else {
-                    if ($object->status_id !== \App\Models\Status::STATUS_DELETED) {
+                    if ($object->status_id !== Status::STATUS_DELETED) {
                         $years['Активные'][] = $object;
                     }
                 }
@@ -132,38 +137,13 @@ class MakeFinanceReportHistory extends Command
             $summary = [];
 
             foreach ($years as $year => $objects) {
-                $summary[$year] = [
-                    'receive' => 0,
-                    'pay' => 0,
-                    'balance' => 0,
-                    'general_balance' => 0,
-                    'general_balance_to_receive_percentage' => 0,
-                    'balance_with_general_balance' => 0,
-                    'contractor_debt' => 0,
-                    'contractor_debt_gu' => 0,
-                    'provider_debt' => 0,
-                    'service_debt' => 0,
-                    'itr_salary_debt' => 0,
-                    'workers_salary_debt' => 0,
-                    'dolgZakazchikovZaVipolnenieRaboti' => 0,
-                    'dolgFactUderjannogoGU' => 0,
-                    'objectBalance' => 0,
-                    'contractsTotalAmount' => 0,
-                    'ostatokNeotrabotannogoAvansa' => 0,
-                    'ostatokPoDogovoruSZakazchikom' => 0,
-                    'prognoz_total' => 0,
-                    'prognoz_zp_worker' => 0,
-                    'prognoz_zp_itr' => 0,
-                    'prognoz_material' => 0,
-                    'prognoz_podryad' => 0,
-                    'prognoz_general' => 0,
-                    'prognoz_service' => 0,
-                    'prognoz_consalting' => 0,
-                    'prognozBalance' => 0,
-                ];
+                $fields = FinanceReport::getInfoFields();
+                foreach ($fields as $field) {
+                    $summary[$year][$field] = 0;
+                }
             }
 
-            $paymentQuery = \App\Models\Payment::select('object_id', 'amount');
+            $paymentQuery = Payment::select('object_id', 'amount');
 
             foreach ($years as $year => $objects) {
                 foreach ($objects as $object) {
@@ -181,12 +161,12 @@ class MakeFinanceReportHistory extends Command
                     $contractorDebtsAmount = $debts['contractor']->total_amount;
                     $contractorGuaranteeDebtsAmount = 0;
 
-                    $debtObjectImport = \App\Models\Debt\DebtImport::where('type_id', \App\Models\Debt\DebtImport::TYPE_OBJECT)->latest('date')->first();
+                    $debtObjectImport = DebtImport::where('type_id',DebtImport::TYPE_OBJECT)->latest('date')->first();
                     $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
 
                     if ($objectExistInObjectImport) {
-                        $contractorDebtsAvans = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-                        $contractorDebtsGU = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
+                        $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
+                        $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
                         $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
                         $contractorGuaranteeDebtsAmount = $contractorDebtsGU;
                     }
@@ -252,7 +232,7 @@ class MakeFinanceReportHistory extends Command
                         $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
                     }
 
-                    if (! empty($object->closing_date) && $object->status_id === \App\Models\Status::STATUS_BLOCKED) {
+                    if (! empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
                         $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                     }
 
@@ -268,16 +248,37 @@ class MakeFinanceReportHistory extends Command
 
                     $generalBalanceToReceivePercentage = $object->total_receive == 0 ? 0 : $object->general_balance / $object->total_receive * 100;
 
-                    $prognozZpWorker = -$ostatokPoDogovoruSZakazchikom * 0.118;
-                    $prognozZpITR = -$ostatokPoDogovoruSZakazchikom * 0.066;
-                    $prognozMaterial = 0;
-                    $prognozPodryad = 0;
-                    $prognozGeneral = -$ostatokPoDogovoruSZakazchikom * 0.082;
-                    $prognozService = -$ostatokPoDogovoruSZakazchikom * 0.05;
-                    $prognozConsalting = $object->code === '361' ? (-$ostatokPoDogovoruSZakazchikom * 0.1139) : 0;
-                    $prognozTotal = $prognozZpWorker + $prognozZpITR + $prognozMaterial + $prognozPodryad + $prognozGeneral + $prognozService + $prognozConsalting;
+                    // ------ Расчет прогнозируемых затрат
+
+                    if ($object->planPayments->count() === 0) {
+                        $this->objectPlanPaymentService->makeDefaultPaymentsForObject($object->id);
+                    }
+
+                    $prognozTotal = 0;
+                    $prognozFields = FinanceReport::getPrognozFields();
+                    foreach ($prognozFields as $field) {
+                        $prognozAmount = -$ostatokPoDogovoruSZakazchikom * FinanceReport::getPercentForField($field);
+
+                        if ($field === 'prognoz_consalting' && $object->code !== '361') {
+                            $prognozAmount = 0;
+                        }
+
+                        $total[$year][$object->code][$field] = $prognozAmount;
+                        $prognozTotal += $prognozAmount;
+
+                        foreach ($object->planPayments as $planPayment) {
+                            if ($field === $planPayment->field && $planPayment->isAutoCalculation()) {
+                                $planPayment->update([
+                                    'amount' => $prognozAmount
+                                ]);
+                                break;
+                            }
+                        }
+                    }
 
                     $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
+
+                    //----------------------------------------
 
                     $total[$year][$object->code]['pay'] = $object->total_pay;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
@@ -290,7 +291,7 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['contractor_debt_gu'] = $contractorGuaranteeDebtsAmount;
                     $total[$year][$object->code]['provider_debt'] = $providerDebtsAmount;
                     $total[$year][$object->code]['service_debt'] = $serviceDebtsAmount;
-                    $total[$year][$object->code]['itr_salary_debt'] = $ITRSalaryDebt;
+//                    $total[$year][$object->code]['itr_salary_debt'] = $ITRSalaryDebt;
                     $total[$year][$object->code]['workers_salary_debt'] = $workSalaryDebt;
                     $total[$year][$object->code]['dolgZakazchikovZaVipolnenieRaboti'] = $dolgZakazchikovZaVipolnenieRaboti;
                     $total[$year][$object->code]['dolgFactUderjannogoGU'] = $dolgFactUderjannogoGU;
@@ -299,13 +300,6 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['ostatokNeotrabotannogoAvansa'] = $ostatokNeotrabotannogoAvansa;
                     $total[$year][$object->code]['ostatokPoDogovoruSZakazchikom'] = $ostatokPoDogovoruSZakazchikom;
                     $total[$year][$object->code]['prognoz_total'] = $prognozTotal;
-                    $total[$year][$object->code]['prognoz_zp_worker'] = $prognozZpWorker;
-                    $total[$year][$object->code]['prognoz_zp_itr'] = $prognozZpITR;
-                    $total[$year][$object->code]['prognoz_material'] = $prognozMaterial;
-                    $total[$year][$object->code]['prognoz_podryad'] = $prognozPodryad;
-                    $total[$year][$object->code]['prognoz_general'] = $prognozGeneral;
-                    $total[$year][$object->code]['prognoz_service'] = $prognozService;
-                    $total[$year][$object->code]['prognoz_consalting'] = $prognozConsalting;
                     $total[$year][$object->code]['prognozBalance'] = $prognozBalance;
 
                     foreach ($total[$year][$object->code] as $key => $value) {

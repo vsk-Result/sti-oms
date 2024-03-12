@@ -702,7 +702,19 @@
 
                 <div class="d-flex flex-stack">
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Прогнозируемые затраты</div>
+                        <div class="text-gray-700 fw-semibold fs-7 me-2">
+                            <div
+                                    class="cursor-pointer"
+                                    data-bs-custom-class="plan-payments-detailing-popover"
+                                    data-bs-toggle="popover"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    title="Прогнозируемые затраты"
+                                    data-bs-content='@include('objects.parts.debts-details.plan_payments')'
+                            >
+                                Прогнозируемые затраты
+                            </div>
+                        </div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $prognozTotal < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($prognozTotal, 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($prognozTotal, 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($prognozTotal, 'RUB') }}
                         </div>

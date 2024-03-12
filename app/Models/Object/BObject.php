@@ -5,13 +5,10 @@ namespace App\Models\Object;
 use App\Models\BankGuarantee;
 use App\Models\Contract\Act;
 use App\Models\Contract\Contract;
-use App\Models\CRM\Avans;
 use App\Models\CRM\ItrSalary;
 use App\Models\CRM\SalaryDebt;
 use App\Models\CRM\SalaryPaidMonth;
 use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
-use App\Models\Debt\DebtManual;
 use App\Models\Guarantee;
 use App\Models\GuaranteePayment;
 use App\Models\Organization;
@@ -55,6 +52,11 @@ class BObject extends Model implements Audit
             Status::STATUS_BLOCKED => 'Закрыт',
             Status::STATUS_DELETED => 'Удален'
         ];
+    }
+
+    public function planPayments(): HasMany
+    {
+        return $this->hasMany(PlanPayment::class, 'object_id');
     }
 
     public function imports(): HasMany
