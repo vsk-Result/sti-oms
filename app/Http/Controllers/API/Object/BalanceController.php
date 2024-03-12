@@ -34,6 +34,9 @@ class BalanceController extends Controller
         $total = $objectsInfo->total;
 
         foreach($years as $year => $objects) {
+            if ($year !== 'Активные') {
+                continue;
+            }
             foreach($objects as $object) {
                 $info[] = [
                     'id' => $object->id,
