@@ -263,6 +263,10 @@ class MakeFinanceReportHistory extends Command
                             $prognozAmount = 0;
                         }
 
+                        if ($field === 'prognoz_podryad') {
+                            $prognozAmount = $debts['contractor']->balance_contract;
+                        }
+
                         $total[$year][$object->code][$field] = $prognozAmount;
                         $prognozTotal += $prognozAmount;
 

@@ -44,8 +44,9 @@ class PivotObjectDebtService
     {
         $this->object = BObject::find($objectId);
 
-        $contractorDebts = $this->getContractorDebts();
+        $contractorDebtsInfo = $this->getContractorDebts();
 
+        $contractorDebts = $contractorDebtsInfo['debts'];
         $contractorTotalAmount = array_sum($contractorDebts);
 
         if ($this->object->code === '288') {
@@ -60,7 +61,9 @@ class PivotObjectDebtService
 
         $contractorInfo = [
             'debts' => $contractorDebts,
-            'total_amount' => $contractorTotalAmount
+            'total_amount' => $contractorTotalAmount,
+            'amount_without_nds' => $contractorDebtsInfo['amount_without_nds'],
+            'balance_contract' => $contractorDebtsInfo['balance_contract'],
         ];
 
         $providerDebts = $this->getProviderDebts();
@@ -188,7 +191,14 @@ class PivotObjectDebtService
             }
         }
 
-        return $result;
+        $amountWithoutNDS = $debts->sum('amount_without_nds');
+        $balanceContract = $debts->sum('balance_contract');
+
+        return [
+            'debts' => $result,
+            'amount_without_nds' => $amountWithoutNDS,
+            'balance_contract' => $balanceContract
+        ];
     }
 
     private function getProviderDebts(): array

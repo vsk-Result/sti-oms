@@ -142,6 +142,8 @@ class ImportObjectDebtsFromExcel extends Command
                     $amountDebt = $row[2];
                     $guarantee = $row[3];
                     $avans = $row[4];
+                    $nds = mb_strtolower($row[5] ?? '');
+                    $balanceContract = $row[6] ?? 0;
 
                     if (empty($amountDebt)) {
                         $amountDebt = 0;
@@ -151,6 +153,30 @@ class ImportObjectDebtsFromExcel extends Command
                     }
                     if (empty($avans)) {
                         $avans = 0;
+                    }
+
+                    if (is_string($amountDebt)) {
+                        $amountDebt = str_replace(',', '.', $amountDebt);
+                        $amountDebt = (float) str_replace(' ', '', $amountDebt);
+                    }
+                    if (is_string($guarantee)) {
+                        $guarantee = str_replace(',', '.', $guarantee);
+                        $guarantee = (float) str_replace(' ', '', $guarantee);
+                    }
+                    if (is_string($avans)) {
+                        $avans = str_replace(',', '.', $avans);
+                        $avans = (float) str_replace(' ', '', $avans);
+                    }
+                    if (is_string($balanceContract)) {
+                        $balanceContract = str_replace(',', '.', $balanceContract);
+                        $balanceContract = (float) str_replace(' ', '', $balanceContract);
+                    }
+
+                    $amountDebtWithoutDNS = -$amountDebt;
+                    if (! empty($nds)) {
+                        if ($nds === 'ндс' || $nds === 'с ндс') {
+                            $amountDebtWithoutDNS = -($amountDebt - ($amountDebt / 6));
+                        }
                     }
 
                     $organization = $this->organizationService->getOrCreateOrganization([
@@ -173,7 +199,7 @@ class ImportObjectDebtsFromExcel extends Command
                         'amount' => -$amountDebt,
                         'guarantee' => -$guarantee,
                         'avans' => -$avans,
-                        'amount_without_nds' => -($amountDebt - ($amountDebt / 6)),
+                        'amount_without_nds' => $amountDebtWithoutDNS,
                         'status_id' => Status::STATUS_ACTIVE,
                         'category' => '',
                         'code' => '',
@@ -183,7 +209,8 @@ class ImportObjectDebtsFromExcel extends Command
                         'comment' => '',
                         'contract' => $contract,
                         'invoice_payment_due_date' => null,
-                        'invoice_amount' => 0
+                        'invoice_amount' => 0,
+                        'balance_contract' => -$balanceContract,
                     ]);
                 }
 
@@ -210,7 +237,6 @@ class ImportObjectDebtsFromExcel extends Command
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Импорт прошел успешно');
         $this->CRONProcessService->successProcess($this->signature);
-
 
         if ($prevImport) {
             $prevImport->delete();

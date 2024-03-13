@@ -220,6 +220,7 @@ class DebtService
             'comment' => $requestData['comment'] ?? null,
             'invoice_payment_due_date' => $requestData['invoice_payment_due_date'] ?? null,
             'invoice_amount' => $requestData['invoice_amount'] ?? 0,
+            'balance_contract' => $requestData['balance_contract'] ?? 0,
         ]);
 
         return $debt;
