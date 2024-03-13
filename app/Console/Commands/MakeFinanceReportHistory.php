@@ -274,6 +274,12 @@ class MakeFinanceReportHistory extends Command
                             $prognozAmount = $debts['contractor']->balance_contract;
                         }
 
+                        if ($field === 'prognoz_general') {
+                            if ($generalBalanceToReceivePercentage <= -6 && $generalBalanceToReceivePercentage >= -10) {
+                                $prognozAmount = -$ostatokPoDogovoruSZakazchikom * (abs($generalBalanceToReceivePercentage) / 100);
+                            }
+                        }
+
                         $total[$year][$object->code][$field] = $prognozAmount;
                         $prognozTotal += $prognozAmount;
 
