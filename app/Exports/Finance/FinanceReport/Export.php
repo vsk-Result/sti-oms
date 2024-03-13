@@ -22,6 +22,9 @@ class Export implements WithMultipleSheets
         $years = collect($this->info['objectsInfo']->years)->toArray();
         $summary = $this->info['objectsInfo']->summary;
 
+        unset($years['Общие']);
+        unset($years['Удаленные']);
+
         $sheets = [
             new PivotSheet('Сводная по балансам и долгам', $this->info),
         ];

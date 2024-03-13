@@ -110,15 +110,20 @@ class MakeFinanceReportHistory extends Command
 
             $total = [];
 
-            $objects = BObject::withoutGeneral()
-                ->select(['id', 'code', 'name', 'closing_date', 'status_id'])
+            $objects = BObject::select(['id', 'code', 'name', 'closing_date', 'status_id'])
                 ->orderByDesc('code')
                 ->orderByDesc('closing_date')
                 ->get();
 
+            $generalObjectCodes = BObject::getCodesWithoutWorktype();
+
             $years = [];
 
             foreach ($objects as $object) {
+                if (in_array($object->code, $generalObjectCodes)) {
+                    $years['Общие'][] = $object;
+                    continue;
+                }
                 if ($object->status_id === Status::STATUS_BLOCKED && !empty($object->closing_date)) {
 //                    $year = \Carbon\Carbon::parse($object->closing_date)->format('Y');
 //
@@ -130,6 +135,8 @@ class MakeFinanceReportHistory extends Command
                 } else {
                     if ($object->status_id !== Status::STATUS_DELETED) {
                         $years['Активные'][] = $object;
+                    } else {
+                        $years['Удаленные'][] = $object;
                     }
                 }
             }

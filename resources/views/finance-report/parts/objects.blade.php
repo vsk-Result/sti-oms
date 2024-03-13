@@ -8,6 +8,9 @@
     $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
     $prognozFields = array_values(\App\Models\FinanceReport::getPrognozFields());
     $percentField = 'general_balance_to_receive_percentage';
+
+    unset($years['Общие']);
+    unset($years['Удаленные']);
 @endphp
 
 <div class="card mt-5">
