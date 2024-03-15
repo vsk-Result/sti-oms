@@ -153,6 +153,20 @@ class MakeFinanceReportHistory extends Command
             $paymentQuery = Payment::select('object_id', 'amount');
 
             foreach ($years as $year => $objects) {
+                $sGeneralTotal = 0;
+                $sReceiveTotal = 0;
+
+                foreach ($objects as $object) {
+                    $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
+                    $pay = $objectPayments->where('amount', '<', 0)->sum('amount');
+                    $receive = $objectPayments->sum('amount') - $pay;
+
+                    $sReceiveTotal += $receive;
+                    $sGeneralTotal += $object->generalCosts()->sum('amount');
+                }
+
+                $avgPercent = (float) number_format($sReceiveTotal == 0 ? 0 : $sGeneralTotal / $sReceiveTotal * 100, 2);
+
                 foreach ($objects as $object) {
 
                     $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
@@ -275,9 +289,9 @@ class MakeFinanceReportHistory extends Command
                         }
 
                         if ($field === 'prognoz_general') {
-                            if ($generalBalanceToReceivePercentage <= -6 && $generalBalanceToReceivePercentage >= -10) {
-                                $prognozAmount = -$ostatokPoDogovoruSZakazchikom * (abs($generalBalanceToReceivePercentage) / 100);
-                            }
+//                            if ($avgPercent < -15) {
+                                $prognozAmount = -$ostatokPoDogovoruSZakazchikom * (abs($avgPercent) / 100);
+//                            }
                         }
 
                         $total[$year][$object->code][$field] = $prognozAmount;

@@ -111,14 +111,17 @@
 
                 $objectsInfo = json_decode($financeReportHistory->objects_new);
                 $years = collect($objectsInfo->years)->toArray();
+                $summary = $objectsInfo->summary;
                 $total = $objectsInfo->total;
 
+                $summ = [];
                 $info = [];
 
                 foreach ($years as $year => $objects) {
                     foreach ($objects as $o) {
                         if ($o->id === $object->id) {
                             $info = (array) $total->{$year}->{$object->code};
+                            $summ = (array) $summary->{$year};
                             break;
                         }
                     }

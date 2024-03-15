@@ -47,7 +47,13 @@
                                         $isPrognozField = in_array($field, $prognozFields);
                                     @endphp
                                     <tr>
-                                        <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">{{ $info }}</td>
+                                        <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">
+                                            @if ($field === 'prognoz_general')
+                                                {{ 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)' }}
+                                            @else
+                                                {{ $info }}
+                                            @endif
+                                        </td>
                                         <td class="fw-bolder hl text-right">
                                             <span class="{{ $isSpecialField ? $sumValue < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">
                                                 @if ($percentField === $field)

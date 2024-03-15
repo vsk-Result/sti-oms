@@ -115,6 +115,11 @@ class ObjectPivotSheet implements
             $isPrognozField = in_array($field, $prognozFields);
 
             $sheet->setCellValue('A' . $row, $info);
+
+            if ($field === 'prognoz_general') {
+                $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)');
+            }
+
             $sheet->setCellValue('B' . $row, $sumValue);
 
             if ($isSpecialField) {
