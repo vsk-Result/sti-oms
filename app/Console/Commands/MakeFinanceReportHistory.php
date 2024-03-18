@@ -337,7 +337,7 @@ class MakeFinanceReportHistory extends Command
                         $contractStartDate = $contractLastStartDate->start_date;
                     }
                     if ($contractLastEndDate) {
-                        $contractEndDate = $contractLastEndDate->start_date;
+                        $contractEndDate = $contractLastEndDate->end_date;
                     }
 
                     $timePercent = 0;
