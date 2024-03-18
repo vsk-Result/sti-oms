@@ -1,13 +1,13 @@
 @php
     $total = $objectsInfo->total;
     $years = collect($objectsInfo->years)->toArray();
-    $objects = $objectsInfo->objects;
     $summary = $objectsInfo->summary;
     $infos = App\Models\FinanceReport::getInfoFields();
 
     $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
     $prognozFields = array_values(\App\Models\FinanceReport::getPrognozFields());
     $percentField = 'general_balance_to_receive_percentage';
+    $percentFields = ['time_percent', 'complete_percent', 'money_percent'];
 
     unset($years['Общие']);
     unset($years['Удаленные']);
@@ -56,8 +56,8 @@
                                         </td>
                                         <td class="fw-bolder hl text-right">
                                             <span class="{{ $isSpecialField ? $sumValue < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">
-                                                @if ($percentField === $field)
-                                                    {{ number_format($sumValue, 2) . '%' }}
+                                                @if ($percentField === $field || in_array($field, $percentFields))
+                                                    {{ $sumValue == 0 ? '-' : number_format($sumValue, 2) . '%' }}
                                                 @else
                                                     {{ \App\Models\CurrencyExchangeRate::format($sumValue, 'RUB') }}
                                                 @endif
@@ -70,7 +70,15 @@
                                             @endphp
                                             <td class="text-right {{ $loop->first ? 'bl' : '' }} {{ $loop->last ? 'pe-4' : '' }}">
                                                 <span class="{{ $isSpecialField ? $value < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }} {{ $field === 'prognoz_total' ? 'fw-boldest' : '' }}">
-                                                    {{ $value === 0 ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
+                                                    @if (in_array($field, $percentFields))
+                                                        @if ($field === 'time_percent')
+                                                            {{ $value == 0 ? 'Нет данных' : number_format($value, 2) . '%' }}
+                                                        @else
+                                                            {{ $value == 0 ? '-' : number_format($value, 2) . '%' }}
+                                                        @endif
+                                                    @else
+                                                        {{ $value === 0 ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
+                                                    @endif
                                                 </span>
                                             </td>
                                         @endforeach

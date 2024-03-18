@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Company;
+use App\Models\Contract\Contract;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\FinanceReport;
@@ -70,6 +71,8 @@ class MakeFinanceReportHistory extends Command
 
     public function handle()
     {
+        ini_set('memory_limit', '-1');
+
         Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
         Log::channel('custom_imports_log')->debug('[START] Создание снимка финансового отчета для истории');
@@ -155,6 +158,9 @@ class MakeFinanceReportHistory extends Command
             foreach ($years as $year => $objects) {
                 $sGeneralTotal = 0;
                 $sReceiveTotal = 0;
+                $sContractsTotalAmount = 0;
+                $sActsTotalAmount = 0;
+                $sReceiveFromCustomers = 0;
 
                 foreach ($objects as $object) {
                     $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
@@ -201,6 +207,7 @@ class MakeFinanceReportHistory extends Command
 //                $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
 
                     $contractsTotalAmount = $customerDebtInfo['amount']['RUB'];
+                    $actsTotalAmount = $customerDebtInfo['acts_amount']['RUB'];
 
                     $dolgZakazchikovZaVipolnenieRaboti = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'];
                     $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
@@ -247,6 +254,7 @@ class MakeFinanceReportHistory extends Command
 //                    $customerDebt -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount')  * $EURExchangeRate->rate;
 
                         $contractsTotalAmount += $customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate;
+                        $actsTotalAmount += $customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate;
                     }
 
                     if ($object->code === '288') {
@@ -311,6 +319,43 @@ class MakeFinanceReportHistory extends Command
 
                     //----------------------------------------
 
+                    $receiveFromCustomers = $object->payments()
+                        ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                        ->where('amount', '>=', 0)
+                        ->where('company_id', 1)
+                        ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                        ->sum('amount');
+
+                    $contracts = $object->contracts;
+
+                    $contractStartDate = '';
+                    $contractEndDate = '';
+                    $contractLastStartDate = $contracts->sortBy('start_date', SORT_NATURAL)->first();
+                    $contractLastEndDate = $contracts->sortBy('end_date', SORT_NATURAL)->last();
+
+                    if ($contractLastStartDate) {
+                        $contractStartDate = $contractLastStartDate->start_date;
+                    }
+                    if ($contractLastEndDate) {
+                        $contractEndDate = $contractLastEndDate->start_date;
+                    }
+
+                    $timePercent = 0;
+                    if (!empty($contractStartDate) && !empty($contractEndDate)) {
+                        $current = Carbon::parse($contractStartDate)->diffInDays(now());
+                        $fullTime = Carbon::parse($contractStartDate)->diffInDays($contractEndDate);
+
+                        if ($fullTime != 0) {
+                            $timePercent = $current / $fullTime * 100;
+                        }
+                    }
+
+                    $sContractsTotalAmount += $contractsTotalAmount;
+                    $sActsTotalAmount += $actsTotalAmount;
+                    $sReceiveFromCustomers += $receiveFromCustomers;
+                    $completePercent = $contractsTotalAmount != 0 ? $actsTotalAmount / $contractsTotalAmount * 100 : 0;
+                    $moneyPercent = $contractsTotalAmount != 0 ? $receiveFromCustomers / $contractsTotalAmount * 100 : 0;
+
                     $total[$year][$object->code]['pay'] = $object->total_pay;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
                     $total[$year][$object->code]['balance'] = $object->total_balance;
@@ -332,39 +377,53 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['ostatokPoDogovoruSZakazchikom'] = $ostatokPoDogovoruSZakazchikom;
                     $total[$year][$object->code]['prognoz_total'] = $prognozTotal;
                     $total[$year][$object->code]['prognozBalance'] = $prognozBalance;
+                    $total[$year][$object->code]['time_percent'] = $timePercent;
+                    $total[$year][$object->code]['complete_percent'] = $completePercent;
+                    $total[$year][$object->code]['money_percent'] = $moneyPercent;
 
                     foreach ($total[$year][$object->code] as $key => $value) {
+                        if (is_string($value)) {
+                            continue;
+                        }
                         $summary[$year][$key] += $value;
                     }
                 }
 
                 $summary[$year]['general_balance_to_receive_percentage'] = $summary[$year]['receive'] == 0 ? 0 : $summary[$year]['general_balance'] / $summary[$year]['receive'] * 100;
+                $summary[$year]['time_percent'] = 0;
+                $summary[$year]['complete_percent'] = $sContractsTotalAmount != 0 ? $sActsTotalAmount / $sContractsTotalAmount * 100 : 0;
+                $summary[$year]['money_percent'] = $sContractsTotalAmount != 0 ? $sReceiveFromCustomers / $sContractsTotalAmount * 100 : 0;
             }
 
         } catch (\Exception $e) {
             $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
+            $errorMessage = mb_substr($errorMessage, 0, 2000);
             Log::channel('custom_imports_log')->debug($errorMessage);
             $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
             return 0;
         }
 
-        $infos = FinanceReport::getInfoFields();
-
+        $objects = [];
+        $infos = [];
         $objects_new = json_encode(compact('total', 'infos', 'summary', 'objects', 'years'));
-        $objects = json_encode([]);
 
         $date = Carbon::now()->format('Y-m-d');
         $financeReportHistory = FinanceReportHistory::where('date', $date)->first();
         // В этом месте можно будет регулировать, сохранять ли каждый раз новую копию, или перезаписывать существующую на один и тот же день
-        if ($financeReportHistory) {
-            $financeReportHistory->update(
-                compact('balances', 'credits', 'loans', 'deposits', 'objects', 'objects_new')
-            );
-        } else {
-            FinanceReportHistory::create(
-                compact('date', 'balances', 'credits', 'loans', 'deposits', 'objects', 'objects_new')
-            );
+        if (!$financeReportHistory) {
+            FinanceReportHistory::create([
+                'date' => $date,
+                'balances' => json_encode([]),
+                'credits' => json_encode([]),
+                'loans' => json_encode([]),
+                'deposits' => json_encode([]),
+                'objects' => json_encode([]),
+                'objects_new' => json_encode([]),
+            ]);
         }
+
+        $financeReportHistory = FinanceReportHistory::where('date', $date)->first();
+        $financeReportHistory->update(compact('balances', 'credits', 'loans', 'deposits', 'objects_new'));
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Создание прошло успешно');
         $this->CRONProcessService->successProcess($this->signature);

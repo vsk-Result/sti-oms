@@ -62,6 +62,7 @@ class ObjectPivotSheet implements
         $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
         $prognozFields = ['prognoz_zp_worker', 'prognoz_zp_itr', 'prognoz_material', 'prognoz_podryad', 'prognoz_general', 'prognoz_service', 'prognoz_consalting'];
         $percentField = 'general_balance_to_receive_percentage';
+        $percentFields = ['time_percent', 'complete_percent', 'money_percent'];
 
         $lastRow = count($infos) + 1;
         $lastColumnIndex = 2 + count($objects);
@@ -128,8 +129,8 @@ class ObjectPivotSheet implements
                 $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($sumValue < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             }
 
-            if ($percentField === $field) {
-                $sheet->setCellValue('B' . $row, $sumValue / 100);
+            if ($percentField === $field || in_array($field, $percentFields)) {
+                $sheet->setCellValue('B' . $row, $sumValue == 0 ? '-' : $sumValue / 100);
                 $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
             }
 
@@ -146,7 +147,16 @@ class ObjectPivotSheet implements
                 $value = $total->{$year}->{$object->code}->{$field};
                 $column = $this->getColumnWord($columnIndex);
 
-                $sheet->setCellValue($column . $row, $value === 0 ? '-' : $value);
+                if (in_array($field, $percentFields)) {
+                    if ($field === 'time_percent') {
+                        $sheet->setCellValue($column . $row, $value === 0 ? 'Нет данных' : $value / 100);
+                    } else {
+                        $sheet->setCellValue($column . $row, $value === 0 ? '-' : $value / 100);
+                    }
+                    $sheet->getStyle($column . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+                } else {
+                    $sheet->setCellValue($column . $row, $value === 0 ? '-' : $value);
+                }
 
                 if ($isSpecialField) {
                     $sheet->getStyle($column . $row)->getFont()->setSize(12);

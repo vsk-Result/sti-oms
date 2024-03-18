@@ -60,6 +60,15 @@ class FinanceReport
             'Прогнозируемые затраты ИТОГО' => 'prognoz_total',
         ];
 
-        return array_merge($infoFields, $prognozFields, ['Прогнозируемый Баланс объекта' => 'prognozBalance']);
+        return array_merge(
+            $infoFields,
+            $prognozFields,
+            [
+                'Прогнозируемый Баланс объекта' => 'prognozBalance',
+                '% времени' => 'time_percent',
+                '% выполнения' => 'complete_percent',
+                '% денег' => 'money_percent',
+            ]
+        );
     }
 }
