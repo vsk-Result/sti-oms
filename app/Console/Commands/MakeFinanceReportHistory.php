@@ -342,6 +342,10 @@ class MakeFinanceReportHistory extends Command
 
                     $timePercent = 0;
                     if (!empty($contractStartDate) && !empty($contractEndDate)) {
+                        if ($contractEndDate < now()->format('Y-m-d')) {
+                            continue;
+                        }
+
                         $current = Carbon::parse($contractStartDate)->diffInDays(now());
                         $fullTime = Carbon::parse($contractStartDate)->diffInDays($contractEndDate);
 
