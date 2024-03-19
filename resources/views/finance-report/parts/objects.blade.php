@@ -56,7 +56,9 @@
                                         </td>
                                         <td class="fw-bolder hl text-right">
                                             <span class="{{ $isSpecialField ? $sumValue < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">
-                                                @if ($percentField === $field || in_array($field, $percentFields))
+                                                @if (in_array($field, $percentFields))
+                                                    {{ '-' }}
+                                                @elseif ($percentField === $field)
                                                     {{ $sumValue == 0 ? '-' : number_format($sumValue, 2) . '%' }}
                                                 @else
                                                     {{ \App\Models\CurrencyExchangeRate::format($sumValue, 'RUB') }}

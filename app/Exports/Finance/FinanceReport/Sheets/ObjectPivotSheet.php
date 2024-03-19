@@ -121,7 +121,11 @@ class ObjectPivotSheet implements
                 $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)');
             }
 
-            $sheet->setCellValue('B' . $row, $sumValue);
+            if (in_array($field, $percentFields)) {
+                $sheet->setCellValue('B' . $row, '-');
+            } else {
+                $sheet->setCellValue('B' . $row, $sumValue);
+            }
 
             if ($isSpecialField) {
                 $sheet->getStyle('A' . $row)->getFont()->setBold(true);
@@ -129,7 +133,7 @@ class ObjectPivotSheet implements
                 $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($sumValue < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             }
 
-            if ($percentField === $field || in_array($field, $percentFields)) {
+            if ($percentField === $field) {
                 $sheet->setCellValue('B' . $row, $sumValue == 0 ? '-' : $sumValue / 100);
                 $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
             }
