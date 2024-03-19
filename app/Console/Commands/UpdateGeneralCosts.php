@@ -8,6 +8,7 @@ use App\Services\CRONProcessService;
 use App\Services\ObjectService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class UpdateGeneralCosts extends Command
@@ -23,7 +24,7 @@ class UpdateGeneralCosts extends Command
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
-            'Ежедневно в 19:00'
+            'Каждые 30 минут'
         );
     }
 
@@ -34,7 +35,7 @@ class UpdateGeneralCosts extends Command
         Log::channel('custom_imports_log')->debug('[START] Обновляет общие затраты объектов');
 
         try {
-            $periods = [
+            $periodsByYears = [
                 [
                     'start_date' => '2017-01-01',
                     'end_date' => '2017-12-31',
@@ -91,27 +92,61 @@ class UpdateGeneralCosts extends Command
             $object27_1 = BObject::where('code', '27.1')->first();
             $object27_8 = BObject::where('code', '27.8')->first();
 
-            $periods = array_reverse($periods);
+            $periodsByYears = array_reverse($periodsByYears, true);
 
-            $generalTotalAmount = 0;
-            $generalInfo = [];
-            foreach ($periods as $index => $period) {
-                $datesBetween = [$period['start_date'], $period['end_date']];
-                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
-                $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                    + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
-                    + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
-                    + $period['bonus'];
+            Cache::put('general_costs', function() use ($periodsByYears, $object27_1, $object27_8) {
+                $generalInfo = [];
+                $groupedByYearsInfo = [];
+                $generalTotalAmount = 0;
 
-                $generalInfo[$index] = [
-                    'start_date' => $period['start_date'],
-                    'end_date' => $period['end_date'],
-                    'general_amount' => $generalAmount,
-                    'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                foreach ($periodsByYears as $year => $periods) {
+                    $groupedByYearsInfo[$year]['total'] = [
+                        'cuming_amount' => 0,
+                        'general_amount' => 0,
+                    ];
+                    foreach ($periods as $index => $period) {
+                        $datesBetween = [$period['start_date'], $period['end_date']];
+                        $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
+                        $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                            + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                            + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
+                            + $period['bonus'];
+
+                        $generalInfo[$year][$index] = [
+                            'start_date' => $period['start_date'],
+                            'end_date' => $period['end_date'],
+                            'general_amount' => $generalAmount,
+                            'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                        ];
+
+                        $generalTotalAmount += $generalAmount;
+
+                        foreach ($generalInfo[$year][$index]['info'] as $objectId => $i) {
+                            if (!isset($groupedByYearsInfo[$year][$objectId]['cuming_amount'])) {
+                                $groupedByYearsInfo[$year][$objectId]['cuming_amount'] = 0;
+                            }
+                            if (!isset($groupedByYearsInfo[$year][$objectId]['general_amount'])) {
+                                $groupedByYearsInfo[$year][$objectId]['general_amount'] = 0;
+                            }
+
+                            $groupedByYearsInfo[$year][$objectId]['cuming_amount'] += $i['cuming_amount'];
+                            $groupedByYearsInfo[$year][$objectId]['general_amount'] += $i['general_amount'];
+                        }
+
+                        foreach ($generalInfo[$year][$index]['info'] as $i) {
+                            $groupedByYearsInfo[$year]['total']['cuming_amount'] += $i['cuming_amount'];
+                            $groupedByYearsInfo[$year]['total']['general_amount'] += $i['general_amount'];
+                        }
+                    }
+                }
+
+                return [
+                    'generalInfo' => $generalInfo,
+                    'groupedByYearsInfo' => $groupedByYearsInfo,
+                    'generalTotalAmount' => $generalTotalAmount,
                 ];
+            });
 
-                $generalTotalAmount += $generalAmount;
-            }
         } catch (\Exception $e) {
             $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
             Log::channel('custom_imports_log')->debug($errorMessage);

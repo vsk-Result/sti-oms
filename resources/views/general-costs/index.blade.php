@@ -89,51 +89,59 @@
 
         $periodsByYears = array_reverse($periodsByYears, true);
 
-        $generalTotalAmount = 0;
-        $generalInfo = [];
 
-        $groupedByYearsInfo = [];
+        $generalCostsInfo = Illuminate\Support\Facades\Cache::get('general_costs', function() use ($periodsByYears, $object27_1, $object27_8) {
+            $generalInfo = [];
+            $groupedByYearsInfo = [];
+            $generalTotalAmount = 0;
 
-        foreach ($periodsByYears as $year => $periods) {
-            $groupedByYearsInfo[$year]['total'] = [
-                'cuming_amount' => 0,
-                'general_amount' => 0,
-            ];
-            foreach ($periods as $index => $period) {
-                $datesBetween = [$period['start_date'], $period['end_date']];
-                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
-                $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
-                                + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
-                                + $period['bonus'];
-
-                $generalInfo[$year][$index] = [
-                    'start_date' => $period['start_date'],
-                    'end_date' => $period['end_date'],
-                    'general_amount' => $generalAmount,
-                    'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+            foreach ($periodsByYears as $year => $periods) {
+                $groupedByYearsInfo[$year]['total'] = [
+                    'cuming_amount' => 0,
+                    'general_amount' => 0,
                 ];
+                foreach ($periods as $index => $period) {
+                    $datesBetween = [$period['start_date'], $period['end_date']];
+                    $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
+                    $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                                    + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                                    + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
+                                    + $period['bonus'];
 
-                $generalTotalAmount += $generalAmount;
+                    $generalInfo[$year][$index] = [
+                        'start_date' => $period['start_date'],
+                        'end_date' => $period['end_date'],
+                        'general_amount' => $generalAmount,
+                        'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                    ];
 
-                foreach ($generalInfo[$year][$index]['info'] as $objectId => $i) {
-                    if (!isset($groupedByYearsInfo[$year][$objectId]['cuming_amount'])) {
-                        $groupedByYearsInfo[$year][$objectId]['cuming_amount'] = 0;
+                    $generalTotalAmount += $generalAmount;
+
+                    foreach ($generalInfo[$year][$index]['info'] as $objectId => $i) {
+                        if (!isset($groupedByYearsInfo[$year][$objectId]['cuming_amount'])) {
+                            $groupedByYearsInfo[$year][$objectId]['cuming_amount'] = 0;
+                        }
+                        if (!isset($groupedByYearsInfo[$year][$objectId]['general_amount'])) {
+                            $groupedByYearsInfo[$year][$objectId]['general_amount'] = 0;
+                        }
+
+                        $groupedByYearsInfo[$year][$objectId]['cuming_amount'] += $i['cuming_amount'];
+                        $groupedByYearsInfo[$year][$objectId]['general_amount'] += $i['general_amount'];
                     }
-                    if (!isset($groupedByYearsInfo[$year][$objectId]['general_amount'])) {
-                        $groupedByYearsInfo[$year][$objectId]['general_amount'] = 0;
+
+                    foreach ($generalInfo[$year][$index]['info'] as $i) {
+                        $groupedByYearsInfo[$year]['total']['cuming_amount'] += $i['cuming_amount'];
+                        $groupedByYearsInfo[$year]['total']['general_amount'] += $i['general_amount'];
                     }
-
-                    $groupedByYearsInfo[$year][$objectId]['cuming_amount'] += $i['cuming_amount'];
-                    $groupedByYearsInfo[$year][$objectId]['general_amount'] += $i['general_amount'];
-                }
-
-                foreach ($generalInfo[$year][$index]['info'] as $i) {
-                    $groupedByYearsInfo[$year]['total']['cuming_amount'] += $i['cuming_amount'];
-                    $groupedByYearsInfo[$year]['total']['general_amount'] += $i['general_amount'];
                 }
             }
-        }
+
+            return [
+                'generalInfo' => $generalInfo,
+                'groupedByYearsInfo' => $groupedByYearsInfo,
+                'generalTotalAmount' => $generalTotalAmount,
+            ];
+        });
     @endphp
     <div class="card mb-5 mb-xl-8 p-0 border-0">
         <div class="card-header border-0 pt-6 pe-0">
@@ -170,11 +178,11 @@
 
                             <th class="min-w-125px bt bl hl">Итого</th>
                             <th class="bt bl hl percent"></th>
-                            <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalTotalAmount, 'RUB') }}</th>
+                            <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['generalTotalAmount'], 'RUB') }}</th>
 
-                            @foreach($generalInfo as $year => $infoArray)
+                            @foreach($generalCostsInfo['generalInfo'] as $year => $infoArray)
                                 <th class="min-w-125px bt grouped toggle-grouped-by-year" data-year="{{ $year }}">{{ $year }}</th>
-                                <th class="min-w-125px text-danger bt br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year]['total']['general_amount'], 'RUB') }}</th>
+                                <th class="min-w-125px text-danger bt br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year]['total']['general_amount'], 'RUB') }}</th>
 
                                 @foreach($infoArray as $info)
                                     <th style="display: none;" class="min-w-125px bt grouped-by-year" data-year="{{ $year }}">с {{ \Carbon\Carbon::parse($info['start_date'])->format('d.m.Y') }} по {{ \Carbon\Carbon::parse($info['end_date'])->format('d.m.Y') }}</th>
@@ -190,7 +198,7 @@
                             <th class="bl hl text-center percent" >%</th>
                             <th class="min-w-125px br hl text-center">Общие расходы</th>
 
-                            @foreach($generalInfo as $year => $infoArray)
+                            @foreach($generalCostsInfo['generalInfo'] as $year => $infoArray)
                                 <th class="min-w-125px grouped">Получено</th>
                                 <th class="min-w-125px br grouped">Общие расходы</th>
 
@@ -209,7 +217,7 @@
                                 $percentSum = 0;
                                 $percentCount = 0;
 
-                                foreach($generalInfo as $info) {
+                                foreach($generalCostsInfo['generalInfo'] as $info) {
                                     if (isset($info['info'][$object->id])) {
                                         $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0) * 100;
                                         $percentSum += $percent;
@@ -242,7 +250,7 @@
                                     $totalCuming = 0;
                                     $totalGeneral = 0;
 
-                                    foreach($generalInfo as $year => $infoArray) {
+                                    foreach($generalCostsInfo['generalInfo'] as $year => $infoArray) {
                                         foreach($infoArray as $info) {
                                             $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
                                             $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
@@ -256,10 +264,10 @@
                                 <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                 <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                @foreach($generalInfo as $year => $infoArray)
-                                    @if (isset($groupedByYearsInfo[$year][$object->id]))
-                                        <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                @foreach($generalCostsInfo['generalInfo'] as $year => $infoArray)
+                                    @if (isset($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]))
+                                        <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
                                         <td class="bl grouped">-</td>
                                         <td class="br grouped">-</td>
@@ -284,7 +292,7 @@
                         @php
                             $closedInfo = [];
                             foreach ($closedObjects as $object) {
-                                foreach($generalInfo as $year => $infoArray) {
+                                foreach($generalCostsInfo['generalInfo'] as $year => $infoArray) {
                                     if (!isset($closedInfo[$year]['cuming_amount'])) {
                                         $closedInfo[$year]['cuming_amount'] = 0;
                                     }
@@ -324,7 +332,7 @@
                             <td class="bl hl text-center percent" >{{ number_format(($closedInfo['total']['cuming_amount'] > 0 ? abs($closedInfo['total']['general_amount'] / $closedInfo['total']['cuming_amount']) : 0) * 100, 2) }}%</td>
                             <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($closedInfo['total']['general_amount'], 'RUB', 0, true) }}</td>
 
-                            @foreach($generalInfo as $year => $infoArray)
+                            @foreach($generalCostsInfo['generalInfo'] as $year => $infoArray)
                                 <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$year]['cuming_amount'], 'RUB', 0, true) }}</td>
                                 <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$year]['general_amount'], 'RUB', 0, true) }}</td>
 
@@ -344,7 +352,7 @@
                                     $totalCuming = 0;
                                     $totalGeneral = 0;
 
-                                    foreach($generalInfo as $year => $infoArray) {
+                                    foreach($generalCostsInfo['generalInfo'] as $year => $infoArray) {
                                         foreach($infoArray as $info) {
                                             $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
                                             $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
@@ -358,10 +366,10 @@
                                 <td class="bl hl text-center percent" >{{ number_format(($totalCuming > 0 ? abs($totalGeneral / $totalCuming) : 0) * 100, 2) }}%</td>
                                 <td class="text-danger bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalGeneral, 'RUB', 0, true) }}</td>
 
-                                @foreach($generalInfo as $year => $infoArray)
-                                    @if (isset($groupedByYearsInfo[$year][$object->id]))
-                                        <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($groupedByYearsInfo[$year][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
+                                @foreach($generalCostsInfo['generalInfo'] as $year => $infoArray)
+                                    @if (isset($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]))
+                                        <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
                                         <td class="bl grouped">-</td>
                                         <td class="br grouped">-</td>
