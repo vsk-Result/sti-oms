@@ -524,7 +524,20 @@ class KostCode
                     'code' => '7.17',
                     'title' => 'Зарплата',
                     'description' => '',
-                    'children' => []
+                    'children' => [
+                        [
+                            'code' => '7.17.1',
+                            'title' => 'Зарплата (ИТР)',
+                            'description' => '',
+                            'children' => []
+                        ],
+                        [
+                            'code' => '7.17.2',
+                            'title' => 'Зарплата (Рабочие)',
+                            'description' => '',
+                            'children' => []
+                        ]
+                    ]
                 ],
                 [
                     'code' => '7.18',
@@ -578,7 +591,20 @@ class KostCode
                     'code' => '7.26',
                     'title' => 'Аванс, долг',
                     'description' => 'Оплата авансов сотрудникам',
-                    'children' => []
+                    'children' => [
+                        [
+                            'code' => '7.26.1',
+                            'title' => 'Аванс, долг (ИТР)',
+                            'description' => 'Оплата авансов сотрудникам (ИТР)',
+                            'children' => []
+                        ],
+                        [
+                            'code' => '7.26.2',
+                            'title' => 'Аванс, долг (Рабочие)',
+                            'description' => 'Оплата авансов сотрудникам (Рабочие)',
+                            'children' => []
+                        ]
+                    ]
                 ],
                 [
                     'code' => '7.27',
@@ -672,6 +698,13 @@ class KostCode
                         foreach ($codeL2['children'] as $codeL3) {
                             if ($code === $codeL3['code']) {
                                 return $codeL3['code'] . ' - ' . $codeL3['title'];
+                            }
+                            if (count($codeL3['children']) > 0) {
+                                foreach ($codeL3['children'] as $codeL4) {
+                                    if ($code === $codeL4['code']) {
+                                        return $codeL4['code'] . ' - ' . $codeL4['title'];
+                                    }
+                                }
                             }
                         }
                     }
