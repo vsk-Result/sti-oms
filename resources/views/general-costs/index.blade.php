@@ -244,7 +244,7 @@
 
                         @foreach($activeObjects as $object)
                             <tr>
-                                <td class="bl ps-2">{{ $object->getName() }}</td>
+                                <td class="bl ps-2"><a href="{{ route('objects.show', $object) }}" class="text-gray-800 text-hover-primary fs-7 me-3">{{ $object->getName() }}</a></td>
 
                                 @php
                                     $totalCuming = 0;
