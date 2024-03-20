@@ -9,6 +9,7 @@
     $percentField = 'general_balance_to_receive_percentage';
     $percentFields = ['time_percent', 'complete_percent', 'money_percent'];
 
+    unset($years['Не отображать']);
     unset($years['Общие']);
     unset($years['Удаленные']);
 @endphp

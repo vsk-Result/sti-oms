@@ -22,6 +22,7 @@ class Export implements WithMultipleSheets
         $years = collect($this->info['objectsInfo']->years)->toArray();
         $summary = $this->info['objectsInfo']->summary;
 
+        unset($years['Не отображать']);
         unset($years['Общие']);
         unset($years['Удаленные']);
 

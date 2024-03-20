@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Company;
-use App\Models\Contract\Contract;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\FinanceReport;
@@ -119,10 +118,16 @@ class MakeFinanceReportHistory extends Command
                 ->get();
 
             $generalObjectCodes = BObject::getCodesWithoutWorktype();
+            $hideObjectCodes = ['362', '368'];
+            $hidePrognozObjectCodes = ['346', '353'];
 
             $years = [];
 
             foreach ($objects as $object) {
+                if (in_array($object->code, $hideObjectCodes)) {
+                    $years['Не отображать'][] = $object;
+                    continue;
+                }
                 if (in_array($object->code, $generalObjectCodes)) {
                     $years['Общие'][] = $object;
                     continue;
@@ -302,6 +307,10 @@ class MakeFinanceReportHistory extends Command
 //                            }
                         }
 
+                        if (in_array($object->code, $hidePrognozObjectCodes)) {
+                            $prognozAmount = 0;
+                        }
+
                         $total[$year][$object->code][$field] = $prognozAmount;
                         $prognozTotal += $prognozAmount;
 
@@ -330,8 +339,8 @@ class MakeFinanceReportHistory extends Command
 
                     $contractStartDate = '';
                     $contractEndDate = '';
-                    $contractLastStartDate = $contracts->sortBy('start_date', SORT_NATURAL)->first();
-                    $contractLastEndDate = $contracts->sortBy('end_date', SORT_NATURAL)->last();
+                    $contractLastStartDate = $contracts->where('start_date', '!=', null)->sortBy('start_date', SORT_NATURAL)->first();
+                    $contractLastEndDate = $contracts->where('end_date', '!=', null)->sortBy('end_date', SORT_NATURAL)->last();
 
                     if ($contractLastStartDate) {
                         $contractStartDate = $contractLastStartDate->start_date;
