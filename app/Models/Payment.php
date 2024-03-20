@@ -35,9 +35,9 @@ class Payment extends Model implements Audit
     const TYPE_GENERAL = 2;
     const TYPE_TRANSFER = 3;
 
-    const CATEGORY_OPSTE = 'Услуги';
-    const CATEGORY_RAD = 'Подрядчики';
-    const CATEGORY_MATERIAL = 'Поставщики';
+    const CATEGORY_OPSTE = 'Накладные/Услуги';
+    const CATEGORY_RAD = 'Работы';
+    const CATEGORY_MATERIAL = 'Материалы';
     const CATEGORY_SALARY = 'Зарплата';
     const CATEGORY_TAX = 'Налоги';
     const CATEGORY_CUSTOMERS = 'Заказчики';

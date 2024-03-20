@@ -142,7 +142,7 @@ class StatementImportService
                 $payment['object_id'] = $object->id;
             }
 
-            $category = $payment['category'];
+            $category = $this->mapOldToNewCategory($payment['category']);
             $category = empty($category) ? $organizationCategory : $category;
             $category = empty($category) ? $this->paymentService->findCategoryFromDescription($payment['description']) : $category;
 
@@ -342,5 +342,18 @@ class StatementImportService
     public function hasError(): bool
     {
         return ! empty($this->error);
+    }
+
+    private function mapOldToNewCategory($category)
+    {
+        if (empty($category)) {
+            return $category;
+        }
+
+        return [
+            'Услуги' => Payment::CATEGORY_OPSTE,
+            'Подрядчики' => Payment::CATEGORY_RAD,
+            'Поставщики' => Payment::CATEGORY_MATERIAL,
+        ][$category];
     }
 }

@@ -36,7 +36,7 @@ class ReplacePaymentCategories extends Command
         Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . Payment::where('category', 'RAD')->count() . ' оплат');
 
         try {
-            Payment::where('category', 'RAD')->update(['category' => 'Подрядчики']);
+            Payment::where('category', 'RAD')->update(['category' => 'Работы']);
         } catch(Exception $e){
             Log::channel('custom_imports_log')->debug('[ERROR] Не удалось обновить категорию RAD: "' . $e->getMessage());
         }
@@ -45,7 +45,7 @@ class ReplacePaymentCategories extends Command
         Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . Payment::where('category', 'MATERIAL')->count() . ' оплат');
 
         try {
-            Payment::where('category', 'MATERIAL')->update(['category' => 'Поставщики']);
+            Payment::where('category', 'MATERIAL')->update(['category' => 'Материалы']);
         } catch(Exception $e){
             Log::channel('custom_imports_log')->debug('[ERROR] Не удалось обновить категорию MATERIAL: "' . $e->getMessage());
         }
@@ -54,7 +54,7 @@ class ReplacePaymentCategories extends Command
         Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . Payment::where('category', 'OPSTE')->count() . ' оплат');
 
         try {
-            Payment::where('category', 'OPSTE')->update(['category' => 'Услуги']);
+            Payment::where('category', 'OPSTE')->update(['category' => 'Накладные/Услуги']);
         } catch(Exception $e){
             Log::channel('custom_imports_log')->debug('[ERROR] Не удалось обновить категорию OPSTE: "' . $e->getMessage());
         }
