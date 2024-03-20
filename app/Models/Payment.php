@@ -89,13 +89,13 @@ class Payment extends Model implements Audit
     public static function getCategories(): array
     {
         return [
-            self::CATEGORY_CUSTOMERS => 'Заказчики',
-            self::CATEGORY_SALARY => 'Зарплата',
-            self::CATEGORY_TAX => 'Налоги',
-            self::CATEGORY_RAD => 'Подрядчики',
-            self::CATEGORY_MATERIAL => 'Поставщики',
-            self::CATEGORY_TRANSFER => 'Трансфер',
-            self::CATEGORY_OPSTE => 'Услуги',
+            self::CATEGORY_CUSTOMERS => self::CATEGORY_CUSTOMERS,
+            self::CATEGORY_SALARY => self::CATEGORY_SALARY,
+            self::CATEGORY_TAX => self::CATEGORY_TAX,
+            self::CATEGORY_RAD => self::CATEGORY_RAD,
+            self::CATEGORY_MATERIAL => self::CATEGORY_MATERIAL,
+            self::CATEGORY_TRANSFER => self::CATEGORY_TRANSFER,
+            self::CATEGORY_OPSTE => self::CATEGORY_OPSTE,
         ];
     }
 
