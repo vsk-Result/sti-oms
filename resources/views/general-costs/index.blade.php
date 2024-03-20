@@ -6,7 +6,6 @@
 @section('content')
     @php
         $object27_1 = \App\Models\Object\BObject::where('code', '27.1')->first();
-        $object27_8 = \App\Models\Object\BObject::where('code', '27.8')->first();
 
         $periodsByYears = [
             '2017' => [
@@ -89,8 +88,7 @@
 
         $periodsByYears = array_reverse($periodsByYears, true);
 
-
-        $generalCostsInfo = Illuminate\Support\Facades\Cache::get('general_costs', function() use ($periodsByYears, $object27_1, $object27_8) {
+        $generalCostsInfo = Illuminate\Support\Facades\Cache::get('general_costs', function() use ($periodsByYears, $object27_1) {
             $generalInfo = [];
             $groupedByYearsInfo = [];
             $generalTotalAmount = 0;
@@ -105,7 +103,6 @@
                     $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
                     $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                                     + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
-                                    + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
                                     + $period['bonus'];
 
                     $generalInfo[$year][$index] = [

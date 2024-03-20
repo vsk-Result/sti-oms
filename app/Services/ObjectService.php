@@ -198,7 +198,6 @@ class ObjectService
         }
 
         $object27_1 = BObject::where('code', '27.1')->first();
-        $object27_8 = BObject::where('code', '27.8')->first();
 
         $bonus = $bonus / count($periods);
 
@@ -212,10 +211,6 @@ class ObjectService
                 ->where('object_id', $object27_1->id)
                 ->whereIn('company_id', [1, 5])
                 ->sum('amount');
-            $generalTotalAmount += (Payment::whereBetween('date', [$startDate, $endDate])
-                    ->where('object_id', $object27_8->id)
-                    ->whereIn('company_id', [1, 5])
-                    ->sum('amount') * 0.7);
             $generalTotalAmount += $bonus;
 
             $sumCumings = 0;

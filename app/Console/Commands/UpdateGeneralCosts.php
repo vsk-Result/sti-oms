@@ -116,7 +116,6 @@ class UpdateGeneralCosts extends Command
 
 
             $object27_1 = BObject::where('code', '27.1')->first();
-            $object27_8 = BObject::where('code', '27.8')->first();
 
             $periodsByYears = array_reverse($periodsByYears, true);
 
@@ -134,7 +133,6 @@ class UpdateGeneralCosts extends Command
                     $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
                     $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                         + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
-                        + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
                         + $period['bonus'];
 
                     $generalInfo[$year][$index] = [

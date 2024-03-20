@@ -42,7 +42,6 @@ class PivotSheet implements
         }])->get();
 
         $object27_1 = \App\Models\Object\BObject::where('code', '27.1')->first();
-        $object27_8 = \App\Models\Object\BObject::where('code', '27.8')->first();
 
         $periods = [
             [
@@ -116,7 +115,6 @@ class PivotSheet implements
             $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->where('company_id', 1);
             $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                 + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
-                + ((clone $paymentQuery)->where('object_id', $object27_8->id)->sum('amount') * 0.7)
                 + $period['bonus'];
 
             $generalInfo[$index] = [
