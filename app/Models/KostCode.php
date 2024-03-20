@@ -6,6 +6,12 @@ class KostCode
 {
     private static array $codes = [
         [
+            'code' => '0',
+            'title' => 'Статья затрат еще не определена',
+            'description' => '',
+            'children' => [],
+        ],
+        [
             'code' => '1',
             'title' => 'Строительные работы',
             'description' => '',
