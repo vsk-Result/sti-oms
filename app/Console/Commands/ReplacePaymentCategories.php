@@ -32,31 +32,21 @@ class ReplacePaymentCategories extends Command
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
         Log::channel('custom_imports_log')->debug('[START] Замена старых категории оплат на новые');
 
-        Log::channel('custom_imports_log')->debug('[INFO] Обработка RAD');
-        Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . Payment::where('category', 'RAD')->count() . ' оплат');
+        $categories = [
+            'Услуги' => Payment::CATEGORY_OPSTE,
+            'Подрядчики' => Payment::CATEGORY_RAD,
+            'Поставщики' => Payment::CATEGORY_MATERIAL,
+        ];
 
-        try {
-            Payment::where('category', 'RAD')->update(['category' => 'Работы']);
-        } catch(Exception $e){
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось обновить категорию RAD: "' . $e->getMessage());
-        }
+        foreach ($categories as $old => $new) {
+            Log::channel('custom_imports_log')->debug('[INFO] Обработка "' . $old . '"');
+            Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . Payment::where('category', $old)->count() . ' оплат');
 
-        Log::channel('custom_imports_log')->debug('[INFO] Обработка MATERIAL');
-        Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . Payment::where('category', 'MATERIAL')->count() . ' оплат');
-
-        try {
-            Payment::where('category', 'MATERIAL')->update(['category' => 'Материалы']);
-        } catch(Exception $e){
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось обновить категорию MATERIAL: "' . $e->getMessage());
-        }
-
-        Log::channel('custom_imports_log')->debug('[INFO] Обработка OPSTE');
-        Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . Payment::where('category', 'OPSTE')->count() . ' оплат');
-
-        try {
-            Payment::where('category', 'OPSTE')->update(['category' => 'Накладные/Услуги']);
-        } catch(Exception $e){
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось обновить категорию OPSTE: "' . $e->getMessage());
+            try {
+                Payment::where('category', $old)->update(['category' => $new]);
+            } catch(Exception $e){
+                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось обновить категорию "' . $old . '": "' . $e->getMessage());
+            }
         }
 
         $this->CRONProcessService->successProcess($this->signature);
