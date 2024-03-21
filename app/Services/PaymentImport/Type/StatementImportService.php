@@ -350,10 +350,12 @@ class StatementImportService
             return $category;
         }
 
-        return [
+        $map = [
             'Услуги' => Payment::CATEGORY_OPSTE,
             'Подрядчики' => Payment::CATEGORY_RAD,
             'Поставщики' => Payment::CATEGORY_MATERIAL,
-        ][$category];
+        ];
+
+        return $map[$category] ?? $category;
     }
 }
