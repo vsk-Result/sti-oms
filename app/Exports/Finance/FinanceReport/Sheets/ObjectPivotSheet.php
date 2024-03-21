@@ -96,7 +96,7 @@ class ObjectPivotSheet implements
         $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setFitToWidth(1);
-        $sheet->getPageSetup()->setFitToHeight(0);
+        $sheet->getPageSetup()->setFitToHeight(1);
 
         $sheet->setCellValue('A1', 'Сводка');
         $sheet->setCellValue('B1', 'Итого');
