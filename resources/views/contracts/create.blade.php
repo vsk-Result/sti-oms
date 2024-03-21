@@ -163,22 +163,64 @@
                                     </div>
 
                                     <div class="col-md-10 mb-10 fv-row">
-                                        <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
-                                            <div class="position-relative mb-3">
-                                                <input
-                                                    class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
-                                                    type="text"
-                                                    name="amount"
-                                                    value="{{ old('amount') }}"
-                                                    required
-                                                />
-                                            </div>
-                                            @if ($errors->has('amount'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div>{{ implode(' ', $errors->get('amount')) }}</div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-1">
+                                                    <label class="form-label fw-bolder text-dark fs-6">Сумма за материалы</label>
+                                                    <div class="position-relative mb-3">
+                                                        <input
+                                                                class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                                type="text"
+                                                                name="amount"
+                                                                value="{{ old('amount') }}"
+                                                                required
+                                                        />
+                                                    </div>
+                                                    @if ($errors->has('amount'))
+                                                        <div class="fv-plugins-message-container invalid-feedback">
+                                                            <div>{{ implode(' ', $errors->get('amount')) }}</div>
+                                                        </div>
+                                                    @endif
                                                 </div>
-                                            @endif
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-1">
+                                                    <label class="form-label fw-bolder text-dark fs-6">Сумма за работы</label>
+                                                    <div class="position-relative mb-3">
+                                                        <input
+                                                                class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('rad_amount') ? 'is-invalid' : '' }}"
+                                                                type="text"
+                                                                name="rad_amount"
+                                                                value="{{ old('rad_amount') }}"
+                                                                required
+                                                        />
+                                                    </div>
+                                                    @if ($errors->has('rad_amount'))
+                                                        <div class="fv-plugins-message-container invalid-feedback">
+                                                            <div>{{ implode(' ', $errors->get('rad_amount')) }}</div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-1">
+                                                    <label class="form-label fw-bolder text-dark fs-6">Сумма за накладные/услуги</label>
+                                                    <div class="position-relative mb-3">
+                                                        <input
+                                                                class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('opste_amount') ? 'is-invalid' : '' }}"
+                                                                type="text"
+                                                                name="opste_amount"
+                                                                value="{{ old('opste_amount') }}"
+                                                                required
+                                                        />
+                                                    </div>
+                                                    @if ($errors->has('opste_amount'))
+                                                        <div class="fv-plugins-message-container invalid-feedback">
+                                                            <div>{{ implode(' ', $errors->get('opste_amount')) }}</div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

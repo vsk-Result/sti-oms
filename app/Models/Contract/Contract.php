@@ -27,7 +27,7 @@ class Contract extends Model implements HasMedia, Audit
     protected $fillable = [
         'parent_id', 'type_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id',
         'name', 'start_date', 'end_date', 'amount', 'amount_type_id', 'description', 'stage_id', 'status_id',
-        'currency', 'currency_rate', 'params'
+        'currency', 'currency_rate', 'params', 'rad_amount', 'opste_amount'
     ];
 
     const TYPE_MAIN = 0;
@@ -108,9 +108,14 @@ class Contract extends Model implements HasMedia, Audit
         return $this->amount_type_id === self::AMOUNT_TYPE_MAIN;
     }
 
+    public function getSumAmount()
+    {
+        return $this->amount + $this->rad_amount + $this->opste_amount;
+    }
+
     public function getAmount(string $currency = null): string|array
     {
-        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->amount : 0;
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->getSumAmount() : 0;
 
         if ($this->isMain()) {
 
@@ -122,19 +127,19 @@ class Contract extends Model implements HasMedia, Audit
             if ($this->object_id === 103 && $currency === 'RUB' && $this->id === 294) {
                 foreach ($this->children->where('currency', $currency) as $subContract) {
                     if ($subContract->isMainAmount()) {
-                        $amount = $subContract->amount;
+                        $amount = $subContract->getSumAmount();
                     }
                 }
                 foreach ($this->children->where('currency', $currency) as $subContract) {
                     if (!$subContract->isMainAmount()) {
-                        $amount += $subContract->amount;
+                        $amount += $subContract->getSumAmount();
                     }
                 }
             } else {
                 foreach ($this->children->where('currency', $currency) as $subContract) {
                     $amount = $subContract->isMainAmount()
-                        ? $subContract->amount
-                        : $amount + $subContract->amount;
+                        ? $subContract->getSumAmount()
+                        : $amount + $subContract->getSumAmount();
                 }
             }
         }
