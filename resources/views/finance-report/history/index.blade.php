@@ -40,6 +40,8 @@
                         @endforeach
                     </tbody>
                 </table>
+
+                {!! $financeReportHistoryItems->links() !!}
             </div>
         </div>
     </div>

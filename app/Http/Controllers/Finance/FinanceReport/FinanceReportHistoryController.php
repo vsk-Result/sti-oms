@@ -12,7 +12,7 @@ class FinanceReportHistoryController extends Controller
 {
     public function index(): View
     {
-        $financeReportHistoryItems = FinanceReportHistory::orderByDesc('date')->get();
+        $financeReportHistoryItems = FinanceReportHistory::orderByDesc('id')->paginate(15);
 
         return view(
             'finance-report.history.index',
