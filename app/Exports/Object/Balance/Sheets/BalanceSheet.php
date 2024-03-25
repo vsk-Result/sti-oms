@@ -4,10 +4,8 @@ namespace App\Exports\Object\Balance\Sheets;
 
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
-use App\Models\Payment;
-use App\Services\Contract\ContractService;
-use App\Services\CurrencyExchangeRateService;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -30,19 +28,13 @@ class BalanceSheet implements
 {
     private BObject $object;
     private PivotObjectDebtService $pivotObjectDebtService;
-    private CurrencyExchangeRateService $currencyExchangeRateService;
-    private ContractService $contractService;
 
     public function __construct(
         BObject $object,
         PivotObjectDebtService $pivotObjectDebtService,
-        CurrencyExchangeRateService $currencyExchangeRateService,
-        ContractService $contractService,
     ) {
         $this->object = $object;
         $this->pivotObjectDebtService = $pivotObjectDebtService;
-        $this->currencyExchangeRateService = $currencyExchangeRateService;
-        $this->contractService = $contractService;
     }
 
     public function title(): string
@@ -53,118 +45,25 @@ class BalanceSheet implements
     public function styles(Worksheet $sheet): void
     {
         $object = $this->object;
+        $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
 
-        $paymentQuery = Payment::select('object_id', 'amount');
-        $objectPayments = (clone $paymentQuery)->where('object_id', $object->id)->get();
+        $objectsInfo = json_decode($financeReportHistory->objects_new);
+        $years = collect($objectsInfo->years)->toArray();
+        $summary = $objectsInfo->summary;
+        $total = $objectsInfo->total;
 
-        $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
-        $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
-        $object->total_balance = $object->total_pay + $object->total_receive;
-        $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount');
-        if ($object->code === '288') {
-            $object->general_balance_1 = $object->generalCosts()->where('is_pinned', false)->sum('amount');
-            $object->general_balance_24 = $object->generalCosts()->where('is_pinned', true)->sum('amount');
+        $info = [];
+
+        foreach ($years as $year => $objects) {
+            foreach ($objects as $o) {
+                if ($o->id === $object->id) {
+                    $info = (array) $total->{$year}->{$object->code};
+                    break;
+                }
+            }
         }
 
         $debts = $this->pivotObjectDebtService->getPivotDebtForObject($this->object->id);
-        $serviceDebtsAmount = $debts['service']->total_amount;
-        $contractorDebtsAmount = $debts['contractor']->total_amount;
-
-        $debtObjectImport = \App\Models\Debt\DebtImport::where('type_id', \App\Models\Debt\DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-
-        if ($objectExistInObjectImport) {
-            $contractorDebtsAvans = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-            $contractorDebtsGU = \App\Models\Debt\Debt::where('import_id', $debtObjectImport->id)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
-            $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
-        }
-
-        $providerDebtsAmount = $debts['provider']->total_amount;
-        $ITRSalaryDebt = $object->getITRSalaryDebt();
-        $workSalaryDebt = $object->getWorkSalaryDebt();
-        $customerDebtInfo = [];
-        $this->contractService->filterContracts(['object_id' => [$object->id]], $customerDebtInfo);
-//                $customerDebt = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'] + $customerDebtInfo['avanses_left_amount']['RUB'] + $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-
-        $contractsTotalAmount = $customerDebtInfo['amount']['RUB'];
-
-        $dolgZakazchikovZaVipolnenieRaboti = $customerDebtInfo['avanses_acts_left_paid_amount']['RUB'];
-        $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-
-        // старая версия
-//                $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_notwork_left_amount']['RUB'] - $customerDebtInfo['acts_amount']['RUB'];
-
-        //новая версия
-        $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_received_amount']['RUB'] - $customerDebtInfo['avanses_acts_paid_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-
-        $ostatokNeotrabotannogoAvansa = $customerDebtInfo['avanses_notwork_left_amount']['RUB'];
-
-        $writeoffs = $object->writeoffs->sum('amount');
-
-        $date = now();
-        $EURExchangeRate = $this->currencyExchangeRateService->getExchangeRate($date->format('Y-m-d'), 'EUR');
-        if ($EURExchangeRate) {
-            $dolgZakazchikovZaVipolnenieRaboti += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
-            $dolgFactUderjannogoGU += ($customerDebtInfo['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount')) * $EURExchangeRate->rate;
-            $ostatokNeotrabotannogoAvansa += ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
-
-            // старая версия
-//                    $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
-//                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
-//                    $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate);
-
-            //новая версия
-
-
-            if ($object->code === '346') {
-                $diff = $customerDebtInfo['amount']['EUR'] - $customerDebtInfo['avanses_received_amount']['EUR'] - $customerDebtInfo['avanses_acts_paid_amount']['EUR'];
-                $ostatokPoDogovoruSZakazchikom += $diff * $EURExchangeRate->rate;
-                $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
-            } else {
-                $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
-                $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_received_amount']['EUR'] * $EURExchangeRate->rate);
-                $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_acts_paid_amount']['EUR'] * $EURExchangeRate->rate);
-                $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
-            }
-
-//                    $customerDebt += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
-//                    $customerDebt += $customerDebtInfo['avanses_left_amount']['EUR'] * $EURExchangeRate->rate;
-//                    $customerDebt += $customerDebtInfo['avanses_acts_deposites_amount']['EUR'] * $EURExchangeRate->rate;
-//                    $customerDebt -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount')  * $EURExchangeRate->rate;
-
-            $contractsTotalAmount += $customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate;
-        }
-
-        if ($object->code === '288') {
-            $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
-        }
-
-        if (! empty($object->closing_date) && $object->status_id === \App\Models\Status::STATUS_BLOCKED) {
-            $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
-        }
-
-        $objectBalance = $object->total_with_general_balance +
-            $dolgZakazchikovZaVipolnenieRaboti +
-            $dolgFactUderjannogoGU +
-            $contractorDebtsAmount +
-            $providerDebtsAmount +
-            $serviceDebtsAmount +
-            $ITRSalaryDebt +
-            $workSalaryDebt +
-            $writeoffs;
-
-        $prognozZpWorker = -$ostatokPoDogovoruSZakazchikom * 0.118;
-        $prognozZpITR = -$ostatokPoDogovoruSZakazchikom * 0.066;
-        $prognozMaterial = 0;
-        $prognozPodryad = 0;
-        $prognozGeneral = -$ostatokPoDogovoruSZakazchikom * 0.082;
-        $prognozService = -$ostatokPoDogovoruSZakazchikom * 0.05;
-        $prognozConsalting = $object->code === '361' ? (-$ostatokPoDogovoruSZakazchikom * 0.1139) : 0;
-        $prognozTotal = $prognozZpWorker + $prognozZpITR + $prognozMaterial + $prognozPodryad + $prognozGeneral + $prognozService + $prognozConsalting;
-
-        $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
-
-        // -------------------------------------------------------------------------------------------------------------------
 
         $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, 24, 29);
         $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
@@ -248,17 +147,14 @@ class BalanceSheet implements
         $sheet->getStyle('B10:D14')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('B10:D14')->getAlignment()->setVertical('center')->setHorizontal('left');
 
-        $this->setValueEndColor($sheet, 'E10', $object->total_receive);
-        $this->setValueEndColor($sheet, 'E11', $object->total_pay);
-        $this->setValueEndColor($sheet, 'E12', $object->total_balance);
-        $this->setValueEndColor($sheet, 'E13', $object->total_with_general_balance - $object->total_balance);
-        $this->setValueEndColor($sheet, 'E14', $object->total_with_general_balance);
+        $this->setValueEndColor($sheet, 'E10', $info['receive']);
+        $this->setValueEndColor($sheet, 'E11', $info['pay']);
+        $this->setValueEndColor($sheet, 'E12', $info['balance']);
+        $this->setValueEndColor($sheet, 'E13', $info['general_balance']);
+        $this->setValueEndColor($sheet, 'E14', $info['balance_with_general_balance']);
 
-        if ($object->total_receive == 0) {
-            $sheet->setCellValue('G13', 0 . ' %');
-        } else {
-            $sheet->setCellValue('G13', number_format(($object->total_with_general_balance - $object->total_balance) / $object->total_receive * 100, 2) . ' %');
-        }
+        $sheet->setCellValue('G13', number_format($info['general_balance_to_receive_percentage'], 2) . ' %');
+
         $sheet->getStyle('G13')->getFont()->setColor(new Color(Color::COLOR_RED));
         $sheet->getStyle('G13:G13')->getAlignment()->setVertical('center')->setHorizontal('center');
 
@@ -287,14 +183,10 @@ class BalanceSheet implements
         $sheet->getStyle('H10:J14')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('H10:J14')->getAlignment()->setVertical('center')->setHorizontal('left');
 
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-        $guaranteeSum = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
-
-        $this->setValueEndColor($sheet, 'K10', $objectExistInObjectImport ? $contractorDebtsAmount - $guaranteeSum : $contractorDebtsAmount);
-        $this->setValueEndColor($sheet, 'K11', $objectExistInObjectImport ? $guaranteeSum : 0);
-        $this->setValueEndColor($sheet, 'K12', $providerDebtsAmount);
-        $this->setValueEndColor($sheet, 'K13', $serviceDebtsAmount);
+        $this->setValueEndColor($sheet, 'K10', $info['contractor_debt']);
+        $this->setValueEndColor($sheet, 'K11', $info['contractor_debt_gu']);
+        $this->setValueEndColor($sheet, 'K12', $info['provider_debt']);
+        $this->setValueEndColor($sheet, 'K13', $info['service_debt']);
         $this->setValueEndColor($sheet, 'K14', 0);
         $sheet->mergeCells('K10:L10');
         $sheet->mergeCells('K11:L11');
@@ -321,11 +213,11 @@ class BalanceSheet implements
         $sheet->getStyle('N10:P14')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('N10:P14')->getAlignment()->setVertical('center')->setHorizontal('left');
 
-        $this->setValueEndColor($sheet, 'Q10', $workSalaryDebt);
-        $this->setValueEndColor($sheet, 'Q11', $dolgZakazchikovZaVipolnenieRaboti);
-        $this->setValueEndColor($sheet, 'Q12', $dolgFactUderjannogoGU);
-        $this->setValueEndColor($sheet, 'Q13', $objectBalance);
-        $this->setValueEndColor($sheet, 'Q14', $prognozTotal);
+        $this->setValueEndColor($sheet, 'Q10', $info['workers_salary_debt']);
+        $this->setValueEndColor($sheet, 'Q11', $info['dolgZakazchikovZaVipolnenieRaboti']);
+        $this->setValueEndColor($sheet, 'Q12', $info['dolgFactUderjannogoGU']);
+        $this->setValueEndColor($sheet, 'Q13', $info['objectBalance']);
+        $this->setValueEndColor($sheet, 'Q14', $info['prognoz_total']);
         $sheet->mergeCells('Q10:R10');
         $sheet->mergeCells('Q11:R11');
         $sheet->mergeCells('Q12:R12');
@@ -349,10 +241,10 @@ class BalanceSheet implements
         $sheet->getStyle('T10:V13')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('T10:V13')->getAlignment()->setVertical('center')->setHorizontal('left');
 
-        $this->setValueEndColor($sheet, 'W10', $contractsTotalAmount);
-        $this->setValueEndColor($sheet, 'W11', $ostatokNeotrabotannogoAvansa);
-        $this->setValueEndColor($sheet, 'W12', $ostatokPoDogovoruSZakazchikom);
-        $this->setValueEndColor($sheet, 'W13', $prognozBalance);
+        $this->setValueEndColor($sheet, 'W10', $info['contractsTotalAmount']);
+        $this->setValueEndColor($sheet, 'W11', $info['ostatokNeotrabotannogoAvansa']);
+        $this->setValueEndColor($sheet, 'W12', $info['ostatokPoDogovoruSZakazchikom']);
+        $this->setValueEndColor($sheet, 'W13', $info['prognozBalance']);
         $sheet->mergeCells('W10:X10');
         $sheet->mergeCells('W11:X11');
         $sheet->mergeCells('W12:X12');
@@ -558,7 +450,7 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'Q28', $otherSum);
-        $this->setValueEndColor($sheet, 'Q29', $providerDebtsAmount);
+        $this->setValueEndColor($sheet, 'Q29', $info['provider_debt']);
         $sheet->getStyle('N17:R28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('N17:R17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('N29:R29')->applyFromArray($titleStyleArray);
@@ -587,7 +479,7 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'W28', $otherSum);
-        $this->setValueEndColor($sheet, 'W29', $serviceDebtsAmount);
+        $this->setValueEndColor($sheet, 'W29', $info['service_debt']);
         $sheet->getStyle('T17:X28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('T17:X17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('T29:X29')->applyFromArray($titleStyleArray);
