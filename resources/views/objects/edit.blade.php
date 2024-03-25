@@ -199,12 +199,15 @@
                                     </div>
 
                                     @foreach($prognozFields as $name => $field)
+                                        @php
+                                            $planPayment = $object->planPayments->where('field', $field)->first();
+                                        @endphp
                                         <div class="pt-4 mb-10 fv-row">
                                             <label class="form-label fw-bolder text-dark fs-6">{{ $name }}</label>
                                             <input
                                                 class="form-control form-control-lg form-control-solid"
                                                 type="text"
-                                                value="{{ old($field, $object->planPayments->where('field', $field)->first()->amount) }}"
+                                                value="{{ old($field, $planPayment->isAutoCalculation() ? null : $planPayment->amount) }}"
                                                 name="{{ $field }}"
                                             />
                                         </div>

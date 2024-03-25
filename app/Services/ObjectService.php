@@ -70,21 +70,16 @@ class ObjectService
 
         $prognozFields = FinanceReport::getPrognozFields();
         foreach ($prognozFields as $field) {
-            if (!isset( $requestData[$field])) {
-                continue;
-            }
-
             $planPayment = $object->planPayments->where('field', $field)->first();
             if (!$planPayment) {
                 continue;
             }
 
             $planPayment->update([
-                'amount' => is_null($requestData[$field]) ? $planPayment->amount : -abs($this->sanitizer->set($requestData[$field])->toEmail()->get()),
+                'amount' => is_null($requestData[$field]) ? 0 : -abs($this->sanitizer->set($requestData[$field])->toEmail()->get()),
                 'type_id' => is_null($requestData[$field]) ? PlanPayment::TYPE_AUTO : PlanPayment::TYPE_MANUAL
             ]);
         }
-
 
         $object->customers()->sync($requestData['customer_id'] ?? []);
     }
