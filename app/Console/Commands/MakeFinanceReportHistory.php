@@ -311,17 +311,22 @@ class MakeFinanceReportHistory extends Command
                             $prognozAmount = 0;
                         }
 
-                        $total[$year][$object->code][$field] = $prognozAmount;
-                        $prognozTotal += $prognozAmount;
-
                         foreach ($object->planPayments as $planPayment) {
-                            if ($field === $planPayment->field && $planPayment->isAutoCalculation()) {
-                                $planPayment->update([
-                                    'amount' => $prognozAmount
-                                ]);
+                            if ($field === $planPayment->field) {
+                                if ($planPayment->isAutoCalculation()) {
+                                    $planPayment->update([
+                                        'amount' => $prognozAmount
+                                    ]);
+                                } else {
+                                    $prognozAmount = $planPayment->amount;
+                                }
+
                                 break;
                             }
                         }
+
+                        $total[$year][$object->code][$field] = $prognozAmount;
+                        $prognozTotal += $prognozAmount;
                     }
 
                     $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;

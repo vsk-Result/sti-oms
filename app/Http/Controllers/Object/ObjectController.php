@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Object;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Object\StoreObjectRequest;
 use App\Http\Requests\Object\UpdateObjectRequest;
+use App\Models\FinanceReport;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\Payment;
@@ -80,7 +81,8 @@ class ObjectController extends Controller
         $statuses = $object->getStatuses();
         $organizations = Organization::orderBy('name')->get();
         $object->load('customers');
-        return view('objects.edit', compact('object', 'statuses', 'organizations'));
+        $prognozFields = FinanceReport::getPrognozFields();
+        return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields'));
     }
 
     public function update(BObject $object, UpdateObjectRequest $request): RedirectResponse

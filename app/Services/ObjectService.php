@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Helpers\Sanitizer;
+use App\Models\FinanceReport;
 use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
+use App\Models\Object\PlanPayment;
 use App\Models\Payment;
 use App\Models\Status;
 use Carbon\Carbon;
@@ -65,6 +67,24 @@ class ObjectService
             'closing_date' => array_key_exists('closing_date', $requestData) ? $requestData['closing_date'] : $object->closing_date,
             'status_id' => $requestData['status_id']
         ]);
+
+        $prognozFields = FinanceReport::getPrognozFields();
+        foreach ($prognozFields as $field) {
+            if (!isset( $requestData[$field])) {
+                continue;
+            }
+
+            $planPayment = $object->planPayments->where('field', $field)->first();
+            if (!$planPayment) {
+                continue;
+            }
+
+            $planPayment->update([
+                'amount' => is_null($requestData[$field]) ? $planPayment->amount : -abs($this->sanitizer->set($requestData[$field])->toEmail()->get()),
+                'type_id' => is_null($requestData[$field]) ? PlanPayment::TYPE_AUTO : PlanPayment::TYPE_MANUAL
+            ]);
+        }
+
 
         $object->customers()->sync($requestData['customer_id'] ?? []);
     }

@@ -186,6 +186,30 @@
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="pt-2">
+                                    <h3 class="mb-10 mt-6">Прогнозируемые затраты</h3>
+
+                                    <div class="alert alert-dismissible bg-light-primary d-flex flex-column flex-sm-row p-5 mb-10">
+                                        <i class="ki-duotone ki-search-list fs-2hx text-success me-4 mb-5 mb-sm-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                                            <h5 class="mb-1">Заполнение прогнозируемых затрат</h5>
+                                            <span>Если задать поле пустым, расчет будет произведен автоматически, иначе будет браться значение из поля, даже если это 0</span>
+                                        </div>
+                                    </div>
+
+                                    @foreach($prognozFields as $name => $field)
+                                        <div class="pt-4 mb-10 fv-row">
+                                            <label class="form-label fw-bolder text-dark fs-6">{{ $name }}</label>
+                                            <input
+                                                class="form-control form-control-lg form-control-solid"
+                                                type="text"
+                                                value="{{ old($field, $object->planPayments->where('field', $field)->first()->amount) }}"
+                                                name="{{ $field }}"
+                                            />
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
 
