@@ -49,7 +49,6 @@ class BalanceSheet implements
 
         $objectsInfo = json_decode($financeReportHistory->objects_new);
         $years = collect($objectsInfo->years)->toArray();
-        $summary = $objectsInfo->summary;
         $total = $objectsInfo->total;
 
         $info = [];

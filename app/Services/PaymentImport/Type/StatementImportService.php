@@ -353,6 +353,7 @@ class StatementImportService
         $map = [
             'Услуги' => Payment::CATEGORY_OPSTE,
             'Подрядчики' => Payment::CATEGORY_RAD,
+            'Субподрядчик' => Payment::CATEGORY_RAD,
             'Поставщики' => Payment::CATEGORY_MATERIAL,
         ];
 

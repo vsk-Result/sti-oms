@@ -74,10 +74,11 @@ class ObjectPivotSheet implements
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
         $sheet->getStyle('A1:A' . $lastRow)->getFont()->setSize(14);
         $sheet->getStyle('B1:B' . $lastRow)->getFont()->setSize(14)->setBold(true);
+        $sheet->getStyle('B1:B' . $lastRow)->getAlignment()->setVertical('center')->setHorizontal('center');
+
         $sheet->getStyle('B2:' . $lastColumn . $lastRow)->getNumberFormat()->setFormatCode('#,##0');
         $sheet->getStyle('A1:' . $lastColumn . '1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:A' . $lastRow)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('B2:' . $lastColumn . $lastRow)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(true);
 
         $sheet->getStyle('B1:B' . $lastRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
         $sheet->getStyle('C1:' . $lastColumn . '1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f15a22');
@@ -121,11 +122,7 @@ class ObjectPivotSheet implements
                 $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)');
             }
 
-            if (in_array($field, $percentFields)) {
-                $sheet->setCellValue('B' . $row, '-');
-            } else {
-                $sheet->setCellValue('B' . $row, $sumValue);
-            }
+            $sheet->setCellValue('B' . $row, $sumValue == 0 ? '-' : $sumValue);
 
             if ($isSpecialField) {
                 $sheet->getStyle('A' . $row)->getFont()->setBold(true);
@@ -133,15 +130,22 @@ class ObjectPivotSheet implements
                 $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($sumValue < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
             }
 
-            if ($percentField === $field) {
+            if ($percentField === $field || in_array($field, $percentFields)) {
                 $sheet->setCellValue('B' . $row, $sumValue == 0 ? '-' : $sumValue / 100);
                 $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
             }
 
             if ($isPrognozField) {
+                $sheet->getStyle('B' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(false);
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setSize(11);
+            }
+
+            if ($field === 'complete_percent' || $field === 'money_percent') {
+                $sheet->getStyle('B' . $row)->getFont()->setSize(12);
+                $sheet->getStyle('B' . $row)->getFont()->setBold(true);
+                $sheet->getStyle('B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
             }
 
             $columnIndex = 3;
@@ -150,6 +154,7 @@ class ObjectPivotSheet implements
 
                 $value = $total->{$year}->{$object->code}->{$field};
                 $column = $this->getColumnWord($columnIndex);
+                $sheet->getStyle($column . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
 
                 if (in_array($field, $percentFields)) {
                     if ($field === 'time_percent') {
@@ -164,6 +169,7 @@ class ObjectPivotSheet implements
 
                 if ($isSpecialField) {
                     $sheet->getStyle($column . $row)->getFont()->setSize(12);
+                    $sheet->getStyle($column . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
                     $sheet->getStyle($column . $row)->getFont()->setColor(new Color($value < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                 }
 
@@ -175,6 +181,13 @@ class ObjectPivotSheet implements
                 if ($field === 'prognoz_total') {
                     $sheet->getStyle($column . $row)->getFont()->setSize(12);
                     $sheet->getStyle($column . $row)->getFont()->setBold(true);
+                    $sheet->getStyle($column . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
+                }
+
+                if ($field === 'complete_percent' || $field === 'money_percent') {
+                    $sheet->getStyle($column . $row)->getFont()->setSize(12);
+                    $sheet->getStyle($column . $row)->getFont()->setBold(true);
+                    $sheet->getStyle($column . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
                 }
 
                 $columnIndex++;
