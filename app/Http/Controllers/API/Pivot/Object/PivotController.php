@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CurrencyExchangeRate;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
+use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\Status;
@@ -56,157 +57,22 @@ class PivotController extends Controller
             return response()->json([], 404);
         }
 
-        $contractsTotal = [];
-        $this->contractService->filterContracts(['object_id' => [$object->id]], $contractsTotal);
-        $currentRate = $this->rateService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
+        $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
 
-        $contractsTotalRUB = $contractsTotal['amount']['RUB'];
-        $contractsTotalEUR = $contractsTotal['amount']['EUR'];
+        $objectsInfo = json_decode($financeReportHistory->objects_new);
+        $years = collect($objectsInfo->years)->toArray();
+        $total = $objectsInfo->total;
 
-        if ($currentRate) {
-            $contractsTotalRUB = $contractsTotalRUB + $contractsTotalEUR * $currentRate->rate;
-            $contractsTotalEUR = 0;
-        }
+        $info = [];
 
-        $paymentQuery = Payment::select('object_id', 'amount');
-        $pay = (clone $paymentQuery)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount');
-        $receive = (clone $paymentQuery)->where('object_id', $object->id)->sum('amount') - $pay;
-
-        $avansesNotworkLeftAmountRUB = $contractsTotal['avanses_notwork_left_amount']['RUB'];
-        $avansesNotworkLeftAmountEUR = $contractsTotal['avanses_notwork_left_amount']['EUR'];
-
-        if ($currentRate) {
-            $avansesNotworkLeftAmountRUB = $avansesNotworkLeftAmountRUB + $avansesNotworkLeftAmountEUR * $currentRate->rate;
-            $avansesNotworkLeftAmountEUR = 0;
-        }
-
-        $balance = $pay + $receive;
-        $generalCosts = $object->generalCosts()->sum('amount');
-
-        $customerDebtRUB = $contractsTotal['avanses_acts_left_paid_amount']['RUB'] + $contractsTotal['avanses_left_amount']['RUB'] + $contractsTotal['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-        $customerDebtEUR = $contractsTotal['avanses_acts_left_paid_amount']['EUR'] + $contractsTotal['avanses_left_amount']['EUR'] + $contractsTotal['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount');
-
-        $customerAvansLeftDebtRUB = $contractsTotal['avanses_left_amount']['RUB'];
-        $customerAvansLeftDebtEUR = $contractsTotal['avanses_left_amount']['EUR'];
-
-        $customerActDebtRUB = $contractsTotal['avanses_acts_left_paid_amount']['RUB'];
-        $customerActDebtEUR = $contractsTotal['avanses_acts_left_paid_amount']['EUR'];
-
-        $customerActGUDebtRUB = $contractsTotal['avanses_acts_deposites_amount']['RUB'];
-        $customerActGUDebtEUR = $contractsTotal['avanses_acts_deposites_amount']['EUR'];
-
-        $customerGUReceiveRUB = $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-        $customerGUReceiveEUR = $object->guaranteePayments->where('currency', 'EUR')->sum('amount');
-
-        if ($currentRate) {
-            $customerDebtRUB = $customerDebtRUB + $customerDebtEUR * $currentRate->rate;
-            $customerDebtEUR = 0;
-
-            $customerActDebtRUB = $customerActDebtRUB + $customerActDebtEUR * $currentRate->rate;
-            $customerActDebtEUR = 0;
-
-            $customerAvansLeftDebtRUB = $customerAvansLeftDebtRUB + $customerAvansLeftDebtEUR * $currentRate->rate;
-            $customerAvansLeftDebtEUR = 0;
-
-            $customerActGUDebtRUB = $customerActGUDebtRUB + $customerActGUDebtEUR * $currentRate->rate;
-            $customerActGUDebtEUR = 0;
-
-            $customerGUReceiveRUB = $customerGUReceiveRUB + $customerGUReceiveEUR * $currentRate->rate;
-            $customerGUReceiveEUR = 0;
-        }
-
-        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
-
-        $contractorDebtsAmount = $debts['contractor']->total_amount;
-        $contractorDebtsGU = 0;
-
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-
-        if ($objectExistInObjectImport) {
-            $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-            $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
-            $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
-        }
-
-        $providerDebtsAmount = $debts['provider']->total_amount;
-        $serviceDebtsAmount = $debts['service']->total_amount;
-
-        $workSalaryDebt = $object->getWorkSalaryDebt();
-        $ITRSalaryDebt = $object->getITRSalaryDebt();
-
-        $dolgZakazchikovZaVipolnenieRaboti = $contractsTotal['avanses_acts_left_paid_amount']['RUB'];
-        $dolgFactUderjannogoGU = $contractsTotal['avanses_acts_deposites_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-
-        // старая версия
-        // $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_notwork_left_amount']['RUB'] - $contractsTotal['acts_amount']['RUB'];
-
-        //новая версия
-        $ostatokPoDogovoruSZakazchikom = $contractsTotal['amount']['RUB'] - $contractsTotal['avanses_received_amount']['RUB'] - $contractsTotal['avanses_acts_paid_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-
-        $ostatokNeotrabotannogoAvansa = $contractsTotal['avanses_notwork_left_amount']['RUB'];
-
-        if ($currentRate) {
-            $dolgZakazchikovZaVipolnenieRaboti += $contractsTotal['avanses_acts_left_paid_amount']['EUR'] * $currentRate->rate;
-            $dolgFactUderjannogoGU += ($contractsTotal['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount')) * $currentRate->rate;
-
-            // старая версия
-            // $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);
-            // $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
-            // $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['acts_amount']['EUR'] * $currentRate->rate);
-
-            if ($object->code === '346') {
-                $diff = $contractsTotal['amount']['EUR'] - $contractsTotal['avanses_received_amount']['EUR'] - $contractsTotal['avanses_acts_paid_amount']['EUR'];
-                $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $currentRate->rate;
-                $ostatokPoDogovoruSZakazchikom += $diff * $currentRate->rate;
-            } else {
-                $ostatokPoDogovoruSZakazchikom += ($contractsTotal['amount']['EUR'] * $currentRate->rate);
-                $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_received_amount']['EUR'] * $currentRate->rate);
-                $ostatokPoDogovoruSZakazchikom -= ($contractsTotal['avanses_acts_paid_amount']['EUR'] * $currentRate->rate);
-                $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $currentRate->rate;
+        foreach ($years as $year => $objects) {
+            foreach ($objects as $o) {
+                if ($o->id === $object->id) {
+                    $info = (array) $total->{$year}->{$object->code};
+                    break;
+                }
             }
-
-            $ostatokNeotrabotannogoAvansa += ($contractsTotal['avanses_notwork_left_amount']['EUR'] * $currentRate->rate);
         }
-
-        $guRUB = $contractsTotal['avanses_non_closes_amount']['RUB'];
-        $guEUR = $contractsTotal['avanses_non_closes_amount']['EUR'];
-
-        if ($currentRate) {
-            $guRUB = $guRUB + $guEUR * $currentRate->rate;
-            $guEUR = 0;
-        }
-
-        if ($object->code === '288') {
-            $dolgFactUderjannogoGU = $contractsTotal['avanses_acts_deposites_amount']['RUB'];
-        }
-
-        if (! empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
-            $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
-        }
-
-        $writeoffs = $object->writeoffs->sum('amount');
-
-        $objectBalanceRUB = $generalCosts + $balance +
-            $dolgZakazchikovZaVipolnenieRaboti +
-            $dolgFactUderjannogoGU +
-            $contractorDebtsAmount +
-            $providerDebtsAmount +
-            $serviceDebtsAmount +
-            $ITRSalaryDebt +
-            $workSalaryDebt +
-            $writeoffs;
-
-        $prognozZpWorker = -$ostatokPoDogovoruSZakazchikom * 0.118;
-        $prognozZpITR = -$ostatokPoDogovoruSZakazchikom * 0.066;
-        $prognozMaterial = 0;
-        $prognozPodryad = 0;
-        $prognozGeneral = -$ostatokPoDogovoruSZakazchikom * 0.082;
-        $prognozService = -$ostatokPoDogovoruSZakazchikom * 0.05;
-        $prognozConsalting = $object->code === '361' ? (-$ostatokPoDogovoruSZakazchikom * 0.1139) : 0;
-        $prognozTotal = $prognozZpWorker + $prognozZpITR + $prognozMaterial + $prognozPodryad + $prognozGeneral + $prognozService + $prognozConsalting;
-
-        $prognozBalance = $objectBalanceRUB + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
 
         $info = [
             'name' => $object->getName(),
