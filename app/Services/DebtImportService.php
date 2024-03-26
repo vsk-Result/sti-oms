@@ -477,7 +477,7 @@ class DebtImportService
                 continue;
             }
 
-            if ($organizationType !== 'УСЛУГИ') {
+            if ($organizationType !== 'НАКЛАДНЫЕ/УСЛУГИ') {
                 continue;
             }
 
@@ -588,7 +588,7 @@ class DebtImportService
                 continue;
             }
 
-            if ($organizationType !== 'ПОСТАВЩИКИ') {
+            if ($organizationType !== 'МАТЕРИАЛЫ') {
                 continue;
             }
 
@@ -637,7 +637,7 @@ class DebtImportService
 
             $this->debtService->createDebt([
                 'import_id' => $import->id,
-                'type_id' => $organizationType === 'ПОСТАВЩИКИ' ? Debt::TYPE_PROVIDER : Debt::TYPE_CONTRACTOR,
+                'type_id' => $organizationType === 'МАТЕРИАЛЫ' ? Debt::TYPE_PROVIDER : Debt::TYPE_CONTRACTOR,
                 'company_id' => $import->company_id,
                 'object_id' => $object->id,
                 'object_worktype_id' => null,
