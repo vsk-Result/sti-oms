@@ -280,7 +280,7 @@ class MakeFinanceReportHistory extends Command
                         $workSalaryDebt +
                         $writeoffs;
 
-                    $generalBalanceToReceivePercentage = $object->total_receive == 0 ? 0 : $object->general_balance / $object->total_receive * 100;
+                    $generalBalanceToReceivePercentage = abs($object->total_receive == 0 ? 0 : $object->general_balance / $object->total_receive * 100);
 
                     // ------ Расчет прогнозируемых затрат
 
