@@ -149,7 +149,7 @@ class CalculateSalaryService
 
         $avanses_id = [];
         foreach ($employees as $employee) {
-            $avanses_objects = $employee->avanses()->where('date', $this->date)->groupBy('code')->pluck('code', 'id')->toArray();
+            $avanses_objects = $employee->avanses()->where('date', $this->date)->pluck('code', 'id')->toArray();
             $workhour_objects = $employee->workhours()->where('date', 'LIKE', $this->date . '%')->groupBy('o_id')->pluck('o_id')->toArray();
             $workhour_objects = CObject::whereIn('id', $workhour_objects)->pluck('code')->toArray();
 
