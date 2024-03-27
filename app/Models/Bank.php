@@ -12,6 +12,24 @@ class Bank
             'visible' => true
         ],
         [
+            'id' => 13,
+            'name' => 'ВТБ Тинькофф',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
+        [
+            'id' => 15,
+            'name' => 'ВТБ Камчатка',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
+        [
+            'id' => 18,
+            'name' => 'ВТБ Запасной',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
+        [
             'id' => 2,
             'name' => 'ПАО "Промсвязьбанк"',
             'logo' => '/images/banks/promsvyazbank.png',
@@ -78,21 +96,9 @@ class Bank
             'visible' => false
         ],
         [
-            'id' => 13,
-            'name' => 'ВТБ Тинькофф',
-            'logo' => '/images/banks/vtb.png',
-            'visible' => true
-        ],
-        [
             'id' => 14,
             'name' => 'АО "Райффайзенбанк"',
             'logo' => '/images/banks/raifaizen.png',
-            'visible' => true
-        ],
-        [
-            'id' => 15,
-            'name' => 'ВТБ Камчатка',
-            'logo' => '/images/banks/vtb.png',
             'visible' => true
         ],
         [
