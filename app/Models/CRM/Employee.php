@@ -78,7 +78,7 @@ class Employee extends Model
             }
         } else {
 
-            $objects = $this->workhours()->where('date', 'LIKE', $date . '%')->groupBy('o_id')->lists('o_id')->toArray();
+            $objects = $this->workhours()->where('date', 'LIKE', $date . '%')->groupBy('o_id')->pluck('o_id')->toArray();
             if (count($objects) == 0) {
                 $patents = $this->patents()->where('date', $date)->get();
 
