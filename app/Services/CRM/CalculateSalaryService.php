@@ -119,10 +119,11 @@ class CalculateSalaryService
 
         $difference_ids = [];
         foreach ($employees as $employee) {
-            dd($employee->differences()->where('date', $this->date)->get());
-            $difference_objects = $employee->differences()->where('date', $this->date)->get()->groupBy('code')->pluck('code', 'id')->toArray();
+            $difference_objects = $employee->differences()->where('date', $this->date)->pluck('code', 'id')->toArray();
+            dd($difference_objects);
             $workhour_objects = $employee->workhours()->where('date', 'LIKE', $this->date . '%')->get()->groupBy('o_id')->pluck('o_id')->toArray();
             $workhour_objects = CObject::whereIn('id', $workhour_objects)->pluck('code')->toArray();
+
 
             foreach ($difference_objects as $difference_id => $difference_object) {
                 if (!in_array($difference_object, $workhour_objects)) {
