@@ -128,11 +128,25 @@ class Bank
 
     public static function getBankName(int $bankId): string
     {
-        return static::$banks[$bankId - 1]['name'];
+        $findBank = self::getById($bankId);
+        return $findBank ? $findBank['name'] : '';
     }
 
     public static function getBankLogo(int $bankId): string
     {
-        return static::$banks[$bankId - 1]['logo'];
+        $findBank = self::getById($bankId);
+        return $findBank ? $findBank['logo'] : '';
+    }
+
+    private static function getById(int $bankId)
+    {
+        $findBank = null;
+        foreach (static::$banks as $bank) {
+            if ($bank['visible'] && $bank['id'] === $bankId) {
+                $findBank = $bank;
+                break;
+            }
+        }
+        return $findBank;
     }
 }
