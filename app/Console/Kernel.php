@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:notify-to-email-about-object-balance')->dailyAt('15:00');
         $schedule->command('oms:update-wrong-payment-code')->dailyAt('20:00');
         $schedule->command('oms:update-object-organization-debt-pivot')->everyThirtyMinutes();
-        $schedule->command('oms:update-crm-salary')->everyTwoHours();
+        $schedule->command('oms:update-crm-salary')->everyFourHours();
     }
 
     /**
