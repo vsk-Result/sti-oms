@@ -124,6 +124,7 @@ class CalculateSalaryService
             $workhour_objects = $employee->workhours()->where('date', 'LIKE', $this->date . '%')->get()->groupBy('o_id')->pluck('o_id')->toArray();
             $workhour_objects = CObject::whereIn('id', $workhour_objects)->pluck('code')->toArray();
 
+
             foreach ($difference_objects as $difference_id => $difference_object) {
                 if (!in_array($difference_object, $workhour_objects)) {
                     $difference_ids[] = $difference_id;
