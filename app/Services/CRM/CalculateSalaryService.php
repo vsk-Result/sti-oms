@@ -28,6 +28,7 @@ class CalculateSalaryService
             $this->fillAvansFinanceFlag();
 
             $this->renderFinances();
+            break;
         }
     }
 
