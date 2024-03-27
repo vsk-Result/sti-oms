@@ -10,7 +10,7 @@ class Difference extends Model
 
     protected $connection = 'mysql_crm';
 
-    protected $fillable = ['finance_flag'];
+    protected $fillable = ['finance_flag', 'code', 'date', 'id'];
 
     public $timestamps = false;
 }
