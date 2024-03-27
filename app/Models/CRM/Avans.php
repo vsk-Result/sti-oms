@@ -11,6 +11,8 @@ class Avans extends Model
 
     protected $connection = 'mysql_crm';
 
+    protected $fillable = ['finance_flag'];
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'e_id');
