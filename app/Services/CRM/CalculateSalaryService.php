@@ -130,6 +130,8 @@ class CalculateSalaryService
             }
         }
 
+        dd($this->date, $difference_ids);
+
         Difference::where('date', $this->date)->update(['finance_flag' => false]);
         Difference::whereIn('id', $difference_ids)->update(['finance_flag' => true]);
 
