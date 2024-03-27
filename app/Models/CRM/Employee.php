@@ -115,9 +115,9 @@ class Employee extends Model
 
                 foreach ($patents as $patent) {
                     if ($patent->paycheck) {
-                        $patentpayment -= $patent->price / 2;
+                        $patentpayment -= (int) $patent->price / 2;
                     } else {
-                        $patentpayment += $patent->price / 2;
+                        $patentpayment += (int) $patent->price / 2;
                     }
                 }
             } else {
