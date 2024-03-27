@@ -79,8 +79,6 @@ class NotifyToEmailAboutUnclosedCRMCostClosures extends Command
             }
         }
 
-        dd($closures);
-
         $this->CRONProcessService->successProcess($this->signature);
 
         return 0;
