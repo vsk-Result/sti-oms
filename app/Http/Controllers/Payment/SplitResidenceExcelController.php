@@ -7,6 +7,7 @@ use App\Imports\Payment\SplitResidenceExcelImport;
 use App\Models\CRM\CObject;
 use App\Models\CRM\Workhour;
 use App\Models\Object\BObject;
+use App\Models\Organization;
 use App\Models\Payment;
 use App\Services\ObjectService;
 use App\Services\PaymentService;
@@ -28,6 +29,8 @@ class SplitResidenceExcelController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $requestData = $request->toArray();
+        $organization = Organization::find($requestData['organization_id']);
+        $isKadinova = $organization->name === 'ИП Кадинова Елена Николаевна';
 
         $payments = Payment::where('organization_receiver_id', $requestData['organization_id'])->where('was_split', false)->get();
 
@@ -45,8 +48,9 @@ class SplitResidenceExcelController extends Controller
 
         $totalAmount = 0;
         $groupedObjectAmount = [];
+        $dataStartIndex = $isKadinova ? 4 : 7;
         foreach ($importData['Отчет'] as $rowIndex => $row) {
-            if ($rowIndex < 7) {
+            if ($rowIndex < $dataStartIndex) {
                 continue;
             }
 
@@ -54,8 +58,8 @@ class SplitResidenceExcelController extends Controller
                 break;
             }
 
-            $objectInfo = $row[3];
-            $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, ' -'));
+            $objectInfo = $isKadinova ? $row[4] : $row[3];
+            $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, $isKadinova ? ' ' : ' -'));
 
             if (empty($objectCode)) {
                 $objectCode = '27.1';
@@ -78,8 +82,10 @@ class SplitResidenceExcelController extends Controller
                 $groupedObjectAmount[$objectMainCode][$worktype] = 0;
             }
 
-            $groupedObjectAmount[$objectMainCode][$worktype] += $row[44];
-            $totalAmount += $row[44];
+            $amount = $isKadinova ? $row[45] : $row[44];
+
+            $groupedObjectAmount[$objectMainCode][$worktype] += $amount;
+            $totalAmount += $amount;
         }
 
         $paymentsTotalAmount = $payments->sum('amount');
