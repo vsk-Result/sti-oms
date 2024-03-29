@@ -15,6 +15,7 @@ use App\Http\Controllers\API\Object\DebtController as ODebtController;
 use App\Http\Controllers\API\Object\DebtV2Controller;
 use App\Http\Controllers\API\Object\BalanceController;
 use App\Http\Controllers\API\Debt\OrganizationController;
+use App\Http\Controllers\API\Finance\FinanceReportExportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,4 +53,6 @@ Route::get('bank-guarantees', [BankGuaranteeController::class, 'index']);
 Route::get('bank-guarantees/export', [BExportController::class, 'store']);
 
 Route::get('loans', [LoanController::class, 'index']);
+
+Route::get('exports/finance/finance-report', [FinanceReportExportController::class, 'store']);
 
