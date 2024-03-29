@@ -65,8 +65,8 @@ class CategoryPivot implements
             $pay = $categoryPayments->where('amount', '<', 0)->sum('amount');
 
             $sheet->setCellValue('A' . $row, $category);
-            $sheet->setCellValue('B' . $row, $pay);
-            $sheet->setCellValue('C' . $row, $receive);
+            $sheet->setCellValue('B' . $row, $receive);
+            $sheet->setCellValue('C' . $row, $pay);
             $sheet->setCellValue('D' . $row, $total);
 
             $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -86,8 +86,8 @@ class CategoryPivot implements
                 $pay = $codePayments->where('amount', '<', 0)->sum('amount');
 
                 $sheet->setCellValue('A' . $row, '    ' . KostCode::getTitleByCode($code));
-                $sheet->setCellValue('B' . $row, $pay);
-                $sheet->setCellValue('C' . $row, $receive);
+                $sheet->setCellValue('B' . $row, $receive);
+                $sheet->setCellValue('C' . $row, $pay);
                 $sheet->setCellValue('D' . $row, $total);
 
                 $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
