@@ -63,6 +63,7 @@ class ObjectService
             'responsible_name' => $this->sanitizer->set($requestData['responsible_name'])->upperCaseAllFirstWords()->get(),
             'responsible_email' => $this->sanitizer->set($requestData['responsible_email'])->toEmail()->get(),
             'responsible_phone' => $this->sanitizer->set($requestData['responsible_phone'])->toPhone()->get(),
+            'free_limit_amount' => $this->sanitizer->set($requestData['free_limit_amount'] ?? 0)->toAmount()->get(),
             'photo' => $photo,
             'closing_date' => array_key_exists('closing_date', $requestData) ? $requestData['closing_date'] : $object->closing_date,
             'status_id' => $requestData['status_id']

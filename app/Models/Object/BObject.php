@@ -42,7 +42,8 @@ class BObject extends Model implements Audit
         'responsible_email',
         'responsible_phone',
         'is_without_worktype',
-        'closing_date'
+        'closing_date',
+        'free_limit_amount'
     ];
 
     private function getStatusesList(): array

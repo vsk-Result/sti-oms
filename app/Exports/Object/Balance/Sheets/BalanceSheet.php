@@ -252,7 +252,35 @@ class BalanceSheet implements
         $sheet->getStyle('W10:X13')->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('W10:X13')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
+        if ($object->code === '361' && $object->free_limit_amount != 0) {
+            $sheet->setCellValue('T10', 'Сумма договоров с Заказчиком');
+            $sheet->setCellValue('T11', 'Остаток неотработанного аванса');
+            $sheet->setCellValue('T12', 'Сумма свободного лимита АВ к получению');
+            $sheet->setCellValue('T13', 'Остаток к получ. от заказчика (в т.ч. ГУ)');
+            $sheet->setCellValue('T14', 'Прогнозируемый Баланс объекта');
+            $sheet->mergeCells('T10:V10');
+            $sheet->mergeCells('T11:V11');
+            $sheet->mergeCells('T12:V12');
+            $sheet->mergeCells('T13:V13');
+            $sheet->mergeCells('T14:V14');
+            $sheet->getStyle('T10:V14')->applyFromArray($titleStyleArray);
+            $sheet->getStyle('T10:V14')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
+            $sheet->getStyle('T10:V14')->getAlignment()->setVertical('center')->setHorizontal('left');
 
+            $this->setValueEndColor($sheet, 'W10', $info['contractsTotalAmount']);
+            $this->setValueEndColor($sheet, 'W11', $info['ostatokNeotrabotannogoAvansa']);
+            $this->setValueEndColor($sheet, 'W12', $object->free_limit_amount);
+            $this->setValueEndColor($sheet, 'W13', $info['ostatokPoDogovoruSZakazchikom']);
+            $this->setValueEndColor($sheet, 'W14', $info['prognozBalance']);
+            $sheet->mergeCells('W10:X10');
+            $sheet->mergeCells('W11:X11');
+            $sheet->mergeCells('W12:X12');
+            $sheet->mergeCells('W13:X13');
+            $sheet->mergeCells('W14:X14');
+            $sheet->getStyle('W10:X14')->applyFromArray($valueStyleArray);
+            $sheet->getStyle('W10:X14')->getAlignment()->setVertical('center')->setHorizontal('right');
+            $sheet->getStyle('W10:X14')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        }
 
         $sheet->getRowDimension(16)->setRowHeight(48);
         $sheet->getStyle('B15:X15')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);

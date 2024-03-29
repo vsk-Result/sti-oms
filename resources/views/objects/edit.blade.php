@@ -148,6 +148,23 @@
                                     </select>
                                 </div>
 
+                                @if ($object->code === '361')
+                                    <div class="mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Сумма свободного лимита АВ к получению</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="free_limit_amount"
+                                                    value="{{ old('free_limit_amount', $object->free_limit_amount) }}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+
                                 <div class="fv-row mb-10">
                                     <label class="col-lg-4 col-form-label fw-bold fs-6">Фотография</label>
                                     <div class="col-lg-8">
