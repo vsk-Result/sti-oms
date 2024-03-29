@@ -36,7 +36,7 @@ class FinanceReportExportController extends Controller
         $depositsInfo = json_decode($financeReportHistory->deposits);
         $objectsInfo = json_decode($financeReportHistory->objects_new);
 
-        $fileName = 'Финансовый отчет_' . now()->format('d_m_Y') . '.pdf';
+        $fileName = 'Финансовый_отчет_' . now()->format('d_m_Y') . '.pdf';
 
         Excel::store(
             new Export(
