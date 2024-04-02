@@ -30,6 +30,12 @@ class Bank
             'visible' => true
         ],
         [
+            'id' => 19,
+            'name' => 'ВТБ Спецсчёт',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
+        [
             'id' => 2,
             'name' => 'ПАО "Промсвязьбанк"',
             'logo' => '/images/banks/promsvyazbank.png',
