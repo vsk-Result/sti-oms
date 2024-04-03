@@ -30,6 +30,7 @@ class Interaction extends Model implements Audit
             'СТИ-ДТГ_Займ',
             'СТИ-Milenium_Переступка',
             'СТИ-Belenzia_Поставка',
+            'СТИ-БАМС_Займ',
             'ПТИ-СТИ_Займ',
             'ПТИ_НП',
             'ПТИ-ДТГ_Поставка',
