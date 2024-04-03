@@ -66,7 +66,7 @@
                 @endcan
             @endcan
 
-            @if(auth()->user()->hasRole('super-admin') || auth()->id() === 16)
+            @canAny(['index schema-interactions'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder"> Схемы</span>
@@ -78,7 +78,7 @@
                         <span class="menu-title">Схема взаимодействия</span>
                     </a>
                 </div>
-            @endif
+            @endcan
 
             <div class="menu-item pt-5">
                 <div class="menu-content pb-2">
