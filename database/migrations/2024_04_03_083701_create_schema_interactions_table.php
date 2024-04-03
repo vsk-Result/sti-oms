@@ -35,6 +35,8 @@ class CreateSchemaInteractionsTable extends Migration
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();
         });
+
+        $this->permissionService->createPermissions($this->permissions);
     }
 
     /**
