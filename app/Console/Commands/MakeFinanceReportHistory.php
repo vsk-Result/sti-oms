@@ -22,6 +22,7 @@ use App\Services\FinanceReport\LoanService;
 use App\Services\ObjectPlanPaymentService;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -75,6 +76,33 @@ class MakeFinanceReportHistory extends Command
         Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
         Log::channel('custom_imports_log')->debug('[START] Создание снимка финансового отчета для истории');
+
+        $pivotInfoFromGromisoft = [];
+
+        $objectsFromGromisoft = [
+            '367' => '367. БЦ Легенда Цветного - Vesper Office',
+            '363' => 'Аэропорт Елизово Камчатка',
+            '361' => 'Гостиница Кемерово (первый этап)',
+            '358' => 'Гостиница Меркурий Завидово',
+            '360' => 'Тинькофф',
+        ];
+
+        $hash = md5(date('dmY'));
+        $endpoint = "https://sti.gromitsoft.space/api/v1/projects?sti_token=sti_" . $hash;
+        $client = new Client();
+
+        try {
+            $response = $client->request('POST', $endpoint);
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode === 200) {
+                $pivotInfoFromGromisoft = json_decode($response->getBody(), true);
+            }
+        } catch (\Throwable $e) {
+            $errorMessage = '[ERROR] Не удалось загрузить данные из https://sti.gromitsoft.space/api/v1/projects';
+            Log::channel('custom_imports_log')->debug($errorMessage);
+        }
 
         $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
 
@@ -372,6 +400,24 @@ class MakeFinanceReportHistory extends Command
                     $completePercent = $contractsTotalAmount != 0 ? $actsTotalAmount / $contractsTotalAmount * 100 : 0;
                     $moneyPercent = $contractsTotalAmount != 0 ? $receiveFromCustomers / $contractsTotalAmount * 100 : 0;
 
+                    $planReadyPercent = 0;
+                    $factReadyPercent = 0;
+                    $deviationPlanPercent = 0;
+
+                    $infoName = '';
+                    if (isset($objectsFromGromisoft[$object->code])) {
+                        $infoName = $objectsFromGromisoft[$object->code];
+                    }
+
+                    foreach ($pivotInfoFromGromisoft as $infoFromGromisoft) {
+                        if ($infoFromGromisoft['name'] === $infoName) {
+                            $planReadyPercent = $infoFromGromisoft['plan_today'];
+                            $factReadyPercent = $infoFromGromisoft['fact_today'];
+                            $deviationPlanPercent = $infoFromGromisoft['summary_delta'];
+                            break;
+                        }
+                    }
+
                     $total[$year][$object->code]['pay'] = $object->total_pay;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
                     $total[$year][$object->code]['balance'] = $object->total_balance;
@@ -396,6 +442,9 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['time_percent'] = $timePercent;
                     $total[$year][$object->code]['complete_percent'] = $completePercent;
                     $total[$year][$object->code]['money_percent'] = $moneyPercent;
+                    $total[$year][$object->code]['plan_ready_percent'] = $planReadyPercent;
+                    $total[$year][$object->code]['fact_ready_percent'] = $factReadyPercent;
+                    $total[$year][$object->code]['deviation_plan_percent'] = $deviationPlanPercent;
 
                     foreach ($total[$year][$object->code] as $key => $value) {
                         if (is_string($value)) {
@@ -409,6 +458,10 @@ class MakeFinanceReportHistory extends Command
                 $summary[$year]['time_percent'] = 0;
                 $summary[$year]['complete_percent'] = $sContractsTotalAmount != 0 ? $sActsTotalAmount / $sContractsTotalAmount * 100 : 0;
                 $summary[$year]['money_percent'] = $sContractsTotalAmount != 0 ? $sReceiveFromCustomers / $sContractsTotalAmount * 100 : 0;
+
+                $summary[$year]['plan_ready_percent'] = 0;
+                $summary[$year]['fact_ready_percent'] = 0;
+                $summary[$year]['deviation_plan_percent'] = 0;
             }
 
         } catch (\Exception $e) {

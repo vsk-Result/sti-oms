@@ -7,7 +7,7 @@
     $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
     $prognozFields = array_values(\App\Models\FinanceReport::getPrognozFields());
     $percentField = 'general_balance_to_receive_percentage';
-    $percentFields = ['time_percent', 'complete_percent', 'money_percent'];
+    $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
 
     unset($years['Не отображать']);
     unset($years['Общие']);
@@ -74,6 +74,18 @@
                                                     @if (in_array($field, $percentFields))
                                                         @if ($field === 'time_percent')
                                                             {{ $value == 0 ? 'Нет данных' : number_format($value, 2) . '%' }}
+                                                        @elseif ($field === 'deviation_plan_percent')
+                                                            @if ($value < 0)
+                                                                <span class="badge badge-light-danger fs-base mt-n3">
+                                                                    <i class="fa fa-arrow-down fs-9 text-danger me-2"></i>{{ number_format($value, 2) . '%' }}
+                                                                </span>
+                                                            @elseif ($value == 0)
+                                                                -
+                                                            @else
+                                                                <span class="badge badge-light-success fs-base">
+                                                                    <i class="fa fa-arrow-up fs-9 text-success me-2"></i>{{ number_format($value, 2) . '%' }}
+                                                                </span>
+                                                            @endif
                                                         @else
                                                             {{ $value == 0 ? '-' : number_format($value, 2) . '%' }}
                                                         @endif

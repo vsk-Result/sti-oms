@@ -32,10 +32,8 @@ class InteractionService
     public function getInteractions(): array
     {
         $names = Interaction::getNames();
-        if (Interaction::whereIn('name', $names)->count() !== count($names)) {
-            foreach ($names as $name) {
-                $this->createInteraction(['name' => $name, 'currency' => 'RUB', 'amount' => 0]);
-            }
+        foreach (Interaction::whereNotIn('name', $names)->get() as $name) {
+            $this->createInteraction(['name' => $name, 'currency' => 'RUB', 'amount' => 0]);
         }
 
         $result = [];

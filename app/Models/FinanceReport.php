@@ -68,6 +68,9 @@ class FinanceReport
                 '% времени' => 'time_percent',
                 '% выполнения' => 'complete_percent',
                 '% денег' => 'money_percent',
+                'Плановая готовность %' => 'plan_ready_percent',
+                'Фактическая готовность %' => 'fact_ready_percent',
+                'Отклонение от плана %' => 'deviation_plan_percent',
             ]
         );
     }

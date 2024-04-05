@@ -62,7 +62,7 @@ class ObjectPivotSheet implements
         $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
         $prognozFields = ['prognoz_zp_worker', 'prognoz_zp_itr', 'prognoz_material', 'prognoz_podryad', 'prognoz_general', 'prognoz_service', 'prognoz_consalting'];
         $percentField = 'general_balance_to_receive_percentage';
-        $percentFields = ['time_percent', 'complete_percent', 'money_percent'];
+        $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
 
         $lastRow = count($infos) + 1;
         $lastColumnIndex = 2 + count($objects);
@@ -93,7 +93,7 @@ class ObjectPivotSheet implements
         ]);
         $sheet->getStyle('C1:' . $lastColumn . '1')->getFont()->setColor(new Color(Color::COLOR_WHITE));
 
-        $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, $lastColumnIndex, 30);
+        $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, $lastColumnIndex, 33);
         $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setFitToWidth(1);
@@ -159,6 +159,11 @@ class ObjectPivotSheet implements
                 if (in_array($field, $percentFields)) {
                     if ($field === 'time_percent') {
                         $sheet->setCellValue($column . $row, $value === 0 ? 'Нет данных' : $value / 100);
+                    } else if ($field === 'deviation_plan_percent') {
+                        if ($value != 0) {
+                            $sheet->getStyle($column . $row)->getFont()->setColor(new Color($value < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                        }
+                        $sheet->setCellValue($column . $row, $value === 0 ? '-' : $value / 100);
                     } else {
                         $sheet->setCellValue($column . $row, $value === 0 ? '-' : $value / 100);
                     }
