@@ -178,11 +178,17 @@
                             <th class="min-w-125px text-danger bt br hl text-right">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['generalTotalAmount'], 'RUB') }}</th>
 
                             @foreach($generalCostsInfo['generalInfo'] as $year => $infoArray)
-                                <th class="min-w-125px bt grouped toggle-grouped-by-year" data-year="{{ $year }}">{{ $year }}</th>
+                                <th class="min-w-125px bt grouped toggle-grouped-by-year" data-year="{{ $year }}">
+                                    {{ $year }}
+                                    <br>
+                                    <span class="text-success fs-8">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year]['total']['cuming_amount'], 'RUB') }}</span>
+                                </th>
                                 <th class="min-w-125px text-danger bt br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year]['total']['general_amount'], 'RUB') }}</th>
 
                                 @foreach($infoArray as $info)
-                                    <th style="display: none;" class="min-w-125px bt grouped-by-year" data-year="{{ $year }}">с {{ \Carbon\Carbon::parse($info['start_date'])->format('d.m.Y') }} по {{ \Carbon\Carbon::parse($info['end_date'])->format('d.m.Y') }}</th>
+                                    <th style="display: none;" class="min-w-125px bt grouped-by-year" data-year="{{ $year }}">
+                                        с {{ \Carbon\Carbon::parse($info['start_date'])->format('d.m.Y') }} по {{ \Carbon\Carbon::parse($info['end_date'])->format('d.m.Y') }}
+                                    </th>
                                     <th style="display: none;" class="bt percent grouped-by-year" data-year="{{ $year }}"></th>
                                     <th style="display: none;" class="min-w-125px text-danger bt br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($info['general_amount'], 'RUB') }}</th>
                                 @endforeach
