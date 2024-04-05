@@ -310,7 +310,9 @@ class PaymentService
         $payment->update($requestData);
 
         $isCode = false;
-        if (empty($payment->code) && $payment->type_id !== Payment::TYPE_OBJECT) {
+        if ($payment->code == '0') {
+            $isCode = true;
+        } else if (empty($payment->code) && $payment->type_id !== Payment::TYPE_OBJECT) {
             $isCode = true;
         } elseif (! empty($payment->code)) {
             $isCode = true;
