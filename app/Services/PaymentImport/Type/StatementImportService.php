@@ -142,7 +142,7 @@ class StatementImportService
                 $payment['object_id'] = $object->id;
             }
 
-            $category = $this->mapOldToNewCategory($payment['category']);
+            $category = $this->mapOldToNewCategory($payment['category'], $payment['description']);
             $category = empty($category) ? $organizationCategory : $category;
             $category = empty($category) ? $this->paymentService->findCategoryFromDescription($payment['description']) : $category;
 
@@ -344,19 +344,28 @@ class StatementImportService
         return ! empty($this->error);
     }
 
-    private function mapOldToNewCategory($category)
+    private function mapOldToNewCategory($category, $description)
     {
         if (empty($category)) {
             return $category;
         }
 
         $map = [
-            'Услуги' => Payment::CATEGORY_OPSTE,
-            'Подрядчики' => Payment::CATEGORY_RAD,
-            'Субподрядчик' => Payment::CATEGORY_RAD,
-            'Поставщики' => Payment::CATEGORY_MATERIAL,
+            'физические лица' => Payment::CATEGORY_OPSTE,
+            'услуги' => Payment::CATEGORY_OPSTE,
+            'подрядчики' => Payment::CATEGORY_RAD,
+            'субподрядчик' => Payment::CATEGORY_RAD,
+            'поставщики' => Payment::CATEGORY_MATERIAL,
         ];
 
-        return $map[$category] ?? $category;
+        $resultCategory = $map[mb_strtolower($category)] ?? $category;
+
+        if (mb_strtolower($category) === 'физические лица') {
+            if (mb_strpos($description, 'аренд') === false) {
+                $resultCategory = Payment::CATEGORY_MATERIAL;
+            }
+        }
+
+        return $resultCategory;
     }
 }
