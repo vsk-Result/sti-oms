@@ -23,7 +23,7 @@ class UpdateCRMSalary extends Command
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
-            'Каждые 4 часа'
+            'Ежедневно в 12:00 и в 19:00'
         );
         $this->salaryService = $salaryService;
     }
