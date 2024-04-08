@@ -28,7 +28,6 @@ class Interaction extends Model implements Audit
             'СТИ-БАМС_Аренда офиса и склада',
             'СТИ-ДТГ_Поставка',
             'СТИ-ДТГ_Займ',
-            'СТИ-Milenium_Переступка',
             'СТИ-Belenzia_Поставка',
             'СТИ-БАМС_Займ',
             'ПТИ-СТИ_Займ',
@@ -42,7 +41,6 @@ class Interaction extends Model implements Audit
             'ДТГ-БАМС_Аренда офиса и склада',
             'ДТГ-СТИ_Ретро',
             'ДТГ-СТИ_Займ',
-            'ДТГ-Milenium_Переступка',
             'ДТГ-Belenzia_Поставка',
             'ДТГ-Belenzia_Поставка',
             'ДТГ-NS_Поставка',
@@ -54,7 +52,9 @@ class Interaction extends Model implements Audit
             'Maviboni-NS_Поставка',
             'Maviboni-Прохорова_%',
             'Maviboni_НП',
-            'Belenzia-Maviboni_Переступка',
+            'Belenzia-Maviboni_Переуступка',
+            'Belenzia-Milenium_Переуступка_1',
+            'Belenzia-Milenium_Переуступка_2',
         ];
     }
 

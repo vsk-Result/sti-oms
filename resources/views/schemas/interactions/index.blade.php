@@ -27,9 +27,10 @@
         customOffsets.set('ДТГ-Maviboni_Поставка', {margin: 95, padding: 15});
         customOffsets.set('ДТГ-NS_Поставка', {margin: 50, padding: 0});
         customOffsets.set('Maviboni-Прохорова_%', {margin: 80, padding: 60});
-        customOffsets.set('Belenzia-Maviboni_Переступка', {margin: 70, padding: 15});
+        customOffsets.set('Belenzia-Maviboni_Переуступка', {margin: 70, padding: 15});
         customOffsets.set('Maviboni-NS_Поставка', {margin: 90, padding: -5});
         customOffsets.set('NS-Maviboni_Поставка', {margin: 50, padding: 15});
+        customOffsets.set('Belenzia-Milenium_Переуступка_2', {margin: 55, padding: 15});
 
         $(function() {
             updateInteractions();
