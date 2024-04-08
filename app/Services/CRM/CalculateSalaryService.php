@@ -24,9 +24,6 @@ class CalculateSalaryService
         foreach ($details as $detail) {
             $this->date = $detail['origin_date'];
 
-            $this->fillDifferenceFinanceFlag();
-            $this->fillAvansFinanceFlag();
-
             $this->renderFinances();
         }
     }
