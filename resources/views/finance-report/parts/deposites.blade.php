@@ -7,13 +7,13 @@
             <span class="d-flex">Баланс по депозитам на {{ $date->format('d.m.Y') }}</span>
         </div>
 
-        @foreach($depositsInfo->deposits as $currency => $deposit)
+        @foreach($depositsInfo->deposits as $name => $deposit)
             <div class="fs-6 d-flex justify-content-between my-4">
-                <div class="fw-bold">{{ $currency }}</div>
+                <div class="fw-bold">{{ $name }}</div>
 
                 <div class="d-flex fw-bolder">
-                    <a class="text-success" target="_blank" style="border-bottom: 1px dashed #ccc;" href="{{ route('bank_guarantees.index') }}?currency%5B%5D={{ $currency }}">
-                        {{ \App\Models\CurrencyExchangeRate::format($deposit, $currency) }}
+                    <a class="text-success" target="_blank" style="border-bottom: 1px dashed #ccc;" href="{{ $name === 'Депозиты' ? route('deposits.index') : route('bank_guarantees.index') }}">
+                        {{ \App\Models\CurrencyExchangeRate::format($deposit, 'RUB') }}
                     </a>
                 </div>
             </div>

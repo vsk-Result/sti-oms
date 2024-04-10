@@ -121,8 +121,8 @@ class PivotSheet implements
         $sheet->setCellValue('A' . $rowTitle, 'Баланс по депозитам');
 
         $row ++;
-        foreach($depositsInfo->deposits as $currency => $deposit) {
-            $sheet->setCellValue('A' . $row, $currency);
+        foreach($depositsInfo->deposits as $name => $deposit) {
+            $sheet->setCellValue('A' . $row, $name);
             $sheet->setCellValue('B' . $row, $deposit);
             $sheet->getRowDimension($row)->setRowHeight(25);
             $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($deposit < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -130,7 +130,7 @@ class PivotSheet implements
             $row++;
         }
 
-        $sheet->setCellValue('A' . $row, 'ИТОГО RUB');
+        $sheet->setCellValue('A' . $row, 'ИТОГО');
         $sheet->setCellValue('B' . $row, $depositsInfo->totalDepositsAmount);
         $sheet->getStyle('B' . $row)->getFont()->setColor(new Color($depositsInfo->totalDepositsAmount < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 

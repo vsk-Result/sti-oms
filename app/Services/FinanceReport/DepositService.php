@@ -26,9 +26,11 @@ class DepositService
         $depositsRUB = Deposit::where('status_id', Status::STATUS_ACTIVE)->where('end_date', '>=', Carbon::now())->where('currency', 'RUB')->sum('amount');
         $depositsEUR = Deposit::where('status_id', Status::STATUS_ACTIVE)->where('end_date', '>=', Carbon::now())->where('currency', 'EUR')->sum('amount');
 
+        $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate ?? 0;
+
         $deposites = [
-            'RUB' => $bgDepositsRUB + $depositsRUB,
-            'EUR' => $bgDepositsEUR + $depositsEUR,
+            'Депозиты по БГ' => $bgDepositsRUB + ($bgDepositsEUR * $rate),
+            'Депозиты' => $depositsRUB + ($depositsEUR * $rate),
         ];
 
         return $deposites;
@@ -36,9 +38,6 @@ class DepositService
 
     public function getDepositesTotalAmount(string|Carbon $date, Company $company): float
     {
-        $deposites = $this->getDeposites($date, $company);
-        $rate = $this->rateService->getExchangeRate($date, 'EUR')->rate ?? 0;
-
-        return $deposites['RUB'] + $rate * $deposites['EUR'];
+        return array_sum($this->getDeposites($date, $company));
     }
 }
