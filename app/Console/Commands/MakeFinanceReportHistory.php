@@ -420,6 +420,8 @@ class MakeFinanceReportHistory extends Command
 
                     $total[$year][$object->code]['pay'] = $object->total_pay;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
+                    $total[$year][$object->code]['receive_customer'] = $receiveFromCustomers;
+                    $total[$year][$object->code]['receive_other'] = $object->total_receive - $receiveFromCustomers;
                     $total[$year][$object->code]['balance'] = $object->total_balance;
                     $total[$year][$object->code]['general_balance'] = $object->general_balance;
                     $total[$year][$object->code]['general_balance_to_receive_percentage'] = $generalBalanceToReceivePercentage;
@@ -447,10 +449,7 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['deviation_plan_percent'] = $deviationPlanPercent;
 
                     foreach ($total[$year][$object->code] as $key => $value) {
-                        if (is_string($value)) {
-                            continue;
-                        }
-                        $summary[$year][$key] += $value;
+                        $summary[$year][$key] += (float) $value;
                     }
                 }
 

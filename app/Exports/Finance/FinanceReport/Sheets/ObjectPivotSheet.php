@@ -5,6 +5,7 @@ namespace App\Exports\Finance\FinanceReport\Sheets;
 use App\Models\CRM\ItrSalary;
 use App\Models\CRM\SalaryDebt;
 use App\Models\CurrencyExchangeRate;
+use App\Models\FinanceReport;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\Status;
@@ -60,7 +61,7 @@ class ObjectPivotSheet implements
         $total = $this->pivotInfo['pivot_info']['total'];
 
         $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
-        $prognozFields = ['prognoz_zp_worker', 'prognoz_zp_itr', 'prognoz_material', 'prognoz_podryad', 'prognoz_general', 'prognoz_service', 'prognoz_consalting'];
+        $prognozFields = array_merge(array_values(FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other']);
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
 

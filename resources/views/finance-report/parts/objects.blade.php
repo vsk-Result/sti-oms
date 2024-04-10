@@ -5,7 +5,7 @@
     $infos = App\Models\FinanceReport::getInfoFields();
 
     $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
-    $prognozFields = array_values(\App\Models\FinanceReport::getPrognozFields());
+    $prognozFields = array_merge(array_values(\App\Models\FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other']);
     $percentField = 'general_balance_to_receive_percentage';
     $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
 

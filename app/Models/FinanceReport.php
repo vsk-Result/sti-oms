@@ -40,6 +40,8 @@ class FinanceReport
         $prognozFields = self::getPrognozFields();
         $infoFields = [
             'Приходы' => 'receive',
+            'Заказчик' => 'receive_customer',
+            'Прочие' => 'receive_other',
             'Расходы' => 'pay',
             'Сальдо без общ. Расходов' => 'balance',
             'Общие расходы' => 'general_balance',
