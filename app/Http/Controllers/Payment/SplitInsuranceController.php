@@ -28,7 +28,7 @@ class SplitInsuranceController extends Controller
         $month = $request->get('month');
         $paymentsForSplit = Payment::where('type_id', Payment::TYPE_GENERAL)
             ->where('company_id', 1)
-            ->where('description', 'LIKE', 'Страховые взносы%')
+            ->where('description', 'LIKE', '%Страховые взносы%')
             ->where('description', 'LIKE', '%за ' . mb_strtolower($month, 'UTF-8') . '%')
             ->orderBy('amount')
             ->get();

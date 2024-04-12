@@ -29,8 +29,8 @@ class SplitNDFLController extends Controller
         $paymentsForSplit = Payment::where('type_id', Payment::TYPE_GENERAL)
             ->where('company_id', 1)
             ->where(function($q) {
-                $q->where('description', 'LIKE', 'Налог на доходы физ. лиц%');
-                $q->orWhere('description', 'LIKE', 'Налог на доходы физических лиц%');
+                $q->where('description', 'LIKE', '%Налог на доходы физ. лиц%');
+                $q->orWhere('description', 'LIKE', '%Налог на доходы физических лиц%');
             })
             ->where('description', 'NOT LIKE', '%аренд%')
             ->where('description', 'LIKE', '%за ' . mb_strtolower($month, 'UTF-8') . '%')
