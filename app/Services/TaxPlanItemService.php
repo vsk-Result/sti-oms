@@ -58,7 +58,13 @@ class TaxPlanItemService
             if ($requestData['filter'] !== 'all') {
                 if ($requestData['filter'] === 'current') {
                     $period = [Carbon::now()->subMonthNoOverflow(), Carbon::now()->addMonthNoOverflow()];
-                    $query->whereBetween('due_date', $period);
+                    $query->where(function($q) use ($period) {
+                        $q->whereBetween('due_date', $period);
+                        $q->orWhere(function($qq) {
+                            $qq->where('due_date', '<=', Carbon::now()->subMonthNoOverflow());
+                            $qq->where('paid', false);
+                        });
+                    });
                 } else if ($requestData['filter'] == '2024') {
                     $period = ['2024-01-01', '2024-12-31'];
                     $query->whereBetween('due_date', $period);
