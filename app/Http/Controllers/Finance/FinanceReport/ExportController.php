@@ -15,7 +15,7 @@ class ExportController extends Controller
 {
     public function store(Request $request): BinaryFileResponse
     {
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if ( !$company) {
             abort(404);

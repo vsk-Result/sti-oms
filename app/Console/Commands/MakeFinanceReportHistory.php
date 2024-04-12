@@ -104,7 +104,7 @@ class MakeFinanceReportHistory extends Command
             Log::channel('custom_imports_log')->debug($errorMessage);
         }
 
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if ( !$company) {
             $errorMessage = '[ERROR] Компания ООО "Строй Техно Инженеринг" не найдена в системе';

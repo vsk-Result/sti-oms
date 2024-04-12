@@ -39,7 +39,7 @@ class BankController extends Controller
             return response()->json([], 403);
         }
 
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if ( !$company) {
             abort(404);

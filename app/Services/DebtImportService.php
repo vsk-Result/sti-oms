@@ -444,7 +444,7 @@ class DebtImportService
 
     private function create1СExcelServiceImport(array $importData, array $requestData): string
     {
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if (!$company) {
             return 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';
@@ -551,7 +551,7 @@ class DebtImportService
 
     private function create1СExcelContractorImport(array $importData, array $requestData): string
     {
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if (!$company) {
             return 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';
@@ -739,7 +739,7 @@ class DebtImportService
 
     private function createObjectContractorsImport(array $importData, array $requestData): string
     {
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if (!$company) {
             return 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';

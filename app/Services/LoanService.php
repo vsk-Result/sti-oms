@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\Sanitizer;
+use App\Models\Company;
 use App\Models\Loan;
 use App\Models\LoanNotifyTag;
 use App\Models\Status;
@@ -45,11 +46,16 @@ class LoanService
         $query->with('company', 'organization');
         $query->orderByDesc('amount');
 
-        $total['amount_loan_from_sti'] = (clone $query)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
-        $total['amount_credit_from_sti'] = (clone $query)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
+        $companyDT = Company::getDT();
 
-        $total['amount_loan_to_sti'] = (clone $query)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_BORROWER)->sum('amount');
-        $total['amount_credit_to_sti'] = (clone $query)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_BORROWER)->sum('amount');
+        $total['amount_loan_from_sti'] = (clone $query)->where('company_id', '!=', $companyDT->id)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
+        $total['amount_credit_from_sti'] = (clone $query)->where('company_id', '!=', $companyDT->id)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
+
+        $total['amount_loan_to_sti'] = (clone $query)->where('company_id', '!=', $companyDT->id)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_BORROWER)->sum('amount');
+        $total['amount_credit_to_sti'] = (clone $query)->where('company_id', '!=', $companyDT->id)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_BORROWER)->sum('amount');
+
+        $total['amount_credit_from_dt'] = (clone $query)->where('company_id', $companyDT->id)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
+        $total['amount_loan_from_dt'] = (clone $query)->where('company_id', $companyDT->id)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
 
         return $query->paginate($perPage)->withQueryString();
     }

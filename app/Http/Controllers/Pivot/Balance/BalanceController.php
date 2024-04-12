@@ -16,7 +16,7 @@ class BalanceController extends Controller
 {
     public function index(Request $request): View
     {
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if ( !$company) {
             abort(404);

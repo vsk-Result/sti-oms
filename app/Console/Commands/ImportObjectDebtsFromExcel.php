@@ -60,7 +60,7 @@ class ImportObjectDebtsFromExcel extends Command
 
         $availableCodes = BObject::getCodesForContractorImportDebts();
 
-        $company = Company::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        $company = Company::getSTI();
 
         if (!$company) {
             $errorMessage = 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';

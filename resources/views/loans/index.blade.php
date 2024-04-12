@@ -48,6 +48,26 @@
                             </div>
                         </div>
                     </div>
+
+                    <div>
+                        <div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex flex-column align-items-left">
+                                    <div class="fs-5 fw-bolder {{ $total['amount_loan_from_dt'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_loan_from_dt'], 'RUB') }}</div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Долг по займам от СТИ</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex flex-column align-items-left">
+                                    <div class="fs-5 fw-bolder {{ $total['amount_credit_from_dt'] < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($total['amount_credit_from_dt'], 'RUB') }}</div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Долг по кредитам от ДТ</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-toolbar">
                     <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterLoanModal">

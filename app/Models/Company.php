@@ -50,4 +50,14 @@ class Company extends Model
 
         return $this->short_name;
     }
+
+    public static function getSTI()
+    {
+        return self::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+    }
+
+    public static function getDT()
+    {
+        return self::where('name', 'ООО "ДТ ТЕРМО ГРУПП"')->first();
+    }
 }
