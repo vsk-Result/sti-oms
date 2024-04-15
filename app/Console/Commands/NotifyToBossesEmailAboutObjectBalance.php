@@ -37,18 +37,17 @@ class NotifyToBossesEmailAboutObjectBalance extends Command
         Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
         Log::channel('custom_imports_log')->debug('[START] Отправка на почту руководителям информацию о балансе объектов');
 
-        $alwaysInCopy = ['oksana.dashenko@st-ing.com', 'enes@st-ing.com', 'result007@yandex.ru'];
         $notificationConfig = [
-            '346' => ['vitaliy.pogrebitskiy@sting.com'], // Октафарма
             '353' => ['oleg.kalin@sting.com'], // Сухаревская (ЖК "Лайон Гейт")
             '358' => ['maxim.generalov@sting.com'], // Завидово
             '360' => ['aleksandar.lazarevic@sting.com'], // Тинькоф
-            '361' => ['petar.evtich@sting.com'], // Кемерово
+            '361' => ['petar.evtich@sting.com', 'pavel.kroviakov@st-ing.com'], // Кемерово
             '363' => ['andrei.sokalskii@sting.com'], // Камчатка
             '364' => ['maxim.generalov@sting.com'], // Гольф-клуб Завидово
             '365' => ['oleg.kalin@sting.com'], // Аэрофлот
             '366' => ['vladimir.vilotievich@sting.com'], // Валента
             '367' => ['oleg.kalin@sting.com'], // Офис Веспер
+            '369' => ['oleg.kalin@sting.com'], // Mono Space
         ];
 
         $now = Carbon::now()->format('d.m.Y');
