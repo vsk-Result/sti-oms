@@ -61,7 +61,7 @@ class ObjectPivotSheet implements
         $total = $this->pivotInfo['pivot_info']['total'];
 
         $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance'];
-        $prognozFields = array_merge(array_values(FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other']);
+        $prognozFields = array_merge(array_values(FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg']);
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
 

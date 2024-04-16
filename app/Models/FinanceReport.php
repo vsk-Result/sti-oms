@@ -41,6 +41,7 @@ class FinanceReport
         $infoFields = [
             'Приходы' => 'receive',
             'Заказчик' => 'receive_customer',
+            'Ретробонусы ДТГ' => 'receive_retro_dtg',
             'Прочие' => 'receive_other',
             'Расходы' => 'pay',
             'Сальдо без общ. Расходов' => 'balance',

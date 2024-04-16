@@ -418,10 +418,20 @@ class MakeFinanceReportHistory extends Command
                         }
                     }
 
+                    $receiveRetroDTG = $object->payments()
+                        ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                        ->where('amount', '>=', 0)
+                        ->where('company_id', 1)
+                        ->where('description', 'LIKE', '%ретроб%')
+                        ->sum('amount');
+
+                    $receiveOther = $object->total_receive - $receiveFromCustomers - $receiveRetroDTG;
+
                     $total[$year][$object->code]['pay'] = $object->total_pay;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
                     $total[$year][$object->code]['receive_customer'] = $receiveFromCustomers;
-                    $total[$year][$object->code]['receive_other'] = $object->total_receive - $receiveFromCustomers;
+                    $total[$year][$object->code]['receive_retro_dtg'] = $receiveRetroDTG;
+                    $total[$year][$object->code]['receive_other'] = $receiveOther;
                     $total[$year][$object->code]['balance'] = $object->total_balance;
                     $total[$year][$object->code]['general_balance'] = $object->general_balance;
                     $total[$year][$object->code]['general_balance_to_receive_percentage'] = $generalBalanceToReceivePercentage;
