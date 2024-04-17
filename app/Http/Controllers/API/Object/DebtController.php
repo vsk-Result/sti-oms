@@ -45,9 +45,34 @@ class DebtController extends Controller
 
         $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
+        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+        $ds = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
+
+        $contractors = [];
+        $contractorsGU = [];
+        foreach ($debts['contractor']->debts as $organization => $amount) {
+            $organizationId = substr($organization, 0, strpos($organization, '::'));
+            $guAmount = 0;
+            $resultAmount = $amount;
+
+            if ($objectExistInObjectImport) {
+                $guAmount += $ds->where('organization_id', $organizationId)->sum('guarantee');
+                $resultAmount += $ds->where('organization_id', $organizationId)->sum('avans');
+            }
+
+            if ($guAmount > 1 || $guAmount < -1) {
+                $contractorsGU[$organization] = $guAmount;
+            }
+            if ($resultAmount > 1 || $resultAmount < -1) {
+                $contractors[$organization] = $resultAmount;
+            }
+        }
+
         $info = [
             'object' => $object->__toString(),
-            'contractors' => $debts['contractor']->debts,
+            'contractors' => $contractors,
+            'contractors_gu' => $contractorsGU,
             'providers' => $debts['provider']->debts,
             'service' => $debts['service']->debts,
         ];
