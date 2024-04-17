@@ -81,8 +81,8 @@ class ObjectPivotSheet implements
         $sheet->getStyle('A1:' . $lastColumn . '1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:A' . $lastRow)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
 
-        $sheet->getStyle('B1:B' . $lastRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-        $sheet->getStyle('C1:' . $lastColumn . '1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f15a22');
+        $sheet->getStyle('B1:B' . $lastRow)->getFill()->applyFromArray(['fillType' => 'solid', 'color' => ['rgb' => 'f7f7f7'],]);
+        $sheet->getStyle('C1:' . $lastColumn . '1')->getFill()->applyFromArray(['fillType' => 'solid', 'color' => ['rgb' => 'f15a22'],]);
         $sheet->getStyle('A1:' . $lastColumn . $lastRow)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]]
         ]);

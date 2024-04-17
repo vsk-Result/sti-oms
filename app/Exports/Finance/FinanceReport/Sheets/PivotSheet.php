@@ -107,7 +107,7 @@ class PivotSheet implements
 
         $sheet->getStyle('B2:B'. $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        $sheet->getStyle('A' . ($row - 1) . ':B' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffbe90');
+        $sheet->getStyle('A' . ($row - 1) . ':B' . $row)->getFill()->applyFromArray(['fillType' => 'solid', 'color' => ['rgb' => 'ffbe90'],]);
         $sheet->getStyle('A1:B'. $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
@@ -145,7 +145,8 @@ class PivotSheet implements
 
         $sheet->getStyle('B' . ($rowTitle + 1) . ':B'. $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        $sheet->getStyle('A' . $row . ':B' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffbe90');
+        $sheet->getStyle('A' . $row . ':B' . $row)->getFill()->applyFromArray(['fillType' => 'solid', 'color' => ['rgb' => 'ffbe90'],]);
+
         $sheet->getStyle('A' . $rowTitle . ':B'. $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
@@ -191,7 +192,7 @@ class PivotSheet implements
 
         $sheet->getStyle('E3' . ':G'. $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        $sheet->getStyle('D' . $row . ':G' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffbe90');
+        $sheet->getStyle('D' . $row . ':G' . $row)->getFill()->applyFromArray(['fillType' => 'solid', 'color' => ['rgb' => 'ffbe90'],]);
         $sheet->getStyle('D1' . ':G'. $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
@@ -230,7 +231,8 @@ class PivotSheet implements
 
         $sheet->getStyle('E' . ($rowTitle + 1) . ':E'. $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        $sheet->getStyle('D' . $row . ':E' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('ffbe90');
+        $sheet->getStyle('D' . $row . ':E' . $row)->getFill()->applyFromArray(['fillType' => 'solid', 'color' => ['rgb' => 'ffbe90'],]);
+
         $sheet->getStyle('D' . $rowTitle . ':E'. $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);

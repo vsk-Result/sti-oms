@@ -10,10 +10,12 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class Export implements WithMultipleSheets
 {
     private array $info;
+    private array $config;
 
-    public function __construct(array $info)
+    public function __construct(array $info, array $config)
     {
         $this->info = $info;
+        $this->config = $config;
     }
 
     public function sheets(): array
@@ -25,6 +27,12 @@ class Export implements WithMultipleSheets
         unset($years['Не отображать']);
         unset($years['Общие']);
         unset($years['Удаленные']);
+
+        if (isset($this->config['show_closed_objects'])){
+            if (!$this->config['show_closed_objects']) {
+                unset($years['Закрытые']);
+            }
+        }
 
         $sheets = [
             new PivotSheet('Сводная по балансам и долгам', $this->info),
