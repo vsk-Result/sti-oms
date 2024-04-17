@@ -44,6 +44,9 @@ class ExportController extends Controller
                     'loansInfo' => $loansInfo,
                     'depositsInfo' => $depositsInfo,
                     'objectsInfo' => $objectsInfo
+                ],
+                [
+                    'show_closed_objects' => false
                 ]
             ),
             $fileName
