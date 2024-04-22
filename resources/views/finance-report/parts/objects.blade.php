@@ -8,6 +8,7 @@
     $prognozFields = array_merge(array_values(\App\Models\FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg']);
     $percentField = 'general_balance_to_receive_percentage';
     $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
+    $exceptFields = ['pay_cash', 'pay_non_cash'];
 
     unset($years['Не отображать']);
     unset($years['Общие']);
@@ -43,6 +44,9 @@
                             <tbody class="text-gray-600 fw-bold">
                                 @foreach($infos as $info => $field)
                                     @php
+                                        if (in_array($field, $exceptFields)) {
+                                            continue;
+                                        }
                                         $sumValue = $summary->{$year}->{$field};
                                         $isSpecialField = in_array($field, $specialFields);
                                         $isPrognozField = in_array($field, $prognozFields);

@@ -186,7 +186,7 @@ class MakeFinanceReportHistory extends Command
                 }
             }
 
-            $paymentQuery = Payment::select('object_id', 'amount');
+            $paymentQuery = Payment::select('object_id', 'amount', 'payment_type_id');
 
             foreach ($years as $year => $objects) {
                 $sGeneralTotal = 0;
@@ -427,7 +427,12 @@ class MakeFinanceReportHistory extends Command
 
                     $receiveOther = $object->total_receive - $receiveFromCustomers - $receiveRetroDTG;
 
+                    $payCash = $objectPayments->where('amount', '<', 0)->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->sum('amount');
+                    $payNonCash = $objectPayments->where('amount', '<', 0)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->sum('amount');
+
                     $total[$year][$object->code]['pay'] = $object->total_pay;
+                    $total[$year][$object->code]['pay_cash'] = $payCash;
+                    $total[$year][$object->code]['pay_non_cash'] = $payNonCash;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
                     $total[$year][$object->code]['receive_customer'] = $receiveFromCustomers;
                     $total[$year][$object->code]['receive_retro_dtg'] = $receiveRetroDTG;

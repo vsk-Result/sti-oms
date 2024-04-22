@@ -44,6 +44,8 @@ class FinanceReport
             'Ретробонусы ДТГ' => 'receive_retro_dtg',
             'Прочие' => 'receive_other',
             'Расходы' => 'pay',
+            'Наличные ' => 'pay_cash',
+            'Безналичные' => 'pay_non_cash',
             'Сальдо без общ. Расходов' => 'balance',
             'Общие расходы' => 'general_balance',
             'Общие расходы / приходы %' => 'general_balance_to_receive_percentage',
