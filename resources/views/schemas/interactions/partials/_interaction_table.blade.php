@@ -1,4 +1,4 @@
-<h3 class="mb-8">Таблица взаимодействий компании {{ $company }}</h3>
+<h3 class="mb-8 mt-8">Таблица взаимодействий компании {{ $company }}</h3>
 
 <form action="{{ route('schemas.interactions.update') }}" method="POST" class="hidden">
     @csrf

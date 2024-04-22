@@ -41,14 +41,6 @@
                     </div>
                 </div>
 
-                @can('index finance-report')
-                    <div class="menu-item">
-                        <a href="{{ route('finance_report.index') }}" class="menu-link {{ request()->is('finance-report*') ? 'active' : '' }}">
-                            <span class="menu-title">Финансовый отчет</span>
-                        </a>
-                    </div>
-                @endcan
-
                 @can('index general-costs')
                     <div class="menu-item">
                         <a href="{{ route('general_costs.index') }}" class="menu-link {{ request()->is('general-costs*') ? 'active' : '' }}">
@@ -57,13 +49,35 @@
                     </div>
                 @endcan
 
-                @can('index pivot-balances')
-                    <div class="menu-item">
-                        <a href="{{ route('pivots.balances.index') }}" class="menu-link {{ request()->is('pivots/balances*') ? 'active' : '' }}">
-                            <span class="menu-title">Отчет по балансам</span>
-                        </a>
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('finance-report*') || request()->is('pivots/balances**')) ? 'hover show' : '' }}">
+                    <span class="menu-link py-2">
+                        <span class="menu-title {{ (request()->is('finance-report*') || request()->is('pivots/balances**')) ? 'fw-boldest' : '' }}">Отчеты</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
+                        @can('index finance-report')
+                            <div class="menu-item">
+                                <a href="{{ route('finance_report.index') }}" class="menu-link py-2 {{ request()->is('finance-report*') ? 'active' : '' }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Финансовый отчет</span>
+                                </a>
+                            </div>
+                        @endcan
+
+                        @can('index pivot-balances')
+                            <div class="menu-item">
+                                <a href="{{ route('pivots.balances.index') }}" class="menu-link py-2 {{ request()->is('pivots/balances*') ? 'active' : '' }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Отчет по балансам</span>
+                                </a>
+                            </div>
+                        @endcan
                     </div>
-                @endcan
+                </div>
             @endcan
 
             @canAny(['index schema-interactions'])

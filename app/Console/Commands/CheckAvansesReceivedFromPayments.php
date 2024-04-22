@@ -42,16 +42,16 @@ class CheckAvansesReceivedFromPayments extends Command
                 'start_date' => '2024-04-10',
                 'active' => true
             ],
-            [
-                'id' => 3,
-                'organization_name' => 'Общество с ограниченной ответственностью "БИЗНЕС АКТИВ"',
-                'contract_name' => 'Кем-007-2023 от 01.08.23 (работы Группы 2)',
-                'payment_templates' => ['Обеспечительный платеж по ДС №1', 'Оплата авансового платежа согласно'],
-                'service' => $this->avansReceivedService,
-                'create_method' => 'createReceivedAvans',
-                'start_date' => '2024-04-10',
-                'active' => true
-            ],
+//            [
+//                'id' => 3,
+//                'organization_name' => 'Общество с ограниченной ответственностью "БИЗНЕС АКТИВ"',
+//                'contract_name' => 'Кем-007-2023 от 01.08.23 (работы Группы 2)',
+//                'payment_templates' => ['Обеспечительный платеж по ДС №1', 'Оплата авансового платежа согласно'],
+//                'service' => $this->avansReceivedService,
+//                'create_method' => 'createReceivedAvans',
+//                'start_date' => '2024-04-10',
+//                'active' => true
+//            ],
             [
                 'id' => 4,
                 'organization_name' => 'АО "ВАЛЕНТА ФАРМ"',
