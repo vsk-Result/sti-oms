@@ -22,3 +22,9 @@ if (! function_exists('get_extension_image_path')) {
         return '';
     }
 }
+
+if (! function_exists('is_valid_amount_in_range')) {
+    function is_valid_amount_in_range($value, $min = -1, $max = 1) {
+        return $value > $max || $value < $min;
+    }
+}
