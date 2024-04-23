@@ -27,7 +27,6 @@ class WorkerSalaryController extends Controller
         $info = [];
         $objects = BObject::where('status_id', Status::STATUS_ACTIVE)->orderBy('code')->get();
 
-        $totalAmount = 0;
         $totalMonthsAmount = [];
         foreach ($objects as $object) {
             $objectInfo = ['name' => $object->getName()];
@@ -60,15 +59,17 @@ class WorkerSalaryController extends Controller
             $info['objects'][] = $objectInfo;
         }
 
-        $info['total']['total_for_all_object']['name'] = 'Общий долг';
-        $info['total']['total_for_all_object']['sum'] = CurrencyExchangeRate::format($totalAmount, 'RUB');
-
+        $totalAmount = 0;
         foreach ($totalMonthsAmount as $month => $amount) {
             $info['total']['total_list'][] = [
                 'name' => 'Общее за ' . $month,
                 'sum' => CurrencyExchangeRate::format($amount, 'RUB')
             ];
+            $totalAmount += $amount;
         }
+
+        $info['total']['total_for_all_object']['name'] = 'Общий долг';
+        $info['total']['total_for_all_object']['sum'] = CurrencyExchangeRate::format($totalAmount, 'RUB');
 
         return response()->json(compact('info'));
     }
