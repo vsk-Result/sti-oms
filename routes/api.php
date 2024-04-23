@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\BankGuarantee\BankGuaranteeController;
 use App\Http\Controllers\API\BankGuarantee\ExportController as BExportController;
 use App\Http\Controllers\API\Loan\LoanController;
+use App\Http\Controllers\API\Object\WorkerSalaryController;
 use App\Http\Controllers\API\Pivot\Act\ActController;
 use App\Http\Controllers\API\Pivot\Act\ExportController;
 use App\Http\Controllers\API\Pivot\Debt\DebtController;
@@ -42,6 +43,8 @@ Route::get('pivots/banks', [BankController::class, 'index']);
 Route::get('pivots/objects/info', [ObjectInfoController::class, 'index']);
 
 Route::get('pivots/objects/pivot', [PivotController::class, 'index']);
+
+Route::get('pivots/workers-salary', [WorkerSalaryController::class, 'index']);
 
 Route::get('objects/debts', [ODebtController::class, 'index']);
 Route::get('objects/debts-v2', [DebtV2Controller::class, 'index']);
