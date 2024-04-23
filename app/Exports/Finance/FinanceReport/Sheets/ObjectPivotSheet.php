@@ -127,7 +127,7 @@ class ObjectPivotSheet implements
                 $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)');
             }
 
-            $sheet->setCellValue('B' . $row, is_valid_amount_in_range($sumValue) == 0 ? '-' : $sumValue);
+            $sheet->setCellValue('B' . $row, !is_valid_amount_in_range($sumValue) == 0 ? '-' : $sumValue);
 
             if ($isSpecialField) {
                 $sheet->getStyle('A' . $row)->getFont()->setBold(true);
@@ -136,7 +136,7 @@ class ObjectPivotSheet implements
             }
 
             if ($percentField === $field || in_array($field, $percentFields)) {
-                $sheet->setCellValue('B' . $row, is_valid_amount_in_range($sumValue) ? '-' : $sumValue / 100);
+                $sheet->setCellValue('B' . $row, !is_valid_amount_in_range($sumValue) ? '-' : $sumValue / 100);
                 $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
             }
 
@@ -168,13 +168,13 @@ class ObjectPivotSheet implements
                         if ($value != 0) {
                             $sheet->getStyle($column . $row)->getFont()->setColor(new Color($value < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
                         }
-                        $sheet->setCellValue($column . $row, is_valid_amount_in_range($value) ? '-' : $value / 100);
+                        $sheet->setCellValue($column . $row, !is_valid_amount_in_range($value) ? '-' : $value / 100);
                     } else {
-                        $sheet->setCellValue($column . $row, is_valid_amount_in_range($value) ? '-' : $value / 100);
+                        $sheet->setCellValue($column . $row, !is_valid_amount_in_range($value) ? '-' : $value / 100);
                     }
                     $sheet->getStyle($column . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
                 } else {
-                    $sheet->setCellValue($column . $row, is_valid_amount_in_range($value) ? '-' : $value);
+                    $sheet->setCellValue($column . $row, !is_valid_amount_in_range($value) ? '-' : $value);
                 }
 
                 if ($isSpecialField) {

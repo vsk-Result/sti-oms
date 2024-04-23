@@ -62,7 +62,7 @@
                                         <td class="fw-bolder hl text-right">
                                             <span class="{{ in_array($field, $percentFields) ? 'fw-boldest' : '' }} {{ $isSpecialField ? $sumValue < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }}">
                                                 @if ($percentField === $field || in_array($field, $percentFields))
-                                                    {{ is_valid_amount_in_range($sumValue) ? '-' : number_format($sumValue, 2) . '%' }}
+                                                    {{ !is_valid_amount_in_range($sumValue) ? '-' : number_format($sumValue, 2) . '%' }}
                                                 @else
                                                     {{ \App\Models\CurrencyExchangeRate::format($sumValue, 'RUB') }}
                                                 @endif
@@ -91,10 +91,10 @@
                                                                 </span>
                                                             @endif
                                                         @else
-                                                            {{ is_valid_amount_in_range($value) ? '-' : number_format($value, 2) . '%' }}
+                                                            {{ !is_valid_amount_in_range($value) ? '-' : number_format($value, 2) . '%' }}
                                                         @endif
                                                     @else
-                                                        {{ is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
+                                                        {{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
                                                     @endif
                                                 </span>
                                             </td>
