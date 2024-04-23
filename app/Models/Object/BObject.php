@@ -176,7 +176,7 @@ class BObject extends Model implements Audit
 
     public function isWithoutWorktype(): bool
     {
-        return $this->is_without_worktype;
+        return $this->is_without_worktype || in_array($this->code, $this->getCodesWithoutWorktype());
     }
 
     public static function getCodesWithoutWorktype(): array
