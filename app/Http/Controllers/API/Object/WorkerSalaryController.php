@@ -35,8 +35,8 @@ class WorkerSalaryController extends Controller
 
             $summaryAmount = 0;
             foreach ($details as $detail) {
-                $objectInfo['info'] = [
-                    'name' => 'Общее за' . $detail['date'],
+                $objectInfo['info'][] = [
+                    'name' => 'Общее за ' . $detail['date'],
                     'sum' => CurrencyExchangeRate::format($detail['amount'], 'RUB')
                 ];
 
