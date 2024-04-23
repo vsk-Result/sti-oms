@@ -136,6 +136,7 @@ class BObject extends Model implements Audit
             if ($object->isWithoutWorktype()) {
                 $result[$object->id . '::' . null] = $object->code;
             } else {
+                $result[$object->id . '::' . null] = $object->code;
                 foreach ($workTypes as $workType) {
                     $result[$object->id . '::' . $workType['id']] = $object->code . '.' . $workType['code'];
                 }
