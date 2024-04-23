@@ -169,20 +169,26 @@
                 <div class="col-md-4 mb-10 fv-row">
                     <div class="mb-1">
                         <label class="form-label fw-bolder text-dark fs-6">Статья затрат</label>
-                        <div class="position-relative mb-3">
-                            <input
-                                class="form-control form-control-lg form-control-solid {{ $errors->has('code') ? 'is-invalid' : '' }}"
-                                type="text"
+                        <select
                                 name="code"
-                                required
-                                value="{{ old('code', $copyPayment ? $copyPayment->code : '') }}"
-                            />
-                        </div>
-                        @if ($errors->has('code'))
-                            <div class="fv-plugins-message-container invalid-feedback">
-                                <div>{{ implode(' ', $errors->get('code')) }}</div>
-                            </div>
-                        @endif
+                                class="form-select form-select-solid"
+                                data-control="select2"
+                                data-dropdown-parent="#createPaymentModal"
+                        >
+                            @foreach($codes as $codeL1)
+                                <option value="{{ $codeL1['code'] }}" {{ $copyPayment && $copyPayment->code === $codeL1['code'] ? 'selected' : '' }}>{{ $codeL1['code'] . ' - ' . $codeL1['title'] }}</option>
+                                @if (count($codeL1['children']) > 0)
+                                    @foreach($codeL1['children'] as $codeL2)
+                                        <option value="{{ $codeL2['code'] }}" {{ $copyPayment && $copyPayment->code === $codeL2['code'] ? 'selected' : '' }}>{{ $codeL2['code'] . ' - ' . $codeL2['title'] }}</option>
+                                        @if (count($codeL2['children']) > 0)
+                                            @foreach($codeL2['children'] as $codeL3)
+                                                <option value="{{ $codeL3['code'] }}" {{ $copyPayment && $copyPayment->code === $codeL3['code'] ? 'selected' : '' }}>{{ $codeL3['code'] . ' - ' . $codeL3['title'] }}</option>
+                                            @endforeach
+                                        @endif
+                                    @endforeach
+                                @endif
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>

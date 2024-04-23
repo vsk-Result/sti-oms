@@ -70,6 +70,7 @@ class PaymentController extends Controller
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
         $currencies = Currency::getCurrencies();
+        $codes = KostCode::getCodes();
 
         if ($request->ajax()) {
 
@@ -80,7 +81,7 @@ class PaymentController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'payment_form' => view('payments.parts._payment_form', compact('copyPayment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'))->render()
+                'payment_form' => view('payments.parts._payment_form', compact('codes', 'copyPayment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'))->render()
             ]);
         }
 
@@ -130,11 +131,12 @@ class PaymentController extends Controller
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
         $currencies = Currency::getCurrencies();
+        $codes = KostCode::getCodes();
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => 'success',
-                'payment_form' => view('payments.parts._edit_payment_form', compact('payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'))->render()
+                'payment_form' => view('payments.parts._edit_payment_form', compact('codes', 'payment', 'categories', 'objects', 'companies', 'organizations', 'banks', 'paymentTypes', 'currencies'))->render()
             ]);
         }
 
