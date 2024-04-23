@@ -17,6 +17,7 @@ use App\Http\Controllers\API\Object\DebtV2Controller;
 use App\Http\Controllers\API\Object\BalanceController;
 use App\Http\Controllers\API\Debt\OrganizationController;
 use App\Http\Controllers\API\Finance\FinanceReportExportController;
+use App\Http\Controllers\API\Pivot\TaxPlan\TaxPlanExportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,6 +46,8 @@ Route::get('pivots/objects/info', [ObjectInfoController::class, 'index']);
 Route::get('pivots/objects/pivot', [PivotController::class, 'index']);
 
 Route::get('pivots/workers-salary', [WorkerSalaryController::class, 'index']);
+
+Route::get('pivots/tax-plan/export', [TaxPlanExportController::class, 'index']);
 
 Route::get('objects/debts', [ODebtController::class, 'index']);
 Route::get('objects/debts-v2', [DebtV2Controller::class, 'index']);

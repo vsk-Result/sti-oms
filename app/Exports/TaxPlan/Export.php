@@ -87,7 +87,7 @@ class Export implements
         $sheet->getRowDimension($row)->setRowHeight(30);
         $sheet->setCellValue('C' . $row, 'Итого');
         $sheet->setCellValue('D' . $row, $this->items->where('paid', false)->sum('amount'));
-        $sheet->getStyle('C' . $row . ':D' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f1faff');
+        $sheet->getStyle('C' . $row . ':D' . $row)->getFill()->applyFromArray(['fillType' => 'solid', 'color' => ['rgb' => 'f7f7f7'],]);
         $sheet->getStyle('C' . $row . ':D' . $row)->applyFromArray($THINStyleArray);
         $sheet->getStyle('C' . $row . ':D' . $row)->getFont()->setBold(true);
 
