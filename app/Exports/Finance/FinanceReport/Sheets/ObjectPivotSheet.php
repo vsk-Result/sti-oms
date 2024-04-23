@@ -127,7 +127,7 @@ class ObjectPivotSheet implements
                 $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)');
             }
 
-            $sheet->setCellValue('B' . $row, !is_valid_amount_in_range($sumValue) == 0 ? '-' : $sumValue);
+            $sheet->setCellValue('B' . $row, !is_valid_amount_in_range($sumValue) ? '-' : $sumValue);
 
             if ($isSpecialField) {
                 $sheet->getStyle('A' . $row)->getFont()->setBold(true);
