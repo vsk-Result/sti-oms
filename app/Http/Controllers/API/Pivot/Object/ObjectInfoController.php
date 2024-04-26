@@ -117,6 +117,7 @@ class ObjectInfoController extends Controller
             $info['total']['contractors_debts'] += $contractorDebtsAmount;
             $info['total']['contractors_debts_gu'] += $contractorDebtsAmountGU;
             $info['total']['providers_debts'] += $providerDebtsAmount;
+            $info['total']['service_debts'] += $serviceDebtsAmount;
             $info['total']['total_debts'] += $totalDebts;
         }
 
