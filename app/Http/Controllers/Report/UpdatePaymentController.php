@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Http\Controllers\Controller;
 use App\Imports\UpdatePaymentImport;
 use App\Models\Payment;
+use App\Services\OrganizationService;
 use App\Services\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,10 +14,12 @@ use Maatwebsite\Excel\Facades\Excel;
 class UpdatePaymentController extends Controller
 {
     private PaymentService $paymentService;
+    private OrganizationService $organizationService;
 
-    public function __construct(PaymentService $paymentService)
+    public function __construct(PaymentService $paymentService, OrganizationService $organizationService)
     {
         $this->paymentService = $paymentService;
+        $this->organizationService = $organizationService;
     }
 
     public function store(Request $request): RedirectResponse
@@ -41,9 +44,22 @@ class UpdatePaymentController extends Controller
 
             $fieldsToUpdate = [];
             foreach ($fields as $index => $field) {
-                if ($field !== 'id') {
-                    $fieldsToUpdate[$field] = $row[$index];
+                if ($field === 'id') {
+                    continue;
                 }
+
+                if ($field === 'organization') {
+                    $fieldsToUpdate['organization_id'] = $this->organizationService->getOrCreateOrganization([
+                        'inn' => null,
+                        'name' => $row[$index],
+                        'company_id' => null,
+                        'kpp' => null
+                    ]);
+
+                    continue;
+                }
+
+                $fieldsToUpdate[$field] = $row[$index];
             }
 
             $this->paymentService->updatePayment($payment, $fieldsToUpdate);
