@@ -4,6 +4,14 @@ namespace App\Models;
 
 class FinanceReport
 {
+    public static function getPrognozConsaltingPercentForObject(string $objectCode): float
+    {
+        return [
+            '361' => 0.1139,
+            '365' => 0.12,
+        ][$objectCode] ?? 0;
+    }
+
     public static function getPrognozFields(): array
     {
         return [
@@ -13,7 +21,7 @@ class FinanceReport
             'Оплата подрядчиков' => 'prognoz_podryad',
             'Общие расходы (8,20%)' => 'prognoz_general',
             'Услуги (5%)' => 'prognoz_service',
-            'Консалтинг (Кемерово 11,39%)' => 'prognoz_consalting',
+            'Консалтинг' => 'prognoz_consalting',
         ];
     }
 
@@ -26,7 +34,7 @@ class FinanceReport
             'prognoz_podryad' => 0,
             'prognoz_general' => 0.082,
             'prognoz_service' => 0.05,
-            'prognoz_consalting' => 0.1139
+            'prognoz_consalting' => 0
         ][$field];
     }
 

@@ -321,8 +321,8 @@ class MakeFinanceReportHistory extends Command
                     foreach ($prognozFields as $field) {
                         $prognozAmount = -$ostatokPoDogovoruSZakazchikom * FinanceReport::getPercentForField($field);
 
-                        if ($field === 'prognoz_consalting' && $object->code !== '361') {
-                            $prognozAmount = 0;
+                        if ($field === 'prognoz_consalting') {
+                            $prognozAmount = -$ostatokPoDogovoruSZakazchikom * FinanceReport::getPrognozConsaltingPercentForObject($object->code);
                         }
 
                         if ($field === 'prognoz_podryad') {
