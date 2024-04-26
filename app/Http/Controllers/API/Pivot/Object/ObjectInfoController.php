@@ -37,6 +37,7 @@ class ObjectInfoController extends Controller
             'debts' => [],
             'total' => [
                 'contractors_debts' => 0,
+                'contractors_debts_gu' => 0,
                 'providers_debts' => 0,
                 'service_debts' => 0,
                 'total_debts' => 0,
@@ -74,11 +75,13 @@ class ObjectInfoController extends Controller
                     'id' => $object->id,
                     'object_name' => $object->getName(),
                     'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
+                    'contractors_debts_gu' => CurrencyExchangeRate::format(0, 'RUB'),
                     'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),
                     'total_debts' => CurrencyExchangeRate::format($totalDebts, 'RUB'),
                 ];
 
                 $info['total']['contractors_debts'] += $contractorDebtsAmount;
+                $info['total']['contractors_debts_gu'] = 0;
                 $info['total']['providers_debts'] += $providerDebtsAmount;
                 $info['total']['total_debts'] += $totalDebts;
 
@@ -86,35 +89,39 @@ class ObjectInfoController extends Controller
             }
 
             $contractorDebtsAmount = $debts['contractor']->total_amount;
+            $contractorDebtsAmountGU = 0;
 
             $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
             $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
 
             if ($objectExistInObjectImport) {
                 $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-                $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
-                $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
+                $contractorDebtsAmountGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
+                $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans;
             }
 
             $providerDebtsAmount = $debts['provider']->total_amount;
             $serviceDebtsAmount = $debts['service']->total_amount;
-            $totalDebts = $contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount;
+            $totalDebts = $contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount + $contractorDebtsAmountGU;
 
             $info['debts'][] = [
                 'id' => $object->id,
                 'object_name' => $object->getName(),
                 'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
+                'contractors_debts_gu' => CurrencyExchangeRate::format($contractorDebtsAmountGU, 'RUB'),
                 'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),
                 'service_debts' => CurrencyExchangeRate::format($serviceDebtsAmount, 'RUB'),
                 'total_debts' => CurrencyExchangeRate::format($totalDebts, 'RUB'),
             ];
 
             $info['total']['contractors_debts'] += $contractorDebtsAmount;
+            $info['total']['contractors_debts_gu'] += $contractorDebtsAmountGU;
             $info['total']['providers_debts'] += $providerDebtsAmount;
             $info['total']['total_debts'] += $totalDebts;
         }
 
         $info['total']['contractors_debts'] = CurrencyExchangeRate::format($info['total']['contractors_debts'], 'RUB');
+        $info['total']['contractors_debts_gu'] = CurrencyExchangeRate::format($info['total']['contractors_debts_gu'], 'RUB');
         $info['total']['providers_debts'] = CurrencyExchangeRate::format($info['total']['providers_debts'], 'RUB');
         $info['total']['service_debts'] = CurrencyExchangeRate::format($info['total']['service_debts'], 'RUB');
         $info['total']['total_debts'] = CurrencyExchangeRate::format($info['total']['total_debts'], 'RUB');
