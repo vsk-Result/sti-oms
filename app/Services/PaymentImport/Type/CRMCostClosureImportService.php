@@ -117,7 +117,10 @@ class CRMCostClosureImportService
                     $organizationReceiver = $companyOrganization;
                 }
 
-                $category = $this->getCategoryFromKostCode($item->getKostCode(), $item->information);
+                $category = $item->category;
+                if (empty($category)) {
+                    $category = $this->getCategoryFromKostCode($item->getKostCode(), $item->information);
+                }
 
                 $this->paymentService->createPayment([
                     'company_id' => $import->company_id,
@@ -163,7 +166,7 @@ class CRMCostClosureImportService
 
     private function getCategoryFromKostCode($code, $description)
     {
-        $salary = ['7.17', '7.18', '7.26'];
+        $salary = ['7.17', '7.18', '7.26', '7.26.1', '7.26.2', '7.17.1', '7.17.2'];
         $provider = [
             '1.1.6', '1.1.7', '1.2.4', '2.1.1', '2.1.10', '2.1.2', '2.1.7', '2.2', '2.2.4', '3', '3.1.2',
             '3.2.2', '4.2', '5.10', '5.2', '7.10', '7.29', '7.32', '7.33', '7.6', '7.7'];
