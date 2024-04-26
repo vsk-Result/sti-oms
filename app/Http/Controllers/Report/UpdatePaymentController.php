@@ -54,12 +54,16 @@ class UpdatePaymentController extends Controller
                         'name' => $row[$index],
                         'company_id' => null,
                         'kpp' => null
-                    ]);
+                    ])->id;
 
                     continue;
                 }
 
                 $fieldsToUpdate[$field] = $row[$index];
+            }
+
+            if (count($fieldsToUpdate) === 0) {
+                continue;
             }
 
             $this->paymentService->updatePayment($payment, $fieldsToUpdate);
