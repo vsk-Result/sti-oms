@@ -24,12 +24,31 @@ class WorkerSalaryController extends Controller
             return response()->json([], 403);
         }
 
+        $objectId = null;
+        if ($request->has('object_id')) {
+            $objectId = $request->get('object_id');
+            $obj = BObject::find($objectId);
+
+            if (! $obj) {
+                abort(404);
+                return response()->json([], 404);
+            }
+        }
+
         $info = [];
-        $objects = BObject::where('status_id', Status::STATUS_ACTIVE)->orderBy('code')->get();
+
+        if (is_null($objectId)) {
+            $objects = BObject::where('status_id', Status::STATUS_ACTIVE)->orderBy('code')->get();
+        } else {
+            $objects = BObject::where('object_id', $objectId)->get();
+        }
 
         $totalMonthsAmount = [];
         foreach ($objects as $object) {
-            $objectInfo = ['name' => $object->getName()];
+            $objectInfo = [
+                'id' => $object->id,
+                'name' => $object->getName()
+            ];
             $details = $object->getWorkSalaryDebtDetails();
 
             $summaryAmount = 0;
