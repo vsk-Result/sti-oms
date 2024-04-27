@@ -38,16 +38,16 @@ class NotifyToBossesEmailAboutObjectBalance extends Command
         Log::channel('custom_imports_log')->debug('[START] Отправка на почту руководителям информацию о балансе объектов');
 
         $notificationConfig = [
-            '353' => ['oleg.kalin@sting.com'], // Сухаревская (ЖК "Лайон Гейт")
-            '358' => ['maxim.generalov@sting.com'], // Завидово
-            '360' => ['aleksandar.lazarevic@sting.com'], // Тинькоф
-            '361' => ['petar.evtich@sting.com', 'pavel.kroviakov@st-ing.com'], // Кемерово
-            '363' => ['andrei.sokalskii@sting.com'], // Камчатка
-            '364' => ['maxim.generalov@sting.com'], // Гольф-клуб Завидово
-            '365' => ['oleg.kalin@sting.com'], // Аэрофлот
-            '366' => ['vladimir.vilotievich@sting.com'], // Валента
-            '367' => ['oleg.kalin@sting.com'], // Офис Веспер
-            '369' => ['oleg.kalin@sting.com'], // Mono Space
+            '353' => ['oleg.kalin@st-ing.com'], // Сухаревская (ЖК "Лайон Гейт")
+            '358' => ['maxim.generalov@st-ing.com'], // Завидово
+            '360' => ['aleksandar.lazarevic@st-ing.com'], // Тинькоф
+            '361' => ['petar.evtich@st-ing.com', 'pavel.kroviakov@st-ing.com'], // Кемерово
+            '363' => ['andrei.sokalskii@st-ing.com'], // Камчатка
+            '364' => ['maxim.generalov@st-ing.com'], // Гольф-клуб Завидово
+            '365' => ['oleg.kalin@st-ing.com'], // Аэрофлот
+            '366' => ['vladimir.vilotievich@st-ing.com'], // Валента
+            '367' => ['oleg.kalin@st-ing.com'], // Офис Веспер
+            '369' => ['oleg.kalin@st-ing.com'], // Mono Space
         ];
 
         $now = Carbon::now()->format('d.m.Y');
