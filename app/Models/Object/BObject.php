@@ -70,6 +70,11 @@ class BObject extends Model implements Audit
         return $this->hasMany(GeneralCost::class, 'object_id');
     }
 
+    public function transferService(): HasMany
+    {
+        return $this->hasMany(TransferService::class, 'object_id');
+    }
+
     public function writeoffs(): HasMany
     {
         return $this->hasMany(Writeoff::class, 'object_id');

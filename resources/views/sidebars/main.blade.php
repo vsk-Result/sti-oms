@@ -34,7 +34,7 @@
                 @endcan
             @endif
 
-            @canAny(['index finance-report', 'index general-costs', 'index pivot-balances'])
+            @canAny(['index finance-report', 'index general-costs', 'index pivot-balances', 'index distribution-transfer-service'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Сводные</span>
@@ -45,6 +45,14 @@
                     <div class="menu-item">
                         <a href="{{ route('general_costs.index') }}" class="menu-link {{ request()->is('general-costs*') ? 'active' : '' }}">
                             <span class="menu-title">Распределение общих затрат</span>
+                        </a>
+                    </div>
+                @endcan
+
+                @can('index distribution-transfer-service')
+                    <div class="menu-item">
+                        <a href="{{ route('distribution_transfer_service.index') }}" class="menu-link {{ request()->is('distribution-transfer-service*') ? 'active' : '' }}">
+                            <span class="menu-title">Распределение услуг по трансферу</span>
                         </a>
                     </div>
                 @endcan

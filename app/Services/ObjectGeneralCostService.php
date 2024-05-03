@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
+use App\Models\Object\TransferService;
 
 class ObjectGeneralCostService
 {
@@ -17,6 +18,18 @@ class ObjectGeneralCostService
         $generalCost->object_id = $object->id;
         $generalCost->amount = $amount;
         $generalCost->is_pinned = $pinned;
+        $generalCost->save();
+    }
+
+    public static function updateDistributionTransferService(BObject $object, float $amount, bool $needDelete = true): void
+    {
+        if ($needDelete) {
+            TransferService::where('object_id', $object->id)->delete();
+        }
+
+        $generalCost = new TransferService();
+        $generalCost->object_id = $object->id;
+        $generalCost->amount = $amount;
         $generalCost->save();
     }
 }

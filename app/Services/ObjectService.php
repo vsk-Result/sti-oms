@@ -168,7 +168,7 @@ class ObjectService
         $objects = $objectsQuery->with(['customers', 'payments' => function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
                 ->where('amount', '>=', 0)
-                ->where('company_id', 1)
+                ->whereIn('company_id', [1, 5])
                 ->whereBetween('date', [$startDate, $endDate]);
         }])->get();
 
@@ -220,6 +220,7 @@ class ObjectService
         $result = [];
         foreach ($periods as $startDate => $endDate) {
             $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])
+                ->where('code', '!=', '7.15')
                 ->where('type_id', Payment::TYPE_GENERAL)
                 ->whereIn('company_id', [1, 5])
                 ->sum('amount');
@@ -256,6 +257,106 @@ class ObjectService
             foreach ($cumings as $objectId => $cuming) {
                 $result[$objectId]['cuming_amount'] = $result[$objectId]['cuming_amount'] + $cuming['cuming'];
                 $result[$objectId]['general_amount'] = $result[$objectId]['general_amount'] + ($cuming['cuming'] / $sumCumings * $generalTotalAmount);
+            }
+        }
+
+        return $result;
+    }
+
+    public static function getDistributionTransferServiceByPeriod(array $datesBetween): array
+    {
+        [$startDate, $endDate] = $datesBetween;
+        $codes = GeneralCost::getObjectCodesForGeneralCosts();
+        $objectsQuery = BObject::query()->whereIn('code', $codes);
+
+        // исключили 349 из 2023 года по письму от Оксаны 30 мая 2023
+        if (str_contains($startDate, '2023')) {
+            $objectsQuery->where('code', '!=', '349');
+        }
+
+        $objects = $objectsQuery->with(['payments' => function($q) use ($startDate, $endDate) {
+            $q->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
+                ->where('amount', '<=', 0)
+                ->whereIn('company_id', [1, 5])
+                ->whereBetween('date', [$startDate, $endDate]);
+        }])->get();
+
+        $closingDates = [];
+        $finalObjects = new Collection();
+        foreach ($objects as $object) {
+            if ($object->payments->sum('amount') < 0) {
+                if (! empty($object->closing_date)) {
+                    if ($object->closing_date < $startDate) {
+                        continue;
+                    }
+                    if ($object->closing_date >= $startDate && $object->closing_date <= $endDate) {
+                        $closingDates[] = $object->closing_date;
+                    }
+                    $finalObjects->push($object);
+                } else {
+                    $finalObjects->push($object);
+                }
+            }
+        }
+
+        sort($closingDates);
+        $closingDates = array_unique($closingDates);
+
+        $periods = [$startDate => $endDate];
+        if (! empty($closingDates)) {
+            foreach ($closingDates as $date) {
+                $periods[$startDate] = $date;
+                if ($date === $endDate) {
+                    break;
+                } else {
+                    $startDate = Carbon::parse($date)->addDay()->format('Y-m-d');
+                }
+            }
+            if ($date !== $endDate) {
+                $periods[$startDate] = $endDate;
+            }
+        }
+
+        $result = [];
+        foreach ($periods as $startDate => $endDate) {
+            $transferAmount = Payment::query()
+                ->whereBetween('date', [$startDate, $endDate])
+                ->whereIn('company_id', [1, 5])
+                ->where('code', '7.15')
+                ->where('type_id', Payment::TYPE_GENERAL)
+                ->sum('amount');
+
+            $sumCash = 0;
+            $cashes = [];
+            foreach ($finalObjects as $object) {
+                $cashAmount = $object->payments
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
+                    ->where('amount', '<=', 0)
+                    ->sum('amount');
+
+                $cashes[$object->id] = [
+                    'cash' => $cashAmount,
+                    'transfer' => 0,
+                ];
+
+                $sumCash += $cashAmount;
+
+                if (! isset($result[$object->id])) {
+                    $result[$object->id] = [
+                        'cash_amount' => 0,
+                        'transfer_amount' => 0
+                    ];
+                }
+            }
+
+            if ($sumCash === 0 || $transferAmount === 0) {
+                continue;
+            }
+
+            foreach ($cashes as $objectId => $cash) {
+                $result[$objectId]['cash_amount'] = $result[$objectId]['cash_amount'] + $cash['cash'];
+                $result[$objectId]['transfer_amount'] = $result[$objectId]['transfer_amount'] + ($cash['cash'] / $sumCash * $transferAmount);
             }
         }
 

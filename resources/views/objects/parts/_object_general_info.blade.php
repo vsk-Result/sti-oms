@@ -157,7 +157,7 @@
                                     data-bs-toggle="popover"
                                     data-bs-placement="top"
                                     data-bs-html="true"
-                                    title="Расходы"
+                                    title="Детализация расходов"
                                     data-bs-content='@include('objects.parts.debts-details.payments')'
                             >
                                 Расходы
@@ -245,16 +245,25 @@
                 <div class="separator separator-dashed my-3"></div>
 
                 <div class="d-flex flex-stack">
-                    @php
-                        $generalCostURL = auth()->user()->can('index general-costs') ? route('general_costs.index') : 'javascript:void(0);';
-                        $generalCostClass = auth()->user()->can('index general-costs') ? 'cursor-pointer' : 'cursor-default';
-                    @endphp
 
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack {{ $generalCostClass }}" href="{{ $generalCostURL }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Общие расходы</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['general_balance'] < 0 ? 'text-danger' : 'text-success' }}">
+                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                        <div class="text-gray-700 fw-semibold fs-7 me-2">
+                            <div
+                                    class="cursor-pointer"
+                                    data-bs-custom-class="plan-payments-detailing-popover"
+                                    data-bs-toggle="popover"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    title="Детализация общих расходов"
+                                    data-bs-content='@include('objects.parts.debts-details.general_costs')'
+                            >
+                                Общие расходы
+                            </div>
+                        </div>
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}
                         </div>
+                    </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ ($object->total_with_general_balance - $object->total_balance) }}">--}}
 {{--                                    <span class="svg-icon svg-icon-2">--}}
 {{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}

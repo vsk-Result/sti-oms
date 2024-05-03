@@ -201,7 +201,7 @@ class MakeFinanceReportHistory extends Command
                     $receive = $objectPayments->sum('amount') - $pay;
 
                     $sReceiveTotal += $receive;
-                    $sGeneralTotal += $object->generalCosts()->sum('amount');
+                    $sGeneralTotal += $object->generalCosts()->sum('amount') + $object->transferService()->sum('amount');
                 }
 
                 $avgPercent = (float) number_format($sReceiveTotal == 0 ? 0 : $sGeneralTotal / $sReceiveTotal * 100, 2);
@@ -213,7 +213,7 @@ class MakeFinanceReportHistory extends Command
                     $object->total_pay = $objectPayments->where('amount', '<', 0)->sum('amount');
                     $object->total_receive = $objectPayments->sum('amount') - $object->total_pay;
                     $object->total_balance = $object->total_pay + $object->total_receive;
-                    $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount');
+                    $object->total_with_general_balance = $object->total_pay + $object->total_receive + $object->generalCosts()->sum('amount') + $object->transferService()->sum('amount');
                     $object->general_balance = $object->total_with_general_balance - $object->total_balance;
 
                     $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
@@ -462,6 +462,7 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['plan_ready_percent'] = $planReadyPercent;
                     $total[$year][$object->code]['fact_ready_percent'] = $factReadyPercent;
                     $total[$year][$object->code]['deviation_plan_percent'] = $deviationPlanPercent;
+                    $total[$year][$object->code]['transfer_service'] = $object->transferService()->sum('amount');
 
                     foreach ($total[$year][$object->code] as $key => $value) {
                         $summary[$year][$key] += (float) $value;

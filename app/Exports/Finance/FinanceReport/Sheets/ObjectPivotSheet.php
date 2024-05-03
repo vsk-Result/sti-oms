@@ -64,7 +64,7 @@ class ObjectPivotSheet implements
         $prognozFields = array_merge(array_values(FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg']);
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
-        $exceptFields = ['pay_cash', 'pay_non_cash'];
+        $exceptFields = ['pay_cash', 'pay_non_cash', 'transfer_service'];
 
         $lastRow = count($infos) + 1 - count($exceptFields);
         $lastColumnIndex = 2 + count($objects);
