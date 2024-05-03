@@ -23,17 +23,28 @@ class LoanController extends Controller
             return response()->json([], 403);
         }
 
+        $creditsArray = [];
+        $loansArray = [];
         $info = [];
-        $loans = Loan::get();
+        $loans = Loan::orderByDesc('amount')->get();
 
         foreach ($loans as $loan) {
-            $info[] = [
+            $entry = [
                 'total' => CurrencyExchangeRate::format($loan->total_amount, 'RUB'),
                 'paid' => CurrencyExchangeRate::format($loan->getPaidAmount(), 'RUB'),
                 'amount' => CurrencyExchangeRate::format($loan->amount, 'RUB'),
                 'organization' => $loan->organization?->name,
             ];
+
+            if ($loan->isCredit()) {
+                $creditsArray[] = $entry;
+            } else {
+                $loansArray[] = $entry;
+            }
         }
+
+        $info['loans'] = $loansArray;
+        $info['credits'] = $creditsArray;
 
         return response()->json(compact('info'));
     }
