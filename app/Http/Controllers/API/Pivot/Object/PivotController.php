@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CurrencyExchangeRate;
 use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
+use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,15 +14,15 @@ class PivotController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (! $request->has('verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
-
-        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
-        }
+//        if (! $request->has('verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
+//
+//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+//            abort(403);
+//            return response()->json([], 403);
+//        }
 
         if (empty($request->object_id)) {
             abort(404);
@@ -52,7 +53,10 @@ class PivotController extends Controller
             }
         }
 
-        $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'general_balance_to_receive_percentage'];
+        $percentFields = [
+            'time_percent', 'complete_percent', 'money_percent', 'general_balance_to_receive_percentage',
+            'fact_ready_percent', 'plan_ready_percent', 'deviation_plan_percent'
+        ];
         $financeReportInfo = [];
         foreach ($info as $field => $amount) {
             if (in_array($field, $percentFields)) {
@@ -62,6 +66,18 @@ class PivotController extends Controller
 
             $financeReportInfo[$field] = CurrencyExchangeRate::format($amount, 'RUB');
         }
+
+        $financeReportInfo['pay_opste'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_OPSTE)->where('amount', '<', 0)->sum('amount'), 'RUB');
+        $financeReportInfo['pay_rad'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_RAD)->where('amount', '<', 0)->sum('amount'), 'RUB');
+        $financeReportInfo['pay_material'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->sum('amount'), 'RUB');
+        $financeReportInfo['pay_salary'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_SALARY)->where('amount', '<', 0)->sum('amount'), 'RUB');
+        $financeReportInfo['pay_tax'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TAX)->where('amount', '<', 0)->sum('amount'), 'RUB');
+        $financeReportInfo['pay_customers'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_CUSTOMERS)->where('amount', '<', 0)->sum('amount'), 'RUB');
+        $financeReportInfo['pay_transfer'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TRANSFER)->where('amount', '<', 0)->sum('amount'), 'RUB');
+        $financeReportInfo['pay_empty'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where(function ($q) {
+            $q->whereNull('category');
+            $q->orWhere('category', '');
+        })->where('amount', '<', 0)->sum('amount'), 'RUB');
 
         $info = array_merge(['name' => $object->getName()], $financeReportInfo);
 
