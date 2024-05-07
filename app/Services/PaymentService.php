@@ -267,15 +267,15 @@ class PaymentService
             'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
             'description' => $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get(),
             'date' => $requestData['date'],
-            'amount' => $paymentCurrencyRate * $requestData['amount'],
+            'amount' => $paymentCurrencyRate * $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'parameters' => $requestData['parameters'] ?? [],
-            'amount_without_nds' => $paymentCurrency === 'RUB' ? $requestData['amount_without_nds'] : ($paymentCurrencyRate * $requestData['amount']),
+            'amount_without_nds' => $paymentCurrency === 'RUB' ? $this->sanitizer->set($requestData['amount_without_nds'])->toAmount()->get() : ($paymentCurrencyRate * $this->sanitizer->set($requestData['amount'])->toAmount()->get()),
             'is_need_split' => $requestData['is_need_split'] ?? false,
             'was_split' => $requestData['was_split'] ?? false,
             'status_id' => $requestData['status_id'] ?? Status::STATUS_ACTIVE,
             'currency' => $paymentCurrency,
             'currency_rate' => $paymentCurrencyRate,
-            'currency_amount' => $requestData['amount'],
+            'currency_amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
         ]);
 
         // Если в описании встретились теги займов/кредитов, отправим уведомление Алле (пока-что)

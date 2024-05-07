@@ -36,7 +36,7 @@ class StorePaymentRequest extends FormRequest
             'description' => 'string|max:1500',
             'code' => 'string|max:6',
             'date' => 'required|date_format:Y-m-d',
-            'amount' => 'required|numeric',
+            'amount' => 'required',
             'status_id' => 'integer',
         ];
     }

@@ -33,7 +33,7 @@
 
                     <div class="form group">
                         <label class="form-label">Сумма долга</label>
-                        <input type="text" name="debt_manual_amount" class="form-control" />
+                        <input type="text" name="debt_manual_amount" class="amount-mask form-control" />
                     </div>
                 </div>
 

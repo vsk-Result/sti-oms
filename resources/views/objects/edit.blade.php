@@ -154,7 +154,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма свободного лимита АВ к получению</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid"
+                                                    class="amount-mask form-control form-control-lg form-control-solid"
                                                     type="text"
                                                     name="free_limit_amount"
                                                     value="{{ old('free_limit_amount', $object->free_limit_amount) }}"
@@ -222,7 +222,7 @@
                                         <div class="pt-4 mb-10 fv-row">
                                             <label class="form-label fw-bolder text-dark fs-6">{{ $name }}</label>
                                             <input
-                                                class="form-control form-control-lg form-control-solid"
+                                                class="amount-mask form-control form-control-lg form-control-solid"
                                                 type="text"
                                                 value="{{ old($field, $planPayment->isAutoCalculation() ? null : $planPayment->amount) }}"
                                                 name="{{ $field }}"

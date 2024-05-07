@@ -100,7 +100,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма ГУ (по договору)</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="amount"
                                                     value="{{ old('amount', $guarantee->amount) }}"
@@ -120,7 +120,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма ГУ (по факту)</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('fact_amount') ? 'is-invalid' : '' }}"
+                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('fact_amount') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="fact_amount"
                                                     value="{{ old('fact_amount', $guarantee->fact_amount) }}"
@@ -260,7 +260,7 @@
                                         </td>
                                         <td>
                                             <input
-                                                    class="form-control form-control-lg form-control-solid"
+                                                    class="amount-mask form-control form-control-lg form-control-solid"
                                                     type="text"
                                                     name="payments_amount[]"
                                                     value=""
@@ -313,7 +313,7 @@
                                             </td>
                                             <td>
                                                 <input
-                                                        class="form-control form-control-lg form-control-solid"
+                                                        class="amount-mask form-control form-control-lg form-control-solid"
                                                         type="text"
                                                         name="isset_payments_amount[{{ $payment->id }}]"
                                                         value="{{ $payment->amount }}"

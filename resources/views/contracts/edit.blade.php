@@ -169,7 +169,7 @@
                                                     <label class="form-label fw-bolder text-dark fs-6">Сумма за материалы</label>
                                                     <div class="position-relative mb-3">
                                                         <input
-                                                                class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                                class="amount-mask amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
                                                                 type="text"
                                                                 name="amount"
                                                                 value="{{ old('amount', $contract->amount) }}"
@@ -188,7 +188,7 @@
                                                     <label class="form-label fw-bolder text-dark fs-6">Сумма за работы</label>
                                                     <div class="position-relative mb-3">
                                                         <input
-                                                                class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('rad_amount') ? 'is-invalid' : '' }}"
+                                                                class="amount-mask amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('rad_amount') ? 'is-invalid' : '' }}"
                                                                 type="text"
                                                                 name="rad_amount"
                                                                 value="{{ old('rad_amount', $contract->rad_amount) }}"
@@ -207,7 +207,7 @@
                                                     <label class="form-label fw-bolder text-dark fs-6">Сумма за накладные/услуги</label>
                                                     <div class="position-relative mb-3">
                                                         <input
-                                                                class="amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('opste_amount') ? 'is-invalid' : '' }}"
+                                                                class="amount-mask amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('opste_amount') ? 'is-invalid' : '' }}"
                                                                 type="text"
                                                                 name="opste_amount"
                                                                 value="{{ old('opste_amount', $contract->opste_amount) }}"
@@ -307,7 +307,7 @@
                                     <tr>
                                         <td>
                                             <input
-                                                class="form-control form-control-lg form-control-solid"
+                                                class="amount-mask form-control form-control-lg form-control-solid"
                                                 type="text"
                                                 name="avanses[]"
                                                 value=""
@@ -361,7 +361,7 @@
                                                 <tr>
                                                     <td>
                                                         <input
-                                                            class="form-control form-control-lg form-control-solid"
+                                                            class="amount-mask form-control form-control-lg form-control-solid"
                                                             type="text"
                                                             name="isset_avanses[{{ $avans->id }}]"
                                                             value="{{ $avans->amount }}"
@@ -411,7 +411,7 @@
                                         </td>
                                         <td>
                                             <input
-                                                class="form-control form-control-lg form-control-solid"
+                                                class="amount-mask form-control form-control-lg form-control-solid"
                                                 type="text"
                                                 name="received_avanses_amount[]"
                                                 value=""
@@ -474,7 +474,7 @@
                                                 </td>
                                                 <td>
                                                     <input
-                                                        class="form-control form-control-lg form-control-solid"
+                                                        class="amount-mask form-control form-control-lg form-control-solid"
                                                         type="text"
                                                         name="isset_received_avanses_amount[{{ $avans->id }}]"
                                                         value="{{ $avans->amount }}"

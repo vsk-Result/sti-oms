@@ -188,7 +188,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма банковской гарантии</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="amount"
                                                     value="{{ old('amount') }}"
@@ -210,7 +210,7 @@
                                         <label class="form-label fw-bolder text-dark fs-6">Комиссия</label>
                                         <div class="position-relative mb-3">
                                             <input
-                                                class="form-control form-control-lg form-control-solid {{ $errors->has('commission') ? 'is-invalid' : '' }}"
+                                                class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('commission') ? 'is-invalid' : '' }}"
                                                 type="text"
                                                 name="commission"
                                                 value="{{ old('commission') }}"
@@ -272,7 +272,7 @@
                                         <label class="form-label fw-bolder text-dark fs-6">Сумма депозита</label>
                                         <div class="position-relative mb-3">
                                             <input
-                                                class="form-control form-control-lg form-control-solid {{ $errors->has('amount_deposit') ? 'is-invalid' : '' }}"
+                                                class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_deposit') ? 'is-invalid' : '' }}"
                                                 type="text"
                                                 name="amount_deposit"
                                                 value="{{ old('amount_deposit') }}"

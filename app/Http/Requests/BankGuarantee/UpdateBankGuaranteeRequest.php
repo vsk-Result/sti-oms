@@ -33,7 +33,6 @@ class UpdateBankGuaranteeRequest extends FormRequest
             'amount' => 'required',
             'start_date_deposit' => 'nullable|date_format:Y-m-d',
             'end_date_deposit' => 'nullable|date_format:Y-m-d',
-            'amount_deposit' => 'nullable|numeric',
             'status_id' => 'required|integer',
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:10240',
         ];

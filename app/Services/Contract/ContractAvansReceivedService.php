@@ -13,6 +13,13 @@ use App\Models\Currency;
 
 class ContractAvansReceivedService
 {
+    private Sanitizer $sanitizer;
+
+    public function __construct(Sanitizer $sanitizer)
+    {
+        $this->sanitizer = $sanitizer;
+    }
+
     public function createReceivedAvans(Contract $contract, array $requestData): ContractReceivedAvans
     {
         $avans = ContractReceivedAvans::create([
@@ -20,7 +27,7 @@ class ContractAvansReceivedService
             'company_id' => $contract->company_id,
             'object_id' => $contract->object_id,
             'date' => $requestData['date'],
-            'amount' => $requestData['amount'],
+            'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'description' => $requestData['description'],
             'status_id' => Status::STATUS_ACTIVE,
             'currency' => $contract->currency,

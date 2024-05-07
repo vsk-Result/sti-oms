@@ -9,6 +9,19 @@ const mainApp = function() {
         });
     }
 
+    const initInputAmountMask = function() {
+        Inputmask("decimal", {
+            digits: '17,2',
+            radixPoint: '.',
+            groupSeparator: ' ',
+            inputtype: "text"
+        }).mask(".amount-mask");
+
+        $('.amount-mask').each(() => {
+            $(this).attr('autocomplete', 'off')
+        });
+    }
+
     // Исключительно в научных целях (кто прочитал, тот пати пупер)
     const initDmitryPartyPooper = function() {
         const isDmitryRightNow = $('body').data('is-dmitry') === 1;
@@ -483,6 +496,7 @@ const mainApp = function() {
             initActsPaymentsLineChart();
 
             initDmitryPartyPooper();
+            initInputAmountMask();
 
             if ($('#show-date-and-time').length > 0) {
                 setInterval(initShowDateAndTime, 500);

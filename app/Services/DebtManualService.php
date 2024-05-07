@@ -46,9 +46,9 @@ class DebtManualService
 
         if ($debtManual) {
             $debtManual->update([
-                'amount' => $requestData['debt_manual_amount'],
-                'avans' => $requestData['debt_manual_avans'],
-                'guarantee' => $requestData['debt_manual_guarantee'],
+                'amount' => $this->sanitizer->set($requestData['debt_manual_amount'])->toAmount()->get(),
+                'avans' => $this->sanitizer->set($requestData['debt_manual_avans'])->toAmount()->get(),
+                'guarantee' => $this->sanitizer->set($requestData['debt_manual_guarantee'])->toAmount()->get(),
             ]);
         } else {
             DebtManual::create([

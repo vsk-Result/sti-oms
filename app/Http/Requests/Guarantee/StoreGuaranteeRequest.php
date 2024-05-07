@@ -29,8 +29,8 @@ class StoreGuaranteeRequest extends FormRequest
             'organization_id' => 'required|integer',
             'state' => 'nullable|string|max:255',
             'conditions' => 'nullable|string|max:1000',
-            'amount' => 'required|numeric',
-            'fact_amount' => 'required|numeric',
+            'amount' => 'required',
+            'fact_amount' => 'required',
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:10240',
         ];
     }

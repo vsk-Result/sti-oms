@@ -14,7 +14,7 @@
                         @else
                             <label class="form-label">Сумма долга</label>
                         @endif
-                        <input type="text" name="debt_manual_amount" id="debt-manual-amount" class="form-control" />
+                        <input type="text" name="debt_manual_amount" id="debt-manual-amount" class="amount-mask form-control" />
                         <input type="hidden" name="debt_manual_id" id="debt-manual-id" class="form-control" />
                         <input type="hidden" name="debt_manual_type_id" id="debt-manual-type-id" class="form-control" />
                         <input type="hidden" name="debt_manual_object_id" id="debt-manual-object-id" class="form-control" />
@@ -25,12 +25,12 @@
                     @if ($hasObjectImport)
                         <div class="form group mb-3">
                             <label class="form-label">Сумма аванса к оплате</label>
-                            <input type="text" name="debt_manual_avans" id="debt-manual-avans" class="form-control" />
+                            <input type="text" name="debt_manual_avans" id="debt-manual-avans" class="amount-mask form-control" />
                         </div>
 
                         <div class="form group mb-3">
                             <label class="form-label">Сумма ГУ</label>
-                            <input type="text" name="debt_manual_guarantee" id="debt-manual-guarantee" class="form-control" />
+                            <input type="text" name="debt_manual_guarantee" id="debt-manual-guarantee" class="amount-mask form-control" />
                         </div>
 
                         <span id="debt-manual-comment" class="text-muted fs-7"></span>

@@ -77,7 +77,7 @@ class ObjectService
             }
 
             $planPayment->update([
-                'amount' => is_null($requestData[$field]) ? 0 : -abs($this->sanitizer->set($requestData[$field])->toEmail()->get()),
+                'amount' => is_null($requestData[$field]) ? 0 : -abs($this->sanitizer->set($requestData[$field])->toAmount()->get()),
                 'type_id' => is_null($requestData[$field]) ? PlanPayment::TYPE_AUTO : PlanPayment::TYPE_MANUAL
             ]);
         }

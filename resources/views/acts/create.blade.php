@@ -108,7 +108,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма выполнения</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="amount"
                                                     value="{{ old('amount') }}"
@@ -129,7 +129,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма удержания аванса</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount_avans') ? 'is-invalid' : '' }}"
+                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_avans') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="amount_avans"
                                                     value="{{ old('amount_avans') }}"
@@ -152,7 +152,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма удержания депозита</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount_deposit') ? 'is-invalid' : '' }}"
+                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_deposit') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="amount_deposit"
                                                     value="{{ old('amount_deposit') }}"
@@ -195,7 +195,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма неоплаченных работ</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                        class="form-control form-control-lg form-control-solid {{ $errors->has('manual_left_paid_amount') ? 'is-invalid' : '' }}"
+                                                        class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('manual_left_paid_amount') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="manual_left_paid_amount"
                                                         value="{{ old('manual_left_paid_amount') }}"
@@ -258,7 +258,7 @@
                                             </td>
                                             <td>
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid"
+                                                    class="amount-mask form-control form-control-lg form-control-solid"
                                                     type="text"
                                                     name="payments_amount[]"
                                                     value=""
@@ -320,7 +320,7 @@
                                             </td>
                                             <td>
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid"
+                                                    class="amount-mask form-control form-control-lg form-control-solid"
                                                     type="text"
                                                     name="payments_amount[]"
                                                     value=""

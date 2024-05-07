@@ -29,7 +29,7 @@ class UpdateWriteoffRequest extends FormRequest
             'date' => 'nullable|date_format:Y-m-d',
             'crm_employee_uid' => 'nullable|string|max:10',
             'description' => 'nullable|string|max:1500',
-            'amount' => 'required|numeric',
+            'amount' => 'required',
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:10240',
             'status_id' => 'required|integer',
         ];

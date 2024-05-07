@@ -159,7 +159,7 @@
                                                 <label class="form-label fw-bolder text-dark fs-6">Сумма займа/кредита</label>
                                                 <div class="position-relative mb-3">
                                                     <input
-                                                            class="form-control form-control-lg form-control-solid {{ $errors->has('total_amount') ? 'is-invalid' : '' }}"
+                                                            class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('total_amount') ? 'is-invalid' : '' }}"
                                                             type="text"
                                                             name="total_amount"
                                                             value="{{ old('total_amount', $loan->total_amount) }}"
@@ -181,7 +181,7 @@
                                                 <label class="form-label fw-bolder text-dark fs-6">Сумма оплаты</label>
                                                 <div class="position-relative mb-3">
                                                     <input
-                                                        class="form-control form-control-lg form-control-solid {{ $errors->has('paid_amount') ? 'is-invalid' : '' }}"
+                                                        class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('paid_amount') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="paid_amount"
                                                         value="{{ old('paid_amount', $loan->paid_amount) }}"
@@ -203,7 +203,7 @@
                                                 <label class="form-label fw-bolder text-dark fs-6">Процент</label>
                                                 <div class="position-relative mb-3">
                                                     <input
-                                                        class="form-control form-control-lg form-control-solid {{ $errors->has('percent') ? 'is-invalid' : '' }}"
+                                                        class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('percent') ? 'is-invalid' : '' }}"
                                                         type="text"
                                                         name="percent"
                                                         value="{{ old('percent', $loan->percent) }}"

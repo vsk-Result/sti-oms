@@ -95,7 +95,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
+                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
                                                     type="text"
                                                     name="amount"
                                                     value="{{ old('amount') }}"
