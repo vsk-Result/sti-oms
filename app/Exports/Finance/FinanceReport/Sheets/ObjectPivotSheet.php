@@ -196,7 +196,7 @@ class ObjectPivotSheet implements
 
                 if ($field === 'complete_percent' || $field === 'money_percent') {
                     $sheet->getStyle($column . $row)->getFont()->setSize(12);
-                    $sheet->getStyle($column . $row)->getFont()->setBold(true);
+//                    $sheet->getStyle($column . $row)->getFont()->setBold(true);
                     $sheet->getStyle($column . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
                 }
 
