@@ -57,6 +57,7 @@ class FinanceReport
             'Сальдо без общ. Расходов' => 'balance',
             'Общие расходы' => 'general_balance',
             'Услуги по трансферу' => 'transfer_service',
+            'Расходы офиса, налоги' => 'office_service',
             'Общие расходы / приходы %' => 'general_balance_to_receive_percentage',
             'Сальдо c общ. Расходами' => 'balance_with_general_balance',
             'Долг подрядчикам' => 'contractor_debt',

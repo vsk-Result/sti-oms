@@ -463,6 +463,7 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['fact_ready_percent'] = $factReadyPercent;
                     $total[$year][$object->code]['deviation_plan_percent'] = $deviationPlanPercent;
                     $total[$year][$object->code]['transfer_service'] = $object->transferService()->sum('amount');
+                    $total[$year][$object->code]['office_service'] = $object->general_balance - $object->transferService()->sum('amount');
 
                     foreach ($total[$year][$object->code] as $key => $value) {
                         $summary[$year][$key] += (float) $value;
