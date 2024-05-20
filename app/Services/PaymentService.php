@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Helpers\Sanitizer;
 use App\Models\Company;
 use App\Models\CRM\AvansImport;
+use App\Models\KostCode;
 use App\Models\Loan;
 use App\Models\LoanNotifyTag;
 use App\Models\Object\BObject;
@@ -607,12 +608,78 @@ class PaymentService
                     $this->error = 'Объект ' . $requestData['object_code'] . ' не найден в системе. Данные об объекте не сохранятся.';
                 }
             }
-
-            unset($requestData['object_code']);
         }
 
         if (array_key_exists('code', $requestData)) {
             $requestData['code'] = $this->sanitizer->set($requestData['code'])->toCode()->get();
+        }
+
+        if ($payment) {
+            if (array_key_exists('code', $requestData)) {
+                if ($payment->object->code === '27.1') {
+                    if (
+                        !(str_contains($requestData['code'], '6.') ||
+                        str_contains($requestData['code'], '7.') ||
+                        str_contains($requestData['code'], '8.') ||
+                        str_contains($requestData['code'], '9.') ||
+                        str_contains($requestData['code'], '10.') ||
+                        str_contains($requestData['code'], '5.10'))
+                    ) {
+                        $this->error = 'Оплата на объекте 27.1 может иметь следующие стати затрат (5.10, 6, 7, 8, 9, 10). Данные о статье затрат не сохранятся.';
+                        unset($requestData['code']);
+                    }
+                }
+            }
+
+            if (array_key_exists('object_code', $requestData)) {
+                if ($requestData['object_code'] === '27.1') {
+                    if (
+                        !(str_contains($payment->code, '6.') ||
+                            str_contains($payment->code, '7.') ||
+                            str_contains($payment->code, '8.') ||
+                            str_contains($payment->code, '9.') ||
+                            str_contains($payment->code, '10.') ||
+                            str_contains($payment->code, '5.10'))
+                    ) {
+                        $this->error = 'Оплата на объекте 27.1 может иметь следующие стати затрат (5.10, 6, 7, 8, 9, 10). Данные об объекте не сохранятся.';
+                        unset($requestData['object_code']);
+                        unset($requestData['object_id']);
+                        unset($requestData['object_worktype_id']);
+                        unset($requestData['type_id']);
+                    }
+                } else if ($requestData['object_code'] === 'Общее') {
+                    if (
+                        !($payment->category === 'Накладные/Услуги' || $payment->category === 'Налоги')
+                    ) {
+                        $this->error = 'Для объекта Общее нельзя указать категорию кроме налогов и услуг. Данные о категории не сохранятся.';
+                        unset($requestData['category']);
+                    }
+                }
+            }
+
+            if (array_key_exists('category', $requestData)) {
+                if ($payment->getObject() === 'Общее') {
+                    if (
+                        !($requestData['category'] === 'Накладные/Услуги' || $requestData['category'] === 'Налоги')
+                    ) {
+                        $this->error = 'Для объекта Общее нельзя указать категорию кроме налогов и услуг. Данные о категории не сохранятся.';
+                        unset($requestData['category']);
+                    }
+                }
+            }
+        }
+
+        if (array_key_exists('code', $requestData)) {
+            $requestData['code'] = $this->sanitizer->set($requestData['code'])->toCode()->get();
+
+            if (!KostCode::checkValid($requestData['code'])) {
+                $this->error = 'Такой статьи затрат нет в системе. Данные о статье затрат не сохранятся.';
+                unset($requestData['code']);
+            }
+        }
+
+        if (array_key_exists('object_code', $requestData)) {
+            unset($requestData['object_code']);
         }
 
         if (array_key_exists('description', $requestData)) {

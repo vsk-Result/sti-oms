@@ -824,4 +824,38 @@ class KostCode
 
         return $code;
     }
+
+    public static function checkValid(string $code): string
+    {
+        $code = str_replace(',', '.', $code);
+        foreach (static::$codes as $codeL1) {
+            if ($code === $codeL1['code']) {
+                return true;
+            }
+            if (count($codeL1['children']) > 0) {
+                foreach ($codeL1['children'] as $codeL2) {
+                    if ($code === $codeL2['code']) {
+                        return true;
+                    }
+                    if (count($codeL2['children']) > 0) {
+                        foreach ($codeL2['children'] as $codeL3) {
+                            if ($code === $codeL3['code']) {
+                                return true;
+                            }
+                            if (count($codeL3['children']) > 0) {
+                                foreach ($codeL3['children'] as $codeL4) {
+                                    if ($code === $codeL4['code']) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
