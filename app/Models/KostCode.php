@@ -6,6 +6,61 @@ class KostCode
 {
     private static array $codes = [
         [
+            'code' => '10',
+            'title' => 'Поступления',
+            'description' => '',
+            'children' => [
+                [
+                    'code' => '10.1',
+                    'title' => 'Аванс целевой',
+                    'description' => '',
+                    'children' => []
+                ],
+                [
+                    'code' => '10.2',
+                    'title' => 'Аванс общий',
+                    'description' => '',
+                    'children' => []
+                ],
+                [
+                    'code' => '10.3',
+                    'title' => 'Выполнение',
+                    'description' => '',
+                    'children' => []
+                ],
+                [
+                    'code' => '10.4',
+                    'title' => 'Гарантийное удержание',
+                    'description' => '',
+                    'children' => []
+                ],
+                [
+                    'code' => '10.5',
+                    'title' => 'Услуги генподряда, ретробонус',
+                    'description' => '',
+                    'children' => []
+                ],
+                [
+                    'code' => '10.6',
+                    'title' => 'Займ, кредит, %',
+                    'description' => '',
+                    'children' => []
+                ],
+                [
+                    'code' => '10.7',
+                    'title' => 'Трансфер',
+                    'description' => '',
+                    'children' => []
+                ],
+                [
+                    'code' => '10.8',
+                    'title' => 'Прочие поступления',
+                    'description' => '',
+                    'children' => []
+                ],
+            ]
+        ],
+        [
             'code' => '0',
             'title' => 'Статья затрат еще не определена',
             'description' => '',
@@ -725,61 +780,6 @@ class KostCode
                 [
                     'code' => '9.5',
                     'title' => 'Ремонт и содержание инструмента/техники',
-                    'description' => '',
-                    'children' => []
-                ],
-            ]
-        ],
-        [
-            'code' => '10',
-            'title' => 'Поступления',
-            'description' => '',
-            'children' => [
-                [
-                    'code' => '10.1',
-                    'title' => 'Аванс целевой',
-                    'description' => '',
-                    'children' => []
-                ],
-                [
-                    'code' => '10.2',
-                    'title' => 'Аванс общий',
-                    'description' => '',
-                    'children' => []
-                ],
-                [
-                    'code' => '10.3',
-                    'title' => 'Выполнение',
-                    'description' => '',
-                    'children' => []
-                ],
-                [
-                    'code' => '10.4',
-                    'title' => 'Гарантийное удержание',
-                    'description' => '',
-                    'children' => []
-                ],
-                [
-                    'code' => '10.5',
-                    'title' => 'Услуги генподряда, ретробонус',
-                    'description' => '',
-                    'children' => []
-                ],
-                [
-                    'code' => '10.6',
-                    'title' => 'Займ, кредит, %',
-                    'description' => '',
-                    'children' => []
-                ],
-                [
-                    'code' => '10.7',
-                    'title' => 'Трансфер',
-                    'description' => '',
-                    'children' => []
-                ],
-                [
-                    'code' => '10.8',
-                    'title' => 'Прочие поступления',
                     'description' => '',
                     'children' => []
                 ],
