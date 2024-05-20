@@ -616,7 +616,7 @@ class PaymentService
 
         if ($payment) {
             if (array_key_exists('code', $requestData)) {
-                if ($payment->object->code === '27.1') {
+                if ($payment->object && $payment->object->code === '27.1') {
                     if (
                         !(str_contains($requestData['code'], '6.') ||
                         str_contains($requestData['code'], '7.') ||
