@@ -64,20 +64,20 @@ class PivotController extends Controller
                 continue;
             }
 
-            $financeReportInfo[$field] = CurrencyExchangeRate::format($amount, 'RUB');
+            $financeReportInfo[$field] = $amount;
         }
 
-        $financeReportInfo['pay_opste'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_OPSTE)->where('amount', '<', 0)->sum('amount'), 'RUB');
-        $financeReportInfo['pay_rad'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_RAD)->where('amount', '<', 0)->sum('amount'), 'RUB');
-        $financeReportInfo['pay_material'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->sum('amount'), 'RUB');
-        $financeReportInfo['pay_salary'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_SALARY)->where('amount', '<', 0)->sum('amount'), 'RUB');
-        $financeReportInfo['pay_tax'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TAX)->where('amount', '<', 0)->sum('amount'), 'RUB');
-        $financeReportInfo['pay_customers'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_CUSTOMERS)->where('amount', '<', 0)->sum('amount'), 'RUB');
-        $financeReportInfo['pay_transfer'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TRANSFER)->where('amount', '<', 0)->sum('amount'), 'RUB');
-        $financeReportInfo['pay_empty'] = CurrencyExchangeRate::format(Payment::where('object_id', $object->id)->where(function ($q) {
+        $financeReportInfo['pay_opste'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_OPSTE)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_rad'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_RAD)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_material'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_salary'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_SALARY)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_tax'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TAX)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_customers'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_CUSTOMERS)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_transfer'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TRANSFER)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_empty'] = Payment::where('object_id', $object->id)->where(function ($q) {
             $q->whereNull('category');
             $q->orWhere('category', '');
-        })->where('amount', '<', 0)->sum('amount'), 'RUB');
+        })->where('amount', '<', 0)->sum('amount');
 
         $info = array_merge(['name' => $object->getName()], $financeReportInfo);
 

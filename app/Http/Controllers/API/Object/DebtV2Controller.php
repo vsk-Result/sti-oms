@@ -46,11 +46,14 @@ class DebtV2Controller extends Controller
 
         $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
+        $salaryAmount = $object->getWorkSalaryDebt();
+
         $info = [
             'object' => $object->__toString(),
-            'contractors_amount' => CurrencyExchangeRate::format($debts['contractor']->total_amount, 'RUB'),
-            'providers_amount' => CurrencyExchangeRate::format($debts['provider']->total_amount, 'RUB'),
-            'service_amount' => CurrencyExchangeRate::format($debts['service']->total_amount, 'RUB'),
+            'contractors_amount' => $debts['contractor']->total_amount,
+            'providers_amount' => $debts['provider']->total_amount,
+            'service_amount' => $debts['service']->total_amount,
+            'salary_amount' => $salaryAmount
         ];
 
         return response()->json(compact('info'));

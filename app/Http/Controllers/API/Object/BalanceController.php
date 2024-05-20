@@ -41,7 +41,7 @@ class BalanceController extends Controller
                 $info[] = [
                     'id' => $object->id,
                     'title' => $object->code . ' | '  . $object->name,
-                    'balance' => CurrencyExchangeRate::format($total->{$year}->{$object->code}->{'objectBalance'}, 'RUB'),
+                    'balance' => $total->{$year}->{$object->code}->{'objectBalance'},
                 ];
             }
         }

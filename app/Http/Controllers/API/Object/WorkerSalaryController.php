@@ -55,7 +55,7 @@ class WorkerSalaryController extends Controller
             foreach ($details as $detail) {
                 $objectInfo['info'][] = [
                     'name' => 'Общее за ' . $detail['date'],
-                    'sum' => CurrencyExchangeRate::format($detail['amount'], 'RUB')
+                    'sum' => $detail['amount']
                 ];
 
                 if (! isset($totalMonthsAmount[$detail['date']])) {
@@ -72,7 +72,7 @@ class WorkerSalaryController extends Controller
 
             $objectInfo['total_for_object'] = [
                 'name' => 'Общее за объект ' . $object->getName(),
-                'sum' => CurrencyExchangeRate::format($summaryAmount, 'RUB')
+                'sum' => $summaryAmount
             ];
 
             $info['objects'][] = $objectInfo;
@@ -82,13 +82,13 @@ class WorkerSalaryController extends Controller
         foreach ($totalMonthsAmount as $month => $amount) {
             $info['total']['total_list'][] = [
                 'name' => 'Общее за ' . $month,
-                'sum' => CurrencyExchangeRate::format($amount, 'RUB')
+                'sum' => $amount
             ];
             $totalAmount += $amount;
         }
 
         $info['total']['total_for_all_object']['name'] = 'Общий долг';
-        $info['total']['total_for_all_object']['sum'] = CurrencyExchangeRate::format($totalAmount, 'RUB');
+        $info['total']['total_for_all_object']['sum'] = $totalAmount;
 
         return response()->json(compact('info'));
     }

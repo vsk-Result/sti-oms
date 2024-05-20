@@ -74,10 +74,10 @@ class ObjectInfoController extends Controller
                 $info['debts'][] = [
                     'id' => $object->id,
                     'object_name' => $object->getName(),
-                    'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
-                    'contractors_debts_gu' => CurrencyExchangeRate::format(0, 'RUB'),
-                    'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),
-                    'total_debts' => CurrencyExchangeRate::format($totalDebts, 'RUB'),
+                    'contractors_debts' => $contractorDebtsAmount,
+                    'contractors_debts_gu' => 0,
+                    'providers_debts' => $providerDebtsAmount,
+                    'total_debts' => $totalDebts,
                 ];
 
                 $info['total']['contractors_debts'] += $contractorDebtsAmount;
@@ -107,11 +107,11 @@ class ObjectInfoController extends Controller
             $info['debts'][] = [
                 'id' => $object->id,
                 'object_name' => $object->getName(),
-                'contractors_debts' => CurrencyExchangeRate::format($contractorDebtsAmount, 'RUB'),
-                'contractors_debts_gu' => CurrencyExchangeRate::format($contractorDebtsAmountGU, 'RUB'),
-                'providers_debts' => CurrencyExchangeRate::format($providerDebtsAmount, 'RUB'),
-                'service_debts' => CurrencyExchangeRate::format($serviceDebtsAmount, 'RUB'),
-                'total_debts' => CurrencyExchangeRate::format($totalDebts, 'RUB'),
+                'contractors_debts' => $contractorDebtsAmount,
+                'contractors_debts_gu' => $contractorDebtsAmountGU,
+                'providers_debts' => $providerDebtsAmount,
+                'service_debts' => $serviceDebtsAmount,
+                'total_debts' => $totalDebts,
             ];
 
             $info['total']['contractors_debts'] += $contractorDebtsAmount;
@@ -120,12 +120,6 @@ class ObjectInfoController extends Controller
             $info['total']['service_debts'] += $serviceDebtsAmount;
             $info['total']['total_debts'] += $totalDebts;
         }
-
-        $info['total']['contractors_debts'] = CurrencyExchangeRate::format($info['total']['contractors_debts'], 'RUB');
-        $info['total']['contractors_debts_gu'] = CurrencyExchangeRate::format($info['total']['contractors_debts_gu'], 'RUB');
-        $info['total']['providers_debts'] = CurrencyExchangeRate::format($info['total']['providers_debts'], 'RUB');
-        $info['total']['service_debts'] = CurrencyExchangeRate::format($info['total']['service_debts'], 'RUB');
-        $info['total']['total_debts'] = CurrencyExchangeRate::format($info['total']['total_debts'], 'RUB');
 
         return response()->json(compact('info'));
     }
