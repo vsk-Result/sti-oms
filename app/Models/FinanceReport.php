@@ -8,7 +8,7 @@ class FinanceReport
     {
         return [
             '361' => 0.1139,
-            '365' => 0.12,
+            '365' => 0.1,
         ][$objectCode] ?? 0;
     }
 
@@ -80,6 +80,9 @@ class FinanceReport
             $prognozFields,
             [
                 'Прогнозируемый Баланс объекта' => 'prognozBalance',
+                'Планируемая Рентабельность' => 'planProfitability',
+                'Планируемая Рентабельность (материал)' => 'planProfitability_material',
+                'Планируемая Рентабельность (работы)' => 'planProfitability_rad',
                 '% времени' => 'time_percent',
                 '% выполнения' => 'complete_percent',
                 '% денег' => 'money_percent',

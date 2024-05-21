@@ -9,6 +9,7 @@ use App\Models\FinanceReport;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
 use App\Models\Object\BObject;
+use App\Models\Object\PlanPayment;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
@@ -316,6 +317,36 @@ class MakeFinanceReportHistory extends Command
                         $this->objectPlanPaymentService->makeDefaultPaymentsForObject($object->id);
                     }
 
+                    if (! $object->planPayments()->where('field', 'planProfitability')->first()) {
+                        PlanPayment::create([
+                            'object_id' => $object->id,
+                            'field' => 'planProfitability',
+                            'amount' => 0,
+                            'type_id' => PlanPayment::TYPE_MANUAL,
+                        ]);
+                    }
+
+                    if (! $object->planPayments()->where('field', 'planProfitability_material')->first()) {
+                        PlanPayment::create([
+                            'object_id' => $object->id,
+                            'field' => 'planProfitability_material',
+                            'amount' => 0,
+                            'type_id' => PlanPayment::TYPE_MANUAL,
+                        ]);
+                    }
+
+                    if (! $object->planPayments()->where('field', 'planProfitability_rad')->first()) {
+                        PlanPayment::create([
+                            'object_id' => $object->id,
+                            'field' => 'planProfitability_rad',
+                            'amount' => 0,
+                            'type_id' => PlanPayment::TYPE_MANUAL,
+                        ]);
+                    }
+
+                    $pp = $object->planPayments;
+                    if ($pp->where(''))
+
                     $prognozTotal = 0;
                     $prognozFields = FinanceReport::getPrognozFields();
                     foreach ($prognozFields as $field) {
@@ -464,6 +495,9 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['deviation_plan_percent'] = $deviationPlanPercent;
                     $total[$year][$object->code]['transfer_service'] = $object->transferService()->sum('amount');
                     $total[$year][$object->code]['office_service'] = $object->general_balance - $object->transferService()->sum('amount');
+                    $total[$year][$object->code]['planProfitability_material'] = $object->planPayments()->where('field', 'planProfitability_material')->first()->amount;
+                    $total[$year][$object->code]['planProfitability_rad'] = $object->planPayments()->where('field', 'planProfitability_rad')->first()->amount;
+                    $total[$year][$object->code]['planProfitability'] = $total[$year][$object->code]['planProfitability_material'] + $total[$year][$object->code]['planProfitability_rad'];
 
                     foreach ($total[$year][$object->code] as $key => $value) {
                         $summary[$year][$key] += (float) $value;

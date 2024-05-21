@@ -69,7 +69,7 @@ class ObjectService
             'status_id' => $requestData['status_id']
         ]);
 
-        $prognozFields = FinanceReport::getPrognozFields();
+        $prognozFields = array_merge(FinanceReport::getPrognozFields(), ['Планируемая Рентабельность (материал)' => 'planProfitability_material', 'Планируемая Рентабельность (работы)' => 'planProfitability_rad']);
         foreach ($prognozFields as $field) {
             $planPayment = $object->planPayments->where('field', $field)->first();
             if (!$planPayment) {
@@ -77,7 +77,7 @@ class ObjectService
             }
 
             $planPayment->update([
-                'amount' => is_null($requestData[$field]) ? 0 : -abs($this->sanitizer->set($requestData[$field])->toAmount()->get()),
+                'amount' => is_null($requestData[$field]) ? 0 : $this->sanitizer->set($requestData[$field])->toAmount()->get(),
                 'type_id' => is_null($requestData[$field]) ? PlanPayment::TYPE_AUTO : PlanPayment::TYPE_MANUAL
             ]);
         }
