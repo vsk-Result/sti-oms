@@ -69,7 +69,13 @@ class ObjectService
             'status_id' => $requestData['status_id']
         ]);
 
-        $prognozFields = array_merge(FinanceReport::getPrognozFields(), ['Планируемая Рентабельность (материал)' => 'planProfitability_material', 'Планируемая Рентабельность (работы)' => 'planProfitability_rad']);
+        if (auth()->user()->hasRole('super-admin')) {
+            $prognozFields = array_merge(FinanceReport::getPrognozFields(), ['Планируемая Рентабельность (материал)' => 'planProfitability_material', 'Планируемая Рентабельность (работы)' => 'planProfitability_rad']);
+
+        } else {
+            $prognozFields = FinanceReport::getPrognozFields();
+        }
+
         foreach ($prognozFields as $field) {
             $planPayment = $object->planPayments->where('field', $field)->first();
             if (!$planPayment) {

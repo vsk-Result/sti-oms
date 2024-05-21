@@ -81,7 +81,12 @@ class ObjectController extends Controller
         $statuses = $object->getStatuses();
         $organizations = Organization::orderBy('name')->get();
         $object->load('customers');
-        $prognozFields = array_merge(FinanceReport::getPrognozFields(), ['Планируемая Рентабельность (материал)' => 'planProfitability_material', 'Планируемая Рентабельность (работы)' => 'planProfitability_rad']);
+        if (auth()->user()->hasRole('super-admin')) {
+            $prognozFields = array_merge(FinanceReport::getPrognozFields(), ['Планируемая Рентабельность (материал)' => 'planProfitability_material', 'Планируемая Рентабельность (работы)' => 'planProfitability_rad']);
+
+        } else {
+            $prognozFields = FinanceReport::getPrognozFields();
+        }
         return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields'));
     }
 
