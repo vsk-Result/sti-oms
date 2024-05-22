@@ -300,10 +300,12 @@ class MakeFinanceReportHistory extends Command
                         $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                     }
 
-                    $taxDebtAmount = TaxPlanItem::where('object_id', $object->id)
-                        ->where('paid', false)
-                        ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль'])
-                        ->sum('amount');
+//                    $taxDebtAmount = TaxPlanItem::where('object_id', $object->id)
+//                        ->where('paid', false)
+//                        ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль'])
+//                        ->sum('amount');
+
+                    $taxDebtAmount = 0;
 
                     $objectBalance = $object->total_with_general_balance +
                         $dolgZakazchikovZaVipolnenieRaboti +
@@ -522,6 +524,11 @@ class MakeFinanceReportHistory extends Command
                 $summary[$year]['plan_ready_percent'] = 0;
                 $summary[$year]['fact_ready_percent'] = 0;
                 $summary[$year]['deviation_plan_percent'] = 0;
+
+                $summary[$year]['tax_debt'] = TaxPlanItem::where('object_id', 0)
+                    ->where('paid', false)
+                    ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль'])
+                    ->sum('amount');
             }
 
         } catch (\Exception $e) {
