@@ -529,6 +529,9 @@ class MakeFinanceReportHistory extends Command
                     ->where('paid', false)
                     ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль'])
                     ->sum('amount');
+
+                $summary[$year]['objectBalance'] += $summary[$year]['tax_debt'];
+                $summary[$year]['prognozBalance'] += $summary[$year]['tax_debt'];
             }
 
         } catch (\Exception $e) {
