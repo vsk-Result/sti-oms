@@ -66,6 +66,7 @@ class FinanceReport
             'Долг за услуги' => 'service_debt',
             // 'Долг на зарплаты ИТР' => 'itr_salary_debt',
             'Долг на зарплаты рабочим' => 'workers_salary_debt',
+            'Долг по налогам' => 'tax_debt',
             'Долг Заказчика за выпол.работы' => 'dolgZakazchikovZaVipolnenieRaboti',
             'Долг Заказчика за ГУ (фактич.удерж.)' => 'dolgFactUderjannogoGU',
             'Текущий Баланс объекта' => 'objectBalance',

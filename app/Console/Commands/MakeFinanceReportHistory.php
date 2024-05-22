@@ -13,6 +13,7 @@ use App\Models\Object\PlanPayment;
 use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
+use App\Models\TaxPlanItem;
 use App\Services\Contract\ContractService;
 use App\Services\CRONProcessService;
 use App\Services\CurrencyExchangeRateService;
@@ -299,6 +300,11 @@ class MakeFinanceReportHistory extends Command
                         $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                     }
 
+                    $taxDebtAmount = TaxPlanItem::where('object_id', $object->id)
+                        ->where('paid', false)
+                        ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль'])
+                        ->sum('amount');
+
                     $objectBalance = $object->total_with_general_balance +
                         $dolgZakazchikovZaVipolnenieRaboti +
                         $dolgFactUderjannogoGU +
@@ -307,6 +313,7 @@ class MakeFinanceReportHistory extends Command
                         $serviceDebtsAmount +
                         $ITRSalaryDebt +
                         $workSalaryDebt +
+                        $taxDebtAmount +
                         $writeoffs;
 
                     $generalBalanceToReceivePercentage = abs($object->total_receive == 0 ? 0 : $object->general_balance / $object->total_receive * 100);
@@ -477,6 +484,7 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['contractor_debt_gu'] = $contractorGuaranteeDebtsAmount;
                     $total[$year][$object->code]['provider_debt'] = $providerDebtsAmount;
                     $total[$year][$object->code]['service_debt'] = $serviceDebtsAmount;
+                    $total[$year][$object->code]['tax_debt'] = $taxDebtAmount;
 //                    $total[$year][$object->code]['itr_salary_debt'] = $ITRSalaryDebt;
                     $total[$year][$object->code]['workers_salary_debt'] = $workSalaryDebt;
                     $total[$year][$object->code]['dolgZakazchikovZaVipolnenieRaboti'] = $dolgZakazchikovZaVipolnenieRaboti;
@@ -498,6 +506,8 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['planProfitability_material'] = $object->planPayments()->where('field', 'planProfitability_material')->first()->amount;
                     $total[$year][$object->code]['planProfitability_rad'] = $object->planPayments()->where('field', 'planProfitability_rad')->first()->amount;
                     $total[$year][$object->code]['planProfitability'] = $total[$year][$object->code]['planProfitability_material'] + $total[$year][$object->code]['planProfitability_rad'];
+
+
 
                     foreach ($total[$year][$object->code] as $key => $value) {
                         $summary[$year][$key] += (float) $value;
