@@ -38,13 +38,19 @@ class Export implements WithMultipleSheets
             new PivotSheet('Сводная по балансам и долгам', $this->info),
         ];
 
-        foreach ($years as $year => $objects) {
-            $sheetName = 'Сводная (' . $year . ')';
+        $years = array_merge(['Свод' => $years['Активные']], $years);
+
+        foreach ($years as $y => $objects) {
+            $sheetName = $y;
             $pivotInfo = [
                 'pivot_list' => FinanceReport::getInfoFields(),
                 'pivot_info' => compact('total', 'summary'),
                 'objects' => $objects
             ];
+
+            if ($y === 'Свод') {
+                $year = 'Активные';
+            }
 
             $sheets[] = new ObjectPivotSheet($sheetName, $pivotInfo, $year);
         }

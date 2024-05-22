@@ -64,9 +64,14 @@ class ObjectPivotSheet implements
         $prognozFields = array_merge(array_values(FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service', 'office_service', 'planProfitability_material', 'planProfitability_rad']);
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
-        $exceptFields = ['pay_cash', 'pay_non_cash'];
+        $exceptFields = ['pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts'];
+        $pivotFields = ['receive', 'pay', 'balance', 'general_balance', 'balance_with_general_balance', 'total_debts', 'customer_debts', 'objectBalance', 'ostatokPoDogovoruSZakazchikom', 'prognoz_total', 'prognozBalance'];
 
-        $lastRow = count($infos) + 1 - count($exceptFields);
+        if ($this->sheetName === 'Свод') {
+            $lastRow = count($pivotFields) + 1;
+        } else {
+            $lastRow = count($infos) + 1 - count($exceptFields);
+        }
         $lastColumnIndex = 2 + count($objects);
         $lastColumn = $this->getColumnWord($lastColumnIndex);
 
@@ -114,9 +119,13 @@ class ObjectPivotSheet implements
 
         $row = 2;
         foreach($infos as $info => $field) {
-            if (in_array($field, $exceptFields)) {
+            if ($this->sheetName === 'Свод' && !in_array($field, $pivotFields)) {
                 continue;
             }
+            if (in_array($field, $exceptFields) && $this->sheetName !== 'Свод') {
+                continue;
+            }
+
             $sumValue = $summary->{$year}->{$field};
             $isSpecialField = in_array($field, $specialFields);
             $isPrognozField = in_array($field, $prognozFields);

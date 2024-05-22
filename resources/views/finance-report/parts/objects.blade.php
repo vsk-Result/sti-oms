@@ -8,11 +8,14 @@
     $prognozFields = array_merge(array_values(\App\Models\FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service', 'office_service', 'planProfitability_material', 'planProfitability_rad']);
     $percentField = 'general_balance_to_receive_percentage';
     $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
-    $exceptFields = ['pay_cash', 'pay_non_cash'];
+    $exceptFields = ['pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts'];
+    $pivotFields = ['receive', 'pay', 'balance', 'general_balance', 'balance_with_general_balance', 'total_debts', 'customer_debts', 'objectBalance', 'ostatokPoDogovoruSZakazchikom', 'prognoz_total', 'prognozBalance'];
 
     unset($years['Не отображать']);
     unset($years['Общие']);
     unset($years['Удаленные']);
+
+    $years = array_merge(['Свод' => $years['Активные']], $years);
 @endphp
 
 <div class="card mt-5">
@@ -21,15 +24,21 @@
         <ul class="nav nav-tabs nav-stretch flex-nowrap text-nowrap fs-3">
             @foreach($years as $year => $objects)
                 <li class="nav-item">
-                    <a class="nav-link btn btn-color-gray-600 rounded-bottom-0 btn-active-light btn-active-color-primary {{ $loop->first ? 'active' : '' }}" data-bs-toggle="tab" href="#FO_year_{{ $year }}">{{ $year }}</a>
+                    <a class="nav-link btn btn-color-gray-600 rounded-bottom-0 btn-active-light btn-active-color-primary {{ $year === 'Активные' ? 'active' : '' }}" data-bs-toggle="tab" href="#FO_year_{{ $year }}">{{ $year }}</a>
                 </li>
             @endforeach
         </ul>
     </div>
     <div class="card-body pt-0 px-0">
         <div class="tab-content">
-            @foreach($years as $year => $objects)
-                <div class="tab-pane fade show {{ $loop->first ? 'active' : '' }}" id="FO_year_{{ $year }}" role="tabpanel">
+            @foreach($years as $y => $objects)
+                @php
+                    $year = $y;
+                    if ($y === 'Свод') {
+                        $year = 'Активные';
+                    }
+                @endphp
+                <div class="tab-pane fade show {{ $y === 'Активные' ? 'active' : '' }}" id="FO_year_{{ $y }}" role="tabpanel">
                     <div class="table-responsive freeze-table">
                         <table class="objects-table table table-hover align-middle table-row-dashed fs-7 gy-5">
                             <thead>
@@ -44,7 +53,10 @@
                             <tbody class="text-gray-600 fw-bold">
                                 @foreach($infos as $info => $field)
                                     @php
-                                        if (in_array($field, $exceptFields)) {
+                                        if ($y === 'Свод' && !in_array($field, $pivotFields)) {
+                                            continue;
+                                        }
+                                        if (in_array($field, $exceptFields) && $y !== 'Свод') {
                                             continue;
                                         }
                                         $sumValue = $summary->{$year}->{$field};

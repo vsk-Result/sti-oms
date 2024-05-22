@@ -307,16 +307,18 @@ class MakeFinanceReportHistory extends Command
 
                     $taxDebtAmount = 0;
 
-                    $objectBalance = $object->total_with_general_balance +
-                        $dolgZakazchikovZaVipolnenieRaboti +
-                        $dolgFactUderjannogoGU +
-                        $contractorDebtsAmount +
+                    $totalDebts = $contractorDebtsAmount +
                         $providerDebtsAmount +
                         $serviceDebtsAmount +
                         $ITRSalaryDebt +
                         $workSalaryDebt +
                         $taxDebtAmount +
                         $writeoffs;
+
+                    $totalCustomerDebts = $dolgZakazchikovZaVipolnenieRaboti +
+                        $dolgFactUderjannogoGU;
+
+                    $objectBalance = $object->total_with_general_balance + $totalCustomerDebts + $totalDebts;
 
                     $generalBalanceToReceivePercentage = abs($object->total_receive == 0 ? 0 : $object->general_balance / $object->total_receive * 100);
 
@@ -508,7 +510,8 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['planProfitability_material'] = $object->planPayments()->where('field', 'planProfitability_material')->first()->amount;
                     $total[$year][$object->code]['planProfitability_rad'] = $object->planPayments()->where('field', 'planProfitability_rad')->first()->amount;
                     $total[$year][$object->code]['planProfitability'] = $total[$year][$object->code]['planProfitability_material'] + $total[$year][$object->code]['planProfitability_rad'];
-
+                    $total[$year][$object->code]['total_debts'] = $totalDebts;
+                    $total[$year][$object->code]['customer_debts'] = $totalCustomerDebts;
 
 
                     foreach ($total[$year][$object->code] as $key => $value) {
