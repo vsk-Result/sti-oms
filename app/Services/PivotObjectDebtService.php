@@ -309,14 +309,22 @@ class PivotObjectDebtService
             $komissiyaServiceAmount += $item->amount;
         }
 
+        $konsaltingServiceAmount = TaxPlanItem::where('object_id', $this->object->id)->where('paid', 0)->where('name', 'LIKE', '%консалтинг%')->sum('amount');
+
         if ($komissiyaServiceAmount != 0) {
             $result['null::Комиссия'] = -$komissiyaServiceAmount;
         }
+
         if ($komissiyaBGServiceAmount != 0) {
             $result['null::Комиссия за БГ'] = -$komissiyaBGServiceAmount;
         }
+
         if ($komissiyaBG_GU_ServiceAmount != 0) {
             $result['null::Комиссия за БГ (г/у)'] = -$komissiyaBG_GU_ServiceAmount;
+        }
+
+        if ($konsaltingServiceAmount != 0) {
+            $result['null::Консалтинг'] = -$konsaltingServiceAmount;
         }
 
         asort($result);
