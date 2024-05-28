@@ -12,7 +12,7 @@ const mainApp = function() {
     const initInputAmountMask = function() {
         Inputmask("decimal", {
             digits: '17,2',
-            radixPoint: '.',
+            radixPoint: ',',
             groupSeparator: ' ',
             inputtype: "text"
         }).mask(".amount-mask");
