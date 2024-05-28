@@ -70,7 +70,7 @@ class PaymentController extends Controller
                     foreach($objects as $o) {
                         $response['objects'][] = [
                             'id' => $o->id,
-                            'name' => $o->getName(),
+                            'name' => $o->code . ' | '  . $o->name,
                             'total_without_general' => $total->{$year}->{$o->code}->{'balance'},
                             'total_with_general' => $total->{$year}->{$o->code}->{'balance_with_general_balance'},
                             'general' => $total->{$year}->{$o->code}->{'general_balance'},
@@ -92,7 +92,7 @@ class PaymentController extends Controller
                         if ($o->id == $object) {
                             $response['objects'][] = [
                                 'id' => $o->id,
-                                'name' => $o->getName(),
+                                'name' => $o->code . ' | '  . $o->name,
                                 'total_without_general' => $total->{$year}->{$o->code}->{'balance'},
                                 'total_with_general' => $total->{$year}->{$o->code}->{'balance_with_general_balance'},
                                 'general' => $total->{$year}->{$o->code}->{'general_balance'},
@@ -141,7 +141,7 @@ class PaymentController extends Controller
 
                     $response['objects'][] = [
                         'id' => $o->id,
-                        'name' => $o->getName(),
+                        'name' => $o->code . ' | '  . $o->name,
                         'total_without_general' => $totalWithoutGeneral,
                         'total_with_general' => $totalWithGeneral,
                         'general' => $general,
@@ -165,7 +165,7 @@ class PaymentController extends Controller
 
                         $response['objects'][] = [
                             'id' => $o->id,
-                            'name' => $o->getName(),
+                            'name' => $o->code . ' | '  . $o->name,
                             'total_without_general' => $totalWithoutGeneral,
                             'total_with_general' => $totalWithGeneral,
                             'general' => $general,
@@ -185,30 +185,6 @@ class PaymentController extends Controller
                 }
             }
         }
-
-
-        if ($object !== 'all_objects') {
-            $paymentQuery->where('object_id', $object);
-            $generalCostsQuery->where('object_id', $object);
-        } else {
-            $objectIds = BObject::active()->pluck('id')->toArray();
-            $paymentQuery->whereIn('object_id', $objectIds);
-            $generalCostsQuery->whereIn('object_id', $objectIds);
-        }
-
-        $pay = (float) (clone $paymentQuery)->where('amount', '<', 0)->sum('amount');
-        $receive = (float) (clone $paymentQuery)->sum('amount') - $pay;
-        $totalWithoutGeneral = $pay + $receive;
-        $totalWithGeneral = $totalWithoutGeneral + $generalCostsQuery->sum('amount');
-        $general = $totalWithGeneral - $totalWithoutGeneral;
-
-        $response = [
-            'total_without_general' => $totalWithoutGeneral,
-            'total_with_general' => $totalWithGeneral,
-            'general' => $general,
-            'pay' => $pay,
-            'receive' => $receive,
-        ];
 
         return response()->json(compact('response'));
     }
