@@ -124,6 +124,12 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/events.log'),
             'level' => 'debug'
+        ],
+
+        'custom_requests_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/requests/requests.log'),
+            'level' => 'debug'
         ]
     ],
 

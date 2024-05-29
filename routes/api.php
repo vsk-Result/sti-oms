@@ -18,6 +18,7 @@ use App\Http\Controllers\API\Object\BalanceController;
 use App\Http\Controllers\API\Debt\OrganizationController;
 use App\Http\Controllers\API\Finance\FinanceReportExportController;
 use App\Http\Controllers\API\Pivot\TaxPlan\TaxPlanExportController;
+use App\Http\Controllers\API\Gromisoft\Employees\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,4 +62,6 @@ Route::get('bank-guarantees/export', [BExportController::class, 'store']);
 Route::get('loans', [LoanController::class, 'index']);
 
 Route::get('exports/finance/finance-report', [FinanceReportExportController::class, 'store']);
+
+Route::post('v1/gromisoft/employees', [EmployeeController::class, 'index']);
 
