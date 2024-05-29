@@ -110,7 +110,20 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Тип кредита (если выбран кредит)</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="credit_type_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($creditTypes as $typeId => $typeName)
+                                                        <option value="{{ $typeId }}">{{ $typeName }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Дата зачисления</label>
                                             <div class="position-relative mb-3">
@@ -130,7 +143,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Дата окончания</label>
                                             <div class="position-relative mb-3">
@@ -155,7 +168,7 @@
                                     <div class="col-md-4 fv-row">
                                         <div class="fv-row">
                                             <div class="mb-1">
-                                                <label class="form-label fw-bolder text-dark fs-6">Сумма займа/кредита</label>
+                                                <label class="loan-sum form-label fw-bolder text-dark fs-6">Сумма займа/кредита</label>
                                                 <div class="position-relative mb-3">
                                                     <input
                                                             class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('total_amount') ? 'is-invalid' : '' }}"
@@ -177,7 +190,7 @@
                                     <div class="col-md-4 fv-row">
                                         <div class="fv-row">
                                             <div class="mb-1">
-                                                <label class="form-label fw-bolder text-dark fs-6">Сумма оплаты</label>
+                                                <label class="loan-paid form-label fw-bolder text-dark fs-6">Сумма оплаты</label>
                                                 <div class="position-relative mb-3">
                                                     <input
                                                         class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('paid_amount') ? 'is-invalid' : '' }}"
@@ -296,6 +309,7 @@
     <script>
         $(function() {
             new Tagify(document.querySelector('#tags'));
+            checkCreditType();
         });
 
         $('select[name=auto_paid]').on('change', function() {
@@ -306,5 +320,20 @@
                 $('#visible-search-name').hide();
             }
         });
+
+        $('select[name=credit_type_id]').on('change', function() {
+            checkCreditType();
+        });
+
+        function checkCreditType() {
+            const value = $('select[name=credit_type_id]').val();
+            if (value == 0) {
+                $('.loan-sum').text('Сумма кредита');
+                $('.loan-paid').text('Погашено');
+            } else {
+                $('.loan-sum').text('Всего');
+                $('.loan-paid').text('В использовании');
+            }
+        };
     </script>
 @endpush

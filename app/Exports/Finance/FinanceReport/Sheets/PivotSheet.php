@@ -2,6 +2,7 @@
 
 namespace App\Exports\Finance\FinanceReport\Sheets;
 
+use App\Models\Loan;
 use App\Models\PaymentImport;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -158,17 +159,48 @@ class PivotSheet implements
 
         $sheet->setCellValue('D1', 'Долг по кредитам');
         $sheet->setCellValue('D2', 'Банк / Договор');
-        $sheet->setCellValue('E2', 'Доступно');
-        $sheet->setCellValue('F2', 'В использовании');
-        $sheet->setCellValue('G2', 'Всего');
+        $sheet->setCellValue('E2', 'Сумма кредита');
+        $sheet->setCellValue('F2', 'Погашено');
+        $sheet->setCellValue('G2', 'Остаток кредита');
 
         $row = 3;
         foreach($creditsInfo->credits as $credit) {
+            if ($credit->credit_type_id !== Loan::CREDIT_TYPE_DEFAULT) {
+                continue;
+            }
             $sheet->setCellValue('D' . $row, $credit->bank . "\n" . $credit->contract);
-            $sheet->setCellValue('E' . $row, $credit->total - $credit->used);
-            $sheet->setCellValue('F' . $row, $credit->used);
-            $sheet->setCellValue('G' . $row, $credit->total);
+            $sheet->setCellValue('E' . $row, $credit->total);
+            $sheet->setCellValue('F' . $row, $credit->paid);
+            $sheet->setCellValue('G' . $row, abs($credit->debt));
             $sheet->getRowDimension($row)->setRowHeight(30);
+
+            $sheet->getStyle('G' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+
+            $row++;
+        }
+
+        $sheet->setCellValue('D' . $row, 'Долг по кредитам');
+        $sheet->setCellValue('D' . $row, 'Банк / Договор');
+        $sheet->setCellValue('E' . $row, 'Всего');
+        $sheet->setCellValue('F' . $row, 'В использовани');
+        $sheet->setCellValue('G' . $row, 'Доступно');
+
+        $lineRow = $row;
+
+        $row++;
+
+        foreach($creditsInfo->credits as $credit) {
+            if ($credit->credit_type_id !== Loan::CREDIt_TYPE_LINE) {
+                continue;
+            }
+            $sheet->setCellValue('D' . $row, $credit->bank . "\n" . $credit->contract);
+            $sheet->setCellValue('E' . $row, $credit->total);
+            $sheet->setCellValue('F' . $row, $credit->paid);
+            $sheet->setCellValue('G' . $row, $credit->total - $credit->paid);
+            $sheet->getRowDimension($row)->setRowHeight(30);
+
+            $sheet->getStyle('F' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+
             $row++;
         }
 
@@ -196,6 +228,9 @@ class PivotSheet implements
         $sheet->getStyle('D1' . ':G'. $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
+
+        $sheet->getStyle('D' . $lineRow . ':G' . $lineRow)->getFont()->setBold(true);
+        $sheet->getStyle('D' . $lineRow . ':G' . $lineRow)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
     }
 
     private function fillLoans(&$sheet): void

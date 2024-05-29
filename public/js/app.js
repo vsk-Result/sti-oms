@@ -10,6 +10,11 @@ const mainApp = function() {
     }
 
     const initInputAmountMask = function() {
+        $('.amount-mask').each(function() {
+            $(this).val($(this).val().replace('.', ','));
+        });
+
+
         Inputmask("decimal", {
             digits: '17,2',
             radixPoint: ',',

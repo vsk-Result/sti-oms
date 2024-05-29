@@ -22,10 +22,12 @@ class CreditService
 
             $credits[] = [
                 'id' => $credit->id,
+                'credit_type_id' => $credit->credit_type_id,
                 'bank' => $credit->getBankName(),
                 'contract' => $credit->name,
                 'total' => $credit->total_amount,
-                'used' => abs($credit->amount)
+                'paid' => abs($credit->paid_amount),
+                'debt' => $credit->amount,
             ];
         }
 
@@ -57,10 +59,10 @@ class CreditService
         $amount = 0;
         $credits = $this->getCredits($date, $company);
         foreach ($credits as $credit) {
-            $amount += $credit['used'];
+            $amount += $credit['debt'];
         }
 
-        return -$amount;
+        return $amount;
 
         // старая ручная реализация
         $amount = 0;

@@ -107,7 +107,7 @@
                         <th class="min-w-125px">Дата зачисления</th>
                         <th class="min-w-125px">Дата окончания</th>
                         <th class="min-w-125px">Сумма займа/кредита</th>
-                        <th class="min-w-125px">Сумма оплачено</th>
+                        <th class="min-w-125px">Сумма погашено / доступно</th>
                         <th class="min-w-125px">Сумма долга</th>
                         <th class="min-w-100px">Проценты</th>
                         <th class="min-w-400px">Описание</th>
@@ -117,7 +117,12 @@
                     <tbody class="text-gray-600 fw-bold">
                     @forelse($loans as $loan)
                         <tr>
-                            <td class="ps-3">{{ $loan->getType() }}</td>
+                            <td class="ps-3">
+                                {{ $loan->getType() }}
+                                @if ($loan->isCredit())
+                                    <p class="text-muted" >{{ $loan->getCreditType() }}</p>
+                                @endif
+                            </td>
                             <td>{{ $loan->getBankName() }}</td>
                             <td>
                                 @if ($loan->isLender())
@@ -143,8 +148,16 @@
                             <td>{{ $loan->getStartDateFormatted() }}</td>
                             <td>{{ $loan->getEndDateFormatted() }}</td>
                             <td class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($loan->total_amount, 'RUB') }}</td>
-                            <td class="{{ $loan->getPaidAmount() < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->getPaidAmount(), 'RUB') }}</td>
-                            <td class="{{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}</td>
+                            <td class="{{ $loan->getPaidAmount() < 0 ? 'text-danger' : '' }}">
+                                @if ($loan->isCredit() && !$loan->isDefaultCredit())
+                                    {{ \App\Models\CurrencyExchangeRate::format($loan->total_amount - $loan->getPaidAmount(), 'RUB') }}
+                                @else
+                                    {{ \App\Models\CurrencyExchangeRate::format($loan->getPaidAmount(), 'RUB') }}
+                                @endif
+                            </td>
+                            <td class="{{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}
+                            </td>
                             <td>{{ \App\Models\CurrencyExchangeRate::format($loan->percent, '', 2) }}</td>
                             <td>{!! nl2br($loan->description) !!}</td>
                             <td class="text-end">

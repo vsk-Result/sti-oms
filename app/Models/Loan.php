@@ -23,11 +23,14 @@ class Loan extends Model implements Audit
     protected $fillable = [
         'type_id', 'bank_id', 'company_id', 'created_by_user_id', 'updated_by_user_id',
         'start_date', 'end_date', 'name', 'percent', 'amount', 'total_amount', 'status_id', 'description',
-        'organization_id', 'search_name', 'is_auto_paid', 'paid_amount', 'organization_type_id'
+        'organization_id', 'search_name', 'is_auto_paid', 'paid_amount', 'organization_type_id', 'credit_type_id'
     ];
 
     const TYPE_CREDIT = 0;
     const TYPE_LOAN = 1;
+
+    const CREDIT_TYPE_DEFAULT = 0;
+    const CREDIt_TYPE_LINE = 1;
 
     const ORGANIZATION_TYPE_LENDER = 0;
     const ORGANIZATION_TYPE_BORROWER = 1;
@@ -75,14 +78,32 @@ class Loan extends Model implements Audit
         ];
     }
 
+    public static function getCreditTypes(): array
+    {
+        return [
+            self::CREDIT_TYPE_DEFAULT => 'Разовый заём',
+            self::CREDIt_TYPE_LINE => 'Кредитная линия',
+        ];
+    }
+
     public function getType(): string
     {
         return self::getTypes()[$this->type_id];
     }
 
+    public function getCreditType(): string
+    {
+        return self::getCreditTypes()[$this->credit_type_id];
+    }
+
     public function isCredit(): bool
     {
         return $this->type_id == self::TYPE_CREDIT;
+    }
+
+    public function isDefaultCredit(): bool
+    {
+        return $this->credit_type_id == self::CREDIT_TYPE_DEFAULT;
     }
 
     public static function getOrganizationTypes(): array
@@ -114,6 +135,11 @@ class Loan extends Model implements Audit
     public function updateDebtAmount(): void
     {
         $debtAmount = $this->total_amount - $this->getPaidAmount();
+
+        if ($this->isCredit() && !$this->isDefaultCredit()) {
+            $debtAmount = $this->getPaidAmount();
+        }
+
         $this->update([
             'amount' => $this->isLender() ? -$debtAmount : $debtAmount
         ]);

@@ -27,20 +27,22 @@ class LoanController extends Controller
         $total = [];
         $banks = Bank::getBanks();
         $types = Loan::getTypes();
+        $creditTypes = Loan::getCreditTypes();
         $organizations = Organization::orderBy('name')->get();
         $companies = Company::orderBy('name')->get();
         $loans = $this->loanService->filterLoans($request->toArray(), $total);
-        return view('loans.index', compact('loans', 'types', 'companies', 'total', 'banks', 'organizations'));
+        return view('loans.index', compact('loans', 'types', 'companies', 'total', 'banks', 'organizations', 'creditTypes'));
     }
 
     public function create(): View
     {
         $banks = Bank::getBanks();
         $types = Loan::getTypes();
+        $creditTypes = Loan::getCreditTypes();
         $organizationTypes = Loan::getOrganizationTypes();
         $organizations = Organization::orderBy('name')->get();
         $companies = Company::orderBy('name')->get();
-        return view('loans.create', compact('banks', 'types', 'companies', 'organizations', 'organizationTypes'));
+        return view('loans.create', compact('banks', 'types', 'companies', 'organizations', 'organizationTypes', 'creditTypes'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -53,11 +55,12 @@ class LoanController extends Controller
     {
         $banks = Bank::getBanks();
         $types = Loan::getTypes();
+        $creditTypes = Loan::getCreditTypes();
         $organizationTypes = Loan::getOrganizationTypes();
         $organizations = Organization::orderBy('name')->get();
         $companies = Company::orderBy('name')->get();
         $statuses = Status::getStatuses();
-        return view('loans.edit', compact('loan', 'banks', 'types', 'companies', 'statuses', 'organizations', 'organizationTypes'));
+        return view('loans.edit', compact('loan', 'banks', 'types', 'companies', 'statuses', 'organizations', 'organizationTypes', 'creditTypes'));
     }
 
     public function update(Loan $loan, Request $request): RedirectResponse
