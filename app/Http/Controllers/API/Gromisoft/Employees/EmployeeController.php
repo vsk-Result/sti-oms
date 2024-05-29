@@ -48,17 +48,56 @@ class EmployeeController extends Controller
                 ->get();
         }
 
+        $statusesMap = [
+            'works'  => 'Работает',
+            'quarantine_violation'  => 'Нарушение карантина',
+            'dgph'  => 'ДГПХ',
+            'works_without_permission' => 'Работает без разрешения',
+            'work_waiting'  => 'Работа - Ожидание',
+            'decree'  => 'Декрет',
+            'waiting'  => 'Ожидание',
+            'vacation'  => 'Отпуск',
+            'business_trip'  => 'Командировка',
+            'translation_waiting'  => 'Перевод - ожидание',
+            'self_employed'  => 'Самозанятый',
+            'accompanying_family_member'  => 'Сопровождающий член семьи',
+            'technical_service'  => 'Тех. обслуживание',
+            'technical_service_works'  => 'Тех. обслуживание - Работает',
+            'technical_service_waiting'  => 'Тех. обслуживание - Ожидание',
+            'dismissed' => 'Уволен',
+            'invitation_register' => 'Оформляется приглашение',
+            'listed' => 'Числится',
+            'works_decree' => 'Работает в декрете'
+        ];
+
         foreach ($employees as $employee) {
+            $s = $this->searchByValue($employee->status, $statusesMap);
+
+            if ($request->has('status')) {
+                if ($request->get('status') !== $s) {
+                    continue;
+                }
+            }
+
             $data[] = [
                 'uid' => $employee->getUniqueID(),
                 'fullname' => $employee->getFullName(),
                 'position' => $employee->appointment,
-                'status' => $employee->status,
+                'status' => $this->searchByValue($employee->status, $statusesMap)
             ];
         }
 
         $status = 'success';
 
         return response()->json(compact('status', 'data'));
+    }
+
+    private function searchByValue($value, $array) {
+        foreach ($array as $key => $val) {
+            if ($val === $value) {
+                return $key;
+            }
+        }
+        return null;
     }
 }
