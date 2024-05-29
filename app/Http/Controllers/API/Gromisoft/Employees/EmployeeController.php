@@ -27,9 +27,26 @@ class EmployeeController extends Controller
             return response()->json(['status' => $status, 'error' => 'Невалидный токен'], 403);
         }
 
+        $query = $request->get('query');
+
+        if (! empty($query) && mb_strlen($query) < 3) {
+            return response()->json(['status' => $status, 'error' => 'Длина query должны быть больше 2 символов'], 403);
+        }
+
         $data = [];
 
-        $employees = Employee::where('company', 'ООО "Строй Техно Инженеринг"')->where('is_engeneer', 0)->orderBy('secondname')->get();
+        if (empty($query)) {
+            $employees = Employee::where('company', 'ООО "Строй Техно Инженеринг"')
+                ->where('is_engeneer', 0)
+                ->orderBy('secondname')
+                ->get();
+        } else {
+            $employees = Employee::where('company', 'ООО "Строй Техно Инженеринг"')
+                ->where('is_engeneer', 0)
+                ->where('secondname', 'LIKE', "%$query%")
+                ->orderBy('secondname')
+                ->get();
+        }
 
         foreach ($employees as $employee) {
             $data[] = [
