@@ -530,7 +530,7 @@ class MakeFinanceReportHistory extends Command
 
                 $summary[$year]['tax_debt'] = -TaxPlanItem::where('object_id', 0)
                     ->where('paid', false)
-                    ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль'])
+                    ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль', 'Страховые взносы'])
                     ->sum('amount');
 
                 $summary[$year]['objectBalance'] += $summary[$year]['tax_debt'];
