@@ -35,7 +35,7 @@ class PaymentController extends Controller
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();
         $importTypes = PaymentImport::getTypes();
@@ -65,7 +65,7 @@ class PaymentController extends Controller
     {
         $categories = Payment::getCategories();
         $objects = Payment::getTypes() + BObject::getObjectsList();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
@@ -126,7 +126,7 @@ class PaymentController extends Controller
     {
         $categories = Payment::getCategories();
         $objects = Payment::getTypes() + BObject::getObjectsList(true);
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $organizations = Organization::orderBy('name')->get();
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();

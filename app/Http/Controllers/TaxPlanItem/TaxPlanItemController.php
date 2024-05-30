@@ -44,7 +44,7 @@ class TaxPlanItemController extends Controller
             $copyItem = TaxPlanItem::find($request->get('copy-item-id'));
         }
 
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $objects = BObject::orderBy('code')->get();
         return view('tax-plan.create', compact('companies', 'objects', 'copyItem'));
     }
@@ -57,7 +57,7 @@ class TaxPlanItemController extends Controller
 
     public function edit(TaxPlanItem $item): View
     {
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $objects = BObject::orderBy('code')->get();
         return view('tax-plan.edit', compact('item', 'companies', 'objects'));
     }

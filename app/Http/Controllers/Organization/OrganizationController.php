@@ -78,7 +78,7 @@ class OrganizationController extends Controller
     public function create(): View
     {
         $NDSStatuses = Organization::getNDSStatuses();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $categories = Payment::getCategories();
         return view('organizations.create', compact('companies', 'NDSStatuses', 'categories'));
     }
@@ -93,7 +93,7 @@ class OrganizationController extends Controller
     {
         $statuses = Status::getStatuses();
         $NDSStatuses = Organization::getNDSStatuses();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $categories = Payment::getCategories();
         return view('organizations.edit', compact('organization', 'companies', 'statuses', 'NDSStatuses', 'categories'));
     }

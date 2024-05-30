@@ -31,7 +31,7 @@ class WriteoffController extends Controller
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
 
         $totalInfo = [];
         $writeoffs = $this->writeoffService->filterWriteoff($request->toArray(), $totalInfo);
@@ -53,7 +53,7 @@ class WriteoffController extends Controller
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
 
         return view('writeoffs.create', compact( 'objects', 'companies', 'objectId'));
     }
@@ -76,7 +76,7 @@ class WriteoffController extends Controller
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $statuses = Status::getStatuses();
 
         return view('writeoffs.edit', compact('writeoff', 'objects', 'companies', 'statuses'));

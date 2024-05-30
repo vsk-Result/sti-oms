@@ -53,7 +53,7 @@ class BankGuaranteeController extends Controller
         $objectId = $request->get('current_object_id') ?? null;
         $contractId = $request->get('current_contract_id') ?? null;
         $objects = BObject::orderBy('code')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent', 'object', 'children', 'children.object')->orderBy('name')->get();
         $targets = BankGuarantee::getTargetsList();
@@ -77,7 +77,7 @@ class BankGuaranteeController extends Controller
     {
         $banks = Bank::getBanks();
         $objects = BObject::orderBy('code')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $targets = BankGuarantee::getTargetsList();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('parent', 'object', 'children', 'children.object')->orderBy('name')->get();

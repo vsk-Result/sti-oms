@@ -27,7 +27,7 @@ class PaymentController extends Controller
 
     public function index(BObject $object, Request $request): View
     {
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $objects = BObject::orderBy('code')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();

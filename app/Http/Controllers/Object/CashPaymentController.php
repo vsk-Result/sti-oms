@@ -64,7 +64,7 @@ class CashPaymentController extends Controller
             ]);
         }
 
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $objects = BObject::orderBy('code')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = Payment::getCategories();

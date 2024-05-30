@@ -29,7 +29,7 @@ class LoanController extends Controller
         $types = Loan::getTypes();
         $creditTypes = Loan::getCreditTypes();
         $organizations = Organization::orderBy('name')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $loans = $this->loanService->filterLoans($request->toArray(), $total);
         return view('loans.index', compact('loans', 'types', 'companies', 'total', 'banks', 'organizations', 'creditTypes'));
     }
@@ -41,7 +41,7 @@ class LoanController extends Controller
         $creditTypes = Loan::getCreditTypes();
         $organizationTypes = Loan::getOrganizationTypes();
         $organizations = Organization::orderBy('name')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         return view('loans.create', compact('banks', 'types', 'companies', 'organizations', 'organizationTypes', 'creditTypes'));
     }
 
@@ -58,7 +58,7 @@ class LoanController extends Controller
         $creditTypes = Loan::getCreditTypes();
         $organizationTypes = Loan::getOrganizationTypes();
         $organizations = Organization::orderBy('name')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $statuses = Status::getStatuses();
         return view('loans.edit', compact('loan', 'banks', 'types', 'companies', 'statuses', 'organizations', 'organizationTypes', 'creditTypes'));
     }

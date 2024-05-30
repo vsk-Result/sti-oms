@@ -35,6 +35,7 @@ class ObjectInfoController extends Controller
                 'providers_debts' => 0,
                 'service_debts' => 0,
                 'salary_debts' => 0,
+                'tax_debts' => 0,
                 'total_debts' => 0,
             ]
         ];
@@ -77,6 +78,9 @@ class ObjectInfoController extends Controller
             $info['total']['salary_debts'] += $salaryDebtsAmount;
             $info['total']['total_debts'] += $totalDebts;
         }
+
+        $info['total']['tax_debts'] = $objectsInfo->summary->{'Активные'}->{'tax_debt'};
+        $info['total']['total_debts'] += $info['total']['tax_debts'];
 
         return response()->json(compact('info'));
     }

@@ -40,7 +40,7 @@ class GuaranteeController extends Controller
         $objectId = $request->get('current_object_id') ?? null;
         $contractId = $request->get('current_contract_id') ?? null;
         $objects = BObject::orderBy('code')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('object', 'children', 'children.object')->orderBy('name')->get();
         $currencies = Currency::getCurrencies();
@@ -62,7 +62,7 @@ class GuaranteeController extends Controller
     public function edit(Guarantee $guarantee): View
     {
         $objects = BObject::orderBy('code')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('object', 'children', 'children.object')->orderBy('name')->get();
         $statuses = Status::getStatuses();

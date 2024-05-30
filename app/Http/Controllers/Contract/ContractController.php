@@ -43,7 +43,7 @@ class ContractController extends Controller
         $amountTypes = Contract::getAmountTypes();
         $objectId = $request->get('current_object_id') ?? null;
         $objects = BObject::orderBy('code')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $currencies = Currency::getCurrencies();
 
         return view('contracts.create', compact('objects', 'companies', 'objectId', 'types', 'mainContracts', 'amountTypes', 'currencies'));
@@ -66,7 +66,7 @@ class ContractController extends Controller
         $types = Contract::getTypes();
         $amountTypes = Contract::getAmountTypes();
         $objects = BObject::orderBy('code')->get();
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $statuses = Status::getStatuses();
         $currencies = Currency::getCurrencies();
 

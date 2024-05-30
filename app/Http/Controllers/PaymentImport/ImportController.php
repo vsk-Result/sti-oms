@@ -25,7 +25,7 @@ class ImportController extends Controller
 
     public function index(Request $request): View
     {
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
         $types = PaymentImport::getTypes();
         $banks = Bank::getBanks();
         $statuses = PaymentImport::getStatusesLists();

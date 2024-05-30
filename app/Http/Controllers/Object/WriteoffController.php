@@ -33,7 +33,7 @@ class WriteoffController extends Controller
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('id')->get();
 
         $totalInfo = [];
         $writeoffs = $this->writeoffService->filterWriteoff($requestData, $totalInfo);
