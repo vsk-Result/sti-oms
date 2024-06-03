@@ -292,6 +292,17 @@ class MakeFinanceReportHistory extends Command
                         $actsTotalAmount += $customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate;
                     }
 
+                    $receiveFromCustomers = $object->payments()
+                        ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                        ->where('amount', '>=', 0)
+                        ->where('company_id', 1)
+                        ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                        ->sum('amount');
+
+                    if (count($object->customers->pluck('id')->toArray()) > 0) {
+                        $ostatokPoDogovoruSZakazchikom = $contractsTotalAmount - $receiveFromCustomers;
+                    }
+
                     if ($object->code === '288') {
                         $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
                     }
@@ -402,13 +413,6 @@ class MakeFinanceReportHistory extends Command
                     $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
 
                     //----------------------------------------
-
-                    $receiveFromCustomers = $object->payments()
-                        ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
-                        ->where('amount', '>=', 0)
-                        ->where('company_id', 1)
-                        ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
-                        ->sum('amount');
 
                     $contracts = $object->contracts;
 

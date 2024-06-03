@@ -118,4 +118,30 @@ class PaymentImport extends Model
     {
         return 'storage/' . $this->file;
     }
+
+    public static function getCrmCostAuthors(): array
+    {
+        $authors = [];
+
+        foreach (self::where('type_id', self::TYPE_CRM_COST_CLOSURE)->get() as $item) {
+            if (empty($item->description)) {
+                continue;
+            }
+
+            $author = $item->description;
+
+            $author = str_replace('Закрытый период кассы', '', $author);
+            $author = mb_substr($author, 0, mb_strpos($author, 'за '));
+
+            if (!empty($author)) {
+                $authors[$author] = $author;
+            }
+        }
+
+        $authors = array_unique($authors);
+
+        ksort($authors);
+
+        return $authors;
+    }
 }

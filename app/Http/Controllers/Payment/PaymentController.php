@@ -43,6 +43,7 @@ class PaymentController extends Controller
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
+        $crmCostAuthors = PaymentImport::getCrmCostAuthors();
 
         $totalInfo = [];
         $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
@@ -56,7 +57,8 @@ class PaymentController extends Controller
             'payments.index',
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'categories',
-                'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes', 'codes', 'currencies'
+                'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes', 'codes', 'currencies',
+                'crmCostAuthors'
             )
         );
     }

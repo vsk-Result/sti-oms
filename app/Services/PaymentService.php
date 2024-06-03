@@ -207,6 +207,17 @@ class PaymentService
             });
         }
 
+        if (! empty($requestData['crm_cost_author'])) {
+            $importIds = [];
+            foreach ($requestData['crm_cost_author'] as $author) {
+                $importIds = array_merge($importIds, PaymentImport::where('description', 'LIKE', '%' . $author . '%')->pluck('id')->toArray());
+            }
+
+            if (count($importIds) > 0) {
+                $paymentQuery->whereIn('import_id', $importIds);
+            }
+        }
+
         if (! empty($requestData['sort_by'])) {
             if ($requestData['sort_by'] == 'company_id') {
                 $paymentQuery->orderBy(Company::select('name')->whereColumn('companies.id', 'payments.company_id'), $requestData['sort_direction'] ?? 'asc');

@@ -36,6 +36,7 @@ class PaymentController extends Controller
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
+        $crmCostAuthors = PaymentImport::getCrmCostAuthors();
 
         $totalInfo = [];
         $requestData = array_merge(['object_id' => [$object->id]], $request->toArray());
@@ -51,6 +52,7 @@ class PaymentController extends Controller
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'activeOrganizations',
                 'categories', 'importTypes', 'banks', 'totalInfo', 'object', 'paymentTypes', 'codes', 'currencies',
+                'crmCostAuthors'
             )
         );
     }

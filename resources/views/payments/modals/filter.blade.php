@@ -331,6 +331,21 @@
                                     </select>
                                 </div>
                             @endif
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Касса</label>
+                                <select
+                                        name="crm_cost_author[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterPaymentModal"
+                                        multiple
+                                >
+                                    @foreach($crmCostAuthors as $author)
+                                        <option value="{{ $author }}" {{ in_array($author, request()->input('crm_cost_author', [])) ? 'selected' : '' }}>{{ $author }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
