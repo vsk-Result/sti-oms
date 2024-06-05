@@ -602,4 +602,17 @@ class Contract extends Model implements HasMedia, Audit
     {
         return self::getAmountTypes()[$this->amount_type_id];
     }
+
+    public function isFloat(): bool
+    {
+        if (mb_strpos($this->name, 'перемен') !== false) {
+            return true;
+        }
+
+        if (mb_strpos($this->name, 'изменя') !== false) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -251,7 +251,13 @@ class MakeFinanceReportHistory extends Command
 //                $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_notwork_left_amount']['RUB'] - $customerDebtInfo['acts_amount']['RUB'];
 
                     //новая версия
-                    $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $customerDebtInfo['avanses_received_amount']['RUB'] - $customerDebtInfo['avanses_acts_paid_amount']['RUB'] - $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
+                    $avansesFixReceived = $customerDebtInfo['avanses_received_amount_fix']['RUB'];
+                    $avansesFloatReceived = $customerDebtInfo['avanses_received_amount_float']['RUB'];
+                    $avansesReceived = $customerDebtInfo['avanses_received_amount']['RUB'];
+                    $actsReceived = $customerDebtInfo['avanses_acts_paid_amount']['RUB'];
+                    $guReceived = $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
+
+                    $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $avansesReceived - $actsReceived - $guReceived;
 
                     $ostatokNeotrabotannogoAvansa = $customerDebtInfo['avanses_notwork_left_amount']['RUB'];
 
@@ -282,6 +288,12 @@ class MakeFinanceReportHistory extends Command
                             $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_acts_paid_amount']['EUR'] * $EURExchangeRate->rate);
                             $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
                         }
+
+                        $avansesFixReceived += $customerDebtInfo['avanses_received_amount_fix']['EUR'] * $EURExchangeRate->rate;
+                        $avansesFloatReceived += $customerDebtInfo['avanses_received_amount_float']['EUR'] * $EURExchangeRate->rate;
+                        $avansesReceived += $customerDebtInfo['avanses_received_amount']['EUR'] * $EURExchangeRate->rate;
+                        $actsReceived += $customerDebtInfo['avanses_acts_paid_amount']['EUR'] * $EURExchangeRate->rate;
+                        $guReceived += $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
 
 //                    $customerDebt += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
 //                    $customerDebt += $customerDebtInfo['avanses_left_amount']['EUR'] * $EURExchangeRate->rate;
@@ -481,6 +493,10 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['pay_non_cash'] = $payNonCash;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
                     $total[$year][$object->code]['receive_customer'] = $receiveFromCustomers;
+                    $total[$year][$object->code]['receive_customer_fix_avans'] = $avansesFixReceived;
+                    $total[$year][$object->code]['receive_customer_target_avans'] = $avansesFloatReceived;
+                    $total[$year][$object->code]['receive_customer_acts'] = $actsReceived;
+                    $total[$year][$object->code]['receive_customer_gu'] = $guReceived;
                     $total[$year][$object->code]['receive_retro_dtg'] = $receiveRetroDTG;
                     $total[$year][$object->code]['receive_other'] = $receiveOther;
                     $total[$year][$object->code]['balance'] = $object->total_balance;

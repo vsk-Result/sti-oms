@@ -49,6 +49,10 @@ class FinanceReport
         $infoFields = [
             'Приходы' => 'receive',
             'Заказчик' => 'receive_customer',
+            'Фиксированный аванс' => 'receive_customer_fix_avans',
+            'Целевой аванс' => 'receive_customer_target_avans',
+            'Акты' => 'receive_customer_acts',
+            'Гарантийное удержание' => 'receive_customer_gu',
             'Ретробонусы ДТГ' => 'receive_retro_dtg',
             'Прочие' => 'receive_other',
             'Расходы' => 'pay',

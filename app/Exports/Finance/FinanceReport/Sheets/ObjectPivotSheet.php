@@ -61,11 +61,13 @@ class ObjectPivotSheet implements
         $total = $this->pivotInfo['pivot_info']['total'];
 
         $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance', 'planProfitability'];
-        $prognozFields = array_merge(array_values(FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service', 'office_service', 'planProfitability_material', 'planProfitability_rad']);
+        $prognozFields = array_merge(array_values(\App\Models\FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service', 'office_service', 'planProfitability_material', 'planProfitability_rad', 'receive_customer_fix_avans', 'receive_customer_target_avans', 'receive_customer_acts', 'receive_customer_gu']);
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
         $exceptFields = ['pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts'];
         $pivotFields = ['receive', 'pay', 'balance', 'general_balance', 'balance_with_general_balance', 'total_debts', 'customer_debts', 'objectBalance', 'ostatokPoDogovoruSZakazchikom', 'prognoz_total', 'prognozBalance'];
+
+        $thirdLevelFields = ['receive_customer_fix_avans', 'receive_customer_target_avans', 'receive_customer_acts', 'receive_customer_gu'];
 
         if ($this->sheetName === 'Свод') {
             $lastRow = count($pivotFields) + 1;
@@ -129,6 +131,7 @@ class ObjectPivotSheet implements
             $sumValue = $summary->{$year}->{$field};
             $isSpecialField = in_array($field, $specialFields);
             $isPrognozField = in_array($field, $prognozFields);
+            $isThirdLevelField = in_array($field, $thirdLevelFields);
 
             $sheet->setCellValue('A' . $row, $info);
 
@@ -154,6 +157,13 @@ class ObjectPivotSheet implements
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(false);
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setSize(11);
+            }
+
+            if ($isThirdLevelField) {
+                $sheet->getStyle('B' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(false);
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setSize(10);
             }
 
             if ($field === 'complete_percent' || $field === 'money_percent') {
