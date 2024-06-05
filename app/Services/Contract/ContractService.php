@@ -58,6 +58,8 @@ class ContractService
             $total['avanses_acts_deposites_amount'][$currency] = 0;
             $total['avanses_acts_avanses_amount'][$currency] = 0;
             $total['avanses_notwork_left_amount'][$currency] = 0;
+            $total['avanses_notwork_left_amount_fix'][$currency] = 0;
+            $total['avanses_notwork_left_amount_float'][$currency] = 0;
 
             foreach ((clone $contractQuery)->where('object_id', '!=', 16)->where('currency', $currency)->get() as $contract) {
                 $total['amount'][$currency] += $contract->getAmount($currency);
@@ -77,6 +79,12 @@ class ContractService
                 $total['avanses_acts_deposites_amount'][$currency] += $contract->getActsDepositesAmount($currency);
                 $total['avanses_acts_avanses_amount'][$currency] += $contract->getActsAvasesAmount($currency);
                 $total['avanses_notwork_left_amount'][$currency] += $contract->getNotworkLeftAmount($currency);
+
+                if ($contract->isFloat()) {
+                    $total['avanses_notwork_left_amount_float'][$currency] += $contract->getNotworkLeftAmount($currency);
+                } else {
+                    $total['avanses_notwork_left_amount_fix'][$currency] += $contract->getNotworkLeftAmount($currency);
+                }
             }
 
             foreach ((clone $contractQuery)->where('object_id', 16)->get() as $contract) {
@@ -97,6 +105,12 @@ class ContractService
                 $total['avanses_acts_deposites_amount'][$currency] += $contract->getActsDepositesAmount($currency);
                 $total['avanses_acts_avanses_amount'][$currency] += $contract->getActsAvasesAmount($currency);
                 $total['avanses_notwork_left_amount'][$currency] += $contract->getNotworkLeftAmount($currency);
+
+                if ($contract->isFloat()) {
+                    $total['avanses_notwork_left_amount_float'][$currency] += $contract->getNotworkLeftAmount($currency);
+                } else {
+                    $total['avanses_notwork_left_amount_fix'][$currency] += $contract->getNotworkLeftAmount($currency);
+                }
             }
 
             $total['avanses_non_closes_amount'][$currency] = $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency];

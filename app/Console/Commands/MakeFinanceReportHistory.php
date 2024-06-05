@@ -259,6 +259,8 @@ class MakeFinanceReportHistory extends Command
 
                     $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $avansesReceived - $actsReceived - $guReceived;
 
+                    $ostatokNeotrabotannogoAvansaFix = $customerDebtInfo['avanses_notwork_left_amount_fix']['RUB'];
+                    $ostatokNeotrabotannogoAvansaFloat = $customerDebtInfo['avanses_notwork_left_amount_float']['RUB'];
                     $ostatokNeotrabotannogoAvansa = $customerDebtInfo['avanses_notwork_left_amount']['RUB'];
 
                     $writeoffs = $object->writeoffs->sum('amount');
@@ -269,6 +271,8 @@ class MakeFinanceReportHistory extends Command
                         $dolgZakazchikovZaVipolnenieRaboti += $customerDebtInfo['avanses_acts_left_paid_amount']['EUR'] * $EURExchangeRate->rate;
                         $dolgFactUderjannogoGU += ($customerDebtInfo['avanses_acts_deposites_amount']['EUR'] - $object->guaranteePayments->where('currency', 'EUR')->sum('amount')) * $EURExchangeRate->rate;
                         $ostatokNeotrabotannogoAvansa += ($customerDebtInfo['avanses_notwork_left_amount']['EUR'] * $EURExchangeRate->rate);
+                        $ostatokNeotrabotannogoAvansaFix += ($customerDebtInfo['avanses_notwork_left_amount_fix']['EUR'] * $EURExchangeRate->rate);
+                        $ostatokNeotrabotannogoAvansaFloat += ($customerDebtInfo['avanses_notwork_left_amount_float']['EUR'] * $EURExchangeRate->rate);
 
                         // старая версия
 //                    $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
@@ -516,6 +520,8 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['objectBalance'] = $objectBalance;
                     $total[$year][$object->code]['contractsTotalAmount'] = $contractsTotalAmount;
                     $total[$year][$object->code]['ostatokNeotrabotannogoAvansa'] = $ostatokNeotrabotannogoAvansa;
+                    $total[$year][$object->code]['ostatokNeotrabotannogoAvansaFix'] = $ostatokNeotrabotannogoAvansaFix;
+                    $total[$year][$object->code]['ostatokNeotrabotannogoAvansaFloat'] = $ostatokNeotrabotannogoAvansaFloat;
                     $total[$year][$object->code]['ostatokPoDogovoruSZakazchikom'] = $ostatokPoDogovoruSZakazchikom;
                     $total[$year][$object->code]['prognoz_total'] = $prognozTotal;
                     $total[$year][$object->code]['prognozBalance'] = $prognozBalance;

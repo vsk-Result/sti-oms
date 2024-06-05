@@ -78,6 +78,8 @@ class FinanceReport
             'Текущий Баланс объекта' => 'objectBalance',
             'Сумма договоров с Заказчиком' => 'contractsTotalAmount',
             'Остаток неотработанного аванса' => 'ostatokNeotrabotannogoAvansa',
+            'Остаток неотработанного аванса в твердой цене' => 'ostatokNeotrabotannogoAvansaFix',
+            'Остаток неотработанного аванса в изменяемой цене' => 'ostatokNeotrabotannogoAvansaFloat',
             'Остаток к получ. от заказчика (в т.ч. ГУ)' => 'ostatokPoDogovoruSZakazchikom',
             'Прогнозируемые затраты ИТОГО' => 'prognoz_total',
         ];

@@ -605,11 +605,11 @@ class Contract extends Model implements HasMedia, Audit
 
     public function isFloat(): bool
     {
-        if (mb_strpos($this->name, 'перемен') !== false) {
+        if (mb_strpos($this->name, 'перемен') !== false && mb_strpos($this->name, 'неперемен') === false) {
             return true;
         }
 
-        if (mb_strpos($this->name, 'изменя') !== false) {
+        if (mb_strpos($this->name, 'изменя') !== false && mb_strpos($this->name, 'неизменя') === false) {
             return true;
         }
 
