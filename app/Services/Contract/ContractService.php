@@ -38,6 +38,8 @@ class ContractService
 
         $contractQuery->with('object', 'children', 'acts', 'avanses', 'avansesReceived', 'acts.payments', 'children.acts', 'children.avanses', 'children.avansesReceived', 'children.acts.payments');
 
+        $contractQuery->orderBy('created_at');
+
         $perPage = 30;
 
         if (! empty($requestData['count_per_page'])) {
