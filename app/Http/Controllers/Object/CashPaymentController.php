@@ -73,6 +73,7 @@ class CashPaymentController extends Controller
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
+        $crmCostAuthors = PaymentImport::getCrmCostAuthors();
 
         $activeOrganizations = [];
         if (! empty($request->get('organization_id'))) {
@@ -110,7 +111,7 @@ class CashPaymentController extends Controller
             compact(
                 'object', 'years', 'months', 'companies', 'objects',
                 'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations', 'pType',
-                'codes', 'currencies'
+                'codes', 'currencies', 'crmCostAuthors'
             )
         );
     }
