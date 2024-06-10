@@ -1,7 +1,7 @@
 <div>
         <div class="d-flex flex-row justify-content-between">
             <strong>Заказчик</strong>
-            <span class="text-success">{{ \App\Models\CurrencyExchangeRate::format($info['receive_customer'], 'RUB') }}</span>
+            <span class="text-success"><strong>{{ \App\Models\CurrencyExchangeRate::format($info['receive_customer'], 'RUB') }}</strong></span>
         </div>
 
         <div class="separator separator-dashed my-3"></div>
