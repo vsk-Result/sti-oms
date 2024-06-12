@@ -308,6 +308,11 @@ class MakeFinanceReportHistory extends Command
                         $actsTotalAmount += $customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate;
                     }
 
+                    if ($object->code === '361') {
+                        $avansesFixReceived = $object->payments()->where('amount', '>', 0)->where('code', '10.2')->sum('amount');
+                        $avansesFloatReceived = $object->payments()->where('amount', '>', 0)->where('code', '10.1')->sum('amount');
+                    }
+
                     $receiveFromCustomers = $object->payments()
                         ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
                         ->where('amount', '>=', 0)
@@ -538,7 +543,6 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['planProfitability'] = $total[$year][$object->code]['planProfitability_material'] + $total[$year][$object->code]['planProfitability_rad'];
                     $total[$year][$object->code]['total_debts'] = $totalDebts;
                     $total[$year][$object->code]['customer_debts'] = $totalCustomerDebts;
-
 
                     foreach ($total[$year][$object->code] as $key => $value) {
                         $summary[$year][$key] += (float) $value;
