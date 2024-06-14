@@ -299,7 +299,7 @@
                 </div>
             @endcan
 
-            @canAny(['index crm-costs', 'index crm-split-avans-imports', 'index scheduler'])
+            @canAny(['index crm-costs', 'index crm-split-avans-imports', 'index scheduler', 'index upload-debts-status'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Другое</span>
@@ -326,6 +326,14 @@
                     <div class="menu-item">
                         <a href="{{ route('scheduler.index') }}" class="menu-link {{ request()->is('scheduler*') ? 'active' : '' }}">
                             <span class="menu-title">Планировщик задач</span>
+                        </a>
+                    </div>
+                @endcan
+
+                @can('index upload-debts-status')
+                    <div class="menu-item">
+                        <a href="{{ route('upload_debts_status.index') }}" class="menu-link {{ request()->is('upload-debts-status*') ? 'active' : '' }}">
+                            <span class="menu-title">Статус загруженных файлов по долгам объектов</span>
                         </a>
                     </div>
                 @endcan

@@ -102,7 +102,7 @@ class ImportObjectDebtsFromExcel extends Command
                     Log::channel('custom_imports_log')->debug($errorMessage);
 
                     if (! File::exists($importManualFilePath)) {
-                        $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден';
+                        $errorMessage = '[ERROR] Файл для загрузки "' . $importManualFilePath . '" не найден';
                         Log::channel('custom_imports_log')->debug($errorMessage);
                         $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
 //                        return 0;
