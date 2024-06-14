@@ -13,13 +13,15 @@ class BalanceController extends Controller
     public function index(Request $request): JsonResponse
     {
         if (! $request->has('verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
         }
 
         if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-            abort(403);
-            return response()->json([], 403);
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+        }
+
+        if (! $request->has('access_objects')) {
+            return response()->json(['error' => 'Отсутствует access_objects'], 403);
         }
 
         $info = [];
@@ -27,6 +29,11 @@ class BalanceController extends Controller
 
         if (!$financeReportHistory) {
             return response()->json(compact('info'));
+        }
+
+        $accessObjects = null;
+        if ($request->get('access_objects') !== '*') {
+            $accessObjects = explode(',', $request->get('access_objects'));
         }
 
         $objectsInfo = json_decode($financeReportHistory->objects_new);
@@ -38,6 +45,10 @@ class BalanceController extends Controller
                 continue;
             }
             foreach($objects as $object) {
+                if (!is_null($accessObjects) && !in_array($object->id, $accessObjects)) {
+                    continue;
+                }
+
                 $info[] = [
                     'id' => $object->id,
                     'title' => $object->code . ' | '  . $object->name,

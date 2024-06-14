@@ -38,9 +38,19 @@ class WorkerSalaryController extends Controller
         $info = [];
 
         if (is_null($objectId)) {
+            if (! $request->has('access_objects')) {
+                return response()->json(['error' => 'Отсутствует access_objects'], 403);
+            }
+
             $objects = BObject::where('status_id', Status::STATUS_ACTIVE)->orderBy('code')->get();
+
+            if ($request->get('access_objects') !== '*') {
+                $accessObjects = explode(',', $request->get('access_objects'));
+                $objects = BObject::where('status_id', Status::STATUS_ACTIVE)->whereIn('id', $accessObjects)->orderBy('code')->get();
+            }
+
         } else {
-            $objects = BObject::where('object_id', $objectId)->get();
+            $objects = BObject::where('id', $objectId)->get();
         }
 
         $totalMonthsAmount = [];
