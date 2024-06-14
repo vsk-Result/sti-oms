@@ -67,26 +67,50 @@ class PaymentController extends Controller
                 }
 
                 if ($object === 'all_objects') {
+                    if (! $request->has('access_objects')) {
+                        return response()->json(['error' => 'Отсутствует access_objects'], 403);
+                    }
+
+                    $accessObjects = null;
+                    if ($request->get('access_objects') !== '*') {
+                        $accessObjects = explode(',', $request->get('access_objects'));
+                    }
+
+                    $response['total'] = [
+                        'total_without_general' => 0,
+                        'total_with_general' => 0,
+                        'general' => 0,
+                        'pay' => 0,
+                        'receive' => 0,
+                    ];
+
                     foreach($objects as $o) {
+                        if (!is_null($accessObjects) && !in_array($o->id, $accessObjects)) {
+                            continue;
+                        }
+
+                        $pay = $total->{$year}->{$o->code}->{'pay'};
+                        $receive = $total->{$year}->{$o->code}->{'receive'};
+                        $totalWithoutGeneral = $total->{$year}->{$o->code}->{'balance'};
+                        $totalWithGeneral = $total->{$year}->{$o->code}->{'balance_with_general_balance'};
+                        $general = $total->{$year}->{$o->code}->{'general_balance'};
+
                         $response['objects'][] = [
                             'id' => $o->id,
                             'name' => $o->code . ' | '  . $o->name,
-                            'total_without_general' => $total->{$year}->{$o->code}->{'balance'},
-                            'total_with_general' => $total->{$year}->{$o->code}->{'balance_with_general_balance'},
-                            'general' => $total->{$year}->{$o->code}->{'general_balance'},
-                            'pay' => $total->{$year}->{$o->code}->{'pay'},
-                            'receive' => $total->{$year}->{$o->code}->{'receive'},
+                            'total_without_general' => $totalWithoutGeneral,
+                            'total_with_general' => $totalWithGeneral,
+                            'general' => $general,
+                            'pay' => $pay,
+                            'receive' => $receive,
                         ];
-                    }
 
-                    $summary = $objectsInfo->summary;
-                    $response['total'] = [
-                        'total_without_general' => $summary->{'Активные'}->{'balance'},
-                        'total_with_general' => $summary->{'Активные'}->{'balance_with_general_balance'},
-                        'general' => $summary->{'Активные'}->{'general_balance'},
-                        'pay' => $summary->{'Активные'}->{'pay'},
-                        'receive' => $summary->{'Активные'}->{'receive'},
-                    ];
+                        $response['total']['total_without_general'] += $totalWithoutGeneral;
+                        $response['total']['total_with_general'] += $totalWithGeneral;
+                        $response['total']['general'] += $general;
+                        $response['total']['pay'] += $pay;
+                        $response['total']['receive'] += $receive;
+                    }
                 } else {
                     foreach($objects as $o) {
                         if ($o->id == $object) {
@@ -125,6 +149,15 @@ class PaymentController extends Controller
             }
 
             if ($object === 'all_objects') {
+                if (! $request->has('access_objects')) {
+                    return response()->json(['error' => 'Отсутствует access_objects'], 403);
+                }
+
+                $accessObjects = null;
+                if ($request->get('access_objects') !== '*') {
+                    $accessObjects = explode(',', $request->get('access_objects'));
+                }
+
                 $response['total'] = [
                     'total_without_general' => 0,
                     'total_with_general' => 0,
@@ -133,6 +166,10 @@ class PaymentController extends Controller
                     'receive' => 0,
                 ];
                 foreach($objects as $o) {
+                    if (!is_null($accessObjects) && !in_array($o->id, $accessObjects)) {
+                        continue;
+                    }
+
                     $pay = (float) (clone $paymentQuery)->where('object_id', $o->id)->where('amount', '<', 0)->sum('amount');
                     $receive = (float) (clone $paymentQuery)->where('object_id', $o->id)->sum('amount') - $pay;
                     $totalWithoutGeneral = $pay + $receive;
