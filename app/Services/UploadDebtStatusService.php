@@ -27,7 +27,7 @@ class UploadDebtStatusService
             [
                 'name' => 'Долги по поставщикам из 1С',
                 'file' => 'TabelOMS_(XLSX).xlsx',
-                'path' => 'public/objects-debts/'
+                'path' => 'public/'
             ]
         ],
         'oms:objects-debts-from-excel' => [
