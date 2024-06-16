@@ -3,24 +3,19 @@
 namespace App\Http\Controllers\Object;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Object\StoreOrUpdateObjectRequest;
 use App\Models\Debt\DebtImport;
 use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
-use App\Models\Payment;
-use App\Models\Status;
-use App\Services\ObjectService;
-use Carbon\Carbon;
+use App\Services\UploadDebtStatusService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class DebtController extends Controller
 {
-    private ObjectService $objectService;
+    private UploadDebtStatusService $uploadDebtStatusService;
 
-    public function __construct(ObjectService $objectService)
+    public function __construct(UploadDebtStatusService $uploadDebtStatusService)
     {
-        $this->objectService = $objectService;
+        $this->uploadDebtStatusService = $uploadDebtStatusService;
     }
 
     public function index(BObject $object): View
@@ -40,6 +35,16 @@ class DebtController extends Controller
             $hasObjectImportId = $debtObjectImport->id;
         }
 
-        return view('objects.tabs.debts', compact('object', 'debtManuals', 'hasObjectImportLink', 'hasObjectImport', 'hasObjectImportId'));
+        $updatedInfo = $this->uploadDebtStatusService->getUpdatedInfoForObject($object);
+
+        $contractorsUpdated = $updatedInfo['contractors'];
+        $serviceUpdated = $updatedInfo['service'];
+        $providersUpdated = $updatedInfo['providers'];
+
+        return view('objects.tabs.debts', compact(
+                'object', 'debtManuals', 'hasObjectImportLink', 'hasObjectImport',
+                'hasObjectImportId', 'contractorsUpdated', 'serviceUpdated', 'providersUpdated'
+            )
+        );
     }
 }

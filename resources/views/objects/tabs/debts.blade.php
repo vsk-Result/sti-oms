@@ -254,6 +254,7 @@
                         <div class="card-title justify-content-between w-100">
                             <div class="d-flex flex-column">
                                 <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
+                                <p class="text-muted fs-7">Обновлено {{ $contractorsUpdated }}</p>
                             </div>
 
                             @if (in_array($object->code, App\Models\Object\BObject::getCodesForContractorImportDebts()))
@@ -435,6 +436,7 @@
                         <div class="card-title">
                             <div class="d-flex flex-column">
                                 <h3 class="fw-bolder mb-1">Долг за услуги</h3>
+                                <p class="text-muted fs-7">Обновлено {{ $serviceUpdated }}</p>
                             </div>
                         </div>
 
@@ -671,6 +673,7 @@
                     <div class="card-header mt-6">
                         <div class="card-title flex-column">
                             <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
+                            <p class="text-muted fs-7">Обновлено {{ $providersUpdated }}</p>
                         </div>
 
                         <div class="card-toolbar">
