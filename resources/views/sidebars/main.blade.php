@@ -72,6 +72,15 @@
                                     <span class="menu-title">Финансовый отчет</span>
                                 </a>
                             </div>
+
+                            <div class="menu-item">
+                                <a href="{{ route('general_report.index') }}" class="menu-link py-2 {{ request()->is('general-report*') ? 'active' : '' }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Отчет по общим затратам</span>
+                                </a>
+                            </div>
                         @endcan
 
                         @can('index pivot-balances')

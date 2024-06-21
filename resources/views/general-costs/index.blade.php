@@ -128,8 +128,9 @@
 
                     foreach ($generalInfo[$year][$index]['info'] as $i) {
                         $groupedByYearsInfo[$year]['total']['cuming_amount'] += $i['cuming_amount'];
-                        $groupedByYearsInfo[$year]['total']['general_amount'] += $i['general_amount'];
                     }
+
+                    $groupedByYearsInfo[$year]['total']['general_amount'] += $generalAmount;
                 }
             }
 
