@@ -70,6 +70,19 @@ class PivotController extends Controller
         $financeReportInfo['pay_opste'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_OPSTE)->where('amount', '<', 0)->sum('amount');
         $financeReportInfo['pay_rad'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_RAD)->where('amount', '<', 0)->sum('amount');
         $financeReportInfo['pay_material'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->sum('amount');
+        $financeReportInfo['pay_material_fix'] = 0;
+        $financeReportInfo['pay_material_float'] = 0;
+
+        if ($object->code === '360') {
+            $financeReportInfo['pay_material_fix'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', '!=', 13)->sum('amount');
+            $financeReportInfo['pay_material_float'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', 13)->sum('amount');
+        }
+
+        if ($object->code === '363') {
+            $financeReportInfo['pay_material_fix'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', '!=', 15)->sum('amount');
+            $financeReportInfo['pay_material_float'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', 15)->sum('amount');
+        }
+
         $financeReportInfo['pay_salary'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_SALARY)->where('amount', '<', 0)->sum('amount');
         $financeReportInfo['pay_tax'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TAX)->where('amount', '<', 0)->sum('amount');
         $financeReportInfo['pay_customers'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_CUSTOMERS)->where('amount', '<', 0)->sum('amount');
