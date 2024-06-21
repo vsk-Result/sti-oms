@@ -74,13 +74,13 @@ class PivotController extends Controller
         $financeReportInfo['pay_material_float'] = 0;
 
         if ($object->code === '360') {
-            $financeReportInfo['pay_material_fix'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', '!=', 13)->sum('amount');
             $financeReportInfo['pay_material_float'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', 13)->sum('amount');
+            $financeReportInfo['pay_material_fix'] = $financeReportInfo['pay_material'] - $financeReportInfo['pay_material_float'];
         }
 
         if ($object->code === '363') {
-            $financeReportInfo['pay_material_fix'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', '!=', 15)->sum('amount');
             $financeReportInfo['pay_material_float'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', 15)->sum('amount');
+            $financeReportInfo['pay_material_fix'] = $financeReportInfo['pay_material'] - $financeReportInfo['pay_material_float'];
         }
 
         $financeReportInfo['pay_salary'] = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_SALARY)->where('amount', '<', 0)->sum('amount');
