@@ -119,7 +119,7 @@
                     <tr data-payment-update-url="{{ route('payments.update', $payment) }}" style="{{ $style }}">
                         <td class="position-relative">
                             @if ($payment->was_split)
-                                <div class="position-absolute start-0 top-0 w-2px h-100 rounded-2 bg-warning"></div>
+                                <div class="position-absolute start-0 top-0 w-2px h-100 rounded-2 bg-{{ $payment->getSplitColor() }}"></div>
                             @endif
                             @if (auth()->user()->can('edit payments'))
                                 <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>

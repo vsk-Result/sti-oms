@@ -179,4 +179,41 @@ class Payment extends Model implements Audit
     {
         return $this->amount < 0 ? $this->organization_receiver_id : $this->organization_sender_id;
     }
+
+    public function getSplitColor(): string
+    {
+        if (!$this->was_split) {
+            return '';
+        }
+
+        // ндфл
+        if (mb_strpos($this->description, 'Налог на доходы физических лиц за') !== false) {
+            return 'danger';
+        }
+
+        // страховые взносы
+        if (mb_strpos($this->description, 'Страховые взносы') !== false) {
+            return 'warning';
+        }
+
+        // проживание
+        $splitResidenceOrganizationsNames = [
+            'ИП Кадинова Елена Николаевна',
+            'Общество с ограниченной ответственностью "АРТИСТ ПЛЮС"',
+            'АО "ИНТЕРМЕТСЕРВИС"'
+        ];
+        $splitResidenceOrganizations = Organization::whereIn('name', $splitResidenceOrganizationsNames)->pluck('id')->toArray();
+
+        if (in_array($this->organization_receiver_id, $splitResidenceOrganizations)) {
+            return 'primary';
+        }
+
+        // CRM зп и авансы
+        if (in_array($this->code, ['7.17', '7.26', '7.17.1', '7.17.2', '7.26.1', '7.26.2']) && $this->payment_type_id === self::PAYMENT_TYPE_NON_CASH) {
+            return 'success';
+        }
+
+        // CRM касса
+        return 'secondary';
+    }
 }
