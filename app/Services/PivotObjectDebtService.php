@@ -68,14 +68,16 @@ class PivotObjectDebtService
 
         $providerDebts = $this->getProviderDebts();
         $providerInfo = [
-            'debts' => $providerDebts,
-            'total_amount' => array_sum($providerDebts)
+            'debts' => $providerDebts['debts'],
+            'total_amount' => array_sum($providerDebts['debts']),
+            'amount_without_nds' => $providerDebts['amount_without_nds'],
         ];
 
         $serviceDebts = $this->getServiceDebts();
         $serviceInfo = [
-            'debts' => $serviceDebts,
-            'total_amount' => array_sum($serviceDebts)
+            'debts' => $serviceDebts['debts'],
+            'total_amount' => array_sum($serviceDebts['debts']),
+            'amount_without_nds' => $serviceDebts['amount_without_nds'],
         ];
 
         $date = Carbon::now()->format('Y-m-d');
@@ -260,7 +262,10 @@ class PivotObjectDebtService
             }
         }
 
-        return $result;
+        return [
+            'debts' => $result,
+            'amount_without_nds' => $debts->sum('amount_without_nds')
+        ];
     }
 
     private function getServiceDebts($forApi = false): array
@@ -329,7 +334,10 @@ class PivotObjectDebtService
 
         asort($result);
 
-        return $result;
+        return [
+            'debts' => $result,
+            'amount_without_nds' => $debts->sum('amount_without_nds')
+        ];
     }
 
     private function sortByAmount($pivotInfo, $objectId)

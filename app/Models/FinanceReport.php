@@ -94,9 +94,15 @@ class FinanceReport
             'Прогнозируемые затраты ИТОГО' => 'prognoz_total',
         ];
 
+        $fieldsWithoutNDS = ['prognozBalance_without_nds'];
+        foreach ($infoFields as $field) {
+            $fieldsWithoutNDS[] = $field . '_without_nds';
+        }
+
         return array_merge(
             $infoFields,
             $prognozFields,
+            $fieldsWithoutNDS,
             [
                 'Прогнозируемый Баланс объекта' => 'prognozBalance',
                 'Планируемая Рентабельность' => 'planProfitability',

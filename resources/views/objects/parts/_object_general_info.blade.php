@@ -23,22 +23,22 @@
                         <span class="badge badge-light-danger">Удален</span>
                     @endif
 
-{{--                    @if(auth()->user()->hasRole('super-admin') || auth()->id() === 16)--}}
-{{--                        <label class="form-check form-switch form-check-custom form-check-solid ms-5">--}}
-{{--                            <span class="form-check-label fw-semibold text-muted me-2">--}}
-{{--                                без НДС--}}
-{{--                            </span>--}}
-{{--                            <input class="form-check-input check-nds" type="checkbox" value="1" checked="checked" data-target="object-nds-{{ $object->id }}" style="height: 1.5em; width: 2.75em;">--}}
-{{--                            <span class="form-check-label fw-semibold text-muted">--}}
-{{--                                с НДС--}}
-{{--                            </span>--}}
-{{--                        </label>--}}
-{{--                        <style>--}}
-{{--                            .form-check.form-check-solid .form-check-input:checked {--}}
-{{--                                background-color: #f05a22;--}}
-{{--                            }--}}
-{{--                        </style>--}}
-{{--                    @endif--}}
+                    @if(auth()->user()->hasRole('super-admin') || auth()->id() === 16)
+                        <label class="form-check form-switch form-check-custom form-check-solid ms-5">
+                            <span class="form-check-label fw-semibold text-muted me-2">
+                                без НДС
+                            </span>
+                            <input class="form-check-input check-nds" type="checkbox" value="1" checked="checked" data-target="object-nds-{{ $object->id }}" style="height: 1.5em; width: 2.75em;">
+                            <span class="form-check-label fw-semibold text-muted">
+                                с НДС
+                            </span>
+                        </label>
+                        <style>
+                            .form-check.form-check-solid .form-check-input:checked {
+                                background-color: #f05a22;
+                            }
+                        </style>
+                    @endif
                 </div>
 
                 <div class="d-flex flex-wrap fw-bold fs-6 mb-4 pe-2">
@@ -144,7 +144,7 @@
                                 Приходы
                             </div>
                         </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['receive'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['receive'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                                 Расходы
                             </div>
                         </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['pay'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['pay'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}
                         </div>
                     </div>
@@ -231,7 +231,7 @@
                     @else
                         <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                             <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов</div>
-                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}">
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_without_nds'], 'RUB') }}">
                                 {{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}
                             </div>
 {{--                            <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $object->total_balance }}">--}}
@@ -264,7 +264,7 @@
                                 Общие расходы
                             </div>
                         </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}
                         </div>
                     </div>
@@ -284,7 +284,7 @@
                 <div class="d-flex flex-stack">
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо c общ. расходами</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance_with_general_balance'] < 0 ? 'text-danger' : 'text-success' }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance_with_general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $info['balance_with_general_balance'] }}">--}}
@@ -303,7 +303,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt'] < 0 ? 'text-danger' : 'text-success' }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ ($contractorDebtsAmount - $contractorGuaranteeDebtsAmount) }}">--}}
@@ -322,7 +322,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам за ГУ</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt_gu'] < 0 ? 'text-danger' : 'text-success' }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt_gu'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $contractorGuaranteeDebtsAmount }}">--}}
@@ -341,7 +341,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг поставщикам</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['provider_debt'] < 0 ? 'text-danger' : 'text-success' }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['provider_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $providerDebtsAmount }}">--}}
@@ -360,7 +360,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг за услуги</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['service_debt'] < 0 ? 'text-danger' : 'text-success' }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['service_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['service_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['service_debt_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['service_debt'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $serviceDebtsAmount }}">--}}
@@ -448,7 +448,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг Заказчика за выпол.работы</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgZakazchikovZaVipolnenieRaboti'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgZakazchikovZaVipolnenieRaboti'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $dolgZakazchikovZaVipolnenieRaboti }}">--}}
@@ -467,7 +467,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Долг Заказчика за ГУ (фактич.удерж.)</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgFactUderjannogoGU'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgFactUderjannogoGU'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $dolgFactUderjannogoGU }}">--}}
@@ -486,7 +486,7 @@
                 <div class="d-flex flex-stack">
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Текущий Баланс объекта</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['objectBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['objectBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $objectBalance }}">--}}
@@ -536,7 +536,7 @@
                 <div class="d-flex flex-stack">
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Сумма договоров с Заказчиком</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractsTotalAmount'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractsTotalAmount'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $contractsTotalAmount }}">--}}
@@ -561,7 +561,7 @@
                                 <span class="fst-italic fs-8 fw-bolder">Сумма свободного лимита АВ к получению</span>
                             @endif
                         </div>
-                        <div class="ms-3 d-flex flex-column align-items-senter fw-bold {{ $info['ostatokNeotrabotannogoAvansa'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}">
+                        <div class="ms-3 d-flex flex-column align-items-senter fw-bold {{ $info['ostatokNeotrabotannogoAvansa'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}
 
                             @if ($object->code === '361' && $object->free_limit_amount != 0)
@@ -585,7 +585,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Остаток к получ. от заказчика (в т.ч. ГУ)</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['ostatokPoDogovoruSZakazchikom'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['ostatokPoDogovoruSZakazchikom'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $ostatokPoDogovoruSZakazchikom }}">--}}
@@ -604,7 +604,7 @@
                 <div class="d-flex flex-stack">
                     <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">Прогнозируемый Баланс объекта</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['prognozBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}">
+                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['prognozBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}
                         </div>
 {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $prognozBalance }}">--}}

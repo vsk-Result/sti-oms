@@ -73,6 +73,12 @@ class ObjectPivotSheet implements
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
         $exceptFields = ['pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts'];
+
+        foreach ($infos as $field) {
+            if (str_contains($field, '_without_nds')) {
+                $exceptFields[] = $field;
+            }
+        }
         $pivotFields = ['receive', 'pay', 'balance', 'general_balance', 'balance_with_general_balance', 'total_debts', 'customer_debts', 'objectBalance', 'ostatokPoDogovoruSZakazchikom', 'prognoz_total', 'prognozBalance'];
 
         $thirdLevelFields = [
