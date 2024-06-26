@@ -5,13 +5,24 @@
     $infos = App\Models\FinanceReport::getInfoFields();
 
     $specialFields = ['balance_with_general_balance', 'objectBalance', 'prognozBalance', 'planProfitability'];
-    $prognozFields = array_merge(array_values(\App\Models\FinanceReport::getPrognozFields()), ['receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service', 'office_service', 'planProfitability_material', 'planProfitability_rad', 'ostatokNeotrabotannogoAvansaFix', 'ostatokNeotrabotannogoAvansaFloat']);
+    $prognozFields = array_merge(
+        array_values(\App\Models\FinanceReport::getPrognozFields()),
+        [
+            'receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service',
+            'office_service', 'planProfitability_material', 'planProfitability_rad',
+            'ostatokNeotrabotannogoAvansaFix', 'ostatokNeotrabotannogoAvansaFloat',
+            'pay_opste', 'pay_rad', 'pay_material', 'pay_salary', 'pay_tax', 'pay_customers', 'pay_transfer', 'pay_empty'
+        ]
+    );
     $percentField = 'general_balance_to_receive_percentage';
     $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
     $exceptFields = ['pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts'];
     $pivotFields = ['receive', 'pay', 'balance', 'general_balance', 'balance_with_general_balance', 'total_debts', 'customer_debts', 'objectBalance', 'ostatokPoDogovoruSZakazchikom', 'prognoz_total', 'prognozBalance'];
 
-    $thirdLevelFields = ['receive_customer_fix_avans', 'receive_customer_target_avans', 'receive_customer_acts', 'receive_customer_gu'];
+    $thirdLevelFields = [
+        'receive_customer_fix_avans', 'receive_customer_target_avans', 'receive_customer_acts', 'receive_customer_gu',
+        'pay_material_fix', 'pay_material_float'
+    ];
 
     unset($years['Не отображать']);
     unset($years['Общие']);
@@ -67,7 +78,7 @@
                                         $isThirdLevelField = in_array($field, $thirdLevelFields);
                                     @endphp
                                     <tr>
-                                        <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }} {{$isThirdLevelField ? 'fs-9' : ''}}">
+                                        <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }} {{ $isPrognozField ? 'ps-5 fw-bold fst-italic fs-8' : '' }} {{$isThirdLevelField ? 'ps-9 fs-9' : ''}}">
                                             @if ($field === 'prognoz_general')
                                                 {{ 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)' }}
                                             @else

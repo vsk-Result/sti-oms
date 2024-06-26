@@ -497,7 +497,42 @@ class MakeFinanceReportHistory extends Command
                     $payCash = $objectPayments->where('amount', '<', 0)->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->sum('amount');
                     $payNonCash = $objectPayments->where('amount', '<', 0)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->sum('amount');
 
+                    $payOpste = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_OPSTE)->where('amount', '<', 0)->sum('amount');
+                    $payRad = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_RAD)->where('amount', '<', 0)->sum('amount');
+                    $payMaterial = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->sum('amount');
+                    $payMaterialFix = 0;
+                    $payMaterialFloat = 0;
+
+                    if ($object->code === '360') {
+                        $payMaterialFloat = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', 13)->sum('amount');
+                        $payMaterialFix = $payMaterial - $payMaterialFloat;
+                    }
+
+                    if ($object->code === '363') {
+                        $payMaterialFloat = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->where('amount', '<', 0)->where('bank_id', 15)->sum('amount');
+                        $payMaterialFix = $payMaterial - $payMaterialFloat;
+                    }
+
+                    $paySalary = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_SALARY)->where('amount', '<', 0)->sum('amount');
+                    $payTax = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TAX)->where('amount', '<', 0)->sum('amount');
+                    $payCustomers = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_CUSTOMERS)->where('amount', '<', 0)->sum('amount');
+                    $payTransfer = Payment::where('object_id', $object->id)->where('category', Payment::CATEGORY_TRANSFER)->where('amount', '<', 0)->sum('amount');
+                    $payEmpty = Payment::where('object_id', $object->id)->where(function ($q) {
+                        $q->whereNull('category');
+                        $q->orWhere('category', '');
+                    })->where('amount', '<', 0)->sum('amount');
+
                     $total[$year][$object->code]['pay'] = $object->total_pay;
+                    $total[$year][$object->code]['pay_opste'] = $payOpste;
+                    $total[$year][$object->code]['pay_rad'] = $payRad;
+                    $total[$year][$object->code]['pay_material'] = $payMaterial;
+                    $total[$year][$object->code]['pay_material_fix'] = $payMaterialFix;
+                    $total[$year][$object->code]['pay_material_float'] = $payMaterialFloat;
+                    $total[$year][$object->code]['pay_salary'] = $paySalary;
+                    $total[$year][$object->code]['pay_tax'] = $payTax;
+                    $total[$year][$object->code]['pay_customers'] = $payCustomers;
+                    $total[$year][$object->code]['pay_transfer'] = $payTransfer;
+                    $total[$year][$object->code]['pay_empty'] = $payEmpty;
                     $total[$year][$object->code]['pay_cash'] = $payCash;
                     $total[$year][$object->code]['pay_non_cash'] = $payNonCash;
                     $total[$year][$object->code]['receive'] = $object->total_receive;
