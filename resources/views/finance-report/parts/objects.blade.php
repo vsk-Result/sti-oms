@@ -11,12 +11,14 @@
             'receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service',
             'office_service', 'planProfitability_material', 'planProfitability_rad',
             'ostatokNeotrabotannogoAvansaFix', 'ostatokNeotrabotannogoAvansaFloat',
-            'pay_opste', 'pay_rad', 'pay_material', 'pay_salary', 'pay_tax', 'pay_customers', 'pay_transfer', 'pay_empty'
+            'pay_opste', 'pay_rad', 'pay_material', 'pay_salary', 'pay_tax'
         ]
     );
     $percentField = 'general_balance_to_receive_percentage';
     $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
-    $exceptFields = ['pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts'];
+    $exceptFields = [
+        'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty'
+    ];
 
     foreach ($infos as $field) {
         if (str_contains($field, '_without_nds')) {
