@@ -120,6 +120,7 @@ class DebtImportService
             $status = $this->createDTTermoImport($importData['ДТТЕРМО'], $requestData);
         } elseif (isset($importData['TDSheet'])) {
             $status = $this->create1СExcelContractorImport($importData['TDSheet'], $requestData);
+            dd($status);
         } elseif (isset($importData['ВЛАД СВОД'])) {
             $status = $this->createObjectContractorsImport($importData['ВЛАД СВОД'], $requestData);
         } elseif (isset($importData['DT'])) {
