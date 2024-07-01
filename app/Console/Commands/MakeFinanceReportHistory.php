@@ -250,6 +250,8 @@ class MakeFinanceReportHistory extends Command
                     }
 
                     $providerDebtsAmount = $debts['provider']->total_amount;
+                    $providerDebtsFixAmount = $debts['provider']->fix_amount;
+                    $providerDebtsFloatAmount = $debts['provider']->float_amount;
                     $providerDebtsAmountWithoutNDS = $debts['provider']->amount_without_nds;
 
                     $ITRSalaryDebt = $object->getITRSalaryDebt();
@@ -738,6 +740,8 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['contractor_debt_gu_without_nds'] = $contractorGuaranteeDebtsAmount;
 
                     $total[$year][$object->code]['provider_debt'] = $providerDebtsAmount;
+                    $total[$year][$object->code]['provider_debt_fix'] = $providerDebtsFixAmount;
+                    $total[$year][$object->code]['provider_debt_float'] = $providerDebtsFloatAmount;
                     $total[$year][$object->code]['provider_debt_without_nds'] = $providerDebtsAmountWithoutNDS;
 
                     $total[$year][$object->code]['service_debt'] = $serviceDebtsAmount;

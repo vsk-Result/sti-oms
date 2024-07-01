@@ -653,7 +653,8 @@ class DebtImportService
                 'description' => trim($row[2]) . ': ' . trim($row[5]),
                 'comment' => $comment,
                 'invoice_payment_due_date' => $dueDate,
-                'invoice_amount' => $invoiceAmount
+                'invoice_amount' => $invoiceAmount,
+                'fix_float_type' => $row[22] ?? null
             ]);
         }
 

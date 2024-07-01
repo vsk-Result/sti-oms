@@ -67,7 +67,8 @@ class ObjectPivotSheet implements
                 'receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service',
                 'office_service', 'planProfitability_material', 'planProfitability_rad',
                 'ostatokNeotrabotannogoAvansaFix', 'ostatokNeotrabotannogoAvansaFloat',
-                'pay_opste', 'pay_rad', 'pay_material', 'pay_salary', 'pay_tax', 'pay_customers', 'pay_transfer', 'pay_empty'
+                'pay_opste', 'pay_rad', 'pay_material', 'pay_salary', 'pay_tax', 'pay_customers', 'pay_transfer', 'pay_empty',
+                'provider_debt_fix', 'provider_debt_float'
             ]
         );
         $percentField = 'general_balance_to_receive_percentage';

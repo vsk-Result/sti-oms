@@ -77,6 +77,8 @@ class FinanceReport
             'Долг подрядчикам' => 'contractor_debt',
             'Долг подрядчикам за ГУ' => 'contractor_debt_gu',
             'Долг поставщикам' => 'provider_debt',
+            'Долг поставщикам (Фиксированная часть контракта)' => 'provider_debt_fix',
+            'Долг поставщикам (Изменяемая часть контракта)' => 'provider_debt_float',
             'Долг за услуги' => 'service_debt',
             // 'Долг на зарплаты ИТР' => 'itr_salary_debt',
             'Долг на зарплаты рабочим' => 'workers_salary_debt',
