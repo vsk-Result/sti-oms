@@ -452,31 +452,17 @@ class MakeFinanceReportHistory extends Command
                         $this->objectPlanPaymentService->makeDefaultPaymentsForObject($object->id);
                     }
 
-                    if (! $object->planPayments()->where('field', 'planProfitability')->first()) {
-                        PlanPayment::create([
-                            'object_id' => $object->id,
-                            'field' => 'planProfitability',
-                            'amount' => 0,
-                            'type_id' => PlanPayment::TYPE_MANUAL,
-                        ]);
-                    }
+                    $checkPlanPaymentsToCreate = ['planProfitability', 'planProfitability_material', 'planProfitability_rad', 'prognoz_material_fix', 'prognoz_material_float'];
 
-                    if (! $object->planPayments()->where('field', 'planProfitability_material')->first()) {
-                        PlanPayment::create([
-                            'object_id' => $object->id,
-                            'field' => 'planProfitability_material',
-                            'amount' => 0,
-                            'type_id' => PlanPayment::TYPE_MANUAL,
-                        ]);
-                    }
-
-                    if (! $object->planPayments()->where('field', 'planProfitability_rad')->first()) {
-                        PlanPayment::create([
-                            'object_id' => $object->id,
-                            'field' => 'planProfitability_rad',
-                            'amount' => 0,
-                            'type_id' => PlanPayment::TYPE_MANUAL,
-                        ]);
+                    foreach ($checkPlanPaymentsToCreate as $value) {
+                        if (! $object->planPayments()->where('field', $value)->first()) {
+                            PlanPayment::create([
+                                'object_id' => $object->id,
+                                'field' => $value,
+                                'amount' => 0,
+                                'type_id' => PlanPayment::TYPE_MANUAL,
+                            ]);
+                        }
                     }
 
                     $pp = $object->planPayments;
@@ -527,6 +513,11 @@ class MakeFinanceReportHistory extends Command
                         }
 
                         $total[$year][$object->code][$field] = $prognozAmount;
+
+                        if (in_array($field, ['prognoz_material_fix', 'prognoz_material_float'])) {
+                            continue;
+                        }
+
                         $prognozTotal += $prognozAmount;
                         $prognozTotalWithoutNDS += $prognozAmountWithoutNDS;
                     }

@@ -86,7 +86,7 @@ class ObjectPivotSheet implements
 
         $thirdLevelFields = [
             'receive_customer_fix_avans', 'receive_customer_target_avans', 'receive_customer_acts', 'receive_customer_gu',
-            'pay_material_fix', 'pay_material_float'
+            'pay_material_fix', 'pay_material_float', 'prognoz_material_fix', 'prognoz_material_float'
         ];
 
         if ($this->sheetName === 'Свод') {
