@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Pivot\Object;
 use App\Http\Controllers\Controller;
 use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
+use App\Models\TaxPlanItem;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -87,7 +89,19 @@ class ObjectInfoController extends Controller
             $info['total']['total_debts'] += $totalDebts;
         }
 
+        $taxPlans = TaxPlanItem::where('object_id', 0)
+            ->where('paid', false)
+            ->where('due_date', '<', Carbon::now())
+            ->get();
+
         $info['total']['tax_debts'] = $objectsInfo->summary->{'Активные'}->{'tax_debt'};
+
+        $info['total']['tax_debts_nds'] = -$taxPlans->where('name', 'НДС')->sum('amount');
+        $info['total']['tax_debts_strah'] = -$taxPlans->where('name', 'Страховые взносы')->sum('amount');
+        $info['total']['tax_debts_prib'] = -$taxPlans->whereIn('name', ['Налог на прибыль аванс', 'Налог на прибыль'])->sum('amount');
+        $info['total']['tax_debts_ndfl'] = -$taxPlans->where('name', 'НДФЛ')->sum('amount');
+        $info['total']['tax_debts_transport'] = -$taxPlans->where('name', 'Транспортный налог')->sum('amount');
+
         $info['total']['total_debts'] += $info['total']['tax_debts'];
 
         return response()->json(compact('info'));
