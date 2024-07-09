@@ -9,7 +9,7 @@
     @php
         $requestYears = request()->input('year', []);
         $requestObjects = request()->input('object_id', []);
-        $isGroupClosed = request()->input('group_closed_objects', true)[0] == 'true';
+        $isGroupClosed = request()->input('group_closed_objects', ['true'])[0] == 'true';
 
 
 
@@ -340,27 +340,23 @@
                         @endforeach
 
                         @php
-                            $closedInfo = [];
+                            $closedInfo = [
+                                'total' => ['cuming_amount' => 0, 'general_amount' => 0]
+                            ];
                             foreach ($closedObjects as $object) {
                                 if (!$isGroupClosed) {
                                     continue;
                                 }
 
-                                if (count($requestObjects) > 0 && !in_array($object->id, $requestObjects)) {
-                                    continue;
-                                }
-
                                 foreach($generalCostsInfo['generalInfo'] as $year => $infoArray) {
-                                    if (count($requestYears) > 0 && !in_array($year, $requestYears)) {
-                                        continue;
-                                    }
-
                                     if (!isset($closedInfo[$year]['cuming_amount'])) {
                                         $closedInfo[$year]['cuming_amount'] = 0;
                                     }
                                     if (!isset($closedInfo[$year]['general_amount'])) {
                                         $closedInfo[$year]['general_amount'] = 0;
                                     }
+
+
 
                                     foreach($infoArray as $index => $info) {
                                         if (!isset($closedInfo[$index]['cuming_amount'])) {
@@ -375,6 +371,15 @@
                                         if (!isset($closedInfo['total']['general_amount'])) {
                                             $closedInfo['total']['general_amount'] = 0;
                                         }
+
+                                        if (count($requestYears) > 0 && !in_array($year, $requestYears)) {
+                                            continue;
+                                        }
+
+                                        if (count($requestObjects) > 0 && !in_array($object->id, $requestObjects)) {
+                                            continue;
+                                        }
+
                                         $closedInfo[$index]['cuming_amount'] += $info['info'][$object->id]['cuming_amount'] ?? 0;
                                         $closedInfo[$index]['general_amount'] += $info['info'][$object->id]['general_amount'] ?? 0;
 

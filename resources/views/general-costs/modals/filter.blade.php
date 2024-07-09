@@ -54,8 +54,8 @@
                                     data-control="select2"
                                     data-dropdown-parent="#filterGeneralCostsModal"
                                 >
-                                    <option value="true" {{ request()->input('group_closed_objects', true)[0] == 'true' ? 'selected' : '' }}>Да</option>
-                                    <option value="false" {{ request()->input('group_closed_objects', true)[0] == 'false' ? 'selected' : '' }}>Нет</option>
+                                    <option value="true" {{ request()->input('group_closed_objects', ['true'])[0] == 'true' ? 'selected' : '' }}>Да</option>
+                                    <option value="false" {{ request()->input('group_closed_objects', ['true'])[0] == 'false' ? 'selected' : '' }}>Нет</option>
                                 </select>
                             </div>
                         </div>
