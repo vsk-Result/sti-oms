@@ -23,10 +23,14 @@ class PivotSheet implements
     WithEvents
 {
     private string $sheetName;
+    private array $requestYears;
+    private array $requestObjects;
 
-    public function __construct(string $sheetName)
+    public function __construct(string $sheetName, array $requestYears, array $requestObjects)
     {
         $this->sheetName = $sheetName;
+        $this->requestYears = $requestYears;
+        $this->requestObjects = $requestObjects;
     }
 
     public function title(): string
@@ -129,6 +133,10 @@ class PivotSheet implements
 
         $averagePercents = [];
         foreach($objects as $object) {
+            if (count($this->requestObjects) > 0 && !in_array($object->id, $this->requestObjects)) {
+                continue;
+            }
+
             $percentSum = 0;
             $percentCount = 0;
 
@@ -181,6 +189,10 @@ class PivotSheet implements
 
         $row = 3;
         foreach($objects as $object) {
+            if (count($this->requestObjects) > 0 && !in_array($object->id, $this->requestObjects)) {
+                continue;
+            }
+
             $sheet->setCellValue('A' . $row, $object->getName());
 
             $totalCuming = 0;
