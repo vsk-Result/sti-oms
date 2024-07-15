@@ -88,6 +88,7 @@ class DebtImportService
         'Домодедово' => '308',
         'Кастанаевская' => '303',
         '367 Офис Веспер' => '367',
+        '371. ЗИЛ' => '371',
     ];
 
     public function __construct(
