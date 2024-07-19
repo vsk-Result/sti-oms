@@ -42,7 +42,6 @@ class PaymentController extends Controller
         $paymentTypes = Payment::getPaymentTypes();
         $banks = Bank::getBanks();
         $codes = KostCode::getCodes();
-        dd($codes);
         $currencies = Currency::getCurrencies();
         $crmCostAuthors = PaymentImport::getCrmCostAuthors();
 
