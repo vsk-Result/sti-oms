@@ -17,6 +17,7 @@ class GeneralReportService
         $paymentsGeneral = Payment::whereIn('company_id', [1, 5])->where('code', '!=', '7.15')->where('type_id', Payment::TYPE_GENERAL)->get();
 
         $payments = $paymentsGeneral->merge($paymentsOffice);
+        $codesWithId = KostCode::getCodesWithId();
 
         foreach ($payments->sortBy('category')->groupBy('category') as $category => $groupedPaymentsByCategory) {
             $item = [
@@ -35,7 +36,9 @@ class GeneralReportService
 
             $items[] = $item;
 
-            foreach ($groupedPaymentsByCategory->sortBy('code')->groupBy('code') as $code => $groupedPaymentsByCode) {
+            foreach ($groupedPaymentsByCategory->sort(function($a, $b) use($codesWithId) {
+                return ($codesWithId[$a->code] ?? 0) - ($codesWithId[$b->code] ?? 0);
+            })->groupBy('code') as $code => $groupedPaymentsByCode) {
                 $item = [
                     'type' => 'code',
                     'name' => empty($code) ? 'Не указана' : KostCode::getTitleByCode($code),

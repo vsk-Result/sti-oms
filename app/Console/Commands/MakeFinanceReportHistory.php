@@ -117,6 +117,7 @@ class MakeFinanceReportHistory extends Command
 
         try {
             $currentDate = Carbon::now();
+            $object27_1 = BObject::where('code', '27.1')->first();
 
             // Балансы
             $balancesFromService = $this->accountBalanceService->getBalances($currentDate, $company);
@@ -206,7 +207,7 @@ class MakeFinanceReportHistory extends Command
                     $sGeneralTotal += $object->generalCosts()->sum('amount') + $object->transferService()->sum('amount');
                 }
 
-                $avgPercent = (float) number_format($sReceiveTotal == 0 ? 0 : $sGeneralTotal / $sReceiveTotal * 100, 2);
+                $avgPercent = (float)number_format($sReceiveTotal == 0 ? 0 : $sGeneralTotal / $sReceiveTotal * 100, 2);
 
                 foreach ($objects as $object) {
 
@@ -237,7 +238,7 @@ class MakeFinanceReportHistory extends Command
 
                     $contractorGuaranteeDebtsAmount = 0;
 
-                    $debtObjectImport = DebtImport::where('type_id',DebtImport::TYPE_OBJECT)->latest('date')->first();
+                    $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
                     $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
 
                     if ($objectExistInObjectImport) {
@@ -278,30 +279,30 @@ class MakeFinanceReportHistory extends Command
 
                     //новая версия
                     $avansesFixReceived = $customerDebtInfo['avanses_received_amount_fix']['RUB'];
-                    $avansesFixReceivedWithoutNDS = $customerDebtInfo['avanses_received_amount_fix']['RUB'] - round($customerDebtInfo['avanses_received_amount_fix']['RUB'] / 6, 2) ;
+                    $avansesFixReceivedWithoutNDS = $customerDebtInfo['avanses_received_amount_fix']['RUB'] - round($customerDebtInfo['avanses_received_amount_fix']['RUB'] / 6, 2);
 
                     $avansesFloatReceived = $customerDebtInfo['avanses_received_amount_float']['RUB'];
-                    $avansesFloatReceivedWithoutNDS = $customerDebtInfo['avanses_received_amount_float']['RUB'] - round($customerDebtInfo['avanses_received_amount_float']['RUB'] / 6, 2) ;
+                    $avansesFloatReceivedWithoutNDS = $customerDebtInfo['avanses_received_amount_float']['RUB'] - round($customerDebtInfo['avanses_received_amount_float']['RUB'] / 6, 2);
 
                     $avansesReceived = $customerDebtInfo['avanses_received_amount']['RUB'];
 
                     $actsReceived = $customerDebtInfo['avanses_acts_paid_amount']['RUB'];
-                    $actsReceivedWithoutNDS = $customerDebtInfo['avanses_acts_paid_amount']['RUB'] - round($customerDebtInfo['avanses_acts_paid_amount']['RUB'] / 6, 2) ;
+                    $actsReceivedWithoutNDS = $customerDebtInfo['avanses_acts_paid_amount']['RUB'] - round($customerDebtInfo['avanses_acts_paid_amount']['RUB'] / 6, 2);
 
                     $guReceived = $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-                    $guReceivedWithoutNDS = $guReceived - round($guReceived / 6, 2) ;
+                    $guReceivedWithoutNDS = $guReceived - round($guReceived / 6, 2);
 
                     $ostatokPoDogovoruSZakazchikom = $customerDebtInfo['amount']['RUB'] - $avansesReceived - $actsReceived - $guReceived;
                     $ostatokPoDogovoruSZakazchikomWithoutNDS = $ostatokPoDogovoruSZakazchikom - round($ostatokPoDogovoruSZakazchikom / 6, 2);
 
                     $ostatokNeotrabotannogoAvansaFix = $customerDebtInfo['avanses_notwork_left_amount_fix']['RUB'];
-                    $ostatokNeotrabotannogoAvansaFixWithoutNDS = $ostatokNeotrabotannogoAvansaFix - round($ostatokNeotrabotannogoAvansaFix / 6, 2) ;
+                    $ostatokNeotrabotannogoAvansaFixWithoutNDS = $ostatokNeotrabotannogoAvansaFix - round($ostatokNeotrabotannogoAvansaFix / 6, 2);
 
                     $ostatokNeotrabotannogoAvansaFloat = $customerDebtInfo['avanses_notwork_left_amount_float']['RUB'];
-                    $ostatokNeotrabotannogoAvansaFloatWithoutNDS = $ostatokNeotrabotannogoAvansaFloat - round($ostatokNeotrabotannogoAvansaFloat / 6, 2) ;
+                    $ostatokNeotrabotannogoAvansaFloatWithoutNDS = $ostatokNeotrabotannogoAvansaFloat - round($ostatokNeotrabotannogoAvansaFloat / 6, 2);
 
                     $ostatokNeotrabotannogoAvansa = $customerDebtInfo['avanses_notwork_left_amount']['RUB'];
-                    $ostatokNeotrabotannogoAvansaWithoutNDS = $ostatokNeotrabotannogoAvansa - round($ostatokNeotrabotannogoAvansa / 6, 2) ;
+                    $ostatokNeotrabotannogoAvansaWithoutNDS = $ostatokNeotrabotannogoAvansa - round($ostatokNeotrabotannogoAvansa / 6, 2);
 
                     $writeoffs = $object->writeoffs->sum('amount');
 
@@ -338,7 +339,7 @@ class MakeFinanceReportHistory extends Command
                             $ostatokPoDogovoruSZakazchikom -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
 
                             $ostatokPoDogovoruSZakazchikomWithoutNDS += ($diff - round($diff / 6, 2)) * $EURExchangeRate->rate;
-                            $ostatokPoDogovoruSZakazchikomWithoutNDS -= ($object->guaranteePayments->where('currency', 'EUR')->sum('amount') - round( $object->guaranteePayments->where('currency', 'EUR')->sum('amount') / 6, 2)) * $EURExchangeRate->rate;
+                            $ostatokPoDogovoruSZakazchikomWithoutNDS -= ($object->guaranteePayments->where('currency', 'EUR')->sum('amount') - round($object->guaranteePayments->where('currency', 'EUR')->sum('amount') / 6, 2)) * $EURExchangeRate->rate;
                         } else {
                             $ostatokPoDogovoruSZakazchikom += ($customerDebtInfo['amount']['EUR'] * $EURExchangeRate->rate);
                             $ostatokPoDogovoruSZakazchikom -= ($customerDebtInfo['avanses_received_amount']['EUR'] * $EURExchangeRate->rate);
@@ -408,7 +409,7 @@ class MakeFinanceReportHistory extends Command
                         $dolgFactUderjannogoGUWithoutNDS = $dolgFactUderjannogoGU - round($dolgFactUderjannogoGU / 6, 2);
                     }
 
-                    if (! empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
+                    if (!empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
                         $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                         $ostatokPoDogovoruSZakazchikomWithoutNDS = $dolgFactUderjannogoGUWithoutNDS;
                     }
@@ -455,7 +456,7 @@ class MakeFinanceReportHistory extends Command
                     $checkPlanPaymentsToCreate = ['planProfitability', 'planProfitability_material', 'planProfitability_rad', 'prognoz_material_fix', 'prognoz_material_float'];
 
                     foreach ($checkPlanPaymentsToCreate as $value) {
-                        if (! $object->planPayments()->where('field', $value)->first()) {
+                        if (!$object->planPayments()->where('field', $value)->first()) {
                             PlanPayment::create([
                                 'object_id' => $object->id,
                                 'field' => $value,
@@ -468,7 +469,7 @@ class MakeFinanceReportHistory extends Command
                     $pp = $object->planPayments;
                     if ($pp->where(''))
 
-                    $prognozTotal = 0;
+                        $prognozTotal = 0;
                     $prognozTotalWithoutNDS = 0;
                     $prognozFields = FinanceReport::getPrognozFields();
                     foreach ($prognozFields as $field) {
@@ -487,8 +488,8 @@ class MakeFinanceReportHistory extends Command
 
                         if ($field === 'prognoz_general') {
 //                            if ($avgPercent < -15) {
-                                $prognozAmount = -$ostatokPoDogovoruSZakazchikom * (abs($avgPercent) / 100);
-                                $prognozAmountWithoutNDS = -$ostatokPoDogovoruSZakazchikomWithoutNDS * (abs($avgPercent) / 100);
+                            $prognozAmount = -$ostatokPoDogovoruSZakazchikom * (abs($avgPercent) / 100);
+                            $prognozAmountWithoutNDS = -$ostatokPoDogovoruSZakazchikomWithoutNDS * (abs($avgPercent) / 100);
 //                            }
                         }
 
@@ -650,8 +651,11 @@ class MakeFinanceReportHistory extends Command
                         $q->orWhere('category', '');
                     })->where('amount', '<', 0)->sum('amount_without_nds');
 
-                    $total[$year][$object->code]['pay'] = $object->total_pay;
-                    $total[$year][$object->code]['pay_without_nds'] = $object->total_pay_without_nds;
+                    $total[$year][$object->code]['transfer_service'] = $object->transferService()->sum('amount');
+                    $total[$year][$object->code]['transfer_service_without_nds'] = $object->transferService()->sum('amount') - round($object->transferService()->sum('amount') / 6, 2);
+
+                    $total[$year][$object->code]['pay'] = $object->total_pay + $total[$year][$object->code]['transfer_service'];
+                    $total[$year][$object->code]['pay_without_nds'] = $object->total_pay_without_nds + $total[$year][$object->code]['transfer_service_without_nds'];
 
                     $total[$year][$object->code]['pay_opste'] = $payOpste;
                     $total[$year][$object->code]['pay_opste_without_nds'] = $payOpsteWithoutNDS;
@@ -716,8 +720,11 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['balance'] = $object->total_balance;
                     $total[$year][$object->code]['balance_without_nds'] = $object->total_balance_without_nds;
 
-                    $total[$year][$object->code]['general_balance'] = $object->general_balance;
-                    $total[$year][$object->code]['general_balance_without_nds'] = $object->general_balance_without_nds;
+                    $total[$year][$object->code]['office_service'] = $object->general_balance - $total[$year][$object->code]['transfer_service'];
+                    $total[$year][$object->code]['office_service_without_nds'] = $object->general_balance_without_nds - $total[$year][$object->code]['transfer_service_without_nds'];
+
+                    $total[$year][$object->code]['general_balance'] = $total[$year][$object->code]['office_service'];
+                    $total[$year][$object->code]['general_balance_without_nds'] = $total[$year][$object->code]['office_service_without_nds'];
 
                     $total[$year][$object->code]['general_balance_to_receive_percentage'] = $generalBalanceToReceivePercentage;
 
@@ -782,12 +789,6 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['fact_ready_percent'] = $factReadyPercent;
                     $total[$year][$object->code]['deviation_plan_percent'] = $deviationPlanPercent;
 
-                    $total[$year][$object->code]['transfer_service'] = $object->transferService()->sum('amount');
-                    $total[$year][$object->code]['transfer_service_without_nds'] = $object->transferService()->sum('amount') - round($object->transferService()->sum('amount') / 6, 2);
-
-                    $total[$year][$object->code]['office_service'] = $object->general_balance - $total[$year][$object->code]['transfer_service'];
-                    $total[$year][$object->code]['office_service_without_nds'] = $object->general_balance_without_nds - $total[$year][$object->code]['transfer_service_without_nds'];
-
                     $total[$year][$object->code]['planProfitability_material'] = $object->planPayments()->where('field', 'planProfitability_material')->first()->amount;
                     $total[$year][$object->code]['planProfitability_rad'] = $object->planPayments()->where('field', 'planProfitability_rad')->first()->amount;
                     $total[$year][$object->code]['planProfitability'] = $total[$year][$object->code]['planProfitability_material'] + $total[$year][$object->code]['planProfitability_rad'];
@@ -798,12 +799,17 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['customer_debts'] = $totalCustomerDebts;
                     $total[$year][$object->code]['customer_debts_without_nds'] = $totalCustomerDebts;
 
+                    $total[$year][$object->code]['general_balance_salary'] = 0;
+                    $total[$year][$object->code]['general_balance_tax'] = 0;
+                    $total[$year][$object->code]['general_balance_material'] = 0;
+                    $total[$year][$object->code]['general_balance_service'] = 0;
+
                     foreach ($total[$year][$object->code] as $key => $value) {
-                        $summary[$year][$key] += (float) $value;
+                        $summary[$year][$key] += (float)$value;
                     }
                 }
 
-                $summary[$year]['general_balance_to_receive_percentage'] = $summary[$year]['receive'] == 0 ? 0 : $summary[$year]['general_balance'] / $summary[$year]['receive'] * 100;
+                $summary[$year]['general_balance_to_receive_percentage'] = $sReceiveFromCustomers == 0 ? 0 : $summary[$year]['general_balance'] / $sReceiveFromCustomers * 100;
                 $summary[$year]['time_percent'] = 0;
                 $summary[$year]['complete_percent'] = $sContractsTotalAmount != 0 ? $sActsTotalAmount / $sContractsTotalAmount * 100 : 0;
                 $summary[$year]['money_percent'] = $sContractsTotalAmount != 0 ? $sReceiveFromCustomers / $sContractsTotalAmount * 100 : 0;
@@ -820,8 +826,17 @@ class MakeFinanceReportHistory extends Command
 
                 $summary[$year]['objectBalance'] += $summary[$year]['tax_debt'];
                 $summary[$year]['prognozBalance'] += $summary[$year]['tax_debt'];
-            }
 
+                $paymentsOffice = Payment::whereIn('company_id', [1, 5])->where('object_id', $object27_1->id)->get();
+                $paymentsGeneral = Payment::whereIn('company_id', [1, 5])->where('code', '!=', '7.15')->where('type_id', Payment::TYPE_GENERAL)->get();
+
+                $payments = $paymentsGeneral->merge($paymentsOffice);
+
+                $summary[$year]['general_balance_salary'] = $payments->where('category', Payment::CATEGORY_SALARY)->sum('amount');
+                $summary[$year]['general_balance_tax'] = $payments->where('category', Payment::CATEGORY_TAX)->sum('amount');
+                $summary[$year]['general_balance_material'] = $payments->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
+                $summary[$year]['general_balance_service'] = $payments->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+            }
         } catch (\Exception $e) {
             $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
             $errorMessage = mb_substr($errorMessage, 0, 2000);

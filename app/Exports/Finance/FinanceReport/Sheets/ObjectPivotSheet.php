@@ -67,14 +67,15 @@ class ObjectPivotSheet implements
                 'receive_customer', 'receive_other', 'receive_retro_dtg', 'transfer_service',
                 'office_service', 'planProfitability_material', 'planProfitability_rad',
                 'ostatokNeotrabotannogoAvansaFix', 'ostatokNeotrabotannogoAvansaFloat',
-                'pay_opste', 'pay_rad', 'pay_material', 'pay_salary', 'pay_tax', 'pay_customers', 'pay_transfer', 'pay_empty',
-                'provider_debt_fix', 'provider_debt_float'
+                'pay_opste', 'pay_rad', 'pay_material', 'pay_salary', 'pay_tax',
+                'provider_debt_fix', 'provider_debt_float', 'general_balance_salary', 'general_balance_tax',
+                'general_balance_material', 'general_balance_service'
             ]
         );
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
         $exceptFields = [
-            'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty'
+            'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty', 'office_service', 'general_balance_material'
         ];
 
         foreach ($infos as $field) {
@@ -149,6 +150,11 @@ class ObjectPivotSheet implements
             }
 
             $sumValue = $summary->{$year}->{$field};
+
+            if ($field === 'general_balance_service') {
+                $sumValue += $summary->{$year}->{'general_balance_material'};
+            }
+
             $isSpecialField = in_array($field, $specialFields);
             $isPrognozField = in_array($field, $prognozFields);
             $isThirdLevelField = in_array($field, $thirdLevelFields);
@@ -165,6 +171,14 @@ class ObjectPivotSheet implements
 
             if ($field === 'prognoz_general') {
                 $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)');
+            }
+
+            if ($field === 'pay_tax') {
+                $sheet->setCellValue('A' . $row, $info . ' (' . number_format(abs($summary->{$year}->{'pay_tax'} / $summary->{$year}->{'pay_salary'} * 100), 2) . '% налог/ з/п)');
+            }
+
+            if ($field === 'general_balance_service') {
+                $sheet->setCellValue('A' . $row, 'Расходы на услуги, материалы');
             }
 
             $sheet->setCellValue('B' . $row, !is_valid_amount_in_range($sumValue) ? '-' : $sumValue);

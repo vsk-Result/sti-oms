@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use phpDocumentor\Reflection\Types\Integer;
+
 class KostCode
 {
     private static array $codes = [
@@ -789,7 +791,30 @@ class KostCode
 
     public static function getCodes(): array
     {
-        return static::$codes;
+        $id = 1;
+        $codesWithId = static::$codes;
+        foreach ($codesWithId as &$codeL1) {
+            $codeL1['id'] = $id++;
+            if (count($codeL1['children']) > 0) {
+                foreach ($codeL1['children'] as &$codeL2) {
+                    $codeL2['id'] = $id++;
+
+                    if (count($codeL2['children']) > 0) {
+                        foreach ($codeL2['children'] as &$codeL3) {
+                            $codeL3['id'] = $id++;
+
+                            if (count($codeL3['children']) > 0) {
+                                foreach ($codeL3['children'] as &$codeL4) {
+                                    $codeL4['id'] = $id++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $codesWithId;
     }
 
     public static function getTitleByCode(string $code): string
@@ -858,4 +883,28 @@ class KostCode
         return false;
     }
 
+    public static function getCodesWithId(): array
+    {
+        $codesWithId = [];
+        foreach (static::getCodes() as $codeL1) {
+            $codesWithId[$codeL1['code']] = $codeL1['id'];
+            if (count($codeL1['children']) > 0) {
+                foreach ($codeL1['children'] as $codeL2) {
+                    $codesWithId[$codeL2['code']] = $codeL2['id'];
+                    if (count($codeL2['children']) > 0) {
+                        foreach ($codeL2['children'] as $codeL3) {
+                            $codesWithId[$codeL3['code']] = $codeL3['id'];
+                            if (count($codeL3['children']) > 0) {
+                                foreach ($codeL3['children'] as $codeL4) {
+                                    $codesWithId[$codeL4['code']] = $codeL4['id'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $codesWithId;
+    }
 }

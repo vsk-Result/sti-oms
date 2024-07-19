@@ -61,8 +61,11 @@ class KostCodePivot implements
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
 
         $row = 2;
-        $codes = KostCode::getCodes();
-        $groupedByCodePayments = (clone $this->payments)->get()->sortBy('code')->groupBy('code');
+        $codesWithId = KostCode::getCodesWithId();
+
+        $groupedByCodePayments = (clone $this->payments)->get()->sort(function($a, $b) use($codesWithId) {
+            return ($codesWithId[$a->code] ?? 0) - ($codesWithId[$b->code] ?? 0);
+        })->groupBy('code');
 
         $sumPay = 0;
         $sumReceive = 0;

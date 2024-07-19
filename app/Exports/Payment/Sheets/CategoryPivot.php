@@ -56,6 +56,7 @@ class CategoryPivot implements
 
         $sumPay = 0;
         $sumReceive = 0;
+        $codesWithId = KostCode::getCodesWithId();
 
         foreach ($groupedByCategoryPayments as $category => $categoryPayments) {
 
@@ -77,7 +78,9 @@ class CategoryPivot implements
             $sumPay += $pay;
             $sumReceive += $receive;
 
-            $groupedByCodePayments = $categoryPayments->sortBy('code')->groupBy('code');
+            $groupedByCodePayments = $categoryPayments->sort(function($a, $b) use($codesWithId) {
+                return ($codesWithId[$a->code] ?? 0) - ($codesWithId[$b->code] ?? 0);
+            })->groupBy('code');
 
             foreach ($groupedByCodePayments as $code => $codePayments) {
                 $total = $codePayments->sum('amount');
