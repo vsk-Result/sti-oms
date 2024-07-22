@@ -34,11 +34,11 @@
                     <div class="table-responsive freeze-table">
                     <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                         <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-150px ps-2" rowspan="2">Категория</th>
-                                <th rowspan="2">Статья затрат/поступлений</th>
-                                <th rowspan="2" class="total-column hl text-right">Итого</th>
-                                <th colspan="{{ count($years) }}" class="text-center">Сальдо</th>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 cell-center">
+                                <th class="min-w-150px ps-2" rowspan="2" colspan="2">Категория</th>
+                                <th rowspan="2" class="collapse-col">Статья затрат/поступлений</th>
+                                <th rowspan="2" class="total-column hl">Итого</th>
+                                <th colspan="{{ count($years) }}">Сумма</th>
                             </tr>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 @foreach($years as $year)
@@ -46,50 +46,106 @@
                                 @endforeach
                             </tr>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th colspan="2" class="ps-2 hl">Итого</th>
+                                <th colspan="3" class="ps-2 hl total-cell">ИТОГО</th>
                                 @php
                                     $totalAll = 0;
                                     $totalByYears = [];
-                                    foreach ($items as $item) {
-                                        if ($item['type'] === 'code') {
-                                            continue;
-                                        }
-
-                                        $totalAll += $item['amount'];
+                                    foreach ($items as $categoryItem) {
+                                        $totalAll += $categoryItem['amount'];
 
                                         foreach ($years as $year) {
                                             if (!isset($totalByYears[$year])) {
                                                 $totalByYears[$year] = 0;
                                             }
-                                            $totalByYears[$year] += $item['years'][$year];
+                                            $totalByYears[$year] += $categoryItem['years'][$year];
                                         }
                                     }
                                 @endphp
                                 <th class="hl text-right {{ $totalAll > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($totalAll, 'RUB', 0, true) }}</th>
                                 @foreach($years as $year)
-                                    <th class="min-w-150px text-center hl {{ $totalByYears[$year] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($totalByYears[$year], 'RUB', 0, true) }}</th>
+                                    <th class="min-w-150px text-right hl {{ $totalByYears[$year] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($totalByYears[$year], 'RUB', 0, true) }}</th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-bold fs-7">
-                            @foreach($items as $item)
-                                <tr>
-                                    @if ($item['type'] === 'category')
-                                        <td class="ps-2">{{ $item['name'] }}</td>
-                                        <td></td>
-                                    @else
-                                        <td></td>
-                                        <td>
-                                            {{ $item['name'] }}
-                                        </td>
-                                    @endif
+                            @foreach($items as $categoryItem)
+                                @php
+                                    $totalReceive = 0;
+                                    $totalReceiveByYear = [];
+                                    $totalPay = 0;
+                                    $totalPayByYear = [];
 
-                                    <td class="hl text-right {{ $item['amount'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($item['amount'], 'RUB', 0, true) }}</td>
+                                    foreach ($years as $year) {
+                                         $totalReceiveByYear[$year] = 0;
+                                         $totalPayByYear[$year] = 0;
+                                    }
 
+
+                                    foreach ($categoryItem['codes']['receive'] as $codeItem) {
+                                        $totalReceive += $codeItem['amount'];
+
+                                        foreach ($years as $year) {
+                                            $totalReceiveByYear[$year] += $codeItem['years'][$year];
+                                        }
+                                    }
+                                    foreach ($categoryItem['codes']['pay'] as $codeItem) {
+                                        $totalPay += $codeItem['amount'];
+
+                                        foreach ($years as $year) {
+                                            $totalPayByYear[$year] += $codeItem['years'][$year];
+                                        }
+                                    }
+                                @endphp
+
+                                <tr class="bg-category">
+                                    <td class="ps-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $categoryItem['name'] }}">+</td>
+                                    <td class="ps-2">{{ $categoryItem['name'] }}</td>
+                                    <td class="collapse-col"></td>
+                                    <td class="hl text-right {{ $categoryItem['amount'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($categoryItem['amount'], 'RUB', 0, true) }}</td>
                                     @foreach($years as $year)
-                                        <th class="text-center">{{ \App\Models\CurrencyExchangeRate::format($item['years'][$year], 'RUB', 0, true) }}</th>
+                                        <td class="hl text-right {{$categoryItem['years'][$year] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($categoryItem['years'][$year], 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
+
+                                <tr class="collapse-row fw-bolder" data-trigger="{{ $categoryItem['name'] }}" style="display: none;">
+                                    <td colspan="2" class="ps-2">Приходы</td>
+                                    <td class="collapse-col">Итого</td>
+                                    <td class="hl text-right {{$totalReceive > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($totalReceive, 'RUB', 0, true) }}</td>
+                                    @foreach($years as $year)
+                                        <td class="hl text-right {{$totalReceiveByYear[$year] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($totalReceiveByYear[$year], 'RUB', 0, true) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                @foreach($categoryItem['codes']['receive'] as $codeItem)
+                                    <tr class="collapse-row" data-trigger="{{ $categoryItem['name'] }}" style="display: none;">
+                                        <td colspan="2"></td>
+                                        <td class="collapse-col">{{ $codeItem['name'] }}</td>
+                                        <td class="hl text-right {{ $codeItem['amount'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($codeItem['amount'], 'RUB', 0, true) }}</td>
+                                        @foreach($years as $year)
+                                            <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($codeItem['years'][$year], 'RUB', 0, true) }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+
+                                <tr class="collapse-row fw-bolder" data-trigger="{{ $categoryItem['name'] }}" style="display: none;">
+                                    <td colspan="2" class="ps-2">Расходы</td>
+                                    <td class="collapse-col">Итого</td>
+                                    <td class="hl text-right {{$totalPay > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($totalPay, 'RUB', 0, true) }}</td>
+                                    @foreach($years as $year)
+                                        <td class="hl text-right {{$totalPayByYear[$year] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($totalPayByYear[$year], 'RUB', 0, true) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                @foreach($categoryItem['codes']['pay'] as $codeItem)
+                                    <tr class="collapse-row" data-trigger="{{ $categoryItem['name'] }}" style="display: none;">
+                                        <td colspan="2"></td>
+                                        <td class="collapse-col">{{ $codeItem['name'] }}</td>
+                                        <td class="hl text-right {{ $codeItem['amount'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($codeItem['amount'], 'RUB', 0, true) }}</td>
+                                        @foreach($years as $year)
+                                            <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($codeItem['years'][$year], 'RUB', 0, true) }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>
@@ -103,31 +159,52 @@
     <script>
         $(function() {
             mainApp.initFreezeTable(2);
+            checkHideColumn();
         });
+
+        $('.collapse-trigger').on('click', function() {
+            const $tr = $(this);
+            const trigger = $tr.data('trigger');
+            const isCollapsed = $tr.hasClass('collapsed');
+
+            if (isCollapsed) {
+                $tr.text('+');
+                $tr.removeClass('collapsed');
+                $(`.collapse-row[data-trigger="${trigger}"]`).hide();
+            } else {
+                $tr.text('-');
+                $tr.addClass('collapsed');
+                $(`.collapse-row[data-trigger="${trigger}"]`).show();
+            }
+
+            checkHideColumn();
+        })
+
+        function checkHideColumn() {
+            const collapsedCategoriesCount = $('.collapse-trigger.collapsed').length;
+
+            if (collapsedCategoriesCount > 0) {
+                $('.total-cell').attr('colspan', 3);
+                $('.collapse-col').show();
+            } else {
+                $('.total-cell').attr('colspan', 2);
+                $('.collapse-col').hide();
+            }
+        }
     </script>
 @endpush
 
 @push('styles')
     <style>
         .table td, .table th {
-            border: 1px solid #eee;
+            border: 1px solid #c8c8c8 !important;
         }
-        .bl {
-            border-left: 1px dashed #ccc !important;
+        .table td:not(.text-danger), .table td:not(.text-success), .table th {
+            color: #181c32;
         }
-        .br {
-            border-right: 1px dashed #ccc !important;
-        }
-        .bb {
-            border-bottom: 1px dashed #ccc !important;
-        }
-        .bt {
-            border-top: 1px dashed #ccc !important;
-        }
-        .hl, .table tbody tr:last-child td.hl {
+        .hl:not(.bg-category), .table tbody tr:last-child td.hl {
             background-color: #f7f7f7 !important;
             font-weight: bold !important;
-            border: 1px dashed #ccc !important;
             min-width: 150px !important;
         }
 
@@ -139,6 +216,15 @@
             min-width: 150px !important;
             width: 150px !important;
             max-width: 150px !important;
+        }
+        
+        .bg-category, .bg-category td.hl {
+            background-color: #dfecfb !important;
+        }
+
+        .cell-center {
+            vertical-align: middle !important;
+            text-align: center !important;
         }
     </style>
 @endpush

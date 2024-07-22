@@ -40,18 +40,14 @@ class PivotSheet implements
     {
         $totalAll = 0;
         $totalByYears = [];
-        foreach ($this->items as $item) {
-            if ($item['type'] === 'code') {
-                continue;
-            }
-
-            $totalAll += $item['amount'];
+        foreach ($this->items as $categoryItem) {
+            $totalAll += $categoryItem['amount'];
 
             foreach ($this->years as $year) {
                 if (!isset($totalByYears[$year])) {
                     $totalByYears[$year] = 0;
                 }
-                $totalByYears[$year] += $item['years'][$year];
+                $totalByYears[$year] += $categoryItem['years'][$year];
             }
         }
 
@@ -62,7 +58,7 @@ class PivotSheet implements
         $sheet->setCellValue('A1', 'КАТЕГОРИЯ');
         $sheet->setCellValue('B1', 'СТАТЬЯ ЗАТРАТ/ПОСТУПЛЕНИЙ');
         $sheet->setCellValue('C1', 'ИТОГО');
-        $sheet->setCellValue('D1', 'САЛЬДО');
+        $sheet->setCellValue('D1', 'Сумма');
 
         $columnIndex = 0;
         foreach($this->years as $year) {
@@ -83,25 +79,132 @@ class PivotSheet implements
         }
 
         $row = 4;
-        foreach($this->items as $item) {
-            if ($item['type'] === 'category') {
-                $sheet->setCellValue('A' . $row, $item['name']);
-            } else {
-                $sheet->setCellValue('B' . $row, $item['name']);
+        $categoryRows = [];
+        foreach($this->items as $categoryItem) {
+            $totalReceive = 0;
+            $totalReceiveByYear = [];
+            $totalPay = 0;
+            $totalPayByYear = [];
+
+            foreach ($this->years as $year) {
+                $totalReceiveByYear[$year] = 0;
+                $totalPayByYear[$year] = 0;
             }
 
 
-            $sheet->setCellValue('C' . $row, $item['amount']);
-            $sheet->getStyle('C' . $row)->getFont()->setColor(new Color($item['amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            foreach ($categoryItem['codes']['receive'] as $codeItem) {
+                $totalReceive += $codeItem['amount'];
+
+                foreach ($this->years as $year) {
+                    $totalReceiveByYear[$year] += $codeItem['years'][$year];
+                }
+            }
+            foreach ($categoryItem['codes']['pay'] as $codeItem) {
+                $totalPay += $codeItem['amount'];
+
+                foreach ($this->years as $year) {
+                    $totalPayByYear[$year] += $codeItem['years'][$year];
+                }
+            }
+
+            $sheet->setCellValue('A' . $row, $categoryItem['name']);
+            $sheet->setCellValue('C' . $row, $categoryItem['amount']);
+            $sheet->getStyle('C' . $row)->getFont()->setColor(new Color($categoryItem['amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
             $columnIndex = 0;
             foreach($this->years as $year) {
-                $sheet->setCellValue($columns[$columnIndex] . $row, $item['years'][$year] == 0 ? '' : $item['years'][$year]);
+                $sheet->setCellValue($columns[$columnIndex] . $row, $categoryItem['years'][$year] == 0 ? '' : $categoryItem['years'][$year]);
+                $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($categoryItem['years'][$year] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
                 $columnIndex += 1;
             }
 
+            $categoryRows[] = $row;
+            $sheet->getStyle('A' . $row . ':G' . $row)->getFont()->setBold(true);
             $sheet->getRowDimension($row)->setRowHeight(50);
             $row++;
+
+            $sheet->setCellValue('A' . $row, 'Приходы');
+            $sheet->setCellValue('B' . $row, 'Итого');
+            $sheet->setCellValue('C' . $row, $totalReceive);
+            $sheet->getStyle('C' . $row)->getFont()->setColor(new Color($totalReceive < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+            $columnIndex = 0;
+            foreach($this->years as $year) {
+                $sheet->setCellValue($columns[$columnIndex] . $row, $totalReceiveByYear[$year] == 0 ? '' : $totalReceiveByYear[$year]);
+                $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($totalReceiveByYear[$year] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+                $columnIndex += 1;
+            }
+
+            $sheet->getStyle('C' . $row . ':G' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+            $sheet->getStyle('A' . $row . ':G' . $row)->getFont()->setBold(true);
+            $sheet->getRowDimension($row)->setRowHeight(50);
+
+            $sheet->getRowDimension($row)->setOutlineLevel(1)
+                ->setVisible(false)
+                ->setCollapsed(true);
+            $row++;
+
+            foreach ($categoryItem['codes']['receive'] as $codeItem) {
+                $sheet->setCellValue('B' . $row, $codeItem['name']);
+                $sheet->setCellValue('C' . $row, $codeItem['amount']);
+                $sheet->getStyle('C' . $row)->getFont()->setColor(new Color($codeItem['amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+                $columnIndex = 0;
+                foreach($this->years as $year) {
+                    $sheet->setCellValue($columns[$columnIndex] . $row, $codeItem['years'][$year] == 0 ? '' : $codeItem['years'][$year]);
+                    $columnIndex += 1;
+                }
+
+                $sheet->getRowDimension($row)->setRowHeight(50);
+
+                $sheet->getRowDimension($row)->setOutlineLevel(1)
+                    ->setVisible(false)
+                    ->setCollapsed(true);
+                $row++;
+            }
+
+            $sheet->setCellValue('A' . $row, 'Расходы');
+            $sheet->setCellValue('B' . $row, 'Итого');
+            $sheet->setCellValue('C' . $row, $totalPay);
+            $sheet->getStyle('C' . $row)->getFont()->setColor(new Color($totalPay < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+            $columnIndex = 0;
+            foreach($this->years as $year) {
+                $sheet->setCellValue($columns[$columnIndex] . $row, $totalPayByYear[$year] == 0 ? '' : $totalPayByYear[$year]);
+                $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($totalPayByYear[$year] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+                $columnIndex += 1;
+            }
+
+            $sheet->getStyle('C' . $row . ':G' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+            $sheet->getStyle('A' . $row . ':G' . $row)->getFont()->setBold(true);
+            $sheet->getRowDimension($row)->setRowHeight(50);
+
+            $sheet->getRowDimension($row)->setOutlineLevel(1)
+                ->setVisible(false)
+                ->setCollapsed(true);
+            $row++;
+
+            foreach ($categoryItem['codes']['pay'] as $codeItem) {
+                $sheet->setCellValue('B' . $row, $codeItem['name']);
+                $sheet->setCellValue('C' . $row, $codeItem['amount']);
+                $sheet->getStyle('C' . $row)->getFont()->setColor(new Color($codeItem['amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+                $columnIndex = 0;
+                foreach($this->years as $year) {
+                    $sheet->setCellValue($columns[$columnIndex] . $row, $codeItem['years'][$year] == 0 ? '' : $codeItem['years'][$year]);
+                    $columnIndex += 1;
+                }
+
+                $sheet->getRowDimension($row)->setRowHeight(50);
+
+                $sheet->getRowDimension($row)->setOutlineLevel(1)
+                    ->setVisible(false)
+                    ->setCollapsed(true);
+                $row++;
+            }
         }
 
         $row--;
@@ -127,7 +230,7 @@ class PivotSheet implements
 
         $sheet->getStyle('A1:G' . $row)->getAlignment()->setVertical('center');
         $sheet->getStyle('A1:G2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-        $sheet->getStyle('A1:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('A3:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
 
         $sheet->getStyle('A1:G3')->getFont()->setBold(true);
         $sheet->getStyle('C1:C' . $row)->getFont()->setBold(true);
@@ -139,6 +242,9 @@ class PivotSheet implements
         $sheet->getStyle('A3:G3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
         $sheet->getStyle('C1:C' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
+        foreach ($categoryRows as $r) {
+            $sheet->getStyle('A' . $r . ':G' . $r)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('dce6f1');
+        }
 
         $sheet->getStyle('C3:G' . $row)->getNumberFormat()->setFormatCode('#,##0');
     }
