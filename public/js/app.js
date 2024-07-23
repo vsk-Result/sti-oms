@@ -567,3 +567,14 @@ $(document).on('click', '.check-nds', function(e) {
         }
     });
 });
+
+$(document).on('click', '.pop-click', function(e) {
+    const title = $(this).data('title');
+    $('.popover').each(function() {
+        const h3 = $(this).find('h3').first();
+
+        if (h3.text() !== title) {
+            $(this).remove();
+        }
+    });
+});

@@ -133,12 +133,13 @@
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">
                             <div
-                                    class="cursor-pointer"
+                                    class="cursor-pointer pop-click"
                                     data-bs-custom-class="plan-payments-detailing-popover"
                                     data-bs-toggle="popover"
                                     data-bs-placement="top"
                                     data-bs-html="true"
                                     title="Детализация приходов"
+                                    data-title="Детализация приходов"
                                     data-bs-content='@include('objects.parts.debts-details.receive')'
                             >
                                 Приходы
@@ -156,12 +157,13 @@
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">
                             <div
-                                    class="cursor-pointer"
+                                    class="cursor-pointer pop-click"
                                     data-bs-custom-class="plan-payments-detailing-popover"
                                     data-bs-toggle="popover"
                                     data-bs-placement="top"
                                     data-bs-html="true"
                                     title="Детализация расходов"
+                                    data-title="Детализация расходов"
                                     data-bs-content='@include('objects.parts.debts-details.payments')'
                             >
                                 Расходы
@@ -253,12 +255,13 @@
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">
                             <div
-                                    class="cursor-pointer"
+                                    class="cursor-pointer pop-click"
                                     data-bs-custom-class="plan-payments-detailing-popover"
                                     data-bs-toggle="popover"
                                     data-bs-placement="top"
                                     data-bs-html="true"
                                     title="Детализация общих расходов"
+                                    data-title="Детализация общих расходов"
                                     data-bs-content='@include('objects.parts.debts-details.general_costs')'
                             >
                                 Общие расходы
@@ -339,8 +342,21 @@
                 <div class="separator separator-dashed my-3"></div>
 
                 <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг поставщикам</div>
+                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                        <div class="text-gray-700 fw-semibold fs-7 me-2">
+                            <div
+                                    class="cursor-pointer pop-click"
+                                    data-bs-custom-class="plan-payments-detailing-popover"
+                                    data-bs-toggle="popover"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    title="Долг поставщикам"
+                                    data-title="Долг поставщикам"
+                                    data-bs-content='@include('objects.parts.debts-details.provider')'
+                            >
+                                Долг поставщикам
+                            </div>
+                        </div>
                         <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['provider_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}
                         </div>
@@ -352,7 +368,7 @@
 {{--                                            </svg>--}}
 {{--                                        </span>--}}
 {{--                        </button>--}}
-                    </a>
+                    </div>
                 </div>
 
                 <div class="separator separator-dashed my-3"></div>
@@ -418,12 +434,13 @@
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">
                             <div
-                                    class="cursor-pointer"
+                                    class="cursor-pointer pop-click"
                                     data-bs-custom-class="workers-salary-detailing-popover"
                                     data-bs-toggle="popover"
                                     data-bs-placement="top"
                                     data-bs-html="true"
                                     title="Детализация по долгу на зарплаты рабочим"
+                                    data-title="Детализация по долгу на зарплаты рабочим"
                                     data-bs-content='@include('objects.parts.debts-details.workers_salary')'
                             >
                                 Долг на зарплаты рабочим
@@ -506,12 +523,13 @@
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">
                             <div
-                                    class="cursor-pointer"
+                                    class="cursor-pointer pop-click"
                                     data-bs-custom-class="plan-payments-detailing-popover"
                                     data-bs-toggle="popover"
                                     data-bs-placement="top"
                                     data-bs-html="true"
                                     title="Прогнозируемые затраты"
+                                    data-title="Прогнозируемые затраты"
                                     data-bs-content='@include('objects.parts.debts-details.plan_payments')'
                             >
                                 Прогнозируемые затраты

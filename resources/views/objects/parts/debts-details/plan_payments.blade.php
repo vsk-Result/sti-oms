@@ -1,6 +1,7 @@
 <div>
     @foreach($object->planPayments as $index => $planPayment)
 {{--        @continue($planPayment->amount > -1 && $planPayment->amount < 1)--}}
+        @continue(empty(\App\Models\FinanceReport::getNameForField($planPayment->field)))
         @continue($planPayment->field === 'prognoz_consalting' && $planPayment->amount == 0)
 
         <div class="d-flex flex-row justify-content-between">
