@@ -186,6 +186,9 @@ class PaymentService
         }
 
         if (! empty($requestData['code'])) {
+            if (in_array('null', $requestData['code'])) {
+                array_push($requestData['code'], null, '');
+            }
             $paymentQuery->whereIn('code', $requestData['code']);
         }
 

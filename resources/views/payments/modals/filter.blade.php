@@ -134,7 +134,8 @@
                                     data-dropdown-parent="#filterPaymentModal"
                                     multiple
                                 >
-                                    @foreach($codes as $codeL1)
+                                    <option value="null" {{ in_array("null", request()->input('code', []), true) ? 'selected' : '' }}>Не указана</option>
+                                @foreach($codes as $codeL1)
                                         <option value="{{ $codeL1['code'] }}" {{ in_array($codeL1['code'], request()->input('code', []), true) ? 'selected' : '' }}>{{ $codeL1['code'] . ' - ' . $codeL1['title'] }}</option>
                                     @if (count($codeL1['children']) > 0)
                                             @foreach($codeL1['children'] as $codeL2)
