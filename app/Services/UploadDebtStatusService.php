@@ -110,6 +110,18 @@ class UploadDebtStatusService
                 'name' => 'Долги по подрядчикам объекта 369',
                 'file' => '369.xlsx',
                 'path' => 'public/objects-debts/'
+            ],
+            '370' => [
+                'code' => '370',
+                'name' => 'Долги по подрядчикам объекта 370',
+                'file' => '370.xlsx',
+                'path' => 'public/objects-debts/'
+            ],
+            '371' => [
+                'code' => '371',
+                'name' => 'Долги по подрядчикам объекта 371',
+                'file' => '371.xlsx',
+                'path' => 'public/objects-debts/'
             ]
         ],
     ];
