@@ -69,6 +69,8 @@ class PivotObjectDebtService
         $providerDebts = $this->getProviderDebts();
         $providerInfo = [
             'debts' => $providerDebts['debts'],
+            'debts_fix' => $providerDebts['debts_fix'],
+            'debts_float' => $providerDebts['debts_float'],
             'total_amount' => array_sum($providerDebts['debts']),
             'amount_without_nds' => $providerDebts['amount_without_nds'],
             'fix_amount' => $providerDebts['fix_amount'],
@@ -266,6 +268,8 @@ class PivotObjectDebtService
 
         return [
             'debts' => $result,
+            'debts_fix' => $debts->where('fix_float_type', 'Фиксированная часть'),
+            'debts_float' => $debts->where('fix_float_type', 'Изменяемая часть'),
             'amount_without_nds' => $debts->sum('amount_without_nds'),
             'fix_amount' => $debts->where('fix_float_type', 'Фиксированная часть')->sum('amount'),
             'float_amount' => $debts->where('fix_float_type', 'Изменяемая часть')->sum('amount'),

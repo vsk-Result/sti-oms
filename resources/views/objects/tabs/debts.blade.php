@@ -681,11 +681,22 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder">
                                         <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                            {{ number_format($debts['provider']->total_amount, 2, ',', ' ') }}
+                                            {{ number_format($debts['provider']->fix_amount, 2, ',', ' ') }}
                                         </a>
                                     </div>
                                 </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого</div>
+                                <div class="fw-bold fs-6 text-gray-400">Итого (фикс)</div>
+                            </div>
+
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="fs-4 fw-bolder">
+                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                            {{ number_format($debts['provider']->float_amount, 2, ',', ' ') }}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="fw-bold fs-6 text-gray-400">Итого (изм)</div>
                             </div>
                         </div>
                     </div>
@@ -695,61 +706,96 @@
                             <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2">Контрагент</th>
-                                    <th class="w-175px pe-2">Сумма</th>
+                                    <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
+                                    <th class="w-175px pe-2 text-end">Сумма (изм)</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($debts['provider']->debts as $organization => $amount)
-                                    @php
-                                        $type = \App\Models\Debt\DebtManual::TYPE_PROVIDER;
-                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
-                                        $organizationName = substr($organization, strpos($organization, '::') + 2);
-                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
-
-                                        $comment = '';
-                                        if ($debtManual) {
-                                            if ($debtManual->updatedBy) {
-                                                $comment = 'Изменил(а) ' . $debtManual->updatedBy->name . ', ' . $debtManual->updated_at->format('d.m.Y H:i');
-                                            } else {
-                                                $comment = 'Создал(а) ' . $debtManual->createdBy->name . ', ' . $debtManual->created_at->format('d.m.Y H:i');
-                                            }
+                                @php
+                                    $providerDebts = [];
+                                    foreach ($debts['provider']->debts_fix as $debt) {
+                                        $organizationName = $debt->organization->name;
+                                        if (!isset($providerDebts[$organizationName])) {
+                                            $providerDebts[$organizationName] = [
+                                                'fix' => 0,
+                                                'float' => 0,
+                                                'organization_id' => $debt->organization_id,
+                                            ];
                                         }
-                                    @endphp
 
-                                    <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">
+                                        $providerDebts[$organizationName]['fix'] += $debt->amount;
+                                    }
+                                    foreach ($debts['provider']->debts_float as $debt) {
+                                        $organizationName = $debt->organization->name;
+                                        if (!isset($providerDebts[$organizationName])) {
+                                            $providerDebts[$organizationName] = [
+                                                'fix' => 0,
+                                                'float' => 0,
+                                                'organization_id' => $debt->organization_id,
+                                            ];
+                                        }
+
+                                        $providerDebts[$organizationName]['float'] += $debt->amount;
+                                    }
+                                @endphp
+                                @forelse($providerDebts as $organizationName => $debtAmount)
+{{--                                    @php--}}
+{{--                                        $type = \App\Models\Debt\DebtManual::TYPE_PROVIDER;--}}
+{{--                                        $organizationId = substr($organization, 0, strpos($organization, '::'));--}}
+{{--                                        $organizationName = substr($organization, strpos($organization, '::') + 2);--}}
+{{--                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();--}}
+
+{{--                                        $comment = '';--}}
+{{--                                        if ($debtManual) {--}}
+{{--                                            if ($debtManual->updatedBy) {--}}
+{{--                                                $comment = 'Изменил(а) ' . $debtManual->updatedBy->name . ', ' . $debtManual->updated_at->format('d.m.Y H:i');--}}
+{{--                                            } else {--}}
+{{--                                                $comment = 'Создал(а) ' . $debtManual->createdBy->name . ', ' . $debtManual->created_at->format('d.m.Y H:i');--}}
+{{--                                            }--}}
+{{--                                        }--}}
+{{--                                    @endphp--}}
+
+{{--                                    <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">--}}
+                                    <tr class="row-edit-debt-manual">
                                         <td class="ps-2">{{ $organizationName }}</td>
-                                        <td class="text-danger d-flex justify-content-between gap-2 pe-2">
-                                            @if ($debtManual)
-                                                <div>
-                                                    <span class="fw-boldest">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>
-                                                    <span class="text-muted fs-8">(изменено вручную)</span>
-                                                </div>
-                                            @else
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                                    {{ number_format($amount, 2, ',', ' ') }}
+{{--                                        <td class="text-danger d-flex justify-content-between gap-2 pe-2">--}}
+                                        <td class="text-danger text-end">
+{{--                                            @if ($debtManual)--}}
+{{--                                                <div>--}}
+{{--                                                    <span class="fw-boldest">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>--}}
+{{--                                                    <span class="text-muted fs-8">(изменено вручную)</span>--}}
+{{--                                                </div>--}}
+{{--                                            @else--}}
+                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                                    {{ number_format($debtAmount['fix'], 2, ',', ' ') }}
                                                 </a>
-                                            @endif
+{{--                                            @endif--}}
 
-                                            <a
-                                                    class="edit-debt-manual d-none text-hover-gray-900"
-                                                    href="javascript:void(0)"
-                                                    data-organization-name="{{ $organizationName }}"
-                                                    data-organization-id="{{ $organizationId }}"
-                                                    data-object-id="{{ $object->id }}"
-                                                    data-type-id="{{ $type }}"
-                                                    data-id="{{ $debtManual->id ?? '' }}"
-                                                    data-amount="{{ $debtManual->amount ?? $amount }}"
-                                                    data-avans="{{ $debtManual->avans ?? 0 }}"
-                                                    data-guarantee="{{ $debtManual->guarantee ?? 0 }}"
-                                                    data-comment="{{ $comment }}"
-                                            >
-                                                <i class="fa fa-pen text-primary"></i>
+{{--                                            <a--}}
+{{--                                                    class="edit-debt-manual d-none text-hover-gray-900"--}}
+{{--                                                    href="javascript:void(0)"--}}
+{{--                                                    data-organization-name="{{ $organizationName }}"--}}
+{{--                                                    data-organization-id="{{ $organizationId }}"--}}
+{{--                                                    data-object-id="{{ $object->id }}"--}}
+{{--                                                    data-type-id="{{ $type }}"--}}
+{{--                                                    data-id="{{ $debtManual->id ?? '' }}"--}}
+{{--                                                    data-amount="{{ $debtManual->amount ?? $amount }}"--}}
+{{--                                                    data-avans="{{ $debtManual->avans ?? 0 }}"--}}
+{{--                                                    data-guarantee="{{ $debtManual->guarantee ?? 0 }}"--}}
+{{--                                                    data-comment="{{ $comment }}"--}}
+{{--                                            >--}}
+{{--                                                <i class="fa fa-pen text-primary"></i>--}}
+{{--                                            </a>--}}
+                                        </td>
+                                        <td class="text-danger text-end">
+                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                                {{ number_format($debtAmount['float'], 2, ',', ' ') }}
                                             </a>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2">
+                                        <td colspan="3">
                                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                                 Долги отсутствуют
                                             </p>
