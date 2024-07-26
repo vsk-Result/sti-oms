@@ -479,6 +479,7 @@ class PaymentService
             || str_contains($description, 'перечисление отпускных')
             || str_contains($description, 'оплата больничного')
             || str_contains($description, 'перечисление согласно реестру')
+            || str_contains($description, 'аванс сотрудников ооо "строй техно инженеринг"')
         ) {
             return true;
         }
