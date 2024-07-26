@@ -80,6 +80,7 @@ class BalanceSheet implements
 
         $sheet->getColumnDimension('A')->setWidth(4);
         $sheet->getColumnDimension('T')->setWidth(12);
+        $sheet->getColumnDimension('N')->setWidth(18);
 
         for ($row = 1; $row < 30; $row++) {
             $sheet->getRowDimension($row)->setRowHeight(28);
@@ -328,16 +329,18 @@ class BalanceSheet implements
         $sheet->getStyle('H28:K29')->getFont()->setBold(true);
 
         $sheet->setCellValue('N17', 'Контрагент');
-        $sheet->setCellValue('Q17', 'Сумма долга');
+        $sheet->setCellValue('O17', 'Сумма (фикс)');
+        $sheet->setCellValue('Q17', 'Сумма (изм)');
         $sheet->setCellValue('N28', 'ОСТАЛЬНЫЕ');
         $sheet->setCellValue('N29', 'ИТОГО');
-        $sheet->mergeCells('N17:P17');
+        $sheet->mergeCells('O17:P17');
         $sheet->mergeCells('Q17:R17');
-        $sheet->mergeCells('N28:P28');
-        $sheet->mergeCells('N29:P29');
+        $sheet->mergeCells('O28:P28');
+        $sheet->mergeCells('O29:P29');
         $sheet->mergeCells('Q28:R28');
         $sheet->mergeCells('Q29:R29');
-        $sheet->getStyle('N17:P29')->getAlignment()->setVertical('center')->setHorizontal('left');
+        $sheet->getStyle('N17:N29')->getAlignment()->setVertical('center')->setHorizontal('left');
+        $sheet->getStyle('O17:P29')->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('Q17:R29')->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('N28:R29')->getFont()->setBold(true);
 
@@ -456,33 +459,63 @@ class BalanceSheet implements
         $sheet->getStyle('K18:L29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
-        $otherSum = 0;
+        $otherFixSum = 0;
+        $otherFloatSum = 0;
         $count = 0;
         $row = 18;
-        foreach ($debts['provider']->debts as $organization => $amount) {
+
+        $providerDebts = [];
+        foreach ($debts['provider']->debts_fix as $debt) {
+            $organizationName = $debt->organization->name;
+            if (!isset($providerDebts[$organizationName])) {
+                $providerDebts[$organizationName] = [
+                    'fix' => 0,
+                    'float' => 0,
+                    'organization_id' => $debt->organization_id,
+                ];
+            }
+
+            $providerDebts[$organizationName]['fix'] += $debt->amount;
+        }
+        foreach ($debts['provider']->debts_float as $debt) {
+            $organizationName = $debt->organization->name;
+            if (!isset($providerDebts[$organizationName])) {
+                $providerDebts[$organizationName] = [
+                    'fix' => 0,
+                    'float' => 0,
+                    'organization_id' => $debt->organization_id,
+                ];
+            }
+
+            $providerDebts[$organizationName]['float'] += $debt->amount;
+        }
+
+        foreach ($providerDebts as $organizationName => $debtAmount) {
             if ($count === 10) {
-                $otherSum += $amount;
+                $otherFixSum = $debtAmount['fix'];
+                $otherFloatSum = $debtAmount['float'];
                 continue;
             }
 
-            $organizationName = substr($organization, strpos($organization, '::') + 2);
-
             $sheet->setCellValue('N' . $row, $organizationName);
-            $this->setValueEndColor($sheet, 'Q' . $row, $amount);
-            $sheet->mergeCells('N' . $row . ':P' . $row);
+            $this->setValueEndColor($sheet, 'O' . $row, $debtAmount['fix']);
+            $this->setValueEndColor($sheet, 'Q' . $row, $debtAmount['float']);
+            $sheet->mergeCells('O' . $row . ':P' . $row);
             $sheet->mergeCells('Q' . $row . ':R' . $row);
 
             $row++;
             $count++;
         }
 
-        $this->setValueEndColor($sheet, 'Q28', $otherSum);
-        $this->setValueEndColor($sheet, 'Q29', $info['provider_debt']);
+        $this->setValueEndColor($sheet, 'O28', $otherFixSum);
+        $this->setValueEndColor($sheet, 'Q28', $otherFloatSum);
+        $this->setValueEndColor($sheet, 'O29', $debts['provider']->fix_amount);
+        $this->setValueEndColor($sheet, 'Q29', $debts['provider']->float_amount);
         $sheet->getStyle('N17:R28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('N17:R17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('N29:R29')->applyFromArray($titleStyleArray);
         $sheet->getStyle('N29:R29')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
-        $sheet->getStyle('Q18:R29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('O18:R29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
         $otherSum = 0;
