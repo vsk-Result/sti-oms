@@ -268,10 +268,10 @@ class PivotObjectDebtService
 
         return [
             'debts' => $result,
-            'debts_fix' => $debts->where('fix_float_type', 'Фиксированная часть'),
+            'debts_fix' => $debts->where('fix_float_type', '!=', 'Изменяемая часть'),
             'debts_float' => $debts->where('fix_float_type', 'Изменяемая часть'),
             'amount_without_nds' => $debts->sum('amount_without_nds'),
-            'fix_amount' => $debts->where('fix_float_type', 'Фиксированная часть')->sum('amount'),
+            'fix_amount' => $debts->where('fix_float_type', '!=', 'Изменяемая часть')->sum('amount'),
             'float_amount' => $debts->where('fix_float_type', 'Изменяемая часть')->sum('amount'),
         ];
     }
