@@ -466,11 +466,13 @@ class BalanceSheet implements
                 $providerDebts[$organizationName] = [
                     'fix' => 0,
                     'float' => 0,
+                    'total' => 0,
                     'organization_id' => $debt->organization_id,
                 ];
             }
 
             $providerDebts[$organizationName]['fix'] += $debt->amount;
+            $providerDebts[$organizationName]['total'] += $debt->amount;
         }
         foreach ($debts['provider']->debts_float as $debt) {
             $organizationName = $debt->organization->name;
@@ -478,15 +480,17 @@ class BalanceSheet implements
                 $providerDebts[$organizationName] = [
                     'fix' => 0,
                     'float' => 0,
+                    'total' => 0,
                     'organization_id' => $debt->organization_id,
                 ];
             }
 
             $providerDebts[$organizationName]['float'] += $debt->amount;
+            $providerDebts[$organizationName]['total'] += $debt->amount;
         }
 
-        $providerFixAmounts = array_column($providerDebts, 'fix');
-        array_multisort($providerFixAmounts, SORT_ASC, $providerDebts);
+        $providerTotalAmounts = array_column($providerDebts, 'total');
+        array_multisort($providerTotalAmounts, SORT_ASC, $providerDebts);
 
         $otherFixSum = 0;
         $otherFloatSum = 0;
