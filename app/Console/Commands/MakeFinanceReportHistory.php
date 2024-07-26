@@ -21,6 +21,7 @@ use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
 use App\Services\FinanceReport\DepositService;
 use App\Services\FinanceReport\LoanService;
+use App\Services\GeneralReportService;
 use App\Services\ObjectPlanPaymentService;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
@@ -42,6 +43,7 @@ class MakeFinanceReportHistory extends Command
     private CurrencyExchangeRateService $currencyExchangeService;
     private ContractService $contractService;
     private ObjectPlanPaymentService $objectPlanPaymentService;
+    private GeneralReportService $generalReportService;
 
     public function __construct(
         AccountBalanceService $accountBalanceService,
@@ -53,6 +55,7 @@ class MakeFinanceReportHistory extends Command
         CurrencyExchangeRateService $currencyExchangeService,
         ContractService $contractService,
         ObjectPlanPaymentService $objectPlanPaymentService,
+        GeneralReportService $generalReportService
     ) {
         parent::__construct();
         $this->accountBalanceService = $accountBalanceService;
@@ -64,6 +67,7 @@ class MakeFinanceReportHistory extends Command
         $this->contractService = $contractService;
         $this->objectPlanPaymentService = $objectPlanPaymentService;
         $this->CRONProcessService = $CRONProcessService;
+        $this->generalReportService = $generalReportService;
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
@@ -827,15 +831,12 @@ class MakeFinanceReportHistory extends Command
                 $summary[$year]['objectBalance'] += $summary[$year]['tax_debt'];
                 $summary[$year]['prognozBalance'] += $summary[$year]['tax_debt'];
 
-                $paymentsOffice = Payment::whereIn('company_id', [1, 5])->where('object_id', $object27_1->id)->get();
-                $paymentsGeneral = Payment::whereIn('company_id', [1, 5])->where('code', '!=', '7.15')->where('type_id', Payment::TYPE_GENERAL)->get();
+                $totalPercentsForGeneralCosts = $this->generalReportService->getSplitPercentsByCategory(['2024', '2023', '2022', '2021']);
 
-                $payments = $paymentsGeneral->merge($paymentsOffice);
-
-                $summary[$year]['general_balance_salary'] = $payments->where('category', Payment::CATEGORY_SALARY)->sum('amount');
-                $summary[$year]['general_balance_tax'] = $payments->where('category', Payment::CATEGORY_TAX)->sum('amount');
-                $summary[$year]['general_balance_material'] = $payments->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
-                $summary[$year]['general_balance_service'] = $payments->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+                $summary[$year]['general_balance_salary'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_SALARY] * $summary[$year]['general_balance'];
+                $summary[$year]['general_balance_tax'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_TAX] * $summary[$year]['general_balance'];
+                $summary[$year]['general_balance_material'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_MATERIAL] * $summary[$year]['general_balance'];
+                $summary[$year]['general_balance_service'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] * $summary[$year]['general_balance'];
             }
         } catch (\Exception $e) {
             $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
