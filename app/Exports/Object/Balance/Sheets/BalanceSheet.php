@@ -459,11 +459,6 @@ class BalanceSheet implements
         $sheet->getStyle('K18:L29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
-        $otherFixSum = 0;
-        $otherFloatSum = 0;
-        $count = 0;
-        $row = 18;
-
         $providerDebts = [];
         foreach ($debts['provider']->debts_fix as $debt) {
             $organizationName = $debt->organization->name;
@@ -490,10 +485,17 @@ class BalanceSheet implements
             $providerDebts[$organizationName]['float'] += $debt->amount;
         }
 
+        $providerFixAmounts = array_column($providerDebts, 'fix');
+        array_multisort($providerFixAmounts, SORT_ASC, $providerDebts);
+
+        $otherFixSum = 0;
+        $otherFloatSum = 0;
+        $count = 0;
+        $row = 18;
         foreach ($providerDebts as $organizationName => $debtAmount) {
             if ($count === 10) {
-                $otherFixSum = $debtAmount['fix'];
-                $otherFloatSum = $debtAmount['float'];
+                $otherFixSum += $debtAmount['fix'];
+                $otherFloatSum += $debtAmount['float'];
                 continue;
             }
 
