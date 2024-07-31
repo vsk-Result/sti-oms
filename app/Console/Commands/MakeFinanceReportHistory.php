@@ -721,8 +721,8 @@ class MakeFinanceReportHistory extends Command
                     $total[$year][$object->code]['receive_other'] = $receiveOther;
                     $total[$year][$object->code]['receive_other_without_nds'] = $receiveOtherWithoutNDS;
 
-                    $total[$year][$object->code]['balance'] = $object->total_balance;
-                    $total[$year][$object->code]['balance_without_nds'] = $object->total_balance_without_nds;
+                    $total[$year][$object->code]['balance'] = $object->total_balance + $total[$year][$object->code]['transfer_service'];
+                    $total[$year][$object->code]['balance_without_nds'] = $object->total_balance_without_nds + $total[$year][$object->code]['transfer_service'];
 
                     $total[$year][$object->code]['office_service'] = $object->general_balance - $total[$year][$object->code]['transfer_service'];
                     $total[$year][$object->code]['office_service_without_nds'] = $object->general_balance_without_nds - $total[$year][$object->code]['transfer_service_without_nds'];
