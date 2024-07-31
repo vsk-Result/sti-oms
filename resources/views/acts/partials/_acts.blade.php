@@ -105,6 +105,55 @@
                     </th>
                     <th></th>
                 </tr>
+
+                @if ($isShowExtendedTotal)
+                    <tr class="fw-bold fs-8" style="background-color: #fbfbfb;">
+                        <th colspan="5" class="ps-4" style="vertical-align: middle;">Итого (фиксированная часть)</th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['amount_fix']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount_fix']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount_fix']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount_fix']['RUB'], 'RUB') }}
+                        </th>
+                        <th></th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount_fix']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount_fix']['RUB'], 'RUB') }}
+                        </th>
+                        <th></th>
+                    </tr>
+                    <tr class="fw-bold fs-8" style="background-color: #fbfbfb;">
+                        <th colspan="5" class="ps-4" style="vertical-align: middle;">Итого (переменная часть)</th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['amount_float']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount_float']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount_float']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount_float']['RUB'], 'RUB') }}
+                        </th>
+                        <th></th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount_float']['RUB'], 'RUB') }}
+                        </th>
+                        <th>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount_float']['RUB'], 'RUB') }}
+                        </th>
+                        <th></th>
+                    </tr>
+                @endif
                 </thead>
                 <tbody class="text-gray-600 fw-bold">
                 @forelse($acts as $act)

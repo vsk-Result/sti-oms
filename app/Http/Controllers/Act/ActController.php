@@ -29,8 +29,9 @@ class ActController extends Controller
         $contracts = Contract::with('parent')->orderBy('name')->get();
 
         $actsPaymentsLineChartInfo = $this->actService->prepareInfoForActsPaymentsLineChart($total['ids']);
+        $isShowExtendedTotal = false;
 
-        return view('acts.index', compact('acts', 'total', 'objects', 'contracts', 'actsPaymentsLineChartInfo'));
+        return view('acts.index', compact('isShowExtendedTotal', 'acts', 'total', 'objects', 'contracts', 'actsPaymentsLineChartInfo'));
     }
 
     public function create(Request $request): View

@@ -148,6 +148,21 @@ class ActService
             $total['need_paid_amount'][$currency] = 0;
             $total['paid_amount'][$currency] = 0;
             $total['left_paid_amount'][$currency] = 0;
+
+            $total['amount_fix'][$currency] = 0;
+            $total['avanses_amount_fix'][$currency] = 0;
+            $total['deposites_amount_fix'][$currency] = 0;
+            $total['need_paid_amount_fix'][$currency] = 0;
+            $total['paid_amount_fix'][$currency] = 0;
+            $total['left_paid_amount_fix'][$currency] = 0;
+
+            $total['amount_float'][$currency] = 0;
+            $total['avanses_amount_float'][$currency] = 0;
+            $total['deposites_amount_float'][$currency] = 0;
+            $total['need_paid_amount_float'][$currency] = 0;
+            $total['paid_amount_float'][$currency] = 0;
+            $total['left_paid_amount_float'][$currency] = 0;
+
             foreach ((clone $actQuery)->where('currency', $currency)->get() as $act) {
                 $total['amount'][$currency] += $act->getAmount();
                 $total['avanses_amount'][$currency] += $act->getAvansAmount();
@@ -155,6 +170,22 @@ class ActService
                 $total['need_paid_amount'][$currency] += $act->getNeedPaidAmount();
                 $total['paid_amount'][$currency] += $act->getPaidAmount();
                 $total['left_paid_amount'][$currency] += $act->getLeftPaidAmount();
+
+                if ($act->contract->isFloat()) {
+                    $total['amount_float'][$currency] += $act->getAmount();
+                    $total['avanses_amount_float'][$currency] += $act->getAvansAmount();
+                    $total['deposites_amount_float'][$currency] += $act->getDepositAmount();
+                    $total['need_paid_amount_float'][$currency] += $act->getNeedPaidAmount();
+                    $total['paid_amount_float'][$currency] += $act->getPaidAmount();
+                    $total['left_paid_amount_float'][$currency] += $act->getLeftPaidAmount();
+                } else {
+                    $total['amount_fix'][$currency] += $act->getAmount();
+                    $total['avanses_amount_fix'][$currency] += $act->getAvansAmount();
+                    $total['deposites_amount_fix'][$currency] += $act->getDepositAmount();
+                    $total['need_paid_amount_fix'][$currency] += $act->getNeedPaidAmount();
+                    $total['paid_amount_fix'][$currency] += $act->getPaidAmount();
+                    $total['left_paid_amount_fix'][$currency] += $act->getLeftPaidAmount();
+                }
             }
         }
 
