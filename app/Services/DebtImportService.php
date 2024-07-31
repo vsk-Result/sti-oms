@@ -585,9 +585,9 @@ class DebtImportService
                 continue;
             }
 
-            if ($organizationName === 'ДТ ТЕРМО ГРУПП ООО') {
-                continue;
-            }
+//            if ($organizationName === 'ДТ ТЕРМО ГРУПП ООО') {
+//                continue;
+//            }
 
             if ($organizationType !== 'МАТЕРИАЛЫ') {
                 continue;
