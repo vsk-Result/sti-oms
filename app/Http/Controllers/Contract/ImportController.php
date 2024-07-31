@@ -148,7 +148,7 @@ class ImportController extends Controller
                     ]);
 
                     $act->update([
-                        'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
+                        'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit
                     ]);
 
                     if (! empty($row[14])) {
@@ -276,7 +276,7 @@ class ImportController extends Controller
                         ]);
 
                         $act->update([
-                            'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
+                            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit
                         ]);
 
                         if (!empty($row[16])) {

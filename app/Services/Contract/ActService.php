@@ -205,6 +205,8 @@ class ActService
             'date' => $requestData['date'],
             'planned_payment_date' => $requestData['planned_payment_date'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
+            'rad_amount' => $this->sanitizer->set($requestData['rad_amount'])->toAmount()->get(),
+            'opste_amount' => $this->sanitizer->set($requestData['opste_amount'])->toAmount()->get(),
             'amount_avans' => $this->sanitizer->set($requestData['amount_avans'])->toAmount()->get(),
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
@@ -215,7 +217,7 @@ class ActService
         ]);
 
         $act->update([
-            'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
+            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit
         ]);
 
         if (! empty($requestData['payments_date'])) {
@@ -259,6 +261,8 @@ class ActService
             'planned_payment_date' => $requestData['planned_payment_date'],
             'number' => $requestData['number'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
+            'rad_amount' => $this->sanitizer->set($requestData['rad_amount'])->toAmount()->get(),
+            'opste_amount' => $this->sanitizer->set($requestData['opste_amount'])->toAmount()->get(),
             'amount_avans' => $this->sanitizer->set($requestData['amount_avans'])->toAmount()->get(),
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
@@ -269,7 +273,7 @@ class ActService
         ]);
 
         $act->update([
-            'amount_need_paid' => $act->amount - $act->amount_avans - $act->amount_deposit
+            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit
         ]);
 
         $currentPaymentsIds = $act->payments()->pluck('id', 'id')->toArray();
@@ -348,7 +352,7 @@ class ActService
                 $actsMonths[$month][$act->currency] = 0;
             }
 
-            $actsMonths[$month][$act->currency] += $act->amount;
+            $actsMonths[$month][$act->currency] += $act->getAmount();
         }
 
         foreach ($actsMonths as $month => $currencies) {

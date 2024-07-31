@@ -25,7 +25,8 @@ class Act extends Model implements Audit, HasMedia
     protected $fillable = [
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
         'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id',
-        'currency', 'currency_rate', 'number', 'planned_payment_date', 'manual_left_paid_amount'
+        'currency', 'currency_rate', 'number', 'planned_payment_date', 'manual_left_paid_amount',
+        'rad_amount', 'opste_amount'
     ];
 
     public function contract(): BelongsTo
@@ -60,7 +61,7 @@ class Act extends Model implements Audit, HasMedia
 
     public function getAmount(): string
     {
-        return $this->amount;
+        return $this->amount + $this->rad_amount + $this->opste_amount;
     }
 
     public function getAvansAmount(): string

@@ -103,9 +103,9 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Сумма выполнения</label>
+                                            <label class="form-label fw-bolder text-dark fs-6">Сумма за материалы</label>
                                             <div class="position-relative mb-3">
                                                 <input
                                                     class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount') ? 'is-invalid' : '' }}"
@@ -124,6 +124,50 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-4 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Сумма за работы</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                        class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('rad_amount') ? 'is-invalid' : '' }}"
+                                                        type="text"
+                                                        name="rad_amount"
+                                                        value="{{ old('rad_amount') }}"
+                                                        required
+                                                        autocomplete="off"
+                                                />
+                                            </div>
+                                            @if ($errors->has('rad_amount'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('rad_amount')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Сумма за накладные/услуги</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                        class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('opste_amount') ? 'is-invalid' : '' }}"
+                                                        type="text"
+                                                        name="opste_amount"
+                                                        value="{{ old('opste_amount') }}"
+                                                        required
+                                                        autocomplete="off"
+                                                />
+                                            </div>
+                                            @if ($errors->has('opste_amount'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('opste_amount')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
                                     <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма удержания аванса</label>
@@ -144,20 +188,18 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="row">
                                     <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма удержания депозита</label>
                                             <div class="position-relative mb-3">
                                                 <input
-                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_deposit') ? 'is-invalid' : '' }}"
-                                                    type="text"
-                                                    name="amount_deposit"
-                                                    value="{{ old('amount_deposit') }}"
-                                                    required
-                                                    autocomplete="off"
+                                                        class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_deposit') ? 'is-invalid' : '' }}"
+                                                        type="text"
+                                                        name="amount_deposit"
+                                                        value="{{ old('amount_deposit') }}"
+                                                        required
+                                                        autocomplete="off"
                                                 />
                                             </div>
                                             @if ($errors->has('amount_deposit'))
@@ -167,30 +209,10 @@
                                             @endif
                                         </div>
                                     </div>
-
-                                    <div class="col-md-6 mb-10 fv-row">
-                                        <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Описание</label>
-                                            <div class="position-relative mb-3">
-                                                <input
-                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('description') ? 'is-invalid' : '' }}"
-                                                    type="text"
-                                                    name="description"
-                                                    value="{{ old('description') }}"
-                                                    autocomplete="off"
-                                                />
-                                            </div>
-                                            @if ($errors->has('description'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div>{{ implode(' ', $errors->get('description')) }}</div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-12 mb-10 fv-row">
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма неоплаченных работ</label>
                                             <div class="position-relative mb-3">
@@ -210,8 +232,27 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
 
+                                    <div class="col-md-8 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Описание</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                    class="form-control form-control-lg form-control-solid {{ $errors->has('description') ? 'is-invalid' : '' }}"
+                                                    type="text"
+                                                    name="description"
+                                                    value="{{ old('description') }}"
+                                                    autocomplete="off"
+                                                />
+                                            </div>
+                                            @if ($errors->has('description'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('description')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-12 mb-10 fv-row">
                                         <div class="mb-1">
