@@ -144,6 +144,7 @@ class ImportObjectDebtsFromExcel extends Command
                     $avans = $row[4];
                     $nds = mb_strtolower($row[5] ?? '');
                     $balanceContract = $row[6] ?? 0;
+                    $neotrabotAvans = $row[7] ?? 0;
 
                     if (empty($amountDebt)) {
                         $amountDebt = 0;
@@ -153,6 +154,9 @@ class ImportObjectDebtsFromExcel extends Command
                     }
                     if (empty($avans)) {
                         $avans = 0;
+                    }
+                    if (empty($neotrabotAvans)) {
+                        $neotrabotAvans = 0;
                     }
 
                     if (is_string($amountDebt)) {
@@ -170,6 +174,10 @@ class ImportObjectDebtsFromExcel extends Command
                     if (is_string($balanceContract)) {
                         $balanceContract = str_replace(',', '.', $balanceContract);
                         $balanceContract = (float) str_replace(' ', '', $balanceContract);
+                    }
+                    if (is_string($neotrabotAvans)) {
+                        $neotrabotAvans = str_replace(',', '.', $neotrabotAvans);
+                        $neotrabotAvans = (float) str_replace(' ', '', $neotrabotAvans);
                     }
 
                     $amountDebtWithoutDNS = -$amountDebt;
@@ -211,6 +219,7 @@ class ImportObjectDebtsFromExcel extends Command
                         'invoice_payment_due_date' => null,
                         'invoice_amount' => 0,
                         'balance_contract' => -$balanceContract,
+                        'unwork_avans' => $neotrabotAvans,
                     ]);
                 }
 

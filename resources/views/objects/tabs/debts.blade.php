@@ -286,26 +286,13 @@
                                     <div class="d-flex align-items-center">
                                         <div class="fs-4 fw-bolder text-danger">
                                             <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($ds->sum('guarantee'), 2, ',', ' ') }}
+                                                {{ number_format($debts['contractor']->total_amount + $ds->sum('avans'), 2, ',', ' ') }}
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="fw-bold fs-6 text-gray-400">Итого ГУ</div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
                                 </div>
-
-
-                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="fs-4 fw-bolder text-danger">
-                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($ds->sum('avans'), 2, ',', ' ') }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="fw-bold fs-6 text-gray-400">Итого авансы</div>
-                                </div>
-                            @endif
-
+                            @else
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                     <div class="d-flex align-items-center">
                                         <div class="fs-4 fw-bolder text-danger">
@@ -316,23 +303,57 @@
                                     </div>
                                     <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
                                 </div>
+                            @endif
                         </div>
                     </div>
 
                     <div class="card-body p-9 pt-0">
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="ps-2">Контрагент</th>
-                                @if ($hasObjectImport)
-                                    <th class="w-150px text-end">ГУ</th>
-                                    <th class="w-150px text-end pe-2">Авансы к оплате</th>
-                                    <th class="w-175px text-end">Долг за СМР</th>
-                                @else
-                                    <th class="w-175px text-end pe-2">Сумма</th>
-                                @endif
-                                <th></th>
-                            </tr>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="ps-2">Контрагент</th>
+                                    @if ($hasObjectImport)
+                                        <th class="w-150px text-end">Неотр. аванс</th>
+                                        <th class="w-150px text-end">ГУ</th>
+                                        <th class="w-150px text-end pe-2">Авансы к оплате</th>
+                                        <th class="w-175px text-end">Долг за СМР</th>
+                                    @else
+                                        <th class="w-175px text-end pe-2">Сумма</th>
+                                    @endif
+                                    <th></th>
+                                </tr>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="ps-2 hl">ИТОГО</th>
+                                    @if ($hasObjectImport)
+                                        <th class="w-150px text-end hl">
+                                            <a target="_blank" class="text-success" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format($ds->sum('unwork_avans'), 2, ',', ' ') }}
+                                            </a>
+                                        </th>
+                                        <th class="w-150px text-end hl">
+                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format($ds->sum('guarantee'), 2, ',', ' ') }}
+                                            </a>
+                                        </th>
+                                        <th class="w-150px text-end pe-2 hl">
+                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format($ds->sum('avans'), 2, ',', ' ') }}
+                                            </a>
+                                        </th>
+                                        <th class="w-175px text-end hl">
+                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
+                                            </a>
+                                        </th>
+                                    @else
+                                        <th class="w-175px text-end pe-2 hl">
+                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
+                                            </a>
+                                        </th>
+                                    @endif
+                                    <th class="hl"></th>
+                                </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
                                 @forelse($debts['contractor']->debts as $organization => $amount)
@@ -344,9 +365,11 @@
 
                                         $avans = 0;
                                         $guarantee = 0;
+                                        $unworkAvans = 0;
                                         if ($hasObjectImport) {
                                             $avans = $ds->where('organization_id', $organizationId)->sum('avans');
                                             $guarantee = $ds->where('organization_id', $organizationId)->sum('guarantee');
+                                            $unworkAvans = $ds->where('organization_id', $organizationId)->sum('unwork_avans');
                                         }
 
                                         $comment = '';
@@ -368,6 +391,9 @@
                                         <td class="ps-2">{{ $organizationName }}</td>
                                         @if ($hasObjectImport)
                                             @if ($debtManual)
+                                                <td class="text-success text-end pe-2">
+                                                    <span class="fw-boldest text-end">{{ number_format($unworkAvans, 2, ',', ' ') }}</span>
+                                                </td>
                                                 <td class="text-danger text-end pe-2">
                                                     <span class="fw-boldest text-end">{{ number_format($guarantee, 2, ',', ' ') }}</span>
                                                 </td>
@@ -375,6 +401,11 @@
                                                     <span class="fw-boldest text-end">{{ number_format($avans, 2, ',', ' ') }}</span>
                                                 </td>
                                             @else
+                                                <td class="text-success text-end pe-2">
+                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                        {{ number_format($unworkAvans, 2, ',', ' ') }}
+                                                    </a>
+                                                </td>
                                                 <td class="text-danger text-end pe-2">
                                                     <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                         {{ number_format($guarantee, 2, ',', ' ') }}
@@ -460,6 +491,14 @@
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2">Контрагент</th>
                                     <th class="w-175px text-end pe-2">Сумма</th>
+                                </tr>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="ps-2 hl">ИТОГО</th>
+                                    <th class="w-175px text-end pe-2 hl">
+                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                                            {{ number_format($debts['service']->total_amount, 2, ',', ' ') }}
+                                        </a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -681,22 +720,11 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder">
                                         <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                            {{ number_format($debts['provider']->fix_amount, 2, ',', ' ') }}
+                                            {{ number_format($debts['provider']->total_amount, 2, ',', ' ') }}
                                         </a>
                                     </div>
                                 </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого (фикс)</div>
-                            </div>
-
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="fs-4 fw-bolder">
-                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                            {{ number_format($debts['provider']->float_amount, 2, ',', ' ') }}
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого (изм)</div>
+                                <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
                             </div>
                         </div>
                     </div>
@@ -708,6 +736,19 @@
                                     <th class="ps-2">Контрагент</th>
                                     <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
                                     <th class="w-175px pe-2 text-end">Сумма (изм)</th>
+                                </tr>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="ps-2 hl">ИТОГО</th>
+                                    <th class="w-175px pe-2 text-end hl">
+                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                            {{ number_format($debts['provider']->fix_amount, 2, ',', ' ') }}
+                                        </a>
+                                    </th>
+                                    <th class="w-175px pe-2 text-end hl">
+                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                            {{ number_format($debts['provider']->float_amount, 2, ',', ' ') }}
+                                        </a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -818,6 +859,14 @@
         }
         .row-edit-debt-manual.manual {
             background-color: cornsilk;
+        }
+
+        th.hl {
+            background-color: #f7f7f7 !important;
+            font-weight: bold !important;
+            height: 50px;
+            vertical-align: middle;
+            font-size: 13px;
         }
     </style>
 @endpush

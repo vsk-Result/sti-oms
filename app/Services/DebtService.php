@@ -221,6 +221,7 @@ class DebtService
             'invoice_payment_due_date' => $requestData['invoice_payment_due_date'] ?? null,
             'invoice_amount' => $requestData['invoice_amount'] ?? 0,
             'balance_contract' => $requestData['balance_contract'] ?? 0,
+            'unwork_avans' => $requestData['unwork_avans'] ?? 0,
             'fix_float_type' => $requestData['fix_float_type'] ?? null,
         ]);
 
