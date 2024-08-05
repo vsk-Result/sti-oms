@@ -49,10 +49,18 @@ class BalanceController extends Controller
                     continue;
                 }
 
+                $contractEndDate = '';
+                $contractLastEndDate = $object->contracts->where('end_date', '!=', null)->sortBy('end_date', SORT_NATURAL)->last();
+
+                if ($contractLastEndDate) {
+                    $contractEndDate = $contractLastEndDate->end_date;
+                }
+
                 $info[] = [
                     'id' => $object->id,
                     'title' => $object->code . ' | '  . $object->name,
                     'balance' => $total->{$year}->{$object->code}->{'objectBalance'},
+                    'contract_end_date' => $contractEndDate,
                 ];
             }
         }
