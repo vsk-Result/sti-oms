@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Object;
 
 use App\Http\Controllers\Controller;
+use App\Models\Contract\Contract;
 use App\Models\CurrencyExchangeRate;
 use App\Models\FinanceReportHistory;
 use Illuminate\Http\JsonResponse;
@@ -50,7 +51,7 @@ class BalanceController extends Controller
                 }
 
                 $contractEndDate = '';
-                $contractLastEndDate = $object->contracts->where('end_date', '!=', null)->sortBy('end_date', SORT_NATURAL)->last();
+                $contractLastEndDate = Contract::where('object_id', $object->id)->where('end_date', '!=', null)->sortBy('end_date', SORT_NATURAL)->last();
 
                 if ($contractLastEndDate) {
                     $contractEndDate = $contractLastEndDate->end_date;
