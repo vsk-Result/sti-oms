@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract\Contract;
 use App\Models\CurrencyExchangeRate;
 use App\Models\FinanceReportHistory;
+use App\Models\Object\BObject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -57,12 +58,14 @@ class BalanceController extends Controller
                     $contractEndDate = $contractLastEndDate->end_date;
                 }
 
+                $objectFull = BObject::find($object->id);
+
                 $info[] = [
                     'id' => $object->id,
                     'title' => $object->code . ' | '  . $object->name,
                     'balance' => $total->{$year}->{$object->code}->{'objectBalance'},
                     'contract_end_date' => $contractEndDate,
-//                    'photo' => $object->photo ? "/storage/" . $object->photo : asset('images/blanks/object_photo_blank.jpg'),
+                    'photo' => ($objectFull && $object->photo) ? ("/storage/" . $objectFull->photo) : asset('images/blanks/object_photo_blank.jpg'),
                 ];
             }
         }
