@@ -65,7 +65,7 @@ class BalanceController extends Controller
                     'title' => $object->code . ' | '  . $object->name,
                     'balance' => $total->{$year}->{$object->code}->{'objectBalance'},
                     'contract_end_date' => $contractEndDate,
-                    'photo' => ($objectFull && $object->photo) ? ("/storage/" . $objectFull->photo) : asset('images/blanks/object_photo_blank.jpg'),
+                    'photo' => ($objectFull && $objectFull->photo) ? ("/storage/" . $objectFull->photo) : asset('images/blanks/object_photo_blank.jpg'),
                 ];
             }
         }
