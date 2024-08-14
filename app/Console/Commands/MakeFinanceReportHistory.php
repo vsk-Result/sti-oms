@@ -308,8 +308,6 @@ class MakeFinanceReportHistory extends Command
                     $ostatokNeotrabotannogoAvansa = $customerDebtInfo['avanses_notwork_left_amount']['RUB'];
                     $ostatokNeotrabotannogoAvansaWithoutNDS = $ostatokNeotrabotannogoAvansa - round($ostatokNeotrabotannogoAvansa / 6, 2);
 
-                    $writeoffs = $object->writeoffs->sum('amount');
-
                     $date = now();
                     $EURExchangeRate = $this->currencyExchangeService->getExchangeRate($date->format('Y-m-d'), 'EUR');
                     if ($EURExchangeRate) {
@@ -430,16 +428,14 @@ class MakeFinanceReportHistory extends Command
                         $serviceDebtsAmount +
                         $ITRSalaryDebt +
                         $workSalaryDebt +
-                        $taxDebtAmount +
-                        $writeoffs;
+                        $taxDebtAmount;
 
                     $totalDebtsWithoutNDS = $contractorDebtsAmountWithoutNDS +
                         $providerDebtsAmountWithoutNDS +
                         $serviceDebtsAmountWithoutNDS +
                         $ITRSalaryDebt +
                         $workSalaryDebt +
-                        $taxDebtAmount +
-                        $writeoffs;
+                        $taxDebtAmount;
 
                     $totalCustomerDebts = $dolgZakazchikovZaVipolnenieRaboti +
                         $dolgFactUderjannogoGU;

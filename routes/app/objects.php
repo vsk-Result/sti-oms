@@ -16,6 +16,7 @@ use App\Http\Controllers\Object\BankGuaranteeController;
 use App\Http\Controllers\Object\DepositController;
 use App\Http\Controllers\Object\ExportController;
 use App\Http\Controllers\Object\WriteoffController;
+use App\Http\Controllers\Object\ReceivePlanController;
 
 // Экспорт объекта в Excel
 
@@ -84,5 +85,10 @@ Route::get('objects/{object}/activity', [ActivityController::class, 'index'])->n
 Route::get('objects-users', [UserController::class, 'index'])->name('objects.users.index')->middleware('can:index admin-roles');
 Route::get('objects-users/{object}/edit', [UserController::class, 'edit'])->name('objects.users.edit')->middleware('can:edit admin-roles');
 Route::post('objects-users/{object}', [UserController::class, 'update'])->name('objects.users.update')->middleware('can:edit admin-roles');
+
+// План поступлений
+
+Route::get('objects/{object}/receive-plan', [ReceivePlanController::class, 'index'])->name('objects.receive_plan.index');
+Route::post('objects/{object}/receive-plan', [ReceivePlanController::class, 'store'])->name('objects.receive_plan.store');
 
 

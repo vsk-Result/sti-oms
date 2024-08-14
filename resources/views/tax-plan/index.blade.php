@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'План налогов к оплате')
+@section('toolbar-title', 'План расходов к оплате')
 @section('breadcrumbs', Breadcrumbs::render('tax_plan.index'))
 
 @section('content')
@@ -12,6 +12,7 @@
                 <div class="card-title">
                     <div class="me-8">
                         <a href="{{ route('tax_plan.index', ['filter' => 'current']) }}" class="cash-year btn btn-light {{ request()->get('filter') === 'current' ? 'active': '' }}">Текущие за 2024</a>
+                        <a href="{{ route('tax_plan.index', ['filter' => '2025']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2025' ? 'active': '' }}" >Все за 2025</a>
                         <a href="{{ route('tax_plan.index', ['filter' => '2024']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2024' ? 'active': '' }}" >Все за 2024</a>
                         <a href="{{ route('tax_plan.index', ['filter' => '2023']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2023' ? 'active': '' }}">2023</a>
                         <a href="{{ route('tax_plan.index', ['filter' => 'all']) }}" class="cash-year btn btn-light {{ request()->get('filter') === 'all' ? 'active': '' }}">Все</a>

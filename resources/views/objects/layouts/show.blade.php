@@ -39,6 +39,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/bank-guarantees') ? 'active' : '' }}" href="{{ route('objects.bank_guarantees.index', $object) }}?object_id%5B%5D={{ $object->id }}">Банковские гарантии и депозиты</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/receive-plan') ? 'active' : '' }}" href="{{ route('objects.receive_plan.index', $object) }}?object_id%5B%5D={{ $object->id }}">План поступлений</a>
+                            </li>
 {{--                            <li class="nav-item">--}}
 {{--                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/deposits') ? 'active' : '' }}" href="{{ route('objects.deposits.index', $object) }}?object_id%5B%5D={{ $object->id }}">Депозиты без БГ</a>--}}
 {{--                            </li>--}}

@@ -66,10 +66,13 @@ class TaxPlanItemService
                         });
                     });
                     $query->where('paid', false);
+                } else if ($requestData['filter'] == '2025') {
+                    $period = ['2025-01-01', '2025-12-31'];
+                    $query->whereBetween('due_date', $period);
                 } else if ($requestData['filter'] == '2024') {
                     $period = ['2024-01-01', '2024-12-31'];
                     $query->whereBetween('due_date', $period);
-                }else if ($requestData['filter'] == '2023') {
+                } else if ($requestData['filter'] == '2023') {
                     $period = ['2023-01-01', '2023-12-31'];
                     $query->whereBetween('due_date', $period);
                 }

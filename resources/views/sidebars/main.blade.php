@@ -171,7 +171,7 @@
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
-                                    <span class="menu-title">План налогов к оплате</span>
+                                    <span class="menu-title">План расходов к оплате</span>
                                 </a>
                             </div>
                         @endcan
