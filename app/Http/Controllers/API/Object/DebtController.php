@@ -69,11 +69,38 @@ class DebtController extends Controller
             }
         }
 
+        $fixProviders = [];
+        foreach ($debts['provider']->debts_fix as $debt) {
+            $id = $debt->organization_id . '::' . $debt->organization->name;
+
+            if (! isset($fixProviders[$id])) {
+                $fixProviders[$id] = 0;
+            }
+
+            $fixProviders[$id] += $debt->amount;
+        }
+
+        $floatProviders = [];
+        foreach ($debts['provider']->debts_float as $debt) {
+            $id = $debt->organization_id . '::' . $debt->organization->name;
+
+            if (! isset($floatProviders[$id])) {
+                $floatProviders[$id] = 0;
+            }
+
+            $floatProviders[$id] += $debt->amount;
+        }
+
+        asort($fixProviders);
+        asort($floatProviders);
+
         $info = [
             'object' => $object->__toString(),
             'contractors' => $contractors,
             'contractors_gu' => $contractorsGU,
             'providers' => $debts['provider']->debts,
+            'providers_fix' => $fixProviders,
+            'providers_float' => $floatProviders,
             'service' => $debts['service']->debts,
         ];
 
