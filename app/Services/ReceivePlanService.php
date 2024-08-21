@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\Sanitizer;
+use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
 use App\Models\Status;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ class ReceivePlanService
         $this->sanitizer = $sanitizer;
     }
 
-    public function getPeriods($objectId): array
+    public function getPeriods(?int $objectId = null): array
     {
         $periods = [];
 
@@ -44,30 +45,35 @@ class ReceivePlanService
             ];
         }
 
-        $reasons = ReceivePlan::getReasons();
-        foreach ($periods as $period) {
-            foreach ($reasons as $reasonId => $reasonName) {
-                if ($this->isPlanExist($objectId, $reasonId, $period['start'])) {
-                    continue;
-                }
+        if ($objectId) {
+            $reasons = ReceivePlan::getReasons();
+            foreach ($periods as $period) {
+                foreach ($reasons as $reasonId => $reasonName) {
+                    if ($this->isPlanExist($objectId, $reasonId, $period['start'])) {
+                        continue;
+                    }
 
-                $this->createReceivePlan([
-                    'object_id' => $objectId,
-                    'reason_id' => $reasonId,
-                    'date' => $period['start'],
-                    'amount' => 0,
-                    'status_id' => Status::STATUS_ACTIVE
-                ]);
+                    $this->createReceivePlan([
+                        'object_id' => $objectId,
+                        'reason_id' => $reasonId,
+                        'date' => $period['start'],
+                        'amount' => 0,
+                        'status_id' => Status::STATUS_ACTIVE
+                    ]);
+                }
             }
         }
-
 
         return $periods;
     }
 
-    public function getPlans(int $objectId, string $startDate, string $endDate): Collection
+    public function getPlans(?int $objectId, string $startDate, string $endDate): Collection
     {
-        return ReceivePlan::where('object_id', $objectId)->whereBetween('date', [$startDate, $endDate])->get();
+        if ($objectId) {
+            return ReceivePlan::where('object_id', $objectId)->whereBetween('date', [$startDate, $endDate])->get();
+        }
+
+        return ReceivePlan::whereBetween('date', [$startDate, $endDate])->get();
     }
 
     public function isPlanExist(int $objectId, int $reasonId, string $date): bool
@@ -110,5 +116,17 @@ class ReceivePlanService
     public function findPlan(int $objectId, int $reasonId, string $date): ReceivePlan | null
     {
        return ReceivePlan::where('object_id', $objectId)->where('reason_id', $reasonId)->where('date', $date)->first();
+    }
+
+    public function getAllPeriods(): array
+    {
+        $activeObjectIds = BObject::active()->pluck('id')->toArray();
+        $closedObjectIds = ReceivePlan::groupBy('object_id')->pluck('object_id')->toArray();
+
+        $objectIds = array_merge($activeObjectIds, $closedObjectIds);
+        $data = [];
+
+
+        dd($this->getPeriods());
     }
 }

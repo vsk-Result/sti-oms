@@ -23,3 +23,13 @@ Breadcrumbs::for('pivots.dtsti.index', function (BreadcrumbTrail $trail) {
     $trail->push('Долги ДТ - СТИ');
 });
 
+Breadcrumbs::for('pivots.cash_flow.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Отчет CASH FLOW');
+});
+
+Breadcrumbs::for('pivots.acts_category.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Отчет по категориям');
+});
+

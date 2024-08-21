@@ -57,9 +57,9 @@
                     </div>
                 @endcan
 
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('finance-report*') || request()->is('pivots/balances**')) ? 'hover show' : '' }}">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('finance-report*') || request()->is('pivots**')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
-                        <span class="menu-title {{ (request()->is('finance-report*') || request()->is('pivots/balances**')) ? 'fw-boldest' : '' }}">Отчеты</span>
+                        <span class="menu-title {{ (request()->is('finance-report*') || request()->is('pivots**')) ? 'fw-boldest' : '' }}">Отчеты</span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
@@ -79,6 +79,17 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">Отчет по общим затратам</span>
+                                </a>
+                            </div>
+                        @endcan
+
+                        @can('index pivot-cash-flow')
+                            <div class="menu-item">
+                                <a href="{{ route('pivots.cash_flow.index') }}" class="menu-link py-2 {{ request()->is('pivots/cash-flow*') ? 'active' : '' }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>;
+                                <span class="menu-title">Отчет CASH FLOW</span>
                                 </a>
                             </div>
                         @endcan
