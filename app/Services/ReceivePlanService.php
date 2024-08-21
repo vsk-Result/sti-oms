@@ -47,6 +47,7 @@ class ReceivePlanService
 
         if ($objectId) {
             $reasons = ReceivePlan::getReasons();
+
             foreach ($periods as $period) {
                 foreach ($reasons as $reasonId => $reasonName) {
                     if ($this->isPlanExist($objectId, $reasonId, $period['start'])) {
@@ -60,6 +61,19 @@ class ReceivePlanService
                         'amount' => 0,
                         'status_id' => Status::STATUS_ACTIVE
                     ]);
+                }
+            }
+
+            $earlyPlans = ReceivePlan::where('object_id', $objectId)->where('date', '<', $periods[0]['start'])->get();
+            foreach ($earlyPlans as $plan) {
+                $issetPlan = $this->findPlan($objectId, $plan->reason_id, $periods[0]['start']);
+
+                if ($issetPlan) {
+                    $issetPlan->update([
+                        'amount' => $issetPlan->amount + $plan->amount
+                    ]);
+
+                    $plan->delete();
                 }
             }
         }
