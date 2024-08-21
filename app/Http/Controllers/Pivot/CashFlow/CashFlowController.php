@@ -54,8 +54,12 @@ class CashFlowController extends Controller
         $planPayments = TaxPlanItem::where('paid', false)->get();
         $reasons = ReceivePlan::getReasons();
         $periods = $this->receivePlanService->getPeriods();
-        $objects = BObject::active()->orderBy('code')->get();
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
+
+        $activeObjectIds = BObject::active()->orderBy('code')->pluck('id')->toArray();
+        $closedObjectIds = ReceivePlan::whereBetween('date', [$periods[0]['start'], end($periods)['start']])->groupBy('object_id')->pluck('object_id')->toArray();
+
+        $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
 
         return view(
             'pivots.cash-flow.index',
