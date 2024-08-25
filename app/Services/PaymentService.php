@@ -663,22 +663,26 @@ class PaymentService
                         unset($requestData['object_worktype_id']);
                         unset($requestData['type_id']);
                     }
+
+                    if (! in_array($payment->category, [Payment::CATEGORY_OPSTE, Payment::CATEGORY_SALARY, Payment::CATEGORY_MATERIAL, Payment::CATEGORY_TAX])) {
+                        $this->error = 'Категория на объекте 27.1 может иметь следующие значения: Зарплата, Налоги, Материалы, Накладные/Услуги. Введенные данные не сохранятся.';
+                        unset($requestData['object_code']);
+                        unset($requestData['object_id']);
+                        unset($requestData['object_worktype_id']);
+                        unset($requestData['type_id']);
+                    }
                 } else if ($requestData['object_code'] === 'Общее') {
-                    if (
-                        !($payment->category === 'Накладные/Услуги' || $payment->category === 'Налоги')
-                    ) {
-                        $this->error = 'Для объекта Общее нельзя указать категорию кроме налогов и услуг. Данные о категории не сохранятся.';
+                    if (! in_array($payment->category, [Payment::CATEGORY_OPSTE, Payment::CATEGORY_SALARY, Payment::CATEGORY_MATERIAL, Payment::CATEGORY_TAX])) {
+                        $this->error = 'Категория на объекте Общее может иметь следующие значения: Зарплата, Налоги, Материалы, Накладные/Услуги. Введенные данные не сохранятся.';
                         unset($requestData['category']);
                     }
                 }
             }
 
             if (array_key_exists('category', $requestData)) {
-                if ($payment->getObject() === 'Общее') {
-                    if (
-                        !($requestData['category'] === 'Накладные/Услуги' || $requestData['category'] === 'Налоги')
-                    ) {
-                        $this->error = 'Для объекта Общее нельзя указать категорию кроме налогов и услуг. Данные о категории не сохранятся.';
+                if ($payment->getObject() === 'Общее' || $payment->getObject() === '27.1') {
+                    if (! in_array($requestData['category'], [Payment::CATEGORY_OPSTE, Payment::CATEGORY_SALARY, Payment::CATEGORY_MATERIAL, Payment::CATEGORY_TAX])) {
+                        $this->error = 'Категория на объекте 27.1 или Общее может иметь следующие значения: Зарплата, Налоги, Материалы, Накладные/Услуги. Введенные данные не сохранятся.';
                         unset($requestData['category']);
                     }
                 }

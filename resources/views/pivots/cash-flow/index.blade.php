@@ -161,9 +161,13 @@
                                 @php
                                     $total = 0;
                                 @endphp
-                                @foreach($periods as $period)
+                                @foreach($periods as $index => $period)
                                     @php
-                                        $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                        if ($index === 0) {
+                                            $amount = $planPayments->where('name', $type)->where('due_date', '<=', $period['end'])->sum('amount');
+                                        } else {
+                                            $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                        }
                                         $total += $amount;
                                     @endphp
 
@@ -186,9 +190,14 @@
                             @php
                                 $total = 0;
                             @endphp
-                            @foreach($periods as $period)
+                            @foreach($periods as $index => $period)
                                 @php
-                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                    if ($index === 0) {
+                                        $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                                    } else {
+                                        $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                    }
+
                                     $total += $amount;
                                 @endphp
 
@@ -217,10 +226,15 @@
                         <tr class="object-row">
                             <td class="ps-2 fw-bolder">Сальдо (без учета целевых авансов) по неделям:</td>
 
-                            @foreach($periods as $period)
+                            @foreach($periods as $index => $period)
                                 @php
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
-                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+
+                                    if ($index === 0) {
+                                        $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                                    } else {
+                                        $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                    }
 
                                     $diff = $otherAmount - $amount;
                                 @endphp
@@ -238,10 +252,15 @@
                                 $prev = 0;
                             @endphp
 
-                            @foreach($periods as $period)
+                            @foreach($periods as $index => $period)
                                 @php
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
-                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+
+                                    if ($index === 0) {
+                                        $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                                    } else {
+                                        $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                    }
 
                                     $diff = $otherAmount - $amount + $prev;
                                     $prev = $diff;
