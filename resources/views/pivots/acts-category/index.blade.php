@@ -55,17 +55,17 @@
                                 ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
                                 ->get();
 
-                            $receiveMaterialFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->amount)->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->first();
+                            $receiveMaterialFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->amount)->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->exists();
                             if ($receiveMaterialFromCustomers) {
                                 $totalMaterialPaidAmount += $act->amount;
                             }
 
-                            $receiveRadFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->rad_amount)->where('category', \App\Models\Payment::CATEGORY_RAD)->first();
+                            $receiveRadFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->rad_amount)->where('category', \App\Models\Payment::CATEGORY_RAD)->exists();
                             if ($receiveRadFromCustomers) {
                                 $totalRadPaidAmount += $act->rad_amount;
                             }
 
-                            $receiveOpsteFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->opste_amount)->where('category', \App\Models\Payment::CATEGORY_OPSTE)->first();
+                            $receiveOpsteFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->opste_amount)->where('category', \App\Models\Payment::CATEGORY_OPSTE)->exists();
                             if ($receiveOpsteFromCustomers) {
                                 $totalOpstePaidAmount += $act->opste_amount;
                             }
