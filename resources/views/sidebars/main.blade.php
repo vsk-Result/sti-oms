@@ -34,7 +34,7 @@
                 @endcan
             @endif
 
-            @canAny(['index finance-report', 'index general-costs', 'index pivot-balances', 'index distribution-transfer-service'])
+            @canAny(['index finance-report', 'index general-costs', 'index pivot-balances', 'index distribution-transfer-service', 'index pivot-cash-flow', 'index pivot-acts-category'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Сводные</span>
@@ -88,8 +88,19 @@
                                 <a href="{{ route('pivots.cash_flow.index') }}" class="menu-link py-2 {{ request()->is('pivots/cash-flow*') ? 'active' : '' }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
-                                </span>;
+                                </span>
                                 <span class="menu-title">Отчет CASH FLOW</span>
+                                </a>
+                            </div>
+                        @endcan
+
+                        @can('index pivot-acts-category')
+                            <div class="menu-item">
+                                <a href="{{ route('pivots.acts_category.index') }}" class="menu-link py-2 {{ request()->is('pivots/acts-category*') ? 'active' : '' }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Отчет по категориям</span>
                                 </a>
                             </div>
                         @endcan

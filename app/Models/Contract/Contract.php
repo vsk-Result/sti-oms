@@ -147,6 +147,108 @@ class Contract extends Model implements HasMedia, Audit
         return $amount;
     }
 
+    public function getMaterialAmount(string $currency = null): string|array
+    {
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->amount : 0;
+
+        if ($this->isMain()) {
+
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[7])) {
+                return json_decode($this->params)[7] ?? 0;
+            }
+
+            // Тинькоф
+            if ($this->object_id === 103 && $currency === 'RUB' && $this->id === 294) {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if ($subContract->isMainAmount()) {
+                        $amount = $subContract->amount;
+                    }
+                }
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if (!$subContract->isMainAmount()) {
+                        $amount += $subContract->amount;
+                    }
+                }
+            } else {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    $amount = $subContract->isMainAmount()
+                        ? $subContract->amount
+                        : $amount + $subContract->amount;
+                }
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getRadAmount(string $currency = null): string|array
+    {
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->rad_amount : 0;
+
+        if ($this->isMain()) {
+
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[7])) {
+                return json_decode($this->params)[7] ?? 0;
+            }
+
+            // Тинькоф
+            if ($this->object_id === 103 && $currency === 'RUB' && $this->id === 294) {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if ($subContract->isMainAmount()) {
+                        $amount = $subContract->rad_amount;
+                    }
+                }
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if (!$subContract->isMainAmount()) {
+                        $amount += $subContract->rad_amount;
+                    }
+                }
+            } else {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    $amount = $subContract->isMainAmount()
+                        ? $subContract->rad_amount
+                        : $amount + $subContract->rad_amount;
+                }
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getOpsteAmount(string $currency = null): string|array
+    {
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->opste_amount : 0;
+
+        if ($this->isMain()) {
+
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[7])) {
+                return json_decode($this->params)[7] ?? 0;
+            }
+
+            // Тинькоф
+            if ($this->object_id === 103 && $currency === 'RUB' && $this->id === 294) {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if ($subContract->isMainAmount()) {
+                        $amount = $subContract->opste_amount;
+                    }
+                }
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    if (!$subContract->isMainAmount()) {
+                        $amount += $subContract->opste_amount;
+                    }
+                }
+            } else {
+                foreach ($this->children->where('currency', $currency) as $subContract) {
+                    $amount = $subContract->isMainAmount()
+                        ? $subContract->opste_amount
+                        : $amount + $subContract->opste_amount;
+                }
+            }
+        }
+
+        return $amount;
+    }
+
     public function getAvansesAmount(string $currency = null): string|array
     {
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avanses->sum('amount') : 0;

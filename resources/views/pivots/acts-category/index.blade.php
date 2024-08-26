@@ -15,43 +15,220 @@
                             <th class="min-w-200px">% по договору</th>
 
                             @foreach($acts as $act)
-                                <th class="min-w-200px">{{ $act->name }}</th>
+                                <th class="min-w-200px">{{ $act->number }}</th>
                             @endforeach
 
                             <th class="min-w-200px">Итого выполнение</th>
                             <th class="min-w-200px">% выполнение</th>
-                            <th class="min-w-200px">Остато к выполнению</th>
+                            <th class="min-w-200px">Остаток к выполнению</th>
                             <th class="min-w-200px">Оплата</th>
                             <th class="min-w-200px">% оплаты</th>
                             <th class="min-w-200px">Остаток к оплате</th>
-                            <th class="min-w-200px">% остатка к оплатее</th>
+                            <th class="min-w-200px">% остатка к оплате</th>
                         </tr>
                     </thead>
 
+                    @php
+                        $totalMaterialAmount = $acts->sum('amount');
+                        $totalRadAmount = $acts->sum('rad_amount');
+                        $totalOpsteAmount = $acts->sum('opste_amount');
+
+                        $totalMaterialContractAmount = 0;
+                        $totalRadContractAmount = 0;
+                        $totalOpsteContractAmount = 0;
+
+                        foreach (App\Models\Contract\Contract::whereIn('object_id', $activeObjectIds)->where('type_id', App\Models\Contract\Contract::TYPE_MAIN)->get() as $contract) {
+                            $totalMaterialContractAmount += $contract->getMaterialAmount();
+                            $totalRadContractAmount += $contract->getRadAmount();
+                            $totalOpsteContractAmount += $contract->getOpsteAmount();
+                        }
+
+                        $totalMaterialPaidAmount = 0;
+                        $totalRadPaidAmount = 0;
+                        $totalOpstePaidAmount = 0;
+
+                        foreach ($acts as $act) {
+                            $object = $act->object;
+                            $receivePaymentsFromCustomers = $object->payments()
+                                ->where('payment_type_id', App\Models\Payment::PAYMENT_TYPE_NON_CASH)
+                                ->where('company_id', 1)
+                                ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                                ->get();
+
+                            $receiveMaterialFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->amount)->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->first();
+                            if ($receiveMaterialFromCustomers) {
+                                $totalMaterialPaidAmount += $act->amount;
+                            }
+
+                            $receiveRadFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->rad_amount)->where('category', \App\Models\Payment::CATEGORY_RAD)->first();
+                            if ($receiveRadFromCustomers) {
+                                $totalRadPaidAmount += $act->rad_amount;
+                            }
+
+                            $receiveOpsteFromCustomers = $receivePaymentsFromCustomers->where('amount', $act->opste_amount)->where('category', \App\Models\Payment::CATEGORY_OPSTE)->first();
+                            if ($receiveOpsteFromCustomers) {
+                                $totalOpstePaidAmount += $act->opste_amount;
+                            }
+                        }
+
+                        $totalMaterialLeftPaidAmount = $totalMaterialContractAmount - $totalMaterialPaidAmount;
+                        $totalRadLeftPaidAmount = $totalRadContractAmount - $totalRadPaidAmount;
+                        $totalOpsteLeftPaidAmount = $totalOpsteContractAmount - $totalOpstePaidAmount;
+
+                        $totalAmount = $totalMaterialAmount + $totalRadAmount + $totalOpsteAmount;
+                        $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
+                        $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
+                        $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
+                    @endphp
+
                     <tbody class="text-gray-600 fw-bold fs-7">
-                        <tr class="object-row">
+                        <tr>
                             <td class="ps-2 fw-bolder">Материал</td>
-                            <td class="text-right">
-                                {{ \App\Models\CurrencyExchangeRate::format(\App\Models\Contract\Contract::where('type_id', \App\Models\Contract\Contract::TYPE_MAIN), 'RUB', 0, true) }}
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalMaterialContractAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount * 100 : 0) . '%' }}
                             </td>
 
                             @foreach($acts as $act)
-                                @php
-                                    $amount = $plans->where('object_id', $object->id)->where('date', $period['start'])->sum('amount');
-                                @endphp
-                                <td class="text-right fw-bolder">
-                                    {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                                <td class="cell-center fw-bolder">
+                                    {{ \App\Models\CurrencyExchangeRate::format($act->amount, 'RUB', 0, true) }}
                                 </td>
                             @endforeach
 
-                            <td class="text-right fw-bolder pe-2">
-                                {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalMaterialAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalMaterialContractAmount - $totalMaterialAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalMaterialPaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalPaidAmount != 0 ? $totalMaterialPaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalMaterialLeftPaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalLeftPaidAmount != 0 ? $totalMaterialLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
                             </td>
                         </tr>
 
-                        @foreach($acts as $act)
+                        <tr>
+                            <td class="ps-2 fw-bolder">Работы</td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadContractAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount * 100 : 0) . '%' }}
+                            </td>
 
-                        @endforeach
+                            @foreach($acts as $act)
+                                <td class="cell-center fw-bolder">
+                                    {{ \App\Models\CurrencyExchangeRate::format($act->rad_amount, 'RUB', 0, true) }}
+                                </td>
+                            @endforeach
+
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadContractAmount - $totalRadAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadPaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalPaidAmount != 0 ? $totalRadPaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadLeftPaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalLeftPaidAmount != 0 ? $totalRadLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="ps-2 fw-bolder">Накладные</td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalOpsteContractAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount * 100 : 0) . '%' }}
+                            </td>
+
+                            @foreach($acts as $act)
+                                <td class="cell-center fw-bolder">
+                                    {{ \App\Models\CurrencyExchangeRate::format($act->opste_amount, 'RUB', 0, true) }}
+                                </td>
+                            @endforeach
+
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalOpsteAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalOpsteContractAmount - $totalOpsteAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalOpstePaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalPaidAmount != 0 ? $totalOpstePaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalOpsteLeftPaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalLeftPaidAmount != 0 ? $totalOpsteLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                            </td>
+                        </tr>
+
+                        <tr class="object-row fw-bolder">
+                            <td class="ps-2 fw-bolder">Итого</td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalContractAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">100%</td>
+
+                            @foreach($acts as $act)
+                                <td class="cell-center fw-bolder"></td>
+                            @endforeach
+
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalContractAmount != 0 ? $totalAmount / $totalContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalContractAmount - $totalAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalPaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalLeftPaidAmount, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount * 100 : 0) . '%' }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -74,7 +251,7 @@
             color: #3f4254;
         }
 
-        .text-right {
+        .cell-center {
             text-align: right !important;
         }
 
