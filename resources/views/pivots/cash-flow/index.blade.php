@@ -239,7 +239,7 @@
                                     $diff = $otherAmount - $amount;
                                 @endphp
 
-                                <td class="text-right fw-bolder {{ $diff < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($diff, 'RUB', 0, true) }}</td>
+                                <td class="cell-center fw-bolder {{ $diff < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($diff, 'RUB', 0, true) }}</td>
                             @endforeach
 
                             <td class="text-right pe-2"></td>
@@ -266,7 +266,7 @@
                                     $prev = $diff;
                                 @endphp
 
-                                <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($diff, 'RUB', 0, true) }}</td>
+                                <td class="cell-center fw-bolder {{ $diff < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($diff, 'RUB', 0, true) }}</td>
                             @endforeach
 
                             <td class="text-right pe-2"></td>
