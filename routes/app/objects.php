@@ -17,6 +17,7 @@ use App\Http\Controllers\Object\DepositController;
 use App\Http\Controllers\Object\ExportController;
 use App\Http\Controllers\Object\WriteoffController;
 use App\Http\Controllers\Object\ReceivePlanController;
+use App\Http\Controllers\Object\ReceivePlanExportController;
 
 // Экспорт объекта в Excel
 
@@ -90,5 +91,6 @@ Route::post('objects-users/{object}', [UserController::class, 'update'])->name('
 
 Route::get('objects/{object}/receive-plan', [ReceivePlanController::class, 'index'])->name('objects.receive_plan.index');
 Route::post('objects/{object}/receive-plan', [ReceivePlanController::class, 'store'])->name('objects.receive_plan.store');
+Route::post('objects/{object}/receive-plan/export', [ReceivePlanExportController::class, 'store'])->name('objects.receive_plan.exports.store');
 
 
