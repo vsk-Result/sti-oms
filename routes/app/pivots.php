@@ -8,6 +8,7 @@ use App\Http\Controllers\Pivot\Act\ExportController as ActExportController;
 use App\Http\Controllers\Pivot\DTSTI\DTSTIController;
 use App\Http\Controllers\Pivot\DTSTI\ExportController as DTSTIExportController;
 use App\Http\Controllers\Pivot\CashFlow\CashFlowController;
+use App\Http\Controllers\Pivot\CashFlow\ExportController as CashFlowExportController;
 use App\Http\Controllers\Pivot\ActCategory\ActCategoryController;
 
 // Сводная по долгам от СТИ
@@ -33,6 +34,7 @@ Route::post('pivots/dt-sti/export', [DTSTIExportController::class, 'store'])->na
 
 // Отчет по CASH FLOW
 Route::get('pivots/cash-flow', [CashFlowController::class, 'index'])->name('pivots.cash_flow.index');
+Route::post('pivots/cash-flow/export', [CashFlowExportController::class, 'store'])->name('pivots.cash_flow.exports.store');
 
 // Отчет по категориям
 Route::get('pivots/acts-category', [ActCategoryController::class, 'index'])->name('pivots.acts_category.index');
