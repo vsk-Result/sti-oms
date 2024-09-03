@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Пользователи')
 @section('toolbar-title', 'Пользователи')
 @section('breadcrumbs', Breadcrumbs::render('users.index'))
 

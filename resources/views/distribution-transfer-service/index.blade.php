@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Распределение услуг по трансферу')
 @section('toolbar-title', 'Распределение услуг по трансферу')
 @section('breadcrumbs', Breadcrumbs::render('distribution_transfer_service.index'))
 

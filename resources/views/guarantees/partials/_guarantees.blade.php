@@ -121,7 +121,7 @@
                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                 @can('edit guarantees')
                                     <div class="menu-item px-3">
-                                        <a target="_blank" href="{{ route('guarantees.edit', $guarantee) }}" class="menu-link px-3">Изменить</a>
+                                        <a href="{{ route('guarantees.edit', $guarantee) }}" class="menu-link px-3">Изменить</a>
                                     </div>
 
                                     <div class="menu-item px-3">

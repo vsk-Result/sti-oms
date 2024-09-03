@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'Наши компании')
+@section('title', 'Компании')
+@section('toolbar-title', 'Компании')
 @section('breadcrumbs', Breadcrumbs::render('companies.index'))
 
 @section('content')

@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Изменение записи')
 @section('toolbar-title', 'Изменение записи')
 @section('breadcrumbs', Breadcrumbs::render('tax_plan.edit', $item))
 

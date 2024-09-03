@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Изменения акта ' . $act->number)
 @section('toolbar-title', 'Изменения акт')
 @section('breadcrumbs', Breadcrumbs::render('acts.edit', $act))
 

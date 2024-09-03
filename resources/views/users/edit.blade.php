@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Настройки аккаунта')
 @section('toolbar-title', 'Настройки аккаунта')
 @section('breadcrumbs', Breadcrumbs::render('users.edit', auth()->user()))
 

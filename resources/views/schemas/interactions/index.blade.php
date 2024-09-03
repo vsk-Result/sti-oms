@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Схема взаимодействия')
 @section('toolbar-title', 'Схема взаимодействия')
 @section('breadcrumbs', Breadcrumbs::render('schemas.interactions.index'))
 

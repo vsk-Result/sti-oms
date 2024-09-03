@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Распределение общих затрат')
 @section('toolbar-title', 'Распределение общих затрат')
 @section('breadcrumbs', Breadcrumbs::render('general_costs.index'))
 

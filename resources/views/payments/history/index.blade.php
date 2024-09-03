@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'История оплат')
 @section('toolbar-title', 'История оплат')
 @section('breadcrumbs', Breadcrumbs::render('payments.history.index'))
 

@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Банковская гарантия #' . $guarantee->id)
 @section('toolbar-title', 'Банковская гарантия #' . $guarantee->id)
 @section('breadcrumbs', Breadcrumbs::render('bank_guarantees.show', $guarantee))
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Система управления объектами') }}</title>
+    <title>@yield('title') | {{ config('app.name', 'ОМС') }}</title>
 
     <link rel="icon" href="{{ asset('images/favicon/cropped-STI_logo_2020_512x512-32x32.png') }}" sizes="32x32" />
     <link rel="icon" href="{{ asset('images/favicon/cropped-STI_logo_2020_512x512-192x192.png') }}" sizes="192x192" />

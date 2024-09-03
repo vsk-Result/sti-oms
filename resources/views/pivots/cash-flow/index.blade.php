@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Отчет CASH FLOW')
 @section('toolbar-title', 'Отчет CASH FLOW')
 @section('breadcrumbs', Breadcrumbs::render('pivots.cash_flow.index'))
 

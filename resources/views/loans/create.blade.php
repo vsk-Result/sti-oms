@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'Новый займ / кредит')
+@section('title', 'Новый займ/кредит')
+@section('toolbar-title', 'Новый займ/кредит')
 @section('breadcrumbs', Breadcrumbs::render('loans.create'))
 
 @section('content')

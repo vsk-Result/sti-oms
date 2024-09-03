@@ -8,7 +8,11 @@
 
     <div class="row g-6 g-xl-9">
         <div class="col-lg-12">
-            @include('acts.partials._acts')
+            @if ($isShowGroupedActs)
+                @include('acts.partials._acts_grouped')
+            @else
+                @include('acts.partials._acts')
+            @endif
         </div>
     </div>
 @endsection
@@ -48,5 +52,21 @@
 
             document.location = url.toString();
         });
+
+        $('.collapse-trigger').on('click', function() {
+            const $tr = $(this);
+            const trigger = $tr.data('trigger');
+            const isCollapsed = $tr.hasClass('collapsed');
+
+            if (isCollapsed) {
+                $tr.text('+');
+                $tr.removeClass('collapsed');
+                $(`.collapse-row[data-trigger="${trigger}"]`).hide();
+            } else {
+                $tr.text('-');
+                $tr.addClass('collapsed');
+                $(`.collapse-row[data-trigger="${trigger}"]`).show();
+            }
+        })
     </script>
 @endpush

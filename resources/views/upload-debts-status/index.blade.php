@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Статус загруженных файлов по долгам объектов')
 @section('toolbar-title', 'Статус загруженных файлов по долгам объектов')
 @section('breadcrumbs', Breadcrumbs::render('upload_debts_status.index'))
 

@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Статус фоновых процессов')
 @section('toolbar-title', 'Статус фоновых процессов')
 @section('breadcrumbs', Breadcrumbs::render('cron_processes.index'))
 

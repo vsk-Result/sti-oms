@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'История финансовых отчетов')
 @section('toolbar-title', 'История финансовых отчетов')
 @section('breadcrumbs', Breadcrumbs::render('finance_report.history.index'))
 

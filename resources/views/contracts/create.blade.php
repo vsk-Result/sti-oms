@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Новый договор')
 @section('toolbar-title', 'Новый договор')
 @section('breadcrumbs', Breadcrumbs::render('contracts.create'))
 

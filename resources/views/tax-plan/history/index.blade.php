@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'История плана налогов')
 @section('toolbar-title', 'История плана налогов')
 @section('breadcrumbs', Breadcrumbs::render('tax_plan.history.index'))
 

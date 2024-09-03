@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Менеджер логов')
 @section('toolbar-title', 'Менеджер логов')
 @section('breadcrumbs', Breadcrumbs::render('logs.index'))
 

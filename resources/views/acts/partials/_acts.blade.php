@@ -55,105 +55,56 @@
         <div class="table-responsive freeze-table">
             <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
-                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                    <th data-sort-by="object_id" class="min-w-100px ps-4 sortable-row">Объект</th>
-                    <th data-sort-by="contract_id" class="min-w-150px sortable-row">Договор</th>
-                    <th data-sort-by="number" class="min-w-75px sortable-row">Номер акта</th>
-                    <th class="min-w-25px"></th>
-                    <th data-sort-by="date" class="min-w-150px sortable-row">Дата акта</th>
-                    <th data-sort-by="amount" class="min-w-150px sortable-row">Выполнено</th>
-                    <th data-sort-by="amount_avans" class="min-w-175px sortable-row">Аванс удержан</th>
-                    <th data-sort-by="amount_deposit" class="min-w-150px sortable-row">Депозит удержан</th>
-                    <th data-sort-by="amount_need_paid" class="min-w-150px sortable-row">К оплате</th>
-                    <th data-sort-by="planned_payment_date" class="min-w-150px sortable-row">Дата планируемой оплаты</th>
-                    <th class="min-w-150px">Оплачено</th>
-                    <th class="min-w-150px">Сумма неоплаченных работ</th>
-                    <th class="min-w-150px">Действие</th>
-                </tr>
-                <tr class="fw-bolder" style="background-color: #f7f7f7;">
-                    <th colspan="5" class="ps-4" style="vertical-align: middle;">Итого</th>
-                    <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}
-                    </th>
-                    <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}
-                    </th>
-                    <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['EUR'], 'EUR') }}
-                    </th>
-                    <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['EUR'], 'EUR') }}
-                    </th>
-                    <th></th>
-                    <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['EUR'], 'EUR') }}
-                    </th>
-                    <th>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['EUR'], 'EUR') }}
-                    </th>
-                    <th></th>
-                </tr>
-
-                @if ($isShowExtendedTotal)
-                    <tr class="fw-bold fs-8" style="background-color: #fbfbfb;">
-                        <th colspan="5" class="ps-4" style="vertical-align: middle;">Итого (фиксированная часть)</th>
+                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                        <th data-sort-by="object_id" class="min-w-100px ps-4 sortable-row">Объект</th>
+                        <th data-sort-by="contract_id" class="min-w-150px sortable-row">Договор</th>
+                        <th data-sort-by="number" class="min-w-75px sortable-row">Номер акта</th>
+                        <th class="min-w-25px"></th>
+                        <th data-sort-by="date" class="min-w-150px sortable-row">Дата акта</th>
+                        <th data-sort-by="amount" class="min-w-150px sortable-row">Выполнено</th>
+                        <th data-sort-by="amount_avans" class="min-w-175px sortable-row">Аванс удержан</th>
+                        <th data-sort-by="amount_deposit" class="min-w-150px sortable-row">Депозит удержан</th>
+                        <th data-sort-by="amount_need_paid" class="min-w-150px sortable-row">К оплате</th>
+                        <th data-sort-by="planned_payment_date" class="min-w-150px sortable-row">Дата планируемой оплаты</th>
+                        <th class="min-w-150px">Оплачено</th>
+                        <th class="min-w-150px">Сумма неоплаченных работ</th>
+                        <th class="min-w-150px">Действие</th>
+                    </tr>
+                    <tr class="fw-bolder" style="background-color: #f7f7f7;">
+                        <th colspan="5" class="ps-4" style="vertical-align: middle;">Итого</th>
                         <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['amount_fix']['RUB'], 'RUB') }}
+                            {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
+                            <br>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}
                         </th>
                         <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount_fix']['RUB'], 'RUB') }}
+                            {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['RUB'], 'RUB') }}
+                            <br>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}
                         </th>
                         <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount_fix']['RUB'], 'RUB') }}
+                            {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['RUB'], 'RUB') }}
+                            <br>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount']['EUR'], 'EUR') }}
                         </th>
                         <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount_fix']['RUB'], 'RUB') }}
+                            {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['RUB'], 'RUB') }}
+                            <br>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount']['EUR'], 'EUR') }}
                         </th>
                         <th></th>
                         <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount_fix']['RUB'], 'RUB') }}
+                            {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['RUB'], 'RUB') }}
+                            <br>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount']['EUR'], 'EUR') }}
                         </th>
                         <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount_fix']['RUB'], 'RUB') }}
+                            {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['RUB'], 'RUB') }}
+                            <br>
+                            {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount']['EUR'], 'EUR') }}
                         </th>
                         <th></th>
                     </tr>
-                    <tr class="fw-bold fs-8" style="background-color: #fbfbfb;">
-                        <th colspan="5" class="ps-4" style="vertical-align: middle;">Итого (переменная часть)</th>
-                        <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['amount_float']['RUB'], 'RUB') }}
-                        </th>
-                        <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount_float']['RUB'], 'RUB') }}
-                        </th>
-                        <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['deposites_amount_float']['RUB'], 'RUB') }}
-                        </th>
-                        <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['need_paid_amount_float']['RUB'], 'RUB') }}
-                        </th>
-                        <th></th>
-                        <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['paid_amount_float']['RUB'], 'RUB') }}
-                        </th>
-                        <th>
-                            {{ \App\Models\CurrencyExchangeRate::format($total['left_paid_amount_float']['RUB'], 'RUB') }}
-                        </th>
-                        <th></th>
-                    </tr>
-                @endif
                 </thead>
                 <tbody class="text-gray-600 fw-bold">
                 @forelse($acts as $act)
@@ -203,7 +154,7 @@
                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                 @can('edit acts')
                                     <div class="menu-item px-3">
-                                        <a target="_blank" href="{{ route('acts.edit', $act) }}" class="menu-link px-3">Изменить</a>
+                                        <a href="{{ route('acts.edit', $act) }}" class="menu-link px-3">Изменить</a>
                                     </div>
 
                                     <div class="menu-item px-3">

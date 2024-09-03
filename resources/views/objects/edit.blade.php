@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Изменение объекта ' . $object->code)
 @section('toolbar-title', 'Изменение объекта')
 @section('breadcrumbs', Breadcrumbs::render('objects.edit', $object))
 

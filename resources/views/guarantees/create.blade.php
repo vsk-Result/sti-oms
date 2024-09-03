@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Новое гарантийное удержание')
 @section('toolbar-title', 'Новое гарантийное удержание')
 @section('breadcrumbs', Breadcrumbs::render('guarantees.create'))
 

@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Загрузки оплат')
 @section('toolbar-title', 'Загрузки оплат')
 @section('breadcrumbs', Breadcrumbs::render('payment_imports.index'))
 

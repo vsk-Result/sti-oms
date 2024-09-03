@@ -88,7 +88,6 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
                                         <a
-                                            target="_blank"
                                             class="text-danger"
                                             href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}&object_worktype_id%5B%5D=1"
                                         >
@@ -144,7 +143,7 @@
                                     <tr>
                                         <td>{{ $info['name'] }}</td>
                                         <td class="text-danger">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=1">
+                                            <a  class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=1">
                                                 {{ number_format($amount, 2, ',', ' ') }}
                                             </a>
                                         </td>
@@ -174,7 +173,6 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
                                         <a
-                                            target="_blank"
                                             class="text-danger"
                                             href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4"
                                         >
@@ -230,7 +228,7 @@
                                     <tr>
                                         <td>{{ $info['name'] }}</td>
                                         <td class="text-danger">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
+                                            <a  class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
                                                 {{ number_format($amount, 2, ',', ' ') }}
                                             </a>
                                         </td>
@@ -285,7 +283,7 @@
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                     <div class="d-flex align-items-center">
                                         <div class="fs-4 fw-bolder text-danger">
-                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($debts['contractor']->total_amount + $ds->sum('avans'), 2, ',', ' ') }}
                                             </a>
                                         </div>
@@ -296,7 +294,7 @@
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                     <div class="d-flex align-items-center">
                                         <div class="fs-4 fw-bolder text-danger">
-                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
                                             </a>
                                         </div>
@@ -326,28 +324,28 @@
                                     <th class="ps-2 hl">ИТОГО</th>
                                     @if ($hasObjectImport)
                                         <th class="w-150px text-end hl">
-                                            <a target="_blank" class="text-success" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                            <a class="text-success" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($ds->sum('unwork_avans'), 2, ',', ' ') }}
                                             </a>
                                         </th>
                                         <th class="w-150px text-end hl">
-                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($ds->sum('guarantee'), 2, ',', ' ') }}
                                             </a>
                                         </th>
                                         <th class="w-150px text-end pe-2 hl">
-                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($ds->sum('avans'), 2, ',', ' ') }}
                                             </a>
                                         </th>
                                         <th class="w-175px text-end hl">
-                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
                                             </a>
                                         </th>
                                     @else
                                         <th class="w-175px text-end pe-2 hl">
-                                            <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
                                             </a>
                                         </th>
@@ -402,17 +400,17 @@
                                                 </td>
                                             @else
                                                 <td class="text-success text-end pe-2">
-                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                         {{ number_format($unworkAvans, 2, ',', ' ') }}
                                                     </a>
                                                 </td>
                                                 <td class="text-danger text-end pe-2">
-                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                         {{ number_format($guarantee, 2, ',', ' ') }}
                                                     </a>
                                                 </td>
                                                 <td class="text-danger text-end pe-2">
-                                                    <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                         {{ number_format($avans, 2, ',', ' ') }}
                                                     </a>
                                                 </td>
@@ -425,7 +423,7 @@
                                                     <span class="text-muted fs-8">(изменено вручную)</span>
                                                 </div>
                                             @else
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                     {{ number_format($amount, 2, ',', ' ') }}
                                                 </a>
                                             @endif
@@ -475,7 +473,7 @@
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
-                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
                                             {{ number_format($debts['service']->total_amount, 2, ',', ' ') }}
                                         </a>
                                     </div>
@@ -495,7 +493,7 @@
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2 hl">ИТОГО</th>
                                     <th class="w-175px text-end pe-2 hl">
-                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
                                             {{ number_format($debts['service']->total_amount, 2, ',', ' ') }}
                                         </a>
                                     </th>
@@ -511,7 +509,7 @@
                                     <tr>
                                         <td class="ps-2">{{ $organizationName }}</td>
                                         <td class="text-danger text-end pe-2">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
+                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
                                                 {{ number_format($amount, 2, ',', ' ') }}
                                             </a>
                                         </td>
@@ -571,7 +569,6 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
                                         <a
-                                            target="_blank"
                                             class="text-danger"
                                             href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}&object_worktype_id%5B%5D=1"
                                         >
@@ -614,7 +611,7 @@
                                     <tr>
                                         <td>{{ $organization->name }}</td>
                                         <td class="text-danger">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=1">
+                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=1">
                                                 {{ number_format($oneTotal * $seven + $one, 2, ',', ' ') }}
                                             </a>
                                         </td>
@@ -645,7 +642,6 @@
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
                                         <a
-                                            target="_blank"
                                             class="text-danger"
                                             href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4"
                                         >
@@ -688,7 +684,7 @@
                                     <tr>
                                         <td>{{ $organization->name }}</td>
                                         <td class="text-danger">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
+                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
                                                 {{ number_format($twoFourTotal * $seven + $two + $four, 2, ',', ' ') }}
                                             </a>
                                         </td>
@@ -719,7 +715,7 @@
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder">
-                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
                                             {{ number_format($debts['provider']->total_amount, 2, ',', ' ') }}
                                         </a>
                                     </div>
@@ -740,12 +736,12 @@
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2 hl">ИТОГО</th>
                                     <th class="w-175px pe-2 text-end hl">
-                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
                                             {{ number_format($debts['provider']->fix_amount, 2, ',', ' ') }}
                                         </a>
                                     </th>
                                     <th class="w-175px pe-2 text-end hl">
-                                        <a target="_blank" class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
                                             {{ number_format($debts['provider']->float_amount, 2, ',', ' ') }}
                                         </a>
                                     </th>
@@ -807,7 +803,7 @@
 {{--                                                    <span class="text-muted fs-8">(изменено вручную)</span>--}}
 {{--                                                </div>--}}
 {{--                                            @else--}}
-                                                <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                                <a  class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
                                                     {{ number_format($debtAmount['fix'], 2, ',', ' ') }}
                                                 </a>
 {{--                                            @endif--}}
@@ -829,7 +825,7 @@
 {{--                                            </a>--}}
                                         </td>
                                         <td class="text-danger text-end">
-                                            <a target="_blank" class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
+                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
                                                 {{ number_format($debtAmount['float'], 2, ',', ' ') }}
                                             </a>
                                         </td>
@@ -913,6 +909,9 @@
             $('#debt-manual-object-worktype-id').val($(this).data('object-worktype-id') || '');
             $('#debt-manual-organization-id').val($(this).data('organization-id') || '');
             $('#debt-manual-comment').text($(this).data('comment') || '');
+
+            KTApp.init();
+            mainApp.init();
         });
     </script>
 @endpush

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('toolbar-title', 'Займы / Кредиты')
+@section('title', 'Займы/Кредиты')
+@section('toolbar-title', 'Займы/Кредиты')
 @section('breadcrumbs', Breadcrumbs::render('loans.index'))
 
 @section('content')
@@ -170,7 +171,7 @@
                                 </a>
                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                     <div class="menu-item px-3">
-                                        <a target="_blank" href="{{ route('loans.history.index', $loan) }}" class="menu-link px-3">Оплаты</a>
+                                        <a href="{{ route('loans.history.index', $loan) }}" class="menu-link px-3">Оплаты</a>
                                     </div>
                                     @can('edit loans')
                                         <div class="menu-item px-3">

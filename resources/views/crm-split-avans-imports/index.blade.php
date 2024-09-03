@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Статус переноса оплат на карты из CRM')
 @section('toolbar-title', 'Статус переноса оплат на карты из CRM')
 @section('breadcrumbs', Breadcrumbs::render('crm.avanses.imports.split.index'))
 

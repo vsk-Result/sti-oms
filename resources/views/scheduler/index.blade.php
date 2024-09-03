@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Планировщик задач')
 @section('toolbar-title', 'Планировщик задач')
 @section('breadcrumbs', Breadcrumbs::render('scheduler.index'))
 

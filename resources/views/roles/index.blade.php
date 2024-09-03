@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Роли доступа')
 @section('toolbar-title', 'Роли доступа')
 @section('breadcrumbs', Breadcrumbs::render('roles.index'))
 

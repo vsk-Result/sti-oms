@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Новое списание')
 @section('toolbar-title', 'Новое списание')
 @section('breadcrumbs', Breadcrumbs::render('writeoffs.create'))
 

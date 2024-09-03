@@ -1,7 +1,7 @@
 <div class="modal-header">
     <h4 class="modal-title">
         @if ($copyPayment)
-            Новая оплата на основе оплаты <a target="_blank" href="{{ route('payments.edit', $copyPayment) }}">#{{ $copyPayment->id }}</a>
+            Новая оплата на основе оплаты <a  href="{{ route('payments.edit', $copyPayment) }}">#{{ $copyPayment->id }}</a>
         @else
             Новая оплата
         @endif

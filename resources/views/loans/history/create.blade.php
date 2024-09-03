@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Новая оплата для ' . $loan->name . ' (' . $loan->getType() . ')')
 @section('toolbar-title', 'Новая оплата для ' . $loan->name . ' (' . $loan->getType() . ')')
 @section('breadcrumbs', Breadcrumbs::render('loans.history.create', $loan))
 

@@ -12,7 +12,7 @@
                 <div class="fw-bold">{{ $name }}</div>
 
                 <div class="d-flex fw-bolder">
-                    <a class="text-success" target="_blank" style="border-bottom: 1px dashed #ccc;" href="{{ $name === 'Депозиты' ? route('deposits.index') : route('bank_guarantees.index') }}">
+                    <a class="text-success" style="border-bottom: 1px dashed #ccc;" href="{{ $name === 'Депозиты' ? route('deposits.index') : route('bank_guarantees.index') }}">
                         {{ \App\Models\CurrencyExchangeRate::format($deposit, 'RUB') }}
                     </a>
                 </div>

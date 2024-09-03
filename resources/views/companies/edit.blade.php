@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Изменение компании ' . $company->name)
 @section('toolbar-title', 'Изменение компании')
 @section('breadcrumbs', Breadcrumbs::render('companies.edit', $company))
 

@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Депозит #' . $deposit->id)
 @section('toolbar-title', 'Депозит #' . $deposit->id)
 @section('breadcrumbs', Breadcrumbs::render('deposits.show', $deposit))
 

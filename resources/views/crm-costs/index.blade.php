@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Статус касс CRM')
 @section('toolbar-title', 'Статус касс CRM')
 @section('breadcrumbs', Breadcrumbs::render('crm_costs.index'))
 

@@ -84,7 +84,7 @@
         <tr>
             <td>
                 @if (auth()->user()->can('edit payments'))
-                    <a target="_blank" href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
+                    <a  href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
                 @else
                     {{ $payment->getDateFormatted() }}
                 @endif
@@ -119,7 +119,7 @@
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
                     @can('edit payments')
                         <div class="menu-item px-3">
-                            <a target="_blank" href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
+                            <a  href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">Изменить</a>
                         </div>
 
                         <div class="menu-item px-3">

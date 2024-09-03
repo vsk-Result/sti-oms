@@ -15,7 +15,6 @@
                     </div>
                     <p class="fs-7">
                         <a
-                            target="_blank"
                             class="text-muted"
                             style="border-bottom: 1px dashed #ccc;"
                             href="{{ route('loans.history.index', $credit->id) }}"

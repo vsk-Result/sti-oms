@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Загрузки долгов')
 @section('toolbar-title', 'Загрузки долгов')
 @section('breadcrumbs', Breadcrumbs::render('debt_imports.index'))
 

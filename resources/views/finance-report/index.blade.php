@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Финансовый отчет на ' . $date->format('d.m.Y'))
 @section('toolbar-title', 'Финансовый отчет на ' . $date->format('d.m.Y'))
 @section('breadcrumbs', Breadcrumbs::render('finance_report.index'))
 

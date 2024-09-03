@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Новая оплата')
 @section('toolbar-title', 'Новая оплата')
 @section('breadcrumbs', Breadcrumbs::render('payments.create'))
 

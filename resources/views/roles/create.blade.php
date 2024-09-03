@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Новая роль')
 @section('toolbar-title', 'Новая роль')
 @section('breadcrumbs', Breadcrumbs::render('roles.create'))
 

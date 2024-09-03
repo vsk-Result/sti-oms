@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Перенос оплат')
 @section('toolbar-title', 'Перенос оплат')
 @section('breadcrumbs', Breadcrumbs::render('organizations.transfer_payments.create', $organization))
 

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('toolbar-title',  'Долги')
+@section('title', 'Долги')
+@section('toolbar-title', 'Долги')
 @section('breadcrumbs', Breadcrumbs::render('debts.index'))
 
 @section('content')

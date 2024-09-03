@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Банковские гарантии и депозиты')
 @section('toolbar-title', 'Банковские гарантии и депозиты')
 @section('breadcrumbs', Breadcrumbs::render('bank_guarantees.index'))
 

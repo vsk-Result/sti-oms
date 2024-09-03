@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Контрагенты')
 @section('toolbar-title', 'Контрагенты')
 @section('breadcrumbs', Breadcrumbs::render('organizations.index'))
 

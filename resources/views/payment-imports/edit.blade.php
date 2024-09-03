@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Изменение оплат за ' . $import->getDateFormatted() . ' (' . $import->getType() . ')')
 @section('toolbar-title', 'Изменение оплат за ' . $import->getDateFormatted() . ' (' . $import->getType() . ')')
 @section('breadcrumbs', Breadcrumbs::render('payment_imports.edit', $import))
 

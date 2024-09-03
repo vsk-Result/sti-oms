@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Изменение списания')
 @section('toolbar-title', 'Изменение списания')
 @section('breadcrumbs', Breadcrumbs::render('writeoffs.edit', $writeoff))
 

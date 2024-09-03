@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Акт ' . $act->number)
 @section('toolbar-title', 'Акт за ' . $act->getDateFormatted())
 @section('breadcrumbs', Breadcrumbs::render('acts.show', $act))
 

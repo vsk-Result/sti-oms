@@ -11,7 +11,9 @@ const mainApp = function() {
 
     const initInputAmountMask = function() {
         $('.amount-mask').each(function() {
+
             $(this).val($(this).val().replace('.', ','));
+
         });
 
 

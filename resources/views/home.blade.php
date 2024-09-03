@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Главная')
 @section('toolbar-title', 'Главная')
 @section('breadcrumbs', Breadcrumbs::render('home'))
 

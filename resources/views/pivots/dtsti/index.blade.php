@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Долги ДТ - СТИ')
 @section('toolbar-title', 'Долги ДТ - СТИ')
 @section('breadcrumbs', Breadcrumbs::render('pivots.dtsti.index'))
 
@@ -53,7 +54,7 @@
                             <tr style="{{ $loop->last ? 'border-bottom: 1px solid #eee ! important;' : '' }}">
                                 <td class="ps-4 br {{ $loop->first ? 'bt' : '' }} {{ $loop->last ? 'bb' : '' }}">
                                     @if(auth()->user()->can('show objects'))
-                                        <a target="_blank" href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}" class="show-link">{{ $entry['object']['name'] }}</a>
+                                        <a  href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}" class="show-link">{{ $entry['object']['name'] }}</a>
                                     @else
                                         {{ $entry['object']['name'] }}
                                     @endif
