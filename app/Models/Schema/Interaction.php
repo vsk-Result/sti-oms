@@ -48,6 +48,7 @@ class Interaction extends Model implements Audit
             'БАМС_НП',
             'БАМС-СТИ_Займ',
             'БАМС-ДТГ_Займ',
+            'БАМС-ПТИ_Аренда авто',
             'NS-Maviboni_Поставка',
             'Maviboni-NS_Поставка',
             'Maviboni-Прохорова_%',

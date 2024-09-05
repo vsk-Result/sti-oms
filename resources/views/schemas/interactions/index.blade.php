@@ -22,11 +22,11 @@
         customOffsets.set('ПТИ_НП', {margin: 50, padding: 5});
         customOffsets.set('БАМС_НП', {margin: 70, padding: 0});
         customOffsets.set('ДТГ_НП', {margin: 75, padding: 5});
-        customOffsets.set('ПТИ-БАМС_Аренда офиса', {margin: 100, padding: 0});
+        customOffsets.set('ПТИ-БАМС_Аренда офиса', {margin: 90, padding: 0});
         customOffsets.set('ДТГ-Любомир_Премия', {margin: 74, padding: 20});
         customOffsets.set('ДТГ-Belenzia_Поставка', {margin: 95, padding: 10});
         customOffsets.set('ДТГ-Maviboni_Поставка', {margin: 95, padding: 15});
-        customOffsets.set('ДТГ-NS_Поставка', {margin: 50, padding: 10});
+        customOffsets.set('ДТГ-NS_Поставxка', {margin: 50, padding: 10});
         customOffsets.set('Maviboni-Прохорова_%', {margin: 80, padding: 40});
         customOffsets.set('Maviboni-NS_Поставка', {margin: 80, padding: 5});
         customOffsets.set('NS-Maviboni_Поставка', {margin: 75, padding: 0});
@@ -34,6 +34,7 @@
         customOffsets.set('Belenzia-Milenium_Переуступка_1', {margin: 65, padding: 25});
         customOffsets.set('Belenzia-Milenium_Переуступка_2', {margin: 55, padding: 25});
         customOffsets.set('СТИ-Belenzia_Поставка', {margin: 65, padding: 0});
+        customOffsets.set('БАМС-ПТИ_Аренда авто', {margin: 65, padding: 0});
 
         $(function() {
             updateInteractions();
