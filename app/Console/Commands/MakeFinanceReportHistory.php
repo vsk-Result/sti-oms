@@ -159,6 +159,9 @@ class MakeFinanceReportHistory extends Command
             $years = [];
 
             foreach ($objects as $object) {
+                if ($object->code === '000') {
+                    continue;
+                }
                 if (in_array($object->code, $hideObjectCodes)) {
                     $years['Не отображать'][] = $object;
                     continue;
@@ -182,6 +185,11 @@ class MakeFinanceReportHistory extends Command
                         $years['Удаленные'][] = $object;
                     }
                 }
+            }
+
+            $closedObject = BObject::where('code', '000')->first();
+            if ($closedObject) {
+                $years['Активные'][] = $closedObject;
             }
 
             $summary = [];

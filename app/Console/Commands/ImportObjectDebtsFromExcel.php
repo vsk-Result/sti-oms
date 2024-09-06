@@ -132,6 +132,11 @@ class ImportObjectDebtsFromExcel extends Command
                     continue;
                 }
 
+                if ($code === '000') {
+                    $this->importDataForClosedObjects($import, $importData);
+                    continue;
+                }
+
                 foreach ($importData['OMS'] as $row) {
                     if (empty($row[0]) || $row[0] === 'Контрагент' || $row[0] === 'Общий итог' || $row[0] === 'Итого') {
                         continue;
@@ -254,5 +259,86 @@ class ImportObjectDebtsFromExcel extends Command
         $this->pivotObjectDebtService->updatePivotDebtForAllObjects();
 
         return 0;
+    }
+
+    public function importDataForClosedObjects(DebtImport $import, array $importData): void
+    {
+        foreach ($importData['OMS'] as $row) {
+            if (empty($row[0]) || $row[0] === 'код объекта') {
+                continue;
+            }
+
+            $organizationName = $this->sanitizer->set($row[1])->get();
+            $contract = $this->sanitizer->set($row[2])->get();
+            $amountDebt = 0;
+            $guarantee = 0;
+            $avans = 0;
+            $balanceContract = 0;
+            $neotrabotAvans = 0;
+
+            $amountDebtWithoutDNS = -$amountDebt;
+
+            if (!empty($row[4]) && $row[4] !== 'оплачено') {
+                $guaranteeAmount = $row[4];
+                if (is_string($guaranteeAmount)) {
+                    $guaranteeAmount = str_replace(',', '.', $guaranteeAmount);
+                    $guaranteeAmount = (float) str_replace(' ', '', $guaranteeAmount);
+                }
+                $guarantee += $guaranteeAmount;
+            }
+
+            if (!empty($row[6]) && $row[6] !== 'оплачено') {
+                $guaranteeAmount = $row[6];
+                if (is_string($guaranteeAmount)) {
+                    $guaranteeAmount = str_replace(',', '.', $guaranteeAmount);
+                    $guaranteeAmount = (float) str_replace(' ', '', $guaranteeAmount);
+                }
+                $guarantee += $guaranteeAmount;
+            }
+
+            if (!empty($row[8]) && $row[8] !== 'оплачено') {
+                $guaranteeAmount = $row[8];
+                if (is_string($guaranteeAmount)) {
+                    $guaranteeAmount = str_replace(',', '.', $guaranteeAmount);
+                    $guaranteeAmount = (float) str_replace(' ', '', $guaranteeAmount);
+                }
+                $guarantee += $guaranteeAmount;
+            }
+
+            $organization = $this->organizationService->getOrCreateOrganization([
+                'inn' => null,
+                'name' => $organizationName,
+                'company_id' => null,
+                'kpp' => null
+            ]);
+
+            $object = BObject::where('code', '000')->first();
+
+            $debt = $this->debtService->createDebt([
+                'import_id' => $import->id,
+                'type_id' => Debt::TYPE_CONTRACTOR,
+                'company_id' => $import->company_id,
+                'object_id' => $object->id,
+                'object_worktype_id' => null,
+                'organization_id' => $organization->id,
+                'date' => $import->date,
+                'amount' => -$amountDebt,
+                'guarantee' => -$guarantee,
+                'avans' => -$avans,
+                'amount_without_nds' => $amountDebtWithoutDNS,
+                'status_id' => Status::STATUS_ACTIVE,
+                'category' => '',
+                'code' => '',
+                'invoice_number' => '',
+                'order_author' => '',
+                'description' => json_encode($row),
+                'comment' => '',
+                'contract' => $contract,
+                'invoice_payment_due_date' => null,
+                'invoice_amount' => 0,
+                'balance_contract' => -$balanceContract,
+                'unwork_avans' => $neotrabotAvans,
+            ]);
+        }
     }
 }

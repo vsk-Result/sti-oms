@@ -141,6 +141,12 @@ class UploadDebtStatusService
                 'file' => '374.xlsx',
                 'path' => 'public/objects-debts/'
             ],
+            '000' => [
+                'code' => '000',
+                'name' => 'Долги по подрядчикам объекта 000',
+                'file' => '000.xlsx',
+                'path' => 'public/objects-debts/'
+            ],
         ],
     ];
 

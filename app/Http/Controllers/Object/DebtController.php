@@ -32,6 +32,10 @@ class DebtController extends Controller
         if ($objectExistInObjectImport) {
             $hasObjectImport = true;
             $hasObjectImportLink = 'debt-imports/objects/' . $debtObjectImport->id . '_' . $object->code . '.xlsx';
+
+            if ($object->code === '000') {
+                $hasObjectImportLink = 'public/objects-debts-manuals/' . $object->code . '.xlsx';
+            }
             $hasObjectImportId = $debtObjectImport->id;
         }
 

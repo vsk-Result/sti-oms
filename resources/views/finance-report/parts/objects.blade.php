@@ -140,7 +140,11 @@
                                                             {{ !is_valid_amount_in_range($value) ? '-' : number_format($value, 2) . '%' }}
                                                         @endif
                                                     @else
-                                                        {{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
+                                                        @if ($field === 'contractor_debt_gu' && $object->code === '000')
+                                                            <a class="border-bottom-dashed" href="/storage/public/objects-debts-manuals/000.xlsx" target="_blank" download="">{{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}</a>
+                                                        @else
+                                                            {{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
+                                                        @endif
                                                     @endif
                                                 </span>
                                             </td>
