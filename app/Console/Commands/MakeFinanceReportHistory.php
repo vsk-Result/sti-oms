@@ -419,6 +419,11 @@ class MakeFinanceReportHistory extends Command
                         $dolgFactUderjannogoGUWithoutNDS = $dolgFactUderjannogoGU - round($dolgFactUderjannogoGU / 6, 2);
                     }
 
+                    if ($object->code === '000') {
+                        $dolgFactUderjannogoGU = $object->guarantees()->sum('amount') - $object->guaranteePayments()->sum('amount');
+                        $dolgFactUderjannogoGUWithoutNDS = $dolgFactUderjannogoGU - round($dolgFactUderjannogoGU / 6, 2);
+                    }
+
                     if (!empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
                         $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                         $ostatokPoDogovoruSZakazchikomWithoutNDS = $dolgFactUderjannogoGUWithoutNDS;
