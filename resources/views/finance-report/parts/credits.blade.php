@@ -52,7 +52,7 @@
                             </div>
                             <div class="d-flex flex-column">
                                 <span class="text-muted fs-8">Доступно</span>
-                                <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit->total - $credit->paid ?? 0, 'RUB') }}</span>
+                                <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit->total - ($credit->paid ?? 0), 'RUB') }}</span>
                             </div>
                         </div>
                     @endif
