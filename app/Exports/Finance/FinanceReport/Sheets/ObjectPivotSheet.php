@@ -149,10 +149,10 @@ class ObjectPivotSheet implements
                 continue;
             }
 
-            $sumValue = $summary->{$year}->{$field};
+            $sumValue = $summary->{$year}->{$field} ?? 0;
 
             if ($field === 'general_balance_service') {
-                $sumValue += $summary->{$year}->{'general_balance_material'};
+                $sumValue += $summary->{$year}->{'general_balance_material'} ?? 0;
             }
 
             $isSpecialField = in_array($field, $specialFields);
@@ -170,11 +170,11 @@ class ObjectPivotSheet implements
             $sheet->setCellValue('A' . $row, $info);
 
             if ($field === 'prognoz_general') {
-                $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)');
+                $sheet->setCellValue('A' . $row, 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'} ?? 0), 2) . '%)');
             }
 
             if ($field === 'pay_tax') {
-                $sheet->setCellValue('A' . $row, $info . ' (' . number_format(abs($summary->{$year}->{'pay_tax'} / $summary->{$year}->{'pay_salary'} * 100), 2) . '% налог/ з/п)');
+                $sheet->setCellValue('A' . $row, $info . ' (' . number_format(abs(($summary->{$year}->{'pay_tax'} ?? 0) / ($summary->{$year}->{'pay_salary'} ?? 1) * 100), 2) . '% налог/ з/п)');
             }
 
             if ($field === 'general_balance_service') {
@@ -218,7 +218,7 @@ class ObjectPivotSheet implements
             foreach($objects as $object) {
                 if ($percentField === $field) continue;
 
-                $value = $total->{$year}->{$object->code}->{$field};
+                $value = $total->{$year}->{$object->code}->{$field} ?? 0;
                 $column = $this->getColumnWord($columnIndex);
                 $sheet->getStyle($column . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
 

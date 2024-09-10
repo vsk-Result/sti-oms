@@ -165,12 +165,12 @@ class PivotSheet implements
 
         $row = 3;
         foreach($creditsInfo->credits as $credit) {
-            if ($credit->credit_type_id !== Loan::CREDIT_TYPE_DEFAULT) {
+            if (isset($credit->credit_type_id) && $credit->credit_type_id !== Loan::CREDIT_TYPE_DEFAULT) {
                 continue;
             }
             $sheet->setCellValue('D' . $row, $credit->bank . "\n" . $credit->contract);
             $sheet->setCellValue('E' . $row, $credit->total);
-            $sheet->setCellValue('F' . $row, $credit->paid);
+            $sheet->setCellValue('F' . $row, $credit->paid ?? 0);
             $sheet->setCellValue('G' . $row, abs($credit->debt));
             $sheet->getRowDimension($row)->setRowHeight(30);
 
@@ -190,13 +190,13 @@ class PivotSheet implements
         $row++;
 
         foreach($creditsInfo->credits as $credit) {
-            if ($credit->credit_type_id !== Loan::CREDIt_TYPE_LINE) {
+            if (isset($credit->credit_type_id) && $credit->credit_type_id !== Loan::CREDIt_TYPE_LINE) {
                 continue;
             }
             $sheet->setCellValue('D' . $row, $credit->bank . "\n" . $credit->contract);
             $sheet->setCellValue('E' . $row, $credit->total);
-            $sheet->setCellValue('F' . $row, $credit->paid);
-            $sheet->setCellValue('G' . $row, $credit->total - $credit->paid);
+            $sheet->setCellValue('F' . $row, $credit->paid ?? 0);
+            $sheet->setCellValue('G' . $row, $credit->total - ($credit->paid ?? 0));
             $sheet->getRowDimension($row)->setRowHeight(30);
 
             $sheet->getStyle('F' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
