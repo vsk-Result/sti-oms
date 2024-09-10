@@ -25,7 +25,7 @@
                                     @if ($financeReportHistoryItem->objects === '[]')
                                         <a href="{{ route('finance_report.index', ['balance_date' => $financeReportHistoryItem->date]) }}" class="btn btn-light-dark">Посмотреть</a>
 
-                                        <form action="{{ route('finance_report.exports.store', $financeReportHistoryItem->date) }}" method="POST" class="hidden">
+                                        <form action="{{ route('finance_report.exports.store', ['date' => $financeReportHistoryItem->date]) }}" method="POST" class="hidden">
                                             @csrf
                                             <a
                                                     href="javascript:void(0);"
