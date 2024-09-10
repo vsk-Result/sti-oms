@@ -98,7 +98,7 @@
                                             @if ($field === 'prognoz_general')
                                                 {{ 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)' }}
                                             @elseif($field === 'pay_tax')
-                                                {{ $info . ' (' . number_format(abs($summary->{$year}->{'pay_tax'} / $summary->{$year}->{'pay_salary'} * 100), 2) . '% налог/ з/п)' }}
+                                                {{ $info . ' (' . number_format(abs(($summary->{$year}->{'pay_tax'} ?? 0) / ($summary->{$year}->{'pay_salary'} ?? 1) * 100), 2) . '% налог/ з/п)' }}
                                             @elseif($field === 'general_balance_service')
                                                 {{ 'Расходы на услуги, материалы' }}
                                             @else
