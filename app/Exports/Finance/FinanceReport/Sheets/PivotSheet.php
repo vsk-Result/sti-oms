@@ -171,7 +171,7 @@ class PivotSheet implements
             $sheet->setCellValue('D' . $row, $credit->bank . "\n" . $credit->contract);
             $sheet->setCellValue('E' . $row, $credit->total);
             $sheet->setCellValue('F' . $row, $credit->paid ?? 0);
-            $sheet->setCellValue('G' . $row, abs($credit->debt));
+            $sheet->setCellValue('G' . $row, abs($credit->debt ?? 0));
             $sheet->getRowDimension($row)->setRowHeight(30);
 
             $sheet->getStyle('G' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
