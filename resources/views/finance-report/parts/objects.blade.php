@@ -117,7 +117,7 @@
                                         @foreach($objects as $object)
                                             @php
                                                 if ($percentField === $field) continue;
-                                                $value = $total->{$year}->{$object->code}->{$field};
+                                                $value = $total->{$year}->{$object->code}->{$field} ?? 0;
                                             @endphp
                                             <td class="text-right {{ $loop->first ? 'bl' : '' }} {{ $loop->last ? 'pe-4' : '' }}">
                                                 <span class="{{ $isSpecialField ? $value < 0 ? 'text-danger' : 'text-success' : '' }} {{ $isPrognozField ? 'fw-bold fst-italic fs-8' : '' }} {{ $field === 'prognoz_total' ? 'fw-boldest' : '' }}">
