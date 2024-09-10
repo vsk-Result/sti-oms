@@ -86,7 +86,7 @@
                                         $sumValue = $summary->{$year}->{$field} ?? 0;
 
                                         if ($field === 'general_balance_service') {
-                                            $sumValue += $summary->{$year}->{'general_balance_material'};
+                                            $sumValue += $summary->{$year}->{'general_balance_material'} ?? 0;
                                         }
 
                                         $isSpecialField = in_array($field, $specialFields);
@@ -96,7 +96,7 @@
                                     <tr>
                                         <td class="br ps-2 {{ $isSpecialField ? 'fw-boldest' : '' }} {{ $isPrognozField ? 'ps-5 fw-bold fst-italic fs-8' : '' }} {{$isThirdLevelField ? 'ps-9 fs-9' : ''}}">
                                             @if ($field === 'prognoz_general')
-                                                {{ 'Общие расходы (' . number_format(abs($summary->{$year}->{'general_balance_to_receive_percentage'}), 2) . '%)' }}
+                                                {{ 'Общие расходы (' . number_format(abs(($summary->{$year}->{'general_balance_to_receive_percentage'} ?? 0)), 2) . '%)' }}
                                             @elseif($field === 'pay_tax')
                                                 {{ $info . ' (' . number_format(abs(($summary->{$year}->{'pay_tax'} ?? 0) / ($summary->{$year}->{'pay_salary'} ?? 1) * 100), 2) . '% налог/ з/п)' }}
                                             @elseif($field === 'general_balance_service')
