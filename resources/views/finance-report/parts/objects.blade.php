@@ -83,7 +83,7 @@
                                         if (in_array($field, $exceptFields) && $y !== 'Свод') {
                                             continue;
                                         }
-                                        $sumValue = $summary->{$year}->{$field};
+                                        $sumValue = $summary->{$year}->{$field} ?? 0;
 
                                         if ($field === 'general_balance_service') {
                                             $sumValue += $summary->{$year}->{'general_balance_material'};
