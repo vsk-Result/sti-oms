@@ -25,7 +25,7 @@
                 </div>
 
                 <div>
-                    @if ($credit?->credit_type_id === \App\Models\Loan::CREDIT_TYPE_DEFAULT)
+                    @if (isset($credit->credit_type_id) && $credit->credit_type_id === \App\Models\Loan::CREDIT_TYPE_DEFAULT)
                         <div class="d-flex">
                             <div class="d-flex flex-column me-8">
                                 <span class="text-muted fs-8">Сумма кредита</span>
