@@ -33,7 +33,7 @@
                             </div>
                             <div class="d-flex flex-column me-8">
                                 <span class="text-muted fs-8">Погашено</span>
-                                <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit->paid, 'RUB') }}</span>
+                                <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit->paid ?? 0, 'RUB') }}</span>
                             </div>
                             <div class="d-flex flex-column">
                                 <span class="text-muted fs-8">Остаток кредита</span>
@@ -48,11 +48,11 @@
                             </div>
                             <div class="d-flex flex-column me-8">
                                 <span class="text-muted fs-8">В использовании</span>
-                                <span class="fw-bolder text-danger">{{ \App\Models\CurrencyExchangeRate::format($credit->paid, 'RUB') }}</span>
+                                <span class="fw-bolder text-danger">{{ \App\Models\CurrencyExchangeRate::format($credit->paid ?? 0, 'RUB') }}</span>
                             </div>
                             <div class="d-flex flex-column">
                                 <span class="text-muted fs-8">Доступно</span>
-                                <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit->total - $credit->paid, 'RUB') }}</span>
+                                <span class="fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($credit->total - $credit->paid ?? 0, 'RUB') }}</span>
                             </div>
                         </div>
                     @endif
