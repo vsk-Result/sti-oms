@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
@@ -209,10 +210,41 @@ class UploadDebtStatusService
         $providersInfo = self::$commandsAndFiles['oms:contractor-debts-from-excel'][0];
         $updatedInfo['providers'] = $this->getLastUpdatedDate($providersInfo['path'], $providersInfo['file']);
 
-        $providersInfo = self::$commandsAndFiles['oms:objects-debts-from-excel'][$object->code];
-        $updatedInfo['contractors'] = $this->getLastUpdatedDate($providersInfo['path'], $providersInfo['file']);
+        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+
+        if ($objectExistInObjectImport) {
+            $contractorsInfo = self::$commandsAndFiles['oms:objects-debts-from-excel'][$object->code];
+            $updatedInfo['contractors'] = $this->getLastUpdatedDate($contractorsInfo['path'], $contractorsInfo['file']);
+        } else {
+            $updatedInfo['contractors'] = Carbon::yesterday()->format('d.m.Y');
+        }
 
         return $updatedInfo;
+    }
+
+    public function getLinksInfoForObject(BObject $object): array
+    {
+        $linksInfo = [];
+
+        $serviceInfo = self::$commandsAndFiles['oms:service-debts-from-excel'][0];
+        $linksInfo['service'] = $this->getActualLink($serviceInfo['path'], $serviceInfo['file']);
+
+        $providersInfo = self::$commandsAndFiles['oms:contractor-debts-from-excel'][0];
+        $linksInfo['providers'] = $this->getActualLink($providersInfo['path'], $providersInfo['file']);
+
+        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
+        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
+
+        if ($objectExistInObjectImport) {
+            $contractorsInfo = self::$commandsAndFiles['oms:objects-debts-from-excel'][$object->code];
+            $linksInfo['contractors'] = $this->getActualLink($contractorsInfo['path'], $contractorsInfo['file']);
+        } else {
+            $supplyImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
+            $linksInfo['contractors'] = $supplyImport ? ('/' . $supplyImport->getFileLink()) : '#';
+        }
+
+        return $linksInfo;
     }
 
     public function getLastUpdatedDate(string $path, string $filename): string
@@ -238,5 +270,33 @@ class UploadDebtStatusService
         return File::lastModified($importManualFilePath) > File::lastModified($importFilePath)
             ? Carbon::parse(File::lastModified($importManualFilePath))->format('d.m.Y')
             : Carbon::parse(File::lastModified($importFilePath))->format('d.m.Y');
+    }
+
+    public function getActualLink(string $path, string $filename): string
+    {
+        // Путь до файла с автоматической загрузкой
+        $importFilePath = storage_path() . '/app/public/' . $path . $filename;
+
+        //Путь до файла с ручной загрузкой
+        $importManualFilePath = storage_path() . '/app/public/public/objects-debts-manuals/' . $filename;
+
+        $defaultLink = '/storage/' . $path . $filename;
+        $manualLink = '/storage/public/objects-debts-manuals/' . $filename;
+
+        if (! File::exists($importFilePath) && ! File::exists($importManualFilePath)) {
+            return '#';
+        }
+
+        if (! File::exists($importFilePath)) {
+            return $manualLink;
+        }
+
+        if (! File::exists($importManualFilePath)) {
+            return $defaultLink;
+        }
+
+        return File::lastModified($importManualFilePath) > File::lastModified($importFilePath)
+            ? $manualLink
+            : $defaultLink;
     }
 }

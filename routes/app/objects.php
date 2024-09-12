@@ -18,6 +18,7 @@ use App\Http\Controllers\Object\ExportController;
 use App\Http\Controllers\Object\WriteoffController;
 use App\Http\Controllers\Object\ReceivePlanController;
 use App\Http\Controllers\Object\ReceivePlanExportController;
+use App\Http\Controllers\Object\CheckController;
 
 // Экспорт объекта в Excel
 
@@ -93,4 +94,6 @@ Route::get('objects/{object}/receive-plan', [ReceivePlanController::class, 'inde
 Route::post('objects/{object}/receive-plan', [ReceivePlanController::class, 'store'])->name('objects.receive_plan.store');
 Route::post('objects/{object}/receive-plan/export', [ReceivePlanExportController::class, 'store'])->name('objects.receive_plan.exports.store');
 
+// Проверка
 
+Route::get('objects/{object}/check', [CheckController::class, 'index'])->name('objects.check.index');
