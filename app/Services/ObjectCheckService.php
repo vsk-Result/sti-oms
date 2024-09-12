@@ -39,7 +39,7 @@ class ObjectCheckService
         $receiveSum = $info['receive_customer_fix_avans'] + $info['receive_customer_target_avans'] + $info['receive_customer_acts'] + $info['receive_customer_gu'];
 
         return [
-            'has_warning' => $receiveSum !== $info['receive_customer'],
+            'has_warning' => is_valid_amount_in_range($receiveSum !== $info['receive_customer']),
             'diff_amount' => $receiveSum - $info['receive_customer'],
             'payments_receive_amount' => $info['receive_customer'],
             'avanses_receive_amount' => $info['receive_customer_fix_avans'] + $info['receive_customer_target_avans'],
