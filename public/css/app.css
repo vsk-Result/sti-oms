@@ -377,3 +377,35 @@ td > a.show-link:hover {
 .plan-payments-detailing-popover .separator:last-child {
     display: none;
 }
+
+#calculator {
+    display: flex;
+    background-color: #3e3e3e;
+    border-bottom-left-radius: 16px;
+    z-index: 999;
+    min-width: 250px;
+    color: #ffffff;
+}
+
+#calculator .calculator-result {
+    border-bottom: 1px solid #7d7d7e;
+}
+
+#calculator .text-danger {
+    color: #ff7272 !important;
+}
+
+#calculator .btn-light {
+    background-color: #7c7d7d !important;
+    color: #ffffff !important;
+    padding: calc(.3rem + 1px) calc(1rem + 1px);
+    font-size: 0.7rem;
+}
+
+#calculator-mini {
+    width: 30px;
+    background-color: #f25a22;
+    color: #ffffff;
+    z-index: 999;
+    cursor: pointer;
+}

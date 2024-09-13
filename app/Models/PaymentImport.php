@@ -63,12 +63,12 @@ class PaymentImport extends Model
 
     public function getAmountPay(): string
     {
-        return number_format($this->amount_pay, 2, '.', ' ');
+        return CurrencyExchangeRate::format($this->amount_pay, 'RUB');
     }
 
     public function getAmountReceive(): string
     {
-        return number_format($this->amount_receive, 2, '.', ' ');
+        return CurrencyExchangeRate::format($this->amount_receive, 'RUB');
     }
 
     public function reCalculateAmountsAndCounts(): void
@@ -86,12 +86,12 @@ class PaymentImport extends Model
 
     public function getIncomingBalance(): string
     {
-        return number_format($this->incoming_balance, 2, '.', ' ');
+        return CurrencyExchangeRate::format($this->incoming_balance ?? 0, 'RUB');
     }
 
     public function getOutgoingBalance(): string
     {
-        return number_format($this->outgoing_balance, 2, '.', ' ');
+        return CurrencyExchangeRate::format($this->outgoing_balance ?? 0, 'RUB');
     }
 
     public static function getTypes(): array
