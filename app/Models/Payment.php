@@ -78,12 +78,12 @@ class Payment extends Model implements Audit
 
     public function getAmount(): string
     {
-        return number_format($this->amount, 2, '.', ' ');
+        return CurrencyExchangeRate::format($this->amount, 'RUB');
     }
 
     public function getAmountWithoutNDS(): string
     {
-        return number_format($this->amount_without_nds, 2, '.', ' ');
+        return CurrencyExchangeRate::format($this->amount_without_nds, 'RUB');
     }
 
     public static function getCategories(): array

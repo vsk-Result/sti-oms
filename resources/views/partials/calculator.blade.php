@@ -16,10 +16,17 @@
 @push('scripts')
     <script>
         $(function() {
-            const elementWithAmounts = [...document.querySelectorAll('td, th, .text-danger, .text-success, .fw-bolder')].filter(el => el.textContent.includes('₽'));
+            const elementWithAmounts1 = [...document.querySelectorAll('.text-danger, .text-success, .fw-bolder')].filter(el => el.textContent.includes('₽'));
+            const elementWithAmounts2 = [...document.querySelectorAll('td, th')].filter(el => el.textContent.includes('₽'));
 
-            elementWithAmounts.forEach(function(el) {
-                if (! $(el).hasClass('for-calc')) {
+            elementWithAmounts1.forEach(function(el) {
+                if ($(el).children('.for-calc').length === 0 && ! $(el).hasClass('for-calc')) {
+                    $(el).addClass('for-calc');
+                }
+            });
+
+            elementWithAmounts2.forEach(function(el) {
+                if ($(el).children('.for-calc').length === 0 && ! $(el).hasClass('for-calc')) {
                     $(el).addClass('for-calc');
                 }
             });
@@ -31,9 +38,11 @@
                 const clearAmount = +amount.replace(/[^-.\d]+/g, "");
                 const color = clearAmount < 0 ? 'danger' : 'success';
 
+                const showOperator = $('.calculator-detail').length > 0;
+
                 $('.calculator-details').append(`
                     <div class="calculator-detail d-flex flex-row justify-content-between gap-2 align-items-center">
-                        <div class="calculator-detail-operator min-w-20px text-center cursor-pointer">+</div>
+                        <div class="calculator-detail-operator min-w-20px text-center cursor-pointer">${showOperator ? '+' : ''}</div>
                         <div class="calculator-detail-amount text-${color} cursor-pointer">${amount}</div>
                     </div>
                 `);
@@ -62,6 +71,10 @@
             $(document).on('click', '.calculator-detail-operator', function() {
                 const operator = $(this).text();
 
+                if (operator.length === 0) {
+                    return;
+                }
+
                 $(this).text(operator === '+' ? '-' : '+');
                 recalculate();
             });
@@ -84,7 +97,7 @@
                 const operator = $(this).find('.calculator-detail-operator').text();
                 const amount = +$(this).find('.calculator-detail-amount').text().replace(/[^-.\d]+/g, "");
 
-                if (operator === '+') {
+                if (operator === '+' || operator.length === 0) {
                     sum += amount;
                 } else {
                     sum -= amount;
