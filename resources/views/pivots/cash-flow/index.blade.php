@@ -181,7 +181,92 @@
                             <td colspan="{{ 2 + count($periods) }}"></td>
                         </tr>
 
+                        @php
+                            $planGroupedPaymentAmount = [];
+                            foreach ($planGroupedPaymentTypes as $group => $types) {
+                                $planGroupedPaymentAmount[$group] = [];
+
+                                foreach ($types as $type) {
+                                    foreach($periods as $index => $period) {
+                                        if ($index === 0) {
+                                            $amount = $planPayments->where('name', $type)->where('due_date', '<=', $period['end'])->sum('amount');
+                                        } else {
+                                            $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                        }
+
+                                        if (! isset($planGroupedPaymentAmount[$group][$period['format']])) {
+                                            $planGroupedPaymentAmount[$group][$period['format']] = 0;
+                                        }
+                                        $planGroupedPaymentAmount[$group][$period['format']] += $amount;
+                                    }
+                                }
+                            }
+                        @endphp
+                        @foreach($planGroupedPaymentTypes as $group => $types)
+                            <tr>
+                                <td class="ps-2">
+                                    <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="grouped-types">+</span>
+                                    {{ $group }}
+                                </td>
+
+                                @php
+                                    $groupTotal = 0;
+                                @endphp
+                                @foreach($periods as $index => $period)
+                                    @php
+                                        $amount = $planGroupedPaymentAmount[$group][$period['format']];
+                                        $groupTotal += $amount;
+                                    @endphp
+
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
+                                @endforeach
+
+                                <td class="text-right pe-2">
+                                    {{ \App\Models\CurrencyExchangeRate::format($groupTotal, 'RUB', 0, true) }}
+                                </td>
+                            </tr>
+
+                            @foreach($types as $type)
+                                <tr class="collapse-row" data-trigger="grouped-types" style="display: none;">
+                                    <td class="ps-8">{{ $type }}</td>
+
+                                    @php
+                                        $total = 0;
+                                    @endphp
+                                    @foreach($periods as $index => $period)
+                                        @php
+                                            if ($index === 0) {
+                                                $amount = $planPayments->where('name', $type)->where('due_date', '<=', $period['end'])->sum('amount');
+                                            } else {
+                                                $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                            }
+                                            $total += $amount;
+                                        @endphp
+
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
+                                    @endforeach
+
+                                    <td class="text-right pe-2">
+                                        {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endforeach
+
                         @foreach($planPaymentTypes as $type)
+                            @php
+                                $needContinue = false;
+                                foreach ($planGroupedPaymentTypes as $group => $types) {
+                                    if (in_array($type, $types)) {
+                                        $needContinue = true;
+                                        break;
+                                    }
+                                }
+
+                                if ($needContinue) {
+                                    continue;
+                                }
+                            @endphp
                             <tr>
                                 <td class="ps-2">{{ $type }}</td>
 
@@ -309,6 +394,22 @@
     <script>
         $(function() {
             mainApp.initFreezeTable(1);
+
+            $('.collapse-trigger').on('click', function() {
+                const $tr = $(this);
+                const trigger = $tr.data('trigger');
+                const isCollapsed = $tr.hasClass('collapsed');
+
+                if (isCollapsed) {
+                    $tr.text('+');
+                    $tr.removeClass('collapsed');
+                    $(`.collapse-row[data-trigger="${trigger}"]`).hide();
+                } else {
+                    $tr.text('-');
+                    $tr.addClass('collapsed');
+                    $(`.collapse-row[data-trigger="${trigger}"]`).show();
+                }
+            })
         });
     </script>
 @endpush

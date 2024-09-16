@@ -21,6 +21,7 @@ class CashFlowController extends Controller
     public function index(): View
     {
         $planPaymentTypes = $this->receivePlanService->getPlanPaymentTypes();
+        $planGroupedPaymentTypes = $this->receivePlanService->getGroupedPlanPaymentTypes();
         $planPayments = TaxPlanItem::where('paid', false)->get();
         $reasons = ReceivePlan::getReasons();
         $periods = $this->receivePlanService->getPeriods();
@@ -34,7 +35,7 @@ class CashFlowController extends Controller
         return view(
             'pivots.cash-flow.index',
             compact(
-                'reasons', 'periods', 'objects', 'plans', 'planPaymentTypes', 'planPayments'
+                'reasons', 'periods', 'objects', 'plans', 'planPaymentTypes', 'planPayments', 'planGroupedPaymentTypes'
             )
         );
     }
