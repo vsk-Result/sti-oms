@@ -848,6 +848,7 @@ class MakeFinanceReportHistory extends Command
                 $summary[$year]['general_balance_service'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] * $summary[$year]['general_balance'];
             }
         } catch (\Exception $e) {
+            dd($e);
             $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
             $errorMessage = mb_substr($errorMessage, 0, 2000);
             Log::channel('custom_imports_log')->debug($errorMessage);
