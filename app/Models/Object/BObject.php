@@ -264,7 +264,7 @@ class BObject extends Model implements Audit
             $detail = [
                 'date' => Carbon::parse($lastNotPaidMonth . '-01')->format('F Y'),
                 'origin_date' => Carbon::parse($lastNotPaidMonth . '-01')->format('Y-m'),
-                'is_real' => $salaryPaidMonth->is_imported
+                'is_real' => $salaryPaidMonth->is_imported ?? false
             ];
 
             $salaryQuery = SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', $lastNotPaidMonth);
