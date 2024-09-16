@@ -269,7 +269,7 @@ class BObject extends Model implements Audit
 
             $salaryQuery = SalaryDebt::query()->where('object_code', 'LIKE', '%' . $this->code. '%')->where('month', $lastNotPaidMonth);
 
-            if ($salaryPaidMonth->is_imported) {
+            if (($salaryPaidMonth->is_imported ?? false)) {
                 $detail['amount'] = (clone $salaryQuery)->sum('amount');
             } else {
                 $detail['amount'] = $predictAmount + abs((clone $salaryQuery)->sum('card'));
