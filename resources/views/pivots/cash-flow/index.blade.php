@@ -205,7 +205,7 @@
                         @foreach($planGroupedPaymentTypes as $group => $types)
                             <tr>
                                 <td class="ps-2">
-                                    <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="grouped-types">+</span>
+                                    <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $group }}">+</span>
                                     {{ $group }}
                                 </td>
 
@@ -227,7 +227,7 @@
                             </tr>
 
                             @foreach($types as $type)
-                                <tr class="collapse-row" data-trigger="grouped-types" style="display: none;">
+                                <tr class="collapse-row" data-trigger="{{ $group }}" style="display: none;">
                                     <td class="ps-8">{{ $type }}</td>
 
                                     @php
