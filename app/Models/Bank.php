@@ -120,9 +120,15 @@ class Bank
             'visible' => true
         ],
         [
-            'id' => 18,
+            'id' => 20,
             'name' => 'АО "КУБ"',
             'logo' => '/images/banks/kub.png',
+            'visible' => true
+        ],
+        [
+            'id' => 21,
+            'name' => 'Т-банк',
+            'logo' => '/images/banks/vtb.png',
             'visible' => true
         ],
     ];
