@@ -61,7 +61,7 @@ class Bank
         ],
         [
             'id' => 6,
-            'name' => 'АО "КУБ"',
+            'name' => 'АО “КУБ" Спецсчет',
             'logo' => '/images/banks/kub.png',
             'visible' => true
         ],
@@ -117,6 +117,12 @@ class Bank
             'id' => 17,
             'name' => 'АО "Газпромбанк"',
             'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
+        [
+            'id' => 18,
+            'name' => 'АО "КУБ"',
+            'logo' => '/images/banks/kub.png',
             'visible' => true
         ],
     ];
