@@ -9,6 +9,9 @@ use App\Http\Controllers\Pivot\DTSTI\DTSTIController;
 use App\Http\Controllers\Pivot\DTSTI\ExportController as DTSTIExportController;
 use App\Http\Controllers\Pivot\CashFlow\CashFlowController;
 use App\Http\Controllers\Pivot\CashFlow\ExportController as CashFlowExportController;
+use App\Http\Controllers\Pivot\CashFlow\PlanPaymentController;
+use App\Http\Controllers\Pivot\CashFlow\PlanPaymentEntryController;
+use App\Http\Controllers\Pivot\CashFlow\PlanPaymentTableController;
 use App\Http\Controllers\Pivot\ActCategory\ActCategoryController;
 
 // Сводная по долгам от СТИ
@@ -35,6 +38,13 @@ Route::post('pivots/dt-sti/export', [DTSTIExportController::class, 'store'])->na
 // Отчет по CASH FLOW
 Route::get('pivots/cash-flow', [CashFlowController::class, 'index'])->name('pivots.cash_flow.index');
 Route::post('pivots/cash-flow/export', [CashFlowExportController::class, 'store'])->name('pivots.cash_flow.exports.store');
+
+Route::post('pivots/cash-flow/plan-payments', [PlanPaymentController::class, 'store'])->name('pivots.cash_flow.plan_payments.store');
+Route::post('pivots/cash-flow/plan-payments/update', [PlanPaymentController::class, 'update'])->name('pivots.cash_flow.plan_payments.update');
+Route::post('pivots/cash-flow/plan-payments/destroy', [PlanPaymentController::class, 'destroy'])->name('pivots.cash_flow.plan_payments.destroy');
+Route::post('pivots/cash-flow/plan-payments/entries', [PlanPaymentEntryController::class, 'store'])->name('pivots.cash_flow.plan_payments.entries.store');
+Route::get('pivots/cash-flow/plan-payments/table', [PlanPaymentTableController::class, 'index'])->name('pivots.cash_flow.plan_payments.table.index');
+
 
 // Отчет по категориям
 Route::get('pivots/acts-category', [ActCategoryController::class, 'index'])->name('pivots.acts_category.index');

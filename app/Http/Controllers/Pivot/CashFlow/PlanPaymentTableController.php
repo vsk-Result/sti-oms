@@ -8,23 +8,26 @@ use App\Models\CashFlow\PlanPaymentEntry;
 use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
-use App\Services\ReceivePlanService;
-use Illuminate\Contracts\View\View;
+use App\Services\PlanPaymentEntryService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
-class CashFlowController extends Controller
+class PlanPaymentTableController extends Controller
 {
-    private ReceivePlanService $receivePlanService;
+    private PlanPaymentEntryService $planPaymentEntryService;
 
-    public function __construct(ReceivePlanService $receivePlanService)
+    public function __construct(PlanPaymentEntryService $planPaymentEntryService)
     {
-        $this->receivePlanService = $receivePlanService;
+        $this->planPaymentEntryService = $planPaymentEntryService;
     }
 
-    public function index(): View
+    public function index(Request $request): JsonResponse
     {
         $planPaymentGroups = PlanPaymentGroup::all();
         $CFPlanPayments = PlanPayment::all();
         $CFPlanPaymentEntries = PlanPaymentEntry::all();
+        $planGroupedPaymentTypes = $this->receivePlanService->getGroupedPlanPaymentTypes();
+        $reasons = ReceivePlan::getReasons();
         $periods = $this->receivePlanService->getPeriods();
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
 
@@ -32,13 +35,12 @@ class CashFlowController extends Controller
         $closedObjectIds = ReceivePlan::whereBetween('date', [$periods[0]['start'], end($periods)['start']])->groupBy('object_id')->pluck('object_id')->toArray();
 
         $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
-        $objectList = BObject::active()->get();
 
         return view(
             'pivots.cash-flow.index',
             compact(
-                'periods', 'objects', 'plans',
-               'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList'
+                'reasons', 'periods', 'objects', 'plans',
+                'planGroupedPaymentTypes', 'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries'
             )
         );
     }

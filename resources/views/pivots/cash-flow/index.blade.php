@@ -34,10 +34,15 @@
 
         <div class="card-body p-0 ps-0">
             <div class="table-responsive freeze-table">
-                <table class="table table-bordered align-middle table-row-dashed fs-6 gy-3">
+                <table
+                        class="table table-bordered align-middle table-row-dashed fs-6 gy-3 table-cf"
+                        data-update-payment-url="{{ route('pivots.cash_flow.plan_payments.entries.store') }}"
+                        data-update-payment-table-url="{{ route('pivots.cash_flow.plan_payments.table.index') }}"
+                >
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                             <th class="min-w-400px ps-2"></th>
+                            <th class="min-w-50px">Код объекта</th>
                             @foreach($periods as $period)
                                 <th class="min-w-250px">{{ $period['format'] }}</th>
                             @endforeach
@@ -47,6 +52,7 @@
 
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 total-row">
                             <th class="min-w-400px ps-2">ПОСТУПЛЕНИЯ ИТОГО, в том числе:</th>
+                            <th class="min-w-50px"></th>
 
                             @php
                                 $total = 0;
@@ -68,6 +74,7 @@
 
                         <tr class="text-start text-muted fs-8 gs-0">
                             <th class="min-w-400px ps-8 fw-bolder">Целевые авансы</th>
+                            <th class="min-w-50px"></th>
 
                             @php
                                 $total = 0;
@@ -89,6 +96,7 @@
 
                         <tr class="text-start text-muted fs-8 gs-0">
                             <th class="min-w-400px ps-8 fw-bolder">Прочие поступления</th>
+                            <th class="min-w-50px"></th>
 
                             @php
                                 $total = 0;
@@ -123,6 +131,7 @@
                             @endphp
                             <tr class="object-row">
                                 <td class="ps-2 fw-bolder">{{ $object->name }}</td>
+                                <td>{{ $object->code }}</td>
 
                                 @foreach($periods as $period)
                                     @php
@@ -149,6 +158,7 @@
 
                                 <tr>
                                     <td class="ps-8 fs-8 fst-italic">{{ $reason }}</td>
+                                    <td></td>
 
                                     @php
                                         $total = 0;
@@ -177,44 +187,46 @@
 
                         @endforeach
 
-                        <tr class="divider-row">
-                            <td colspan="{{ 2 + count($periods) }}"></td>
+                        <tr class="divider-row divider-before-payments">
+                            <td colspan="{{ 3 + count($periods) }}"></td>
                         </tr>
 
                         @php
+                            $periodsAmount = [];
                             $planGroupedPaymentAmount = [];
-                            foreach ($planGroupedPaymentTypes as $group => $types) {
-                                $planGroupedPaymentAmount[$group] = [];
+                            foreach ($planPaymentGroups as $group) {
+                                $planGroupedPaymentAmount[$group->name] = [];
 
-                                foreach ($types as $type) {
+                                foreach ($group->payments as $payment) {
                                     foreach($periods as $index => $period) {
                                         if ($index === 0) {
-                                            $amount = $planPayments->where('name', $type)->where('due_date', '<=', $period['end'])->sum('amount');
+                                            $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
                                         } else {
-                                            $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                            $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                         }
 
-                                        if (! isset($planGroupedPaymentAmount[$group][$period['format']])) {
-                                            $planGroupedPaymentAmount[$group][$period['format']] = 0;
+                                        if (! isset($planGroupedPaymentAmount[$group->name][$period['format']])) {
+                                            $planGroupedPaymentAmount[$group->name][$period['format']] = 0;
                                         }
-                                        $planGroupedPaymentAmount[$group][$period['format']] += $amount;
+                                        $planGroupedPaymentAmount[$group->name][$period['format']] += $amount;
                                     }
                                 }
                             }
                         @endphp
-                        @foreach($planGroupedPaymentTypes as $group => $types)
-                            <tr>
+                        @foreach($planPaymentGroups as $group)
+                            <tr class="plan-payment">
                                 <td class="ps-2">
-                                    <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $group }}">+</span>
-                                    {{ $group }}
+                                    <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $group->name }}">+</span>
+                                    {{ $group->name }}
                                 </td>
+                                <td></td>
 
                                 @php
                                     $groupTotal = 0;
                                 @endphp
                                 @foreach($periods as $index => $period)
                                     @php
-                                        $amount = $planGroupedPaymentAmount[$group][$period['format']];
+                                        $amount = $planGroupedPaymentAmount[$group->name][$period['format']];
                                         $groupTotal += $amount;
                                     @endphp
 
@@ -226,9 +238,10 @@
                                 </td>
                             </tr>
 
-                            @foreach($types as $type)
-                                <tr class="collapse-row" data-trigger="{{ $group }}" style="display: none;">
-                                    <td class="ps-8">{{ $type }}</td>
+                            @foreach($group->payments as $payment)
+                                <tr class="collapse-row plan-payment" data-trigger="{{ $group->name }}" style="display: none;">
+                                    <td class="ps-8">{{ $payment->name }}</td>
+                                    <td></td>
 
                                     @php
                                         $total = 0;
@@ -236,9 +249,9 @@
                                     @foreach($periods as $index => $period)
                                         @php
                                             if ($index === 0) {
-                                                $amount = $planPayments->where('name', $type)->where('due_date', '<=', $period['end'])->sum('amount');
+                                                $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
                                             } else {
-                                                $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                                $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                             }
                                             $total += $amount;
                                         @endphp
@@ -253,51 +266,43 @@
                             @endforeach
                         @endforeach
 
-                        @foreach($planPaymentTypes as $type)
-                            @php
-                                $needContinue = false;
-                                foreach ($planGroupedPaymentTypes as $group => $types) {
-                                    if (in_array($type, $types)) {
-                                        $needContinue = true;
-                                        break;
-                                    }
-                                }
+                        @foreach($CFPlanPayments as $payment)
+                            @continue(!is_null($payment->group_id))
 
-                                if ($needContinue) {
-                                    continue;
-                                }
-                            @endphp
-                            <tr>
-                                <td class="ps-2">{{ $type }}</td>
+                            @include('pivots.cash-flow.partial.plan_payment_row', $payment)
+                        @endforeach
 
-                                @php
-                                    $total = 0;
-                                @endphp
+                        @can('index cash-flow-plan-payments')
+                            <tr class="plan-payment">
+                                <td class="ps-2">
+                                    <input
+                                            type="text"
+                                            placeholder="Добавить запись"
+                                            value=""
+                                            class="form-control form-control-sm form-control-solid add-plan-payment-input"
+                                            autocomplete="off"
+                                            data-url="{{ route('pivots.cash_flow.plan_payments.store') }}"
+                                    />
+                                </td>
+                                <td></td>
+
                                 @foreach($periods as $index => $period)
-                                    @php
-                                        if ($index === 0) {
-                                            $amount = $planPayments->where('name', $type)->where('due_date', '<=', $period['end'])->sum('amount');
-                                        } else {
-                                            $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
-                                        }
-                                        $total += $amount;
-                                    @endphp
-
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
+                                    <td class="text-right"></td>
                                 @endforeach
 
                                 <td class="text-right pe-2">
-                                    {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
                                 </td>
                             </tr>
-                        @endforeach
+                        @endcan
 
-                        <tr class="divider-row">
-                            <td colspan="{{ 2 + count($periods) }}"></td>
+                        <tr class="divider-row plan-payment">
+                            <td colspan="{{ 3 + count($periods) }}"></td>
                         </tr>
 
-                        <tr class="object-row">
+                        <tr class="object-row plan-payment">
                             <td class="ps-2 fw-bolder">Итого расходов по неделям:</td>
+                            <td></td>
 
                             @php
                                 $total = 0;
@@ -305,9 +310,9 @@
                             @foreach($periods as $index => $period)
                                 @php
                                     if ($index === 0) {
-                                        $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
                                     } else {
-                                        $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                     }
 
                                     $total += $amount;
@@ -321,12 +326,13 @@
                             </td>
                         </tr>
 
-                        <tr class="object-row">
+                        <tr class="object-row plan-payment">
                             <td class="ps-2 fw-bolder">Итого расходов по месяцам:</td>
+                            <td></td>
 
                             @foreach($periods as $period)
                                 @php
-//                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                    //                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
                                 @endphp
 
                                 <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>
@@ -335,17 +341,18 @@
                             <td class="text-right pe-2"></td>
                         </tr>
 
-                        <tr class="object-row">
+                        <tr class="object-row plan-payment">
                             <td class="ps-2 fw-bolder">Сальдо (без учета целевых авансов) по неделям:</td>
+                            <td></td>
 
                             @foreach($periods as $index => $period)
                                 @php
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
                                     if ($index === 0) {
-                                        $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
                                     } else {
-                                        $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                     }
 
                                     $diff = $otherAmount - $amount;
@@ -357,8 +364,9 @@
                             <td class="text-right pe-2"></td>
                         </tr>
 
-                        <tr class="object-row">
+                        <tr class="object-row plan-payment">
                             <td class="ps-2 fw-bolder">Накопительное Сальдо (без учета целевых авансов) по неделям:</td>
+                            <td></td>
 
                             @php
                                 $prev = 0;
@@ -369,9 +377,9 @@
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
                                     if ($index === 0) {
-                                        $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
                                     } else {
-                                        $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                     }
 
                                     $diff = $otherAmount - $amount + $prev;
@@ -409,8 +417,135 @@
                     $tr.addClass('collapsed');
                     $(`.collapse-row[data-trigger="${trigger}"]`).show();
                 }
-            })
+            });
+
+            $(document).on('click', '.plan-payment-name', function() {
+                $(this).parent().find('input').val($(this).text()).show().focus();
+                $(this).hide();
+            });
+
+            $(document).on('blur', '.update-plan-payment-input', function() {
+                const span = $(this).parent().find('span');
+                const payment_id = $(this).data('payment-id');
+
+                if (span.text() !== $(this).val()) {
+
+                    if ($(this).val().length > 0) {
+
+                        const url = $(this).data('url');
+                        const name = $(this).val();
+
+                        mainApp.sendAJAX(
+                            url,
+                            'POST',
+                            {payment_id, name},
+                            (data) => {
+                                $(this).closest('tr').replaceWith(data.view);
+                                mainApp.init();
+                                KTApp.initSelect2();
+                            }
+                        );
+                    } else {
+                        if (confirm('Вы уверены, что хотите удалить запись расхода?')) {
+                            const url = $(this).data('destroy-url');
+                            mainApp.sendAJAX(
+                                url,
+                                'POST',
+                                {payment_id},
+                                () => {
+                                    $(this).closest('tr').remove();
+                                }
+                            );
+                        } else {
+                            $(this).val('').hide();
+                            span.show();
+                        }
+                    }
+                } else {
+                    $(this).val('').hide();
+                    span.show();
+                }
+            });
+
+            $(document).on('change', '.update-plan-payment-select', function() {
+                const payment_id = $(this).data('payment-id');
+                const url = $(this).data('url');
+                const object_id = $(this).val();
+
+                mainApp.sendAJAX(
+                    url,
+                    'POST',
+                    {payment_id, object_id},
+                    (data) => {
+                        $(this).closest('tr').replaceWith(data.view);
+                        mainApp.init();
+                        KTApp.initSelect2();
+                    }
+                );
+            });
+
+            $(document).on('blur', '.add-plan-payment-input', function() {
+                if ($(this).val().length > 0) {
+                    const url = $(this).data('url');
+                    const name = $(this).val();
+
+                    mainApp.sendAJAX(
+                        url,
+                        'POST',
+                        {name},
+                        (data) => {
+                            $(this).val('');
+                            $(this).closest('tr').before(data.view);
+                            mainApp.init();
+                            KTApp.initSelect2();
+                        }
+                    );
+                }
+            });
         });
+
+        $(document).on('focus', '.db-field', function() {
+            $(this).data('initial-amount', $(this).val());
+        });
+
+        $(document).on('blur', '.db-field', function() {
+            const $that = $(this);
+            const payment_id = $that.data('payment-id');
+            const date = $that.data('date');
+            const amount = $that.val();
+            const url = $('.table-cf').data('update-payment-url');
+
+            if ($that.data('initial-amount') !== amount) {
+                mainApp.sendAJAX(
+                    url,
+                    'POST',
+                    {
+                        payment_id,
+                        date,
+                        amount,
+                    },
+                    (data) => {
+                        $(this).closest('tr').replaceWith(data.view);
+                        mainApp.init();
+                        KTApp.initSelect2();
+                    }
+                );
+            }
+        });
+
+        function updatePlanPaymentTable() {
+            const url = $('.table-cf').data('update-payment-table-url');
+
+            mainApp.sendAJAX(
+                url,
+                'GET',
+                {},
+                (data) => {
+                    $('.table-cf tr.plan-payment').remove();
+                    $('.table-cf .divider-before-payments').after(data.view);
+                }
+            );
+        }
     </script>
 @endpush
 
@@ -442,6 +577,10 @@
         .divider-row td {
             height: 6px;
             padding: 0 !important;
+        }
+
+        .add-plan-payment:hover {
+            font-weight: bold;
         }
     </style>
 @endpush

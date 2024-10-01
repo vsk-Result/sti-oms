@@ -30,7 +30,9 @@ class ReceivePlanService
             'format' => $now->startOfWeek()->format('d.m.Y') . ' - ' . $now->endOfWeek()->format('d.m.Y')
         ];
 
-        $end = Carbon::now()->addMonthsNoOverflow(3)->format('Y-m-d');
+        $months = auth()->user()->can('index cash-flow-plan-payments') ? 12 : 3;
+
+        $end = Carbon::now()->addMonthsNoOverflow($months)->format('Y-m-d');
         for ($i = 1; $i < 16; $i++) {
             $newDate = Carbon::now()->addDays($i * 7);
 
