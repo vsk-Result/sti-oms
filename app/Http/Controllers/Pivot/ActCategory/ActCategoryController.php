@@ -33,11 +33,13 @@ class ActCategoryController extends Controller
         }
 
         $activeObjectIds = $filteredObjects->pluck('id')->toArray();
+        $activeObjects = BObject::whereIn('id', $activeObjectIds)->orderByDesc('code')->get();
         $acts = $this->actService->filterActs(['object_id' => $activeObjectIds], $total);
+
         return view(
             'pivots.acts-category.index',
             compact(
-                'acts', 'activeObjectIds', 'objects'
+                'acts', 'activeObjectIds', 'objects', 'activeObjects'
             )
         );
     }

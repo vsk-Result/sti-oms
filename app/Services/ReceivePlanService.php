@@ -24,7 +24,9 @@ class ReceivePlanService
 
         $now = Carbon::now();
 
+        $periodId = 0;
         $periods[] = [
+            'id' => $periodId++,
             'start' => $now->startOfWeek()->format('Y-m-d'),
             'end' => $now->endOfWeek()->format('Y-m-d'),
             'format' => $now->startOfWeek()->format('d.m.Y') . ' - ' . $now->endOfWeek()->format('d.m.Y')
@@ -41,6 +43,7 @@ class ReceivePlanService
             }
 
             $periods[] = [
+                'id' => $periodId++,
                 'start' => $newDate->startOfWeek()->format('Y-m-d'),
                 'end' => $newDate->endOfWeek()->format('Y-m-d'),
                 'format' => $newDate->startOfWeek()->format('d.m.Y') . ' - ' . $newDate->endOfWeek()->format('d.m.Y')

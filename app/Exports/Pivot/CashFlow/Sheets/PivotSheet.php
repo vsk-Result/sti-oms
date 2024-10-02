@@ -2,6 +2,9 @@
 
 namespace App\Exports\Pivot\CashFlow\Sheets;
 
+use App\Models\CashFlow\PlanPayment;
+use App\Models\CashFlow\PlanPaymentEntry;
+use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
 use App\Models\TaxPlanItem;
@@ -60,11 +63,10 @@ class PivotSheet implements
         $sheet->getStyle('A3:'. $lastColumn . '4')->getFont()->setItalic(true);
         $sheet->getStyle('A3:'. $lastColumn . '4')->getFont()->setSize(11);
 
-
-        $planPaymentTypes = $this->receivePlanService->getPlanPaymentTypes();
-        $planPayments = TaxPlanItem::where('paid', false)->get();
+        $planPaymentGroups = PlanPaymentGroup::all();
+        $CFPlanPayments = PlanPayment::all();
+        $CFPlanPaymentEntries = PlanPaymentEntry::all();
         $reasons = ReceivePlan::getReasons();
-        $periods = $this->receivePlanService->getPeriods();
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
 
         $activeObjectIds = BObject::active()->orderBy('code')->pluck('id')->toArray();
@@ -177,8 +179,8 @@ class PivotSheet implements
         $sheet->getRowDimension($row)->setRowHeight(5);
         $row++;
 
-        foreach($planPaymentTypes as $type) {
-            $sheet->setCellValue('A' . $row, $type);
+        foreach($CFPlanPayments as $payment) {
+            $sheet->setCellValue('A' . $row, $payment->name);
             $sheet->getRowDimension($row)->setRowHeight(30);
 
             $total = 0;
@@ -187,9 +189,9 @@ class PivotSheet implements
 
                 $column = $this->getColumnWord($columnIndex);
                 if ($index === 0) {
-                    $amount = $planPayments->where('name', $type)->where('due_date', '<=', $period['end'])->sum('amount');
+                    $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
                 } else {
-                    $amount = $planPayments->where('name', $type)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                    $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                 }
                 $total += $amount;
 
@@ -213,9 +215,9 @@ class PivotSheet implements
 
             $column = $this->getColumnWord($columnIndex);
             if ($index === 0) {
-                $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
             } else {
-                $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
 
             $total += $amount;
@@ -241,9 +243,9 @@ class PivotSheet implements
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
             } else {
-                $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
 
             $diff = $otherAmount - $amount;
@@ -266,9 +268,9 @@ class PivotSheet implements
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $planPayments->where('due_date', '<=', $period['end'])->sum('amount');
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
             } else {
-                $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
 
             $diff = $otherAmount - $amount + $prev;

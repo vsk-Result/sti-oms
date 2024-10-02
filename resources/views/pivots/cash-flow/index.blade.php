@@ -5,11 +5,20 @@
 @section('breadcrumbs', Breadcrumbs::render('pivots.cash_flow.index'))
 
 @section('content')
+
+    @include('pivots.cash-flow.modals.group-payments')
+
     <div class="card mb-5 mb-xl-8 border-0">
         <div class="card-header border-0">
             <div class="card-title"></div>
 
             <div class="card-toolbar">
+                @can('index cash-flow-plan-payments')
+                    <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#groupPaymentsModal">
+                        Группировка планов расходов
+                    </button>
+                @endcan
+
                 <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                     <form action="{{ route('pivots.cash_flow.exports.store') }}" method="POST" class="hidden">
                         @csrf
@@ -195,6 +204,9 @@
                             $periodsAmount = [];
                             $planGroupedPaymentAmount = [];
                             foreach ($planPaymentGroups as $group) {
+                                if ($group->payments->count() === 0) {
+                                    continue;
+                                }
                                 $planGroupedPaymentAmount[$group->name] = [];
 
                                 foreach ($group->payments as $payment) {
@@ -205,15 +217,16 @@
                                             $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                         }
 
-                                        if (! isset($planGroupedPaymentAmount[$group->name][$period['format']])) {
-                                            $planGroupedPaymentAmount[$group->name][$period['format']] = 0;
+                                        if (! isset($planGroupedPaymentAmount[$group->name][$period['id']])) {
+                                            $planGroupedPaymentAmount[$group->name][$period['id']] = 0;
                                         }
-                                        $planGroupedPaymentAmount[$group->name][$period['format']] += $amount;
+                                        $planGroupedPaymentAmount[$group->name][$period['id']] += $amount;
                                     }
                                 }
                             }
                         @endphp
                         @foreach($planPaymentGroups as $group)
+                            @continue($group->payments->count() === 0)
                             <tr class="plan-payment">
                                 <td class="ps-2">
                                     <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $group->name }}">+</span>
@@ -226,7 +239,7 @@
                                 @endphp
                                 @foreach($periods as $index => $period)
                                     @php
-                                        $amount = $planGroupedPaymentAmount[$group->name][$period['format']];
+                                        $amount = $planGroupedPaymentAmount[$group->name][$period['id']];
                                         $groupTotal += $amount;
                                     @endphp
 
@@ -239,30 +252,7 @@
                             </tr>
 
                             @foreach($group->payments as $payment)
-                                <tr class="collapse-row plan-payment" data-trigger="{{ $group->name }}" style="display: none;">
-                                    <td class="ps-8">{{ $payment->name }}</td>
-                                    <td></td>
-
-                                    @php
-                                        $total = 0;
-                                    @endphp
-                                    @foreach($periods as $index => $period)
-                                        @php
-                                            if ($index === 0) {
-                                                $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
-                                            } else {
-                                                $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
-                                            }
-                                            $total += $amount;
-                                        @endphp
-
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
-                                    @endforeach
-
-                                    <td class="text-right pe-2">
-                                        {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
-                                    </td>
-                                </tr>
+                                @include('pivots.cash-flow.partial.grouped_plan_payment_row', ['payment' => $payment, 'gr' => $group->name])
                             @endforeach
                         @endforeach
 
@@ -402,6 +392,7 @@
     <script>
         $(function() {
             mainApp.initFreezeTable(1);
+            $('.collapse-row').hide();
 
             $('.collapse-trigger').on('click', function() {
                 const $tr = $(this);
@@ -427,6 +418,7 @@
             $(document).on('blur', '.update-plan-payment-input', function() {
                 const span = $(this).parent().find('span');
                 const payment_id = $(this).data('payment-id');
+                const group = $(this).closest('tr').data('group');
 
                 if (span.text() !== $(this).val()) {
 
@@ -438,7 +430,7 @@
                         mainApp.sendAJAX(
                             url,
                             'POST',
-                            {payment_id, name},
+                            {payment_id, name, group},
                             (data) => {
                                 $(this).closest('tr').replaceWith(data.view);
                                 mainApp.init();
@@ -471,11 +463,12 @@
                 const payment_id = $(this).data('payment-id');
                 const url = $(this).data('url');
                 const object_id = $(this).val();
+                const group = $(this).closest('tr').data('group');
 
                 mainApp.sendAJAX(
                     url,
                     'POST',
-                    {payment_id, object_id},
+                    {payment_id, object_id, group},
                     (data) => {
                         $(this).closest('tr').replaceWith(data.view);
                         mainApp.init();
@@ -488,11 +481,12 @@
                 if ($(this).val().length > 0) {
                     const url = $(this).data('url');
                     const name = $(this).val();
+                    const group = $(this).closest('tr').data('group');
 
                     mainApp.sendAJAX(
                         url,
                         'POST',
-                        {name},
+                        {name, group},
                         (data) => {
                             $(this).val('');
                             $(this).closest('tr').before(data.view);
@@ -514,6 +508,7 @@
             const date = $that.data('date');
             const amount = $that.val();
             const url = $('.table-cf').data('update-payment-url');
+            const group = $(this).closest('tr').data('group');
 
             if ($that.data('initial-amount') !== amount) {
                 mainApp.sendAJAX(
@@ -523,6 +518,7 @@
                         payment_id,
                         date,
                         amount,
+                        group
                     },
                     (data) => {
                         $(this).closest('tr').replaceWith(data.view);

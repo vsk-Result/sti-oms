@@ -26,7 +26,10 @@ class PlanPaymentEntryController extends Controller
         $payment = $entry->planPayment;
         $periods = $this->receivePlanService->getPeriods();
         $objectList = BObject::active()->get();
-        $view = view('pivots.cash-flow/partial/plan_payment_row', compact('payment', 'periods', 'objectList'))->render();
+
+        $gr = $request->get('group');
+        $row = $request->has('group') ? 'pivots.cash-flow/partial/grouped_plan_payment_row' : 'pivots.cash-flow/partial/plan_payment_row';
+        $view = view($row, compact('payment', 'periods', 'objectList', 'gr'))->render();
 
         $status = 'success';
         return response()->json(compact('status', 'view'));

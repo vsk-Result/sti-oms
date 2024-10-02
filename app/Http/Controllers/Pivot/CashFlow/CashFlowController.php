@@ -22,6 +22,7 @@ class CashFlowController extends Controller
 
     public function index(): View
     {
+        $reasons = ReceivePlan::getReasons();
         $planPaymentGroups = PlanPaymentGroup::all();
         $CFPlanPayments = PlanPayment::all();
         $CFPlanPaymentEntries = PlanPaymentEntry::all();
@@ -38,7 +39,7 @@ class CashFlowController extends Controller
             'pivots.cash-flow.index',
             compact(
                 'periods', 'objects', 'plans',
-               'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList'
+               'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons'
             )
         );
     }
