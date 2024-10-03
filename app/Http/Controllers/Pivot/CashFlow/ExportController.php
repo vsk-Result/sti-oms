@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Pivot\CashFlow;
 
 use App\Exports\Pivot\CashFlow\Export;
 use App\Http\Controllers\Controller;
+use App\Models\CashFlow\PlanPayment;
+use App\Models\CashFlow\PlanPaymentEntry;
+use App\Models\Status;
+use App\Models\TaxPlanItem;
 use App\Services\ReceivePlanService;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -19,6 +23,35 @@ class ExportController extends Controller
 
     public function store(): BinaryFileResponse
     {
+        if (auth()->id() === 1) {
+            $periods = $this->receivePlanService->getPeriods();
+            $planPaymentTypes = $this->receivePlanService->getPlanPaymentTypes();
+            foreach ($periods as $index => $period) {
+                foreach ($planPaymentTypes as $paymentType) {
+                    $planPayment = PlanPayment::where('name', $paymentType)->first();
+                    $entry = PlanPaymentEntry::where('payment_id', $planPayment->id)->where('date', $period['start'])->first();
+
+                    $amount = TaxPlanItem::where('paid', false)->where('name', $paymentType)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
+                    if ($index === 0) {
+                        $amount = TaxPlanItem::where('paid', false)->where('name', $paymentType)->where('due_date', '<=', $period['end'])->sum('amount');
+                    }
+
+                    if (!$entry) {
+                        PlanPaymentEntry::create([
+                            'payment_id' => $planPayment->id,
+                            'date' => $period['start'],
+                            'amount' => $amount,
+                            'status_id' => Status::STATUS_ACTIVE
+                        ]);
+                    } else {
+                        $entry->update([
+                            'amount' => $amount,
+                        ]);
+                    }
+                }
+            }
+        }
+
         return Excel::download(new Export($this->receivePlanService), 'Отчет CASH FLOW.xlsx');
     }
 }
