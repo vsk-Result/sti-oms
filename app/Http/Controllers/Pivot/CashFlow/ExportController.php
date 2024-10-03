@@ -29,6 +29,9 @@ class ExportController extends Controller
             foreach ($periods as $index => $period) {
                 foreach ($planPaymentTypes as $paymentType) {
                     $planPayment = PlanPayment::where('name', $paymentType)->first();
+                    if (!$planPayment) {
+                        continue;
+                    }
                     $entry = PlanPaymentEntry::where('payment_id', $planPayment->id)->where('date', $period['start'])->first();
 
                     $amount = TaxPlanItem::where('paid', false)->where('name', $paymentType)->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
