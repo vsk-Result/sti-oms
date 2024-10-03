@@ -13,6 +13,7 @@ use App\Http\Controllers\Pivot\CashFlow\PlanPaymentController;
 use App\Http\Controllers\Pivot\CashFlow\PlanPaymentEntryController;
 use App\Http\Controllers\Pivot\CashFlow\PlanPaymentTableController;
 use App\Http\Controllers\Pivot\CashFlow\PlanPaymentGroupController;
+use App\Http\Controllers\Pivot\CashFlow\NotificationController;
 use App\Http\Controllers\Pivot\ActCategory\ActCategoryController;
 use App\Http\Controllers\Pivot\ActCategory\ExportController as ActCategoryExportController;
 
@@ -48,6 +49,7 @@ Route::post('pivots/cash-flow/plan-payments/entries', [PlanPaymentEntryControlle
 Route::post('pivots/cash-flow/plan-payments/group/create', [PlanPaymentGroupController::class, 'store'])->name('pivots.cash_flow.plan_payments.group.store');
 Route::post('pivots/cash-flow/plan-payments/group/update', [PlanPaymentGroupController::class, 'update'])->name('pivots.cash_flow.plan_payments.group.update');
 Route::get('pivots/cash-flow/plan-payments/table', [PlanPaymentTableController::class, 'index'])->name('pivots.cash_flow.plan_payments.table.index');
+Route::get('pivots/cash-flow/notifications/read', [NotificationController::class, 'update'])->name('pivots.cash_flow.notifications.update');
 
 
 // Отчет по категориям

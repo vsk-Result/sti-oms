@@ -7,12 +7,22 @@
 @section('content')
 
     @include('pivots.cash-flow.modals.group-payments')
+    @include('pivots.cash-flow.modals.notifications')
 
     <div class="card mb-5 mb-xl-8 border-0">
         <div class="card-header border-0">
             <div class="card-title"></div>
 
             <div class="card-toolbar">
+                @if ($isNotificationsAvailable)
+                    <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#notificationsModal">
+                        Уведомления
+                        @if($hasUnreadNotifications)
+                            <i class="ms-3 fa fa-info-circle text-danger"></i>
+                        @endif
+                    </button>
+                @endif
+
                 @can('index cash-flow-plan-payments')
                     <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#groupPaymentsModal">
                         Группировка планов расходов

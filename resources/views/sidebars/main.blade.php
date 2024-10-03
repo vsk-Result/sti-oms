@@ -1,3 +1,5 @@
+@inject('notificationService', 'App\Services\CashFlow\NotificationService')
+
 <div id="kt_aside" class="aside" data-kt-drawer="true" data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '225px'}" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_toggle" data-kt-sticky="true" data-kt-sticky-name="aside-sticky" data-kt-sticky-offset="{default: false, lg: '1px'}" data-kt-sticky-width="{lg: '225px'}" data-kt-sticky-left="auto" data-kt-sticky-top="94px" data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
     <div class="hover-scroll-overlay-y my-5 my-lg-5 w-100 ps-4 ps-lg-0 pe-4 me-1" id="kt_aside_menu_wrapper" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_header" data-kt-scroll-wrappers="#kt_aside" data-kt-scroll-offset="5px">
         <form id="kt_sidebar_search_form" style="display: none;"><div class="form-control"></div></form>
@@ -59,7 +61,12 @@
 
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('finance-report*') || request()->is('pivots**')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
-                        <span class="menu-title {{ (request()->is('finance-report*') || request()->is('pivots**')) ? 'fw-boldest' : '' }}">Отчеты</span>
+                        <span class="menu-title {{ (request()->is('finance-report*') || request()->is('pivots**')) ? 'fw-boldest' : '' }}">
+                            Отчеты
+                            @if($notificationService->hasUnreadNotifications())
+                                <i class="ms-3 fa fa-info-circle text-danger"></i>
+                            @endif
+                        </span>
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
@@ -90,6 +97,9 @@
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">Отчет CASH FLOW</span>
+                                @if($notificationService->hasUnreadNotifications())
+                                    <i class="fa fa-info-circle text-danger"></i>
+                                @endif
                                 </a>
                             </div>
                         @endcan

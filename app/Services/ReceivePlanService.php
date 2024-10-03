@@ -3,19 +3,25 @@
 namespace App\Services;
 
 use App\Helpers\Sanitizer;
+use App\Models\CashFlow\Notification;
+use App\Models\CashFlow\PlanPayment;
+use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
 use App\Models\Status;
+use App\Services\CashFlow\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class ReceivePlanService
 {
     private Sanitizer $sanitizer;
+    private NotificationService $notificationService;
 
-    public function __construct(Sanitizer $sanitizer)
+    public function __construct(Sanitizer $sanitizer, NotificationService $notificationService)
     {
         $this->sanitizer = $sanitizer;
+        $this->notificationService = $notificationService;
     }
 
     public function getPeriods(?int $objectId = null): array
@@ -100,9 +106,9 @@ class ReceivePlanService
         return (bool) $this->findPlan($objectId, $reasonId, $date);
     }
 
-    public function createReceivePlan(array $requestData): void
+    public function createReceivePlan(array $requestData): ReceivePlan
     {
-        ReceivePlan::create([
+        return ReceivePlan::create([
             'object_id' => $requestData['object_id'],
             'reason_id' => $requestData['reason_id'],
             'date' => $requestData['date'],
@@ -114,9 +120,10 @@ class ReceivePlanService
     public function updatePlan(array $requestData): void
     {
         $plan = $this->findPlan($requestData['object_id'], $requestData['reason_id'], $requestData['date']);
+        $period = Carbon::parse($requestData['date'])->startOfWeek()->format('d.m.Y') . ' - ' . Carbon::parse($requestData['date'])->endOfWeek()->format('d.m.Y');
 
         if (!$plan) {
-            $this->createReceivePlan([
+            $plan = $this->createReceivePlan([
                 'object_id' => $requestData['object_id'],
                 'reason_id' => $requestData['reason_id'],
                 'date' => $requestData['date'],
@@ -124,8 +131,21 @@ class ReceivePlanService
                 'status_id' => Status::STATUS_ACTIVE
             ]);
 
+            $this->notificationService->createNotification(
+                Notification::TYPE_RECEIVE,
+                Notification::EVENT_TYPE_UPDATE,
+                'Сумма прихода "' . $plan->getReason() . '" изменилась с "0 ₽' . '" на "' . CurrencyExchangeRate::format($this->sanitizer->set($requestData['amount'])->toAmount()->get(), 'RUB') . '" за период "' . $period . '"'
+            );
+
             return;
         }
+
+
+        $this->notificationService->createNotification(
+            Notification::TYPE_RECEIVE,
+            Notification::EVENT_TYPE_UPDATE,
+            'Сумма прихода "' . $plan->getReason() . '" изменилась с "' . CurrencyExchangeRate::format($plan->amount, 'RUB') . '" на "' . CurrencyExchangeRate::format($this->sanitizer->set($requestData['amount'])->toAmount()->get(), 'RUB') . '" за период "' . $period . '"'
+        );
 
         $plan->update([
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get()

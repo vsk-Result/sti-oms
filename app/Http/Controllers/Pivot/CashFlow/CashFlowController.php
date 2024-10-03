@@ -8,16 +8,19 @@ use App\Models\CashFlow\PlanPaymentEntry;
 use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
+use App\Services\CashFlow\NotificationService;
 use App\Services\ReceivePlanService;
 use Illuminate\Contracts\View\View;
 
 class CashFlowController extends Controller
 {
     private ReceivePlanService $receivePlanService;
+    private NotificationService $notificationService;
 
-    public function __construct(ReceivePlanService $receivePlanService)
+    public function __construct(ReceivePlanService $receivePlanService, NotificationService $notificationService)
     {
         $this->receivePlanService = $receivePlanService;
+        $this->notificationService = $notificationService;
     }
 
     public function index(): View
@@ -35,11 +38,17 @@ class CashFlowController extends Controller
         $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
         $objectList = BObject::active()->get();
 
+        $isNotificationsAvailable = in_array(auth()->id(), $this->notificationService->getTargetUserIds());
+        $newNotifications = $this->notificationService->getNewNotifications();
+        $historyNotifications = $this->notificationService->getHistoryNotifications();
+        $hasUnreadNotifications = $this->notificationService->hasUnreadNotifications();
+
         return view(
             'pivots.cash-flow.index',
             compact(
                 'periods', 'objects', 'plans',
-               'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons'
+               'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
+                'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable'
             )
         );
     }

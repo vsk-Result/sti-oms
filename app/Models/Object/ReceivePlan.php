@@ -38,4 +38,9 @@ class ReceivePlan extends Model implements Audit
             self::REASON_OTHER => 'Прочие поступления (ген.подрядные работы и прочие)',
         ];
     }
+
+    public function getReason(): string
+    {
+        return $this->getReasons()[$this->reason_id];
+    }
 }
