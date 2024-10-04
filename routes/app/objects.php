@@ -1,24 +1,26 @@
 <?php
 
-use App\Http\Controllers\Object\ObjectController;
-use App\Http\Controllers\Object\PivotController;
-use App\Http\Controllers\Object\ContractController;
 use App\Http\Controllers\Object\ActController;
-use App\Http\Controllers\Object\GuaranteeController;
+use App\Http\Controllers\Object\ActivityController;
+use App\Http\Controllers\Object\BankGuaranteeController;
+use App\Http\Controllers\Object\CashPaymentController;
+use App\Http\Controllers\Object\CheckController;
+use App\Http\Controllers\Object\ContractController;
 use App\Http\Controllers\Object\DebtController;
 use App\Http\Controllers\Object\DebtExportController;
-use App\Http\Controllers\Object\PaymentController;
-use App\Http\Controllers\Object\CashPaymentController;
-use App\Http\Controllers\Object\FileController;
-use App\Http\Controllers\Object\ActivityController;
-use App\Http\Controllers\Object\UserController;
-use App\Http\Controllers\Object\BankGuaranteeController;
 use App\Http\Controllers\Object\DepositController;
 use App\Http\Controllers\Object\ExportController;
-use App\Http\Controllers\Object\WriteoffController;
+use App\Http\Controllers\Object\FileController;
+use App\Http\Controllers\Object\GuaranteeController;
+use App\Http\Controllers\Object\ObjectController;
+use App\Http\Controllers\Object\PaymentController;
+use App\Http\Controllers\Object\PivotController;
 use App\Http\Controllers\Object\ReceivePlanController;
 use App\Http\Controllers\Object\ReceivePlanExportController;
-use App\Http\Controllers\Object\CheckController;
+use App\Http\Controllers\Object\UserController;
+use App\Http\Controllers\Object\WriteoffController;
+use App\Http\Controllers\Object\Report\ActCategory\ActCategoryController;
+use App\Http\Controllers\Object\Report\ActCategory\ExportController as ActCategoryExportController;
 
 // Экспорт объекта в Excel
 
@@ -97,3 +99,9 @@ Route::post('objects/{object}/receive-plan/export', [ReceivePlanExportController
 // Проверка
 
 Route::get('objects/{object}/check', [CheckController::class, 'index'])->name('objects.check.index');
+
+// Отчеты
+// Отчет по актам
+
+Route::get('objects/{object}/reports/act-category', [ActCategoryController::class, 'index'])->name('objects.reports.act_category.index');
+Route::post('objects/{object}/reports/act-category/export', [ActCategoryExportController::class, 'store'])->name('objects.reports.act_category.export.store');

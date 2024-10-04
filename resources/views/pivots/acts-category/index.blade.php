@@ -293,7 +293,7 @@
                                 </td>
                             </tr>
                             <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
-                                <td class="ps-2 fw-bolder">Материалы</td>
+                                <td class="ps-2 fst-italic">Материалы</td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalMaterialContractAmount, 'RUB', 0, true) }}
                                 </td>
@@ -324,7 +324,7 @@
                             </tr>
 
                             <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
-                                <td class="ps-2 fw-bolder">Работы</td>
+                                <td class="ps-2 fst-italic">Работы</td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalRadContractAmount, 'RUB', 0, true) }}
                                 </td>
@@ -355,7 +355,7 @@
                             </tr>
 
                             <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
-                                <td class="ps-2 fw-bolder">Накладные</td>
+                                <td class="ps-2 fst-italic">Накладные</td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalOpsteContractAmount, 'RUB', 0, true) }}
                                 </td>

@@ -28,7 +28,7 @@
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/contracts') ? 'active' : '' }}" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">Договора</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/acts') ? 'active' : '' }}" href="{{ route('objects.acts.index', $object) }}?object_id%5B%5D={{ $object->id }}">Акты</a>
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/acts') || request()->is('*/reports/act-category') ? 'active' : '' }}" href="{{ route('objects.acts.index', $object) }}?object_id%5B%5D={{ $object->id }}">Акты</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>
@@ -49,7 +49,6 @@
                                     <i class="fa fa-info-circle text-danger"></i>
                                 @endif
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/check') ? 'active' : '' }}" href="{{ route('objects.check.index', $object) }}?object_id%5B%5D={{ $object->id }}">Проверка</a>
-
                             </li>
 {{--                            <li class="nav-item">--}}
 {{--                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/deposits') ? 'active' : '' }}" href="{{ route('objects.deposits.index', $object) }}?object_id%5B%5D={{ $object->id }}">Депозиты без БГ</a>--}}
