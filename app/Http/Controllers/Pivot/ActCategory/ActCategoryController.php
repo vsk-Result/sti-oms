@@ -39,7 +39,7 @@ class ActCategoryController extends Controller
         return view(
             'pivots.acts-category.index',
             compact(
-                'acts', 'activeObjectIds', 'objects', 'activeObjects', 'total'
+                'acts', 'activeObjectIds', 'objects', 'activeObjects'
             )
         );
     }
