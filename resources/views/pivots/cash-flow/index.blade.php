@@ -445,6 +445,7 @@
                                 $(this).closest('tr').replaceWith(data.view);
                                 mainApp.init();
                                 KTApp.initSelect2();
+                                mainApp.initFreezeTable(1);
                             }
                         );
                     } else {
@@ -456,6 +457,7 @@
                                 {payment_id},
                                 () => {
                                     $(this).closest('tr').remove();
+                                    mainApp.initFreezeTable(1);
                                 }
                             );
                         } else {
@@ -483,6 +485,7 @@
                         $(this).closest('tr').replaceWith(data.view);
                         mainApp.init();
                         KTApp.initSelect2();
+                        mainApp.initFreezeTable(1);
                     }
                 );
             });
@@ -502,6 +505,7 @@
                             $(this).closest('tr').before(data.view);
                             mainApp.init();
                             KTApp.initSelect2();
+                            mainApp.initFreezeTable(1);
                         }
                     );
                 }
@@ -534,6 +538,7 @@
                         $(this).closest('tr').replaceWith(data.view);
                         mainApp.init();
                         KTApp.initSelect2();
+                        mainApp.initFreezeTable(1);
                     }
                 );
             }
