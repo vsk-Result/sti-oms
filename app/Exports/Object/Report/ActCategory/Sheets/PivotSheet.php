@@ -36,7 +36,7 @@ class PivotSheet implements
     {
         $object = $this->object;
         $total = [];
-        $acts = $this->actService->filterActs(['object_id' => [$object->id]], $total);
+        $acts = $this->actService->filterActs(['object_id' => [$object->id]], $total, false);
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
 

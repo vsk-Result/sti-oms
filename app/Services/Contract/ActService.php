@@ -10,6 +10,7 @@ use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Currency;
 
@@ -107,7 +108,7 @@ class ActService
         return $pivot;
     }
 
-    public function filterActs(array $requestData, array &$total): LengthAwarePaginator
+    public function filterActs(array $requestData, array &$total, bool $needPaginate = true): Collection|LengthAwarePaginator
     {
         $actQuery = Act::query();
 
@@ -191,7 +192,11 @@ class ActService
 
         $total['ids'] = (clone $actQuery)->pluck('id')->toArray();
 
-        return $actQuery->paginate($perPage)->withQueryString();
+        if ($needPaginate) {
+            return $actQuery->paginate($perPage)->withQueryString();
+        }
+
+        return $actQuery->get();
     }
 
     public function createAct(array $requestData): void

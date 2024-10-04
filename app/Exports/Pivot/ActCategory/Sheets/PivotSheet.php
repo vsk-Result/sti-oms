@@ -73,7 +73,7 @@ class PivotSheet implements
         $filteredObjects = BObject::active()->orderBy('code')->get();
         $activeObjectIds = $filteredObjects->pluck('id')->toArray();
         $activeObjects = BObject::whereIn('id', $activeObjectIds)->orderByDesc('code')->get();
-        $acts = $this->actService->filterActs(['object_id' => $activeObjectIds], $total);
+        $acts = $this->actService->filterActs(['object_id' => $activeObjectIds], $total, false);
 
         $sheet->setCellValue( 'A2', 'Итого');
         $sheet->setCellValue( 'A3', 'Материалы');
