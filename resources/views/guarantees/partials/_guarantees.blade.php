@@ -26,6 +26,12 @@
                         Новое ГУ
                     </a>
                 @endcan
+
+                @if($object->code === '000')
+                    <a href="/storage/public/objects-debts-manuals/customer_gu.xlsx" class="btn btn-light-primary me-3">
+                        Скачать детализацию
+                    </a>
+                @endcan
             </div>
         </div>
     </div>
