@@ -63,10 +63,6 @@
                     </thead>
 
                     @php
-                        $totalMaterialAmount = $acts->sum('amount');
-                        $totalRadAmount = $acts->sum('rad_amount');
-                        $totalOpsteAmount = $acts->sum('opste_amount');
-
                         $totalMaterialContractAmount = 0;
                         $totalRadContractAmount = 0;
                         $totalOpsteContractAmount = 0;
@@ -97,7 +93,7 @@
                         $totalRadLeftPaidAmount = $totalRadContractAmount - $totalRadPaidAmount;
                         $totalOpsteLeftPaidAmount = $totalOpsteContractAmount - $totalOpstePaidAmount;
 
-                        $totalAmount = $totalMaterialAmount + $totalRadAmount + $totalOpsteAmount;
+                        $totalAmount = $total['amount']['RUB'];
                         $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
                         $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
                         $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
