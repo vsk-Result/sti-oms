@@ -54,6 +54,7 @@ class NotifyToEmailAboutObjectBalance extends Command
             '366' => ['kseniya.boltisheva@st-ing.com'], // Валента
             '367' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Офис Веспер
             '369' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com'], // Mono Space
+            '373' => ['natalya.vorotnikova@st-ing.com'], // Детский центр Магнитогорск
         ];
 
         $now = Carbon::now()->format('d.m.Y');
