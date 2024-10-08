@@ -21,7 +21,7 @@ class ActCategoryController extends Controller
     {
         $total = [];
 
-        $objects = BObject::active()->orderBy('code')->get();
+        $objects = BObject::active()->whereNotIn('code', ['362', '368'])->orderBy('code')->get();
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
