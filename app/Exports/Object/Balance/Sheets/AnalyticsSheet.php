@@ -155,7 +155,7 @@ class AnalyticsSheet implements
 
             if ($field === 'pay_tax') {
                 $sheet->setCellValue('A' . $row, $info . ' (% налог/ з/п)');
-                $sheet->setCellValue('A' . $row, $info . ' (' . number_format(abs($infoObj['pay_tax'] /$infoObj['pay_salary'] * 100), 2) . '% налог/ з/п)');
+                $sheet->setCellValue('A' . $row, $info . ' (' . number_format(abs($infoObj['pay_salary'] != 0 ? ($infoObj['pay_tax'] /$infoObj['pay_salary'] * 100) : 0), 2) . '% налог/ з/п)');
             }
 
             if ($field === 'general_balance_service') {
