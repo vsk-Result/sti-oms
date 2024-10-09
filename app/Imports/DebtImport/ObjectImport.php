@@ -17,6 +17,8 @@ class ObjectImport implements WithMultipleSheets, SkipsUnknownSheets
             'ОтчетДДС (П)' => new SheetForArray(),
             'свод' => new SheetForArray(),
             'БАЗА Подрядчики' => new SheetForArray(),
+            'Поставщики' => new SheetForArray(),
+            'Свод по подряду' => new SheetForArray(),
         ];
     }
 
