@@ -52,15 +52,15 @@ class PivotObjectSheet implements
         $sheet->mergeCells('A1:D1');
 
         $objectIds = array_unique((clone $this->payments)->pluck('object_id')->toArray());
+        $objects = BObject::whereIn('id', $objectIds);
 
         $row = 3;
-        foreach ($objectIds as $objectId) {
-            $object = BObject::find($objectId);
-            $total = (clone $this->payments)->where('object_id', $objectId)->sum('amount');
+        foreach ($objects as $object) {
+            $total = (clone $this->payments)->where('object_id', $object->id)->sum('amount');
 
-            $sheet->setCellValue('A' . $row, $object?->getName() ?? '');
-            $sheet->setCellValue('B' . $row, (clone $this->payments)->where('object_id', $objectId)->where('amount', '>=', 0)->sum('amount'));
-            $sheet->setCellValue('C' . $row, (clone $this->payments)->where('object_id', $objectId)->where('amount', '<', 0)->sum('amount'));
+            $sheet->setCellValue('A' . $row, $object->getName());
+            $sheet->setCellValue('B' . $row, (clone $this->payments)->where('object_id', $object->id)->where('amount', '>=', 0)->sum('amount'));
+            $sheet->setCellValue('C' . $row, (clone $this->payments)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount'));
             $sheet->setCellValue('D' . $row, $total);
 
             $sheet->getRowDimension($row)->setRowHeight(30);

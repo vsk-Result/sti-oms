@@ -4,6 +4,7 @@ namespace App\Exports\Pivot\MoneyMovement\Sheets;
 
 use App\Models\Organization;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -46,17 +47,17 @@ class PivotOrganizationPaymentSheet implements
 
         $sheet->getStyle('A1:B1')->getFont()->setBold(true);
 
-        $organizationsIds = array_unique((clone $this->payments)->pluck('organization_receiver_id')->toArray());
-        $organizations = Organization::whereIn('id', $organizationsIds)->get();
-        $payments = [];
-        foreach ($organizations as $organization) {
-            $payments[$organization->name] = (clone $this->payments)->where('organization_receiver_id', $organization->id)->sum('amount');
+        $total = 0;
+        $info = [];
+        foreach ((clone $this->payments)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+            $info[Organization::find($payment->organization_receiver_id)?->name ?? 'Не определена'] = $payment->sum_amount;
+            $total += $payment->sum_amount;
         }
 
-        asort($payments);
+        asort($info);
 
         $row = 2;
-        foreach ($payments as $organizationName => $amount) {
+        foreach ($info as $organizationName => $amount) {
 
             $sheet->setCellValue('A' . $row, $organizationName);
             $sheet->setCellValue('B' . $row, $amount);
@@ -66,7 +67,6 @@ class PivotOrganizationPaymentSheet implements
             $row++;
         }
 
-        $total = (clone $this->payments)->whereIn('organization_receiver_id', $organizationsIds)->sum('amount');
         $sheet->setCellValue('A' . $row, 'Итого');
         $sheet->setCellValue('B' . $row, $total);
 

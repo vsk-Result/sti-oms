@@ -38,8 +38,8 @@ class Export implements WithMultipleSheets
             new PivotObjectSheet((clone $this->payments)),
             new PaymentSheet((clone $this->payments)),
             new PivotOrganizationReceiveSheet((clone $this->payments)),
-            new PivotOrganizationPaymentSheet((clone $this->payments)),
             new PivotOrganizationReceiveWithObjectSheet((clone $this->payments)),
+            new PivotOrganizationPaymentSheet((clone $this->payments)),
             new PivotOrganizationPaymentWithObjectSheet((clone $this->payments)),
         ];
     }

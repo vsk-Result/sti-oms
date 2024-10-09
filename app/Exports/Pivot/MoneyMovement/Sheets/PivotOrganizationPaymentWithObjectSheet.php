@@ -5,6 +5,7 @@ namespace App\Exports\Pivot\MoneyMovement\Sheets;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -47,25 +48,24 @@ class PivotOrganizationPaymentWithObjectSheet implements
 
         $sheet->getStyle('A1:B1')->getFont()->setBold(true);
 
-        $organizationsIds = array_unique((clone $this->payments)->pluck('organization_receiver_id')->toArray());
-        $organizations = Organization::whereIn('id', $organizationsIds)->get();
-        $payments = [];
+        $total = 0;
+        $info = [];
         $objects = [];
-        foreach ($organizations as $organization) {
-            $organizationPayments = (clone $this->payments)->where('organization_receiver_id', $organization->id)->get();
-            $payments[$organization->name] = $organizationPayments->sum('amount');
+        foreach ((clone $this->payments)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+            $organization = Organization::find($payment->organization_receiver_id);
+            $info[$organization?->name ?? 'Не определена'] = $payment->sum_amount;
+            $total += $payment->sum_amount;
 
-            $objectIds = array_unique($organizationPayments->pluck('object_id')->toArray());
-            foreach ($objectIds as $objectId) {
-                $object = BObject::find($objectId);
-                $objects[$organization->name][$object?->getName() ?? ('Неопределен_' . $objectId)] = $organizationPayments->where('object_id', $objectId)->sum('amount');
+            foreach ((clone $this->payments)->where('organization_sender_id', $organization->id)->select('object_id', DB::raw('sum(amount) as sum_amount'))->groupBy('object_id')->get() as $ppayment) {
+                $object = BObject::find($ppayment->object_id);
+                $objects[$organization->name][$object?->getName() ?? ('Неопределен_' . $ppayment->object_id)] = $ppayment->sum_amount;
             }
         }
 
-        asort($payments);
+        asort($info);
 
         $row = 2;
-        foreach ($payments as $organizationName => $amount) {
+        foreach ($info as $organizationName => $amount) {
 
             $sheet->setCellValue('A' . $row, $organizationName);
             $sheet->setCellValue('B' . $row, $amount);
@@ -95,7 +95,6 @@ class PivotOrganizationPaymentWithObjectSheet implements
             }
         }
 
-        $total = (clone $this->payments)->whereIn('organization_receiver_id', $organizationsIds)->sum('amount');
         $sheet->setCellValue('A' . $row, 'Итого');
         $sheet->setCellValue('B' . $row, $total);
 
