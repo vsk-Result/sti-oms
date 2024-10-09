@@ -282,12 +282,14 @@ class BObject extends Model implements Audit
         return $details;
     }
 
-    public function scopeActive($query)
+    public function scopeActive($query, $withCodes = null)
     {
         $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());
-        return $query->where(function($q) {
+        return $query->where(function($q) use($withCodes) {
             $q->where('status_id', Status::STATUS_ACTIVE);
-            $q->orWhere('code', '359');
+            if ($withCodes) {
+                $q->orWhereIn('code', $withCodes);
+            }
         })->whereNotIn('code', $exceptObjectsWithCodes);
     }
 

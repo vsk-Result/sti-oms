@@ -33,3 +33,8 @@ Breadcrumbs::for('pivots.acts_category.index', function (BreadcrumbTrail $trail)
     $trail->push('Отчет по категориям');
 });
 
+Breadcrumbs::for('pivots.money_movement.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Отчет о движении денежных средств');
+});
+

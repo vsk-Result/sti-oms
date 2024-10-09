@@ -160,6 +160,22 @@ class Payment extends Model implements Audit
         return '';
     }
 
+    public function getObjectName(): string
+    {
+        if ($this->type_id === static::TYPE_OBJECT) {
+            return $this->object->name ?? '';
+        }
+
+        switch ($this->type_id) {
+            case static::TYPE_TRANSFER:    return 'Трансфер';
+            case static::TYPE_GENERAL:     return 'Общее';
+            default:
+                break;
+        }
+
+        return '';
+    }
+
     public function isNeedSplit(): bool
     {
         return $this->is_need_split;

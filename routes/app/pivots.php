@@ -16,6 +16,8 @@ use App\Http\Controllers\Pivot\CashFlow\PlanPaymentGroupController;
 use App\Http\Controllers\Pivot\CashFlow\NotificationController;
 use App\Http\Controllers\Pivot\ActCategory\ActCategoryController;
 use App\Http\Controllers\Pivot\ActCategory\ExportController as ActCategoryExportController;
+use App\Http\Controllers\Pivot\MoneyMovement\MoneyMovementController;
+use App\Http\Controllers\Pivot\MoneyMovement\ExportController as MoneyMovementExportController;
 
 // Сводная по долгам от СТИ
 Route::get('pivots/debts', [DebtController::class, 'index'])->name('pivots.debts.index');
@@ -54,6 +56,10 @@ Route::get('pivots/cash-flow/notifications/read', [NotificationController::class
 
 // Отчет по категориям
 Route::get('pivots/acts-category', [ActCategoryController::class, 'index'])->name('pivots.acts_category.index');
-
 // Экспорт отчета по категориям
 Route::post('pivots/acts-category/export', [ActCategoryExportController::class, 'store'])->name('pivots.acts_category.exports.store');
+
+// Отчет о движении денежных средств
+Route::get('pivots/money-movement', [MoneyMovementController::class, 'index'])->name('pivots.money_movement.index');
+// Экспорт отчета о движении денежных средств
+Route::post('pivots/money-movement/export', [MoneyMovementExportController::class, 'store'])->name('pivots.money_movement.exports.store');
