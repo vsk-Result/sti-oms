@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AvansImportItem extends Model
 {
     protected $table = 'avans_import_items';
+    public $timestamps = false;
 
     protected $connection = 'mysql_crm';
 

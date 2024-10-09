@@ -3,6 +3,7 @@
 namespace App\Models\CRM;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Employee extends Model
@@ -14,6 +15,11 @@ class Employee extends Model
     public function getFullname()
     {
         return "$this->secondname $this->firstname $this->thirdname";
+    }
+
+    public function object(): BelongsTo
+    {
+        return $this->belongsTo(CObject::class, 'o_id');
     }
 
     public function differences(): HasMany

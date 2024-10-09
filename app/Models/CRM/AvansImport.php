@@ -43,4 +43,16 @@ class AvansImport extends Model
 
         return $sum;
     }
+
+    public function getTotal()
+    {
+        $total = 0;
+        foreach ($this->items as $item) {
+            if ($item->avans) {
+                $total += $item->avans->value;
+            }
+        }
+
+        return $total;
+    }
 }
