@@ -40,21 +40,22 @@ class ImportCRMMoneyRegistryFromExcel extends Command
         $files = Storage::allFiles('public/crm-registry');
 
         foreach ($files as $file) {
-            if (str_contains($file, 'imported')) {
+            $fileName = File::name($file);
+
+            if (str_contains($fileName, 'imported')) {
+                Storage::move('public/crm-registry/' . $fileName . '.xls', 'public/crm-registry/imported/' . $fileName . '.xls');
                 continue;
             }
 
-            $fileName = File::name($file);
-
             try {
                 if ($this->moneyRegistryService->isRegistryWasImported($file)){
-                    Storage::move('public/crm-registry/' . $fileName . '.xls', 'public/crm-registry/' . $fileName . '_imported.xls');
+                    Storage::move('public/crm-registry/' . $fileName . '.xls', 'public/crm-registry/imported/' . $fileName . '_imported.xls');
                     continue;
                 }
 
                 $this->moneyRegistryService->importRegistry($file);
                 $importedCount++;
-                Storage::move('public/crm-registry/' . $fileName . '.xls', 'public/crm-registry/' . $fileName . '_imported.xls');
+                Storage::move('public/crm-registry/' . $fileName . '.xls', 'public/crm-registry/imported/' . $fileName . '_imported.xls');
 
                 Log::channel('custom_imports_log')->debug('[SUCCESS] Файл ' . $fileName . ' успешно загружен');
             } catch (\Exception $e) {
