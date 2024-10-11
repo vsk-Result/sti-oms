@@ -56,9 +56,9 @@ class PivotOrganizationReceiveWithObjectSheet implements
             $info[$organization?->name ?? 'Не определена'] = $payment->sum_amount;
             $total += $payment->sum_amount;
 
-            foreach ((clone $this->payments)->where('organization_sender_id', $organization->id)->select('object_id', DB::raw('sum(amount) as sum_amount'))->groupBy('object_id')->get() as $ppayment) {
+            foreach ((clone $this->payments)->where('organization_sender_id', $payment->organization_sender_id)->select('object_id', DB::raw('sum(amount) as sum_amount'))->groupBy('object_id')->get() as $ppayment) {
                 $object = BObject::find($ppayment->object_id);
-                $objects[$organization->name][$object?->getName() ?? ('Неопределен_' . $ppayment->object_id)] = $ppayment->sum_amount;
+                $objects[$organization?->name ?? 'Не определена'][$object?->getName() ?? ('Неопределен_' . $ppayment->object_id)] = $ppayment->sum_amount;
             }
         }
 
@@ -76,6 +76,10 @@ class PivotOrganizationReceiveWithObjectSheet implements
             $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);
 
             $row++;
+
+            if (!isset($objects[$organizationName])) {
+                continue;
+            }
 
             $objectsInfo = $objects[$organizationName];
             arsort($objectsInfo);

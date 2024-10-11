@@ -4,12 +4,10 @@ namespace App\Exports\Payment\Sheets;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -20,8 +18,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class PaymentSheet implements
     WithTitle,
     WithHeadings,
-    FromQuery,
-    WithMapping,
     WithColumnFormatting,
     ShouldAutoSize,
     WithStyles,
@@ -64,30 +60,6 @@ class PaymentSheet implements
         ];
     }
 
-    public function query(): Builder
-    {
-        return $this->payments;
-    }
-
-    public function map($row): array
-    {
-        return [
-            $row->getObject(),
-            $row->amount < 0 ? 'Расход' : 'Приход',
-            $row->getPaymentType(),
-            Date::dateTimeToExcel(Carbon::parse($row->date)),
-            $row->code . ' ',
-            $row->amount,
-            $row->amount_without_nds,
-            $row->amount < 0 ? ($row->organizationReceiver->name ?? '') : ($row->organizationSender->name ?? ''),
-            $row->description,
-            $row->category,
-            $row->company->name ?? '',
-            $row->getBankName(),
-            $row->id,
-        ];
-    }
-
     public function columnFormats(): array
     {
         return [
@@ -99,6 +71,27 @@ class PaymentSheet implements
 
     public function styles(Worksheet $sheet): void
     {
+        $row = 2;
+        $this->payments->chunk(1000, function($payments) use($sheet, $row) {
+            foreach ($payments as $payment) {
+                $sheet->setCellValue('A' . $row, $payment->getObject());
+                $sheet->setCellValue('B' . $row, $payment->amount < 0 ? 'Расход' : 'Приход');
+                $sheet->setCellValue('C' . $row, $payment->getPaymentType());
+                $sheet->setCellValue('D' . $row, Date::dateTimeToExcel(Carbon::parse($payment->date)));
+                $sheet->setCellValue('E' . $row, $payment->code . ' ');
+                $sheet->setCellValue('F' . $row, $payment->amount);
+                $sheet->setCellValue('G' . $row, $payment->amount_without_nds);
+                $sheet->setCellValue('H' . $row, $payment->amount < 0 ? ($payment->organizationReceiver->name ?? '') : ($payment->organizationSender->name ?? ''));
+                $sheet->setCellValue('I' . $row, $payment->description);
+                $sheet->setCellValue('J' . $row, $payment->category);
+                $sheet->setCellValue('K' . $row, $payment->company->name ?? '');
+                $sheet->setCellValue('L' . $row, $payment->getBankName());
+                $sheet->setCellValue('M' . $row, $payment->id);
+
+                $row++;
+            }
+        });
+
         $sheet->getStyle('A1:M' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
