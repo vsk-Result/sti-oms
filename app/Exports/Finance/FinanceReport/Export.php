@@ -5,6 +5,7 @@ namespace App\Exports\Finance\FinanceReport;
 use App\Exports\Finance\FinanceReport\Sheets\ObjectPivotSheet;
 use App\Exports\Finance\FinanceReport\Sheets\PivotSheet;
 use App\Models\FinanceReport;
+use App\Services\Contract\ActService;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class Export implements WithMultipleSheets
@@ -54,6 +55,8 @@ class Export implements WithMultipleSheets
 
             $sheets[] = new ObjectPivotSheet($sheetName, $pivotInfo, $year);
         }
+
+        $sheets[] = new \App\Exports\Pivot\ActCategory\Sheets\PivotSheet($this->config['act_service']);
 
 //        $objects = BObject::active()
 //            ->orderByDesc('code')

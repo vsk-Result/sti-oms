@@ -6,6 +6,7 @@ use App\Exports\Finance\FinanceReport\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\FinanceReportHistory;
+use App\Services\Contract\ActService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -13,6 +14,13 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends Controller
 {
+    private ActService $actService;
+
+    public function __construct(ActService $actService)
+    {
+        $this->actService = $actService;
+    }
+
     public function store(Request $request): BinaryFileResponse
     {
         $company = Company::getSTI();
@@ -46,7 +54,8 @@ class ExportController extends Controller
                     'objectsInfo' => $objectsInfo
                 ],
                 [
-                    'show_closed_objects' => false
+                    'show_closed_objects' => false,
+                    'act_service' => $this->actService,
                 ]
             ),
             $fileName
