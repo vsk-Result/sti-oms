@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance\FinanceReport;
 use App\Exports\Finance\FinanceReport\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\FinanceReport;
 use App\Models\FinanceReportHistory;
 use App\Services\Contract\ActService;
 use Carbon\Carbon;
@@ -41,6 +42,7 @@ class ExportController extends Controller
         $loansInfo = json_decode($financeReportHistory->loans);
         $depositsInfo = json_decode($financeReportHistory->deposits);
         $objectsInfo = json_decode($financeReportHistory->objects_new);
+        $loansGroupInfo = FinanceReport::getLoansGroupInfo();
 
         $fileName = 'Финансовый отчет ' . now()->format('d.m.Y') . '.xlsx';
 
@@ -51,7 +53,8 @@ class ExportController extends Controller
                     'creditsInfo' => $creditsInfo,
                     'loansInfo' => $loansInfo,
                     'depositsInfo' => $depositsInfo,
-                    'objectsInfo' => $objectsInfo
+                    'objectsInfo' => $objectsInfo,
+                    'loansGroupInfo' => $loansGroupInfo,
                 ],
                 [
                     'show_closed_objects' => false,

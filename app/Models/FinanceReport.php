@@ -127,4 +127,12 @@ class FinanceReport
             ]
         );
     }
+
+    public static function getLoansGroupInfo(): array
+    {
+        return [
+            'АО "МАПК(Е)"' => ['АО "МАПК(Е)"'],
+            'ООО "ДТ ТЕРМО ГРУПП"' => ['ДТТ (Миллениум)', 'ДТТ (Мавибони)', 'ООО "ДТ ТЕРМО ГРУПП"'],
+        ];
+    }
 }

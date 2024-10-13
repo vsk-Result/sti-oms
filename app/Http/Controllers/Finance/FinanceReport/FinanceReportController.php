@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Finance\FinanceReport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\FinanceReport;
 use App\Models\FinanceReportHistory;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -35,10 +36,8 @@ class FinanceReportController extends Controller
         $loansInfo = json_decode($financeReportHistory->loans);
         $depositsInfo = json_decode($financeReportHistory->deposits);
         $objectsInfo = json_decode($financeReportHistory->objects_new);
-        $loansGroupInfo = [
-            'АО "МАПК(Е)"' => ['АО "МАПК(Е)"'],
-            'ООО "ДТ ТЕРМО ГРУПП"' => ['ДТТ (Миллениум)', 'ДТТ (Мавибони)', 'ООО "ДТ ТЕРМО ГРУПП"'],
-        ];
+        $loansGroupInfo = FinanceReport::getLoansGroupInfo();
+
 
         return view(
             'finance-report.index',
