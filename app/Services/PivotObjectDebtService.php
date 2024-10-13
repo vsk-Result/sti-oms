@@ -114,7 +114,6 @@ class PivotObjectDebtService
     {
         $debtManuals = DebtManual::where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $this->object->id)->with('organization')->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
         $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
 
@@ -135,7 +134,7 @@ class PivotObjectDebtService
         } else {
             $debts = $this->object
                 ->debts()
-                ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id])
+                ->whereIn('import_id', [$debtImport?->id, $debt1CImport?->id, $debtObjectImport?->id])
                 ->where('type_id', Debt::TYPE_CONTRACTOR)
                 ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
                 ->with('organization')
@@ -211,12 +210,11 @@ class PivotObjectDebtService
     {
         $debtManuals = DebtManual::where('type_id', Debt::TYPE_PROVIDER)->where('object_id', $this->object->id)->with('organization')->get();
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
 
         $debts = $this->object
             ->debts()
-            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id])
+            ->whereIn('import_id', [$debtImport?->id, $debt1CImport?->id])
             ->where('type_id', Debt::TYPE_PROVIDER)
             ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
             ->with('organization')

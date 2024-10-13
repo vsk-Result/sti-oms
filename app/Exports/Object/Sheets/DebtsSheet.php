@@ -74,7 +74,6 @@ class DebtsSheet implements
 
         $row = 2;
         $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
         $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
         $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
         $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
@@ -83,7 +82,7 @@ class DebtsSheet implements
 
         $debts = $this->object
             ->debts()
-            ->whereIn('import_id', [$debtImport?->id, $debtDTImport?->id, $debt1CImport?->id, $debtObjectImport?->id, $debt1CServiceImport?->id])
+            ->whereIn('import_id', [$debtImport?->id, $debt1CImport?->id, $debtObjectImport?->id, $debt1CServiceImport?->id])
             ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
             ->with('organization', 'object')
             ->orderBy('amount')

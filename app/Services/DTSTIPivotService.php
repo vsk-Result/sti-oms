@@ -13,6 +13,10 @@ class DTSTIPivotService
             'entries' => [],
         ];
 
+        return $pivot;
+
+        // ДОДЕЛАТЬ
+
         $debtDTImport = DebtImport::where('type_id', DebtImport::TYPE_DTTERMO)->latest('date')->first();
 
         foreach ($debtDTImport->debts()->orderBy('amount', 'ASC')->get() as $debt) {
