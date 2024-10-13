@@ -18,7 +18,11 @@
                     $orgName = $loan->organization->name;
                     if (in_array($orgName, $orgNames)) {
                         $usedOrgNames[] = $orgName;
-                        $groupInfo[$group][$orgName . ', ' . $loan->name] = $loan->amount;
+                        if ($orgName === $group) {
+                            $groupInfo[$group][$loan->name] = $loan->amount;
+                        } else {
+                            $groupInfo[$group][$orgName . ', ' . $loan->name] = $loan->amount;
+                        }
                         $groupTotal[$group] += $loan->amount;
                     }
                 }
