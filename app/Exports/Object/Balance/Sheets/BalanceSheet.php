@@ -253,7 +253,7 @@ class BalanceSheet implements
         $sheet->getStyle('W10:X13')->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('W10:X13')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        if ($object->code === '361' && $object->free_limit_amount != 0) {
+        if ($object->free_limit_amount != 0) {
             $sheet->setCellValue('T10', 'Сумма договоров с Заказчиком');
             $sheet->setCellValue('T11', 'Остаток неотработанного аванса');
             $sheet->setCellValue('T12', 'Сумма свободного лимита АВ к получению');

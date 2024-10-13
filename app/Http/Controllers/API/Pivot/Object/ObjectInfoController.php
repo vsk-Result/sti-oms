@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Pivot\Object;
 
 use App\Http\Controllers\Controller;
 use App\Models\FinanceReportHistory;
+use App\Models\Loan;
 use App\Models\Object\BObject;
 use App\Models\TaxPlanItem;
 use Carbon\Carbon;
@@ -28,11 +29,15 @@ class ObjectInfoController extends Controller
 
         $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
 
+        $creditsInfo = json_decode($financeReportHistory->credits);
+        $loansInfo = json_decode($financeReportHistory->loans);
         $objectsInfo = json_decode($financeReportHistory->objects_new);
         $years = collect($objectsInfo->years)->toArray();
         $total = $objectsInfo->total;
 
         $info = [
+            'credits' => [],
+            'loans' => [],
             'debts' => [],
             'total' => [
                 'contractors_debts' => 0,
@@ -41,9 +46,40 @@ class ObjectInfoController extends Controller
                 'service_debts' => 0,
                 'salary_debts' => 0,
                 'tax_debts' => 0,
+                'credits_debts' => 0,
+                'loans_debts' => 0,
                 'total_debts' => 0,
             ]
         ];
+
+        foreach ($creditsInfo->credits as $credit) {
+            if (isset($credit->credit_type_id) && $credit->credit_type_id === Loan::CREDIT_TYPE_DEFAULT) {
+                $info['credits'][] = [
+                    'title' => $credit->bank,
+                    'description' => $credit->contract,
+                    'amount' => (float) $credit->debt,
+                ];
+            } else {
+                $info['credits'][] = [
+                    'title' => $credit->bank,
+                    'description' => $credit->contract,
+                    'amount' => (float) $credit->paid ?? 0,
+                ];
+            }
+        }
+
+        foreach ($loansInfo->loans as $loan) {
+            $info['loans'][] = [
+                'title' => $loan->organization->name,
+                'description' => $loan->name,
+                'amount' => (float) $loan->amount,
+            ];
+        }
+
+        $info['total']['credits_debts'] = (float) $creditsInfo->totalCreditAmount;
+        $info['total']['loans_debts'] = (float) $loansInfo->totalLoanAmount;
+
+
         $objects = BObject::active()->orderBy('code')->get();
 
         if ($request->get('access_objects') !== '*') {

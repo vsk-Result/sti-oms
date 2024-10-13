@@ -574,7 +574,7 @@
                     <div class="pivot-box position-relative w-100 d-flex flex-stack">
                         <div class="text-gray-700 fw-semibold fs-7 me-2">
                             Остаток неотработанного аванса
-                            @if ($object->code === '361' && $object->free_limit_amount != 0)
+                            @if ($object->free_limit_amount != 0)
                                 <br>
                                 <span class="fst-italic fs-8 fw-bolder">Сумма свободного лимита АВ к получению</span>
                             @endif
@@ -582,7 +582,7 @@
                         <div class="ms-3 d-flex flex-column align-items-senter fw-bold {{ $info['ostatokNeotrabotannogoAvansa'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa_without_nds'], 'RUB') }}">
                             {{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}
 
-                            @if ($object->code === '361' && $object->free_limit_amount != 0)
+                            @if ($object->free_limit_amount != 0)
                                 <br>
                                 <span class="text-end fst-italic fs-8 fw-bolder {{ $object->free_limit_amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($object->free_limit_amount, 'RUB') }}</span>
                             @endif

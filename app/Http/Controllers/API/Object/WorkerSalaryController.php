@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Object;
 use App\Http\Controllers\Controller;
 use App\Models\CurrencyExchangeRate;
 use App\Models\FinanceReportHistory;
+use App\Models\Loan;
 use App\Models\Object\BObject;
 use App\Models\Status;
 use Illuminate\Http\JsonResponse;
@@ -99,6 +100,48 @@ class WorkerSalaryController extends Controller
 
         $info['total']['total_for_all_object']['name'] = 'Общий долг';
         $info['total']['total_for_all_object']['sum'] = $totalAmount;
+
+        $info['credits'] = [];
+        $info['loans'] = [];
+
+        $info['total']['credits_total'] = 0;
+        $info['total']['loans_total'] = 0;
+
+        $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
+
+        if (!$financeReportHistory) {
+            return response()->json(compact('info'));
+        }
+
+        $creditsInfo = json_decode($financeReportHistory->credits);
+        $loansInfo = json_decode($financeReportHistory->loans);
+
+        foreach ($creditsInfo->credits as $credit) {
+            if (isset($credit->credit_type_id) && $credit->credit_type_id === Loan::CREDIT_TYPE_DEFAULT) {
+                $info['credits'][] = [
+                    'title' => $credit->bank,
+                    'description' => $credit->contract,
+                    'amount' => (float) $credit->debt,
+                ];
+            } else {
+                $info['credits'][] = [
+                    'title' => $credit->bank,
+                    'description' => $credit->contract,
+                    'amount' => (float) $credit->paid ?? 0,
+                ];
+            }
+        }
+
+        foreach ($loansInfo->loans as $loan) {
+            $info['loans'][] = [
+                'title' => $loan->organization->name,
+                'description' => $loan->name,
+                'amount' => (float) $loan->amount,
+            ];
+        }
+
+        $info['total']['credits_total'] = (float) $creditsInfo->totalCreditAmount;
+        $info['total']['loans_total'] = (float) $loansInfo->totalLoanAmount;
 
         return response()->json(compact('info'));
     }
