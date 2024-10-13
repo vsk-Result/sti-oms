@@ -266,6 +266,10 @@
                                 $totalRadPaidAmountPercent = $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount * 100 : 0;
                                 $totalOpstePaidAmountPercent = $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount * 100 : 0;
 
+                                $totalAmountPercent = $totalContractAmount != 0 ? $totalAmount / $totalContractAmount * 100 : 0;
+                                $totalMaterialAmountPercent = $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount * 100 : 0;
+                                $totalRadAmountPercent = $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount * 100 : 0;
+                                $totalOpsteAmountPercent = $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount * 100 : 0;
                             @endphp
                             <tr class="object-row fw-bolder">
                                 <td class="ps-2 fw-bolder collapse-trigger cursor-pointer" data-trigger="collapse_{{ $object->id }}">
@@ -279,8 +283,8 @@
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalAmount, 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($totalContractAmount != 0 ? $totalAmount / $totalContractAmount * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalAmountPercent < 0 || $totalAmountPercent > 100 ? 'fw-bolder text-danger' : '' }}">
+                                    {{ number_format($totalAmountPercent) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalContractAmount - $totalAmount, 'RUB', 0, true) }}
@@ -309,8 +313,8 @@
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalMaterialAmount, 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalMaterialAmountPercent < 0 || $totalMaterialAmountPercent > 100 ? 'fw-bolder text-danger' : '' }}">
+                                    {{ number_format($totalMaterialAmountPercent) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalMaterialContractAmount - $totalMaterialAmount, 'RUB', 0, true) }}
@@ -340,8 +344,8 @@
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalRadAmount, 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalRadAmountPercent < 0 || $totalRadAmountPercent > 100 ? 'fw-bolder text-danger' : '' }}">
+                                    {{ number_format($totalRadAmountPercent) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalRadContractAmount - $totalRadAmount, 'RUB', 0, true) }}
@@ -371,8 +375,8 @@
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalOpsteAmount, 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalOpsteAmountPercent < 0 || $totalOpsteAmountPercent > 100 ? 'fw-bolder text-danger' : '' }}">
+                                    {{ number_format($totalOpsteAmountPercent) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalOpsteContractAmount - $totalOpsteAmount, 'RUB', 0, true) }}
@@ -412,10 +416,12 @@
                 $(this).find('span').text('+');
                 $(this).removeClass('collapsed');
                 $(`.collapse-row[data-trigger="${trigger}"]`).hide();
+                mainApp.initFreezeTable(1);
             } else {
                 $(this).find('span').text('-');
                 $(this).addClass('collapsed');
                 $(`.collapse-row[data-trigger="${trigger}"]`).show();
+                mainApp.initFreezeTable(1);
             }
         })
     </script>
