@@ -261,6 +261,7 @@
                                 $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
                                 $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
 
+                                $totalPaidAmountPercent = $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount * 100 : 0;
                                 $totalMaterialPaidAmountPercent = $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount * 100 : 0;
                                 $totalRadPaidAmountPercent = $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount * 100 : 0;
                                 $totalOpstePaidAmountPercent = $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount * 100 : 0;
@@ -287,8 +288,8 @@
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalPaidAmount, 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalPaidAmountPercent < 0 || $totalPaidAmountPercent > 100 ? 'fw-bolder text-danger' : '' }}">
+                                    {{ number_format($totalPaidAmountPercent) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalLeftPaidAmount, 'RUB', 0, true) }}
