@@ -7,11 +7,56 @@
             <span class="d-flex">Долг по займам на {{ $loansInfo->loansLastUpdateDate }}</span>
         </div>
 
+        @php
+            $groupInfo = [];
+            $usedOrgNames = [];
+            $groupTotal = [];
+            foreach($loansGroupInfo as $group => $orgNames) {
+                $groupTotal[$group] = 0;
+                $groupInfo[$group] = [];
+                foreach ($loansInfo->loans as $loan) {
+                    $orgName = $loan->organization->name;
+                    if (in_array($orgName, $orgNames)) {
+                        $usedOrgNames[] = $orgName;
+                        $groupInfo[$group][$orgName . ', ' . $loan->name] = $loan->amount;
+                        $groupTotal[$group] += $loan->amount;
+                    }
+                }
+            }
+
+        @endphp
+
+        @foreach($groupInfo as $group => $groupLoans)
+            <div class="fs-6 d-flex justify-content-between my-4">
+                <div class="d-flex flex-column gap-1">
+                    <div class="fw-bold">{{$group }}</div>
+                    @foreach($groupLoans as $loan => $amount)
+                        <p class="fs-7 text-muted mb-0">
+                            {{ $loan }}
+                        </p>
+                    @endforeach
+                </div>
+
+                <div class="min-w-100px d-flex flex-column fw-bolder text-end gap-1 {{ $groupTotal[$group] < 0 ? 'text-danger' : 'text-success' }}">
+                    {{ \App\Models\CurrencyExchangeRate::format($groupTotal[$group], 'RUB') }}
+
+                    @foreach($groupLoans as $loan => $amount)
+                        <p class="fs-7 fst-italic text-end mb-0 {{ $amount < 0 ? 'text-danger' : 'text-success' }}">
+                            {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB') }}
+                        </p>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="separator separator-dashed"></div>
+        @endforeach
+
         @foreach($loansInfo->loans as $loan)
+            @continue(in_array($loan->organization->name, $usedOrgNames))
             <div class="fs-6 d-flex justify-content-between my-4">
                 <div>
                     <div class="fw-bold">{{ $loan->organization->name }}</div>
-                    <p class="fs-7">
+                    <p class="fs-7 mb-0">
                         <a
                             class="text-muted"
                             style="border-bottom: 1px dashed #ccc;"
@@ -22,8 +67,10 @@
                     </p>
                 </div>
 
-                <div class="min-w-100px d-flex fw-bolder {{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">
-                    {{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}
+                <div class="min-w-100px fw-bolder">
+                    <p class="text-end mb-0 {{ $loan->amount < 0 ? 'text-danger' : 'text-success' }}">
+                        {{ \App\Models\CurrencyExchangeRate::format($loan->amount, 'RUB') }}
+                    </p>
                 </div>
             </div>
 

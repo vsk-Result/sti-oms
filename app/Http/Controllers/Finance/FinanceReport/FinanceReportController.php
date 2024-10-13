@@ -35,12 +35,16 @@ class FinanceReportController extends Controller
         $loansInfo = json_decode($financeReportHistory->loans);
         $depositsInfo = json_decode($financeReportHistory->deposits);
         $objectsInfo = json_decode($financeReportHistory->objects_new);
+        $loansGroupInfo = [
+            'АО "МАПК(Е)"' => ['АО "МАПК(Е)"'],
+            'ООО "ДТ ТЕРМО ГРУПП"' => ['ДТТ (Миллениум)', 'ДТТ (Мавибони)', 'ООО "ДТ ТЕРМО ГРУПП"'],
+        ];
 
         return view(
             'finance-report.index',
             compact(
                 'company', 'balancesInfo',
-                'date', 'creditsInfo', 'loansInfo', 'depositsInfo', 'objectsInfo'
+                'date', 'creditsInfo', 'loansInfo', 'depositsInfo', 'objectsInfo', 'loansGroupInfo'
             )
         );
     }
