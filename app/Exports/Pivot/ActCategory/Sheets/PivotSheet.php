@@ -136,9 +136,9 @@ class PivotSheet implements
         $sheet->setCellValue('E3', $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
         $sheet->setCellValue('F3', $totalMaterialContractAmount - $totalMaterialAmount);
         $sheet->setCellValue('G3', $totalMaterialPaidAmount);
-        $sheet->setCellValue('H3', $totalPaidAmount != 0 ? $totalMaterialPaidAmount / $totalPaidAmount : 0);
+        $sheet->setCellValue('H3', $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
         $sheet->setCellValue('I3', $totalMaterialLeftPaidAmount);
-        $sheet->setCellValue('J3', $totalLeftPaidAmount != 0 ? $totalMaterialLeftPaidAmount / $totalLeftPaidAmount : 0);
+        $sheet->setCellValue('J3', $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
 
         $sheet->setCellValue('B4', $totalRadContractAmount);
         $sheet->setCellValue('C4', $totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount : 0);
@@ -146,9 +146,9 @@ class PivotSheet implements
         $sheet->setCellValue('E4', $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
         $sheet->setCellValue('F4', $totalRadContractAmount - $totalRadAmount);
         $sheet->setCellValue('G4', $totalRadPaidAmount);
-        $sheet->setCellValue('H4', $totalPaidAmount != 0 ? $totalRadPaidAmount / $totalPaidAmount : 0);
+        $sheet->setCellValue('H4', $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
         $sheet->setCellValue('I4', $totalRadLeftPaidAmount);
-        $sheet->setCellValue('J4', $totalLeftPaidAmount != 0 ? $totalRadLeftPaidAmount / $totalLeftPaidAmount : 0);
+        $sheet->setCellValue('J4', $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
 
         $sheet->setCellValue('B5', $totalOpsteContractAmount);
         $sheet->setCellValue('C5', $totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount : 0);
@@ -156,9 +156,9 @@ class PivotSheet implements
         $sheet->setCellValue('E5', $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
         $sheet->setCellValue('F5', $totalOpsteContractAmount - $totalOpsteAmount);
         $sheet->setCellValue('G5', $totalOpstePaidAmount);
-        $sheet->setCellValue('H5', $totalPaidAmount != 0 ? $totalOpstePaidAmount / $totalPaidAmount : 0);
+        $sheet->setCellValue('H5', $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
         $sheet->setCellValue('I5', $totalOpsteLeftPaidAmount);
-        $sheet->setCellValue('J5', $totalLeftPaidAmount != 0 ? $totalOpsteLeftPaidAmount / $totalLeftPaidAmount : 0);
+        $sheet->setCellValue('J5', $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
 
         $row = 6;
         foreach($activeObjects as $object) {
@@ -227,9 +227,9 @@ class PivotSheet implements
             $sheet->setCellValue('E' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
             $sheet->setCellValue('F' . $row, $totalMaterialContractAmount - $totalMaterialAmount);
             $sheet->setCellValue('G' . $row, $totalMaterialPaidAmount);
-            $sheet->setCellValue('H' . $row, $totalPaidAmount != 0 ? $totalMaterialPaidAmount / $totalPaidAmount : 0);
+            $sheet->setCellValue('H' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
             $sheet->setCellValue('I' . $row, $totalMaterialLeftPaidAmount);
-            $sheet->setCellValue('J' . $row, $totalLeftPaidAmount != 0 ? $totalMaterialLeftPaidAmount / $totalLeftPaidAmount : 0);
+            $sheet->setCellValue('J' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
 
             $row++;
             $sheet->getRowDimension($row)->setRowHeight(30);
@@ -245,9 +245,9 @@ class PivotSheet implements
             $sheet->setCellValue('E' . $row, $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
             $sheet->setCellValue('F' . $row, $totalRadContractAmount - $totalRadAmount);
             $sheet->setCellValue('G' . $row, $totalRadPaidAmount);
-            $sheet->setCellValue('H' . $row, $totalPaidAmount != 0 ? $totalRadPaidAmount / $totalPaidAmount : 0);
+            $sheet->setCellValue('H' . $row, $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
             $sheet->setCellValue('I' . $row, $totalRadLeftPaidAmount);
-            $sheet->setCellValue('J' . $row, $totalLeftPaidAmount != 0 ? $totalRadLeftPaidAmount / $totalLeftPaidAmount : 0);
+            $sheet->setCellValue('J' . $row, $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
 
             $row++;
             $sheet->getRowDimension($row)->setRowHeight(30);
@@ -263,9 +263,9 @@ class PivotSheet implements
             $sheet->setCellValue('E' . $row, $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
             $sheet->setCellValue('F' . $row, $totalOpsteContractAmount - $totalOpsteAmount);
             $sheet->setCellValue('G' . $row, $totalOpstePaidAmount);
-            $sheet->setCellValue('H' . $row, $totalPaidAmount != 0 ? $totalOpstePaidAmount / $totalPaidAmount : 0);
+            $sheet->setCellValue('H' . $row, $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
             $sheet->setCellValue('I' . $row, $totalOpsteLeftPaidAmount);
-            $sheet->setCellValue('J' . $row, $totalLeftPaidAmount != 0 ? $totalOpsteLeftPaidAmount / $totalLeftPaidAmount : 0);
+            $sheet->setCellValue('J' . $row, $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
 
             $row++;
         }
