@@ -45,7 +45,7 @@
                     {{ \App\Models\CurrencyExchangeRate::format($groupTotal[$group], 'RUB') }}
 
                     @foreach($groupLoans as $loan => $amount)
-                        <p class="fs-7 fst-italic text-end mb-0 text-muted">
+                        <p class="fs-7 fst-italic text-end mb-0 fw-normal {{ $amount < 0 ? 'text-danger' : 'text-success' }}">
                             {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB') }}
                         </p>
                     @endforeach
