@@ -153,13 +153,13 @@
                                 {{ \App\Models\CurrencyExchangeRate::format($totalMaterialPaidAmount, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
-                                {{ number_format($totalPaidAmount != 0 ? $totalMaterialPaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                                {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalMaterialLeftPaidAmount, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
-                                {{ number_format($totalLeftPaidAmount != 0 ? $totalMaterialLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                                {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
                             </td>
                         </tr>
 
@@ -184,13 +184,13 @@
                                 {{ \App\Models\CurrencyExchangeRate::format($totalRadPaidAmount, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
-                                {{ number_format($totalPaidAmount != 0 ? $totalRadPaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                                {{ number_format($totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalRadLeftPaidAmount, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
-                                {{ number_format($totalLeftPaidAmount != 0 ? $totalRadLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                                {{ number_format($totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                             </td>
                         </tr>
 
@@ -215,13 +215,13 @@
                                 {{ \App\Models\CurrencyExchangeRate::format($totalOpstePaidAmount, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
-                                {{ number_format($totalPaidAmount != 0 ? $totalOpstePaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                                {{ number_format($totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalOpsteLeftPaidAmount, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
-                                {{ number_format($totalLeftPaidAmount != 0 ? $totalOpsteLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                                {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
                             </td>
                         </tr>
 
@@ -313,13 +313,13 @@
                                     {{ \App\Models\CurrencyExchangeRate::format($totalMaterialPaidAmount, 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ number_format($totalPaidAmount != 0 ? $totalMaterialPaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                                    {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalMaterialLeftPaidAmount, 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ number_format($totalLeftPaidAmount != 0 ? $totalMaterialLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                                    {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
                                 </td>
                             </tr>
 
@@ -344,13 +344,13 @@
                                     {{ \App\Models\CurrencyExchangeRate::format($totalRadPaidAmount, 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ number_format($totalPaidAmount != 0 ? $totalRadPaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                                    {{ number_format($totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalRadLeftPaidAmount, 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ number_format($totalLeftPaidAmount != 0 ? $totalRadLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                                    {{ number_format($totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                                 </td>
                             </tr>
 
@@ -375,13 +375,13 @@
                                     {{ \App\Models\CurrencyExchangeRate::format($totalOpstePaidAmount, 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ number_format($totalPaidAmount != 0 ? $totalOpstePaidAmount / $totalPaidAmount * 100 : 0) . '%' }}
+                                    {{ number_format($totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($totalOpsteLeftPaidAmount, 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ number_format($totalLeftPaidAmount != 0 ? $totalOpsteLeftPaidAmount / $totalLeftPaidAmount * 100 : 0) . '%' }}
+                                    {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
                                 </td>
                             </tr>
                         @endforeach
