@@ -255,7 +255,7 @@ class DebtImportService
             $organizationName = trim($row[3]);
             $objectName = trim($row[10]);
 
-            if ($organizationName === 'ДТ Термо' || empty($row[12])) {
+            if (empty($row[12])) {
                 continue;
             }
 
