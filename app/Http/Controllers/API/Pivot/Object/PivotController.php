@@ -65,7 +65,7 @@ class PivotController extends Controller
             $financeReportInfo[$field] = $amount;
         }
 
-        $info = array_merge(['name' => $object->getName()], $financeReportInfo);
+        $info = array_merge(['name' => $object->getName(), 'free_limit_amount' => $object->free_limit_amount], $financeReportInfo);
 
         return response()->json(compact('info'));
     }
