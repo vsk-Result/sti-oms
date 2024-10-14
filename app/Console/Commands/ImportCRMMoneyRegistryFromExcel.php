@@ -37,7 +37,7 @@ class ImportCRMMoneyRegistryFromExcel extends Command
         Log::channel('custom_imports_log')->debug('[START] Загрузка зарплатных реестров в CRM из Excel');
 
         $importedCount = 0;
-        $files = Storage::allFiles('public/crm-registry');
+        $files = Storage::files('public/crm-registry');
 
         foreach ($files as $file) {
             $fileName = File::name($file);
