@@ -8,9 +8,13 @@ use App\Exports\Pivot\MoneyMovement\Sheets\PivotOrganizationReceiveSheet;
 use App\Exports\Pivot\MoneyMovement\Sheets\PivotOrganizationPaymentSheet;
 use App\Exports\Pivot\MoneyMovement\Sheets\PivotOrganizationReceiveWithObjectSheet;
 use App\Exports\Pivot\MoneyMovement\Sheets\PivotOrganizationPaymentWithObjectSheet;
+use App\Helpers\Sanitizer;
 use App\Models\Company;
 use App\Models\Organization;
 use App\Models\Payment;
+use App\Services\CurrencyExchangeRateService;
+use App\Services\OrganizationService;
+use App\Services\PaymentService;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -18,8 +22,12 @@ class Export implements WithMultipleSheets
 {
     private Builder $payments;
 
-    public function __construct(Builder $payments)
+    public function __construct(array $filterData)
     {
+        $paymentService = new PaymentService(new Sanitizer(), new OrganizationService(new Sanitizer()), new CurrencyExchangeRateService());
+
+        $payments = $paymentService->filterPayments($filterData);
+
         $exceptOrganizations = Organization::whereIn('name', ['Общество с ограниченной ответственностью "БИЗНЕС АКТИВ"'])->pluck('id')->toArray();
         $exceptPaymentIds = Payment::where('category', Payment::CATEGORY_TRANSFER)->where(function($q) use($exceptOrganizations) {
             $q->where('description', 'LIKE', '%перевод собственных денежных средств%');
@@ -35,7 +43,7 @@ class Export implements WithMultipleSheets
     public function sheets(): array
     {
         ini_set('memory_limit', '-1');
-        ini_set('max_execution_time', 300);
+        ini_set('max_execution_time', 3000);
 
         return [
             new PivotObjectSheet((clone $this->payments)),

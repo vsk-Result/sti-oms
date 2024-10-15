@@ -21,36 +21,34 @@ class PivotOrganizationReceiveSheet implements
 
     public function __construct(Builder $payments)
     {
-        $companyOrganization = Organization::where('company_id', 1)
-            ->where('name', 'ООО "Строй Техно Инженеринг"')
-            ->first();
-
-        $this->payments = $payments->where('organization_sender_id', '!=', $companyOrganization->id);
+        $this->payments = (clone $payments)->where('amount', '>=', 0);
     }
 
     public function title(): string
     {
-        return 'Сводная по контрагентам (приходы)';
+        return 'Сводная по заказчикам (приходы)';
     }
 
     public function styles(Worksheet $sheet): void
     {
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Контрагент');
+        $sheet->setCellValue('A1', 'Заказчик');
         $sheet->setCellValue('B1', 'Приход');
 
         $sheet->getRowDimension(1)->setRowHeight(30);
 
         $sheet->getColumnDimension('A')->setWidth(50);
         $sheet->getColumnDimension('B')->setWidth(22);
-
         $sheet->getStyle('A1:B1')->getFont()->setBold(true);
 
         $total = 0;
         $info = [];
+        $organizationIds = (clone $this->payments)->select('organization_sender_id')->groupBy('organization_sender_id')->pluck('organization_sender_id')->toArray();
+        $organizations = Organization::whereIn('id', $organizationIds)->pluck('name', 'id')->toArray();
         foreach ((clone $this->payments)->select('organization_sender_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_sender_id')->get() as $payment) {
-            $info[Organization::find($payment->organization_sender_id)?->name ?? 'Не определена'] = $payment->sum_amount;
+            $orgName = $organizations[$payment->organization_sender_id] ?? 'Не определена_' . $payment->organization_sender_id;
+            $info[$orgName] = $payment->sum_amount;
             $total += $payment->sum_amount;
         }
 

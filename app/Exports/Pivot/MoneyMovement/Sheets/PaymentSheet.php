@@ -65,10 +65,8 @@ class PaymentSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $paymentsCount = $this->payments->count();
-
         $row = 2;
-        $this->payments->chunk(1000, function($payments) use($sheet, $row) {
+        $this->payments->chunk(2000, function($payments) use($sheet, &$row) {
             foreach ($payments as $payment) {
                 $sheet->setCellValue('A' . $row, $payment->getObject());
                 $sheet->setCellValue('B' . $row, $payment->getObjectName(),);
@@ -89,13 +87,13 @@ class PaymentSheet implements
             }
         });
 
-        $sheet->getStyle('A1:N' . ($paymentsCount + 1))->applyFromArray([
+        $sheet->getStyle('A1:N' . $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
 
-        $sheet->setAutoFilter('A1:N' . ($paymentsCount + 1));
+        $sheet->setAutoFilter('A1:N' . $row);
     }
 
     public function columnWidths(): array

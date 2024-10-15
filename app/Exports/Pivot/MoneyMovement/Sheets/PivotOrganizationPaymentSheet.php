@@ -21,11 +21,7 @@ class PivotOrganizationPaymentSheet implements
 
     public function __construct(Builder $payments)
     {
-        $companyOrganization = Organization::where('company_id', 1)
-            ->where('name', 'ООО "Строй Техно Инженеринг"')
-            ->first();
-
-        $this->payments = $payments->where('organization_receiver_id', '!=', $companyOrganization->id);
+        $this->payments = (clone $payments)->where('amount', '<', 0);
     }
 
     public function title(): string
@@ -49,8 +45,11 @@ class PivotOrganizationPaymentSheet implements
 
         $total = 0;
         $info = [];
+        $organizationIds = (clone $this->payments)->select('organization_receiver_id')->groupBy('organization_receiver_id')->pluck('organization_receiver_id')->toArray();
+        $organizations = Organization::whereIn('id', $organizationIds)->pluck('name', 'id')->toArray();
         foreach ((clone $this->payments)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
-            $info[Organization::find($payment->organization_receiver_id)?->name ?? 'Не определена'] = $payment->sum_amount;
+            $orgName = $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id;
+            $info[$orgName] = $payment->sum_amount;
             $total += $payment->sum_amount;
         }
 

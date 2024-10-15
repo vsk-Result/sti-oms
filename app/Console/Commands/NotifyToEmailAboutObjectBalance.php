@@ -71,7 +71,6 @@ class NotifyToEmailAboutObjectBalance extends Command
 
                     foreach ($receivers as $receiver) {
                         $m->to($receiver);
-                        $m->to('result007@yandex.ru');
                     }
                 });
             } catch(Exception $e){

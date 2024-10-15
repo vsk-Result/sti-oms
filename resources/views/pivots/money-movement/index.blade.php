@@ -9,6 +9,22 @@
         <div class="content-fluid">
             <div class="row">
                 <div class="col-md-6">
+                    @if (session()->has('task_in_progress'))
+                        <div class="alert alert-dismissible bg-light-warning border border-dashed border-warning d-flex flex-column flex-sm-row p-5 mb-10">
+                            <div class="d-flex flex-column pe-0 pe-sm-10">
+                                <p class="mb-0">Отчет с данными параметрами находится на стадии формирования. После завершения на почту придет файл с отчетом.</p>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (session()->has('task_created'))
+                        <div class="alert alert-dismissible bg-light-success border border-dashed border-success d-flex flex-column flex-sm-row p-5 mb-10">
+                            <div class="d-flex flex-column pe-0 pe-sm-10">
+                                <p class="mb-0">Система начала формировать отчет. По завершению вам на почту придет файл с отчетом. Можете продолжить пользоваться сайтом.</p>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="card mb-5 mb-xl-8">
                         <div class="card-body py-3">
                             <form class="form" action="{{ route('pivots.money_movement.exports.store') }}" method="POST" enctype="multipart/form-data">

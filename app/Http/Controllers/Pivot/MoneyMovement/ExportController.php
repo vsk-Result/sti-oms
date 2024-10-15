@@ -4,32 +4,49 @@ namespace App\Http\Controllers\Pivot\MoneyMovement;
 
 use App\Exports\Pivot\MoneyMovement\Export;
 use App\Http\Controllers\Controller;
-use App\Models\Object\BObject;
-use App\Services\PaymentService;
+use App\Services\ScheduleExportService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends Controller
 {
-    private PaymentService $paymentService;
+    private ScheduleExportService $scheduleExportService;
 
-    public function __construct(PaymentService $paymentService)
+    public function __construct(ScheduleExportService $scheduleExportService)
     {
-        $this->paymentService = $paymentService;
+        $this->scheduleExportService = $scheduleExportService;
     }
 
-    public function store(Request $request): BinaryFileResponse
+    public function store(Request $request): RedirectResponse
     {
-        $payments = $this->paymentService->filterPayments(
-            [
-                'object_id' => $request->get('object_id', BObject::active(['27.1'])->orderBy('code')->pluck('id')->toArray()),
-                'period' => $request->get('period', []),
-                'bank_id' => $request->get('bank_id', []),
-                'organization_id' => $request->get('organization_id', []),
-                'sort_by' => 'object_id',
-            ]
+        $requestData = [
+            'period' => $request->get('period', ''),
+            'object_id' => $request->get('object_id', []),
+            'bank_id' => $request->get('bank_id', []),
+            'organization_id' => $request->get('organization_id', [])
+        ];
+
+        $isTaskInProgress = $this->scheduleExportService->isTaskInProgress(
+            'Отчет о движении денежных средств',
+            $requestData
         );
-        return Excel::download(new Export($payments), 'Отчет по категориям.xlsx');
+
+        if ($isTaskInProgress) {
+            session()->flash('task_in_progress');
+
+            return redirect()->back();
+        }
+
+        $this->scheduleExportService->createTask(
+            'Отчет о движении денежных средств',
+            Export::class,
+            'pivot-money-movement',
+            'Отчет о движении денежных средств.xlsx',
+            $requestData
+        );
+
+        session()->flash('task_created');
+
+        return redirect()->back()->withInput();
     }
 }

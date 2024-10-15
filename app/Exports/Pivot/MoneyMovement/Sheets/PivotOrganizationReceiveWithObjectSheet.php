@@ -22,23 +22,19 @@ class PivotOrganizationReceiveWithObjectSheet implements
 
     public function __construct(Builder $payments)
     {
-        $companyOrganization = Organization::where('company_id', 1)
-            ->where('name', 'ООО "Строй Техно Инженеринг"')
-            ->first();
-
-        $this->payments = $payments->where('organization_sender_id', '!=', $companyOrganization->id);
+        $this->payments = (clone $payments)->where('amount', '>=', 0);
     }
 
     public function title(): string
     {
-        return 'Сводная по контрагентам и объектам (приходы)';
+        return 'Сводная по заказчикам и объектам (приходы)';
     }
 
     public function styles(Worksheet $sheet): void
     {
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Контрагент');
+        $sheet->setCellValue('A1', 'Заказчик');
         $sheet->setCellValue('B1', 'Приход');
 
         $sheet->getRowDimension(1)->setRowHeight(30);
@@ -50,15 +46,23 @@ class PivotOrganizationReceiveWithObjectSheet implements
 
         $total = 0;
         $info = [];
+
         $objects = [];
+        $objectIds = (clone $this->payments)->groupBy('object_id')->pluck('object_id')->toArray();
+        $objectList = BObject::whereIn('id', $objectIds)->orderByDesc('code')->get();
+
+
+        $organizationIds = (clone $this->payments)->select('organization_sender_id')->groupBy('organization_sender_id')->pluck('organization_sender_id')->toArray();
+        $organizations = Organization::whereIn('id', $organizationIds)->pluck('name', 'id')->toArray();
         foreach ((clone $this->payments)->select('organization_sender_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_sender_id')->get() as $payment) {
-            $organization = Organization::find($payment->organization_sender_id);
-            $info[$organization?->name ?? 'Не определена'] = $payment->sum_amount;
+            $orgName = $organizations[$payment->organization_sender_id] ?? 'Не определена_' . $payment->organization_sender_id;
+            $info[$orgName] = $payment->sum_amount;
             $total += $payment->sum_amount;
 
             foreach ((clone $this->payments)->where('organization_sender_id', $payment->organization_sender_id)->select('object_id', DB::raw('sum(amount) as sum_amount'))->groupBy('object_id')->get() as $ppayment) {
-                $object = BObject::find($ppayment->object_id);
-                $objects[$organization?->name ?? 'Не определена'][$object?->getName() ?? ('Неопределен_' . $ppayment->object_id)] = $ppayment->sum_amount;
+                $object = $objectList->where('id', $ppayment->object_id)->first();
+                $objectName = $object ? $object->getName() : 'Не определен_' . $ppayment->object_id;
+                $objects[$orgName][$objectName] = $ppayment->sum_amount;
             }
         }
 

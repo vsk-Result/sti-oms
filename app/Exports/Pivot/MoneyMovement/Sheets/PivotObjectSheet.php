@@ -3,6 +3,7 @@
 namespace App\Exports\Pivot\MoneyMovement\Sheets;
 
 use App\Models\Object\BObject;
+use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -51,16 +52,30 @@ class PivotObjectSheet implements
         $sheet->getStyle('A1:D2')->getFont()->setBold(true);
         $sheet->mergeCells('A1:D1');
 
-        $objectIds = array_unique((clone $this->payments)->pluck('object_id')->toArray());
-        $objects = BObject::whereIn('id', $objectIds);
+        $objectIds = (clone $this->payments)->groupBy('object_id')->pluck('object_id')->toArray();
+        $objects = BObject::whereIn('id', $objectIds)->orderByDesc('code')->get();
 
         $row = 3;
-        foreach ($objects as $object) {
-            $total = (clone $this->payments)->where('object_id', $object->id)->sum('amount');
+        $sum = [
+            'total' => 0,
+            'receive' => 0,
+            'payment' => 0,
+        ];
+        foreach ($objectIds as $objectId) {
+            $object = $objects->where('id', $objectId)->first();
+            $objectName = $object ? $object->getName() : 'Не определен_' . $objectId;
 
-            $sheet->setCellValue('A' . $row, $object->getName());
-            $sheet->setCellValue('B' . $row, (clone $this->payments)->where('object_id', $object->id)->where('amount', '>=', 0)->sum('amount'));
-            $sheet->setCellValue('C' . $row, (clone $this->payments)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount'));
+            $total = (clone $this->payments)->where('object_id', $objectId)->sum('amount');
+            $receive = (clone $this->payments)->where('object_id', $objectId)->where('amount', '>=', 0)->sum('amount');
+            $payment = $total - $receive;
+
+            $sum['total'] += $total;
+            $sum['receive'] += $receive;
+            $sum['payment'] += $payment;
+
+            $sheet->setCellValue('A' . $row, $objectName);
+            $sheet->setCellValue('B' . $row, $receive);
+            $sheet->setCellValue('C' . $row, $payment);
             $sheet->setCellValue('D' . $row, $total);
 
             $sheet->getRowDimension($row)->setRowHeight(30);
@@ -70,16 +85,15 @@ class PivotObjectSheet implements
             $row++;
         }
 
-        $total = (clone $this->payments)->sum('amount');
         $sheet->setCellValue('A' . $row, 'Итого');
-        $sheet->setCellValue('B' . $row, (clone $this->payments)->where('amount', '>=', 0)->sum('amount'));
-        $sheet->setCellValue('C' . $row, (clone $this->payments)->where('amount', '<', 0)->sum('amount'));
-        $sheet->setCellValue('D' . $row, $total);
+        $sheet->setCellValue('B' . $row, $sum['receive']);
+        $sheet->setCellValue('C' . $row, $sum['payment']);
+        $sheet->setCellValue('D' . $row, $sum['total']);
 
         $sheet->getRowDimension($row)->setRowHeight(30);
         $sheet->getStyle('B' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
         $sheet->getStyle('C' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
-        $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+        $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($sum['total'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
         $sheet->getStyle('A1:D' . $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
