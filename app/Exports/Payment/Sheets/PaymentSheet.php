@@ -72,7 +72,7 @@ class PaymentSheet implements
     public function styles(Worksheet $sheet): void
     {
         $row = 2;
-        $this->payments->chunk(1000, function($payments) use($sheet, $row) {
+        $this->payments->chunk(2000, function($payments) use($sheet, &$row) {
             foreach ($payments as $payment) {
                 $sheet->setCellValue('A' . $row, $payment->getObject());
                 $sheet->setCellValue('B' . $row, $payment->amount < 0 ? 'Расход' : 'Приход');
