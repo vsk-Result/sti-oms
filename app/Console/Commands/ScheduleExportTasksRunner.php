@@ -76,15 +76,16 @@ class ScheduleExportTasksRunner extends Command
         Log::channel('custom_imports_log')->debug('[INFO] Отчет "' . $taskToRun->name . '" успешно сформирован');
 
         try {
+            $userName = $taskToRun->createdBy->name;
             $exportName = $taskToRun->name;
             $email = $taskToRun->createdBy->email;
             $filepath = storage_path('') . '/app/public/' . $filename;
 
             Log::channel('custom_imports_log')->debug('[INFO] Отправка отчета "' . $taskToRun->name . '" на email "' . $email . '"');
 
-            Mail::send('emails.schedule-exports', [], function ($m) use ($exportName, $filepath, $email) {
-                $m->from('support@st-ing.com', 'OMS Отчет "' . $exportName . '" сформирован');
-                $m->subject('OMS');
+            Mail::send('emails.schedule-exports', compact('exportName', 'userName'), function ($m) use ($exportName, $filepath, $email) {
+                $m->from('support@st-ing.com', 'OMS Отчет сформирован');
+                $m->subject($exportName);
                 $m->attach($filepath);
 
                 $m->to($email);
