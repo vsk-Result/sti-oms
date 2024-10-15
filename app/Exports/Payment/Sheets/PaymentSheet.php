@@ -5,7 +5,6 @@ namespace App\Exports\Payment\Sheets;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -18,7 +17,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class PaymentSheet implements
     WithTitle,
     WithHeadings,
-    WithColumnFormatting,
     ShouldAutoSize,
     WithStyles,
     WithColumnWidths
@@ -60,15 +58,6 @@ class PaymentSheet implements
         ];
     }
 
-    public function columnFormats(): array
-    {
-        return [
-            'D' => NumberFormat::FORMAT_DATE_DDMMYYYY,
-            'F' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-            'G' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
-        ];
-    }
-
     public function styles(Worksheet $sheet): void
     {
         $row = 2;
@@ -95,6 +84,11 @@ class PaymentSheet implements
         $sheet->getStyle('A1:M' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
+
+        $sheet->getStyle('D2:D' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+        $sheet->getStyle('F2:F' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('G2:G' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
 
         $sheet->getStyle('A1:M1')->getFont()->setBold(true);
 
