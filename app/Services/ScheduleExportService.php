@@ -21,6 +21,21 @@ class ScheduleExportService
         return $task->isInProgress();
     }
 
+    public function isTaskReady(string $name, array $data): bool
+    {
+        $dataHash = md5(json_encode($data));
+        $task = ScheduleExport::where('data_hash', $dataHash)
+            ->where('name', $name)
+            ->where('created_by_user_id', auth()->id())
+            ->first();
+
+        if (! $task) {
+            return false;
+        }
+
+        return $task->isReady();
+    }
+
     public function hasTasksToRun(): bool
     {
         return ScheduleExport::ready()->count() > 0;

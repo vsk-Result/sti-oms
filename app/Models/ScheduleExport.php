@@ -27,6 +27,11 @@ class ScheduleExport extends Model
         return $this->status_id === self::STATUS_IN_PROGRESS;
     }
 
+    public function isReady(): bool
+    {
+        return $this->status_id === self::STATUS_READY;
+    }
+
     public static function scopeReady($q)
     {
         return $q->where('status_id', self::STATUS_READY);

@@ -19,6 +19,7 @@ class ExportController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $exportName = 'Отчет о движении денежных средств';
         $requestData = [
             'period' => $request->get('period', ''),
             'object_id' => $request->get('object_id', []),
@@ -26,22 +27,27 @@ class ExportController extends Controller
             'organization_id' => $request->get('organization_id', [])
         ];
 
-        $isTaskInProgress = $this->scheduleExportService->isTaskInProgress(
-            'Отчет о движении денежных средств',
+        $isTaskInReady = $this->scheduleExportService->isTaskReady(
+            $exportName,
             $requestData
         );
 
-        if ($isTaskInProgress) {
+        $isTaskInProgress = $this->scheduleExportService->isTaskInProgress(
+            $exportName,
+            $requestData
+        );
+
+        if ($isTaskInReady || $isTaskInProgress) {
             session()->flash('task_in_progress');
 
             return redirect()->back();
         }
 
         $this->scheduleExportService->createTask(
-            'Отчет о движении денежных средств',
+            $exportName,
             Export::class,
             'pivot-money-movement',
-            'Отчет о движении денежных средств.xlsx',
+            $exportName . '.xlsx',
             $requestData
         );
 
