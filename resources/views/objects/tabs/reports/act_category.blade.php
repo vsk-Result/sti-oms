@@ -63,14 +63,16 @@
                             $totalRadAmount = $acts->sum('rad_amount');
                             $totalOpsteAmount = $acts->sum('opste_amount');
 
+                            $totalContractAmount = 0;
                             $totalMaterialContractAmount = 0;
                             $totalRadContractAmount = 0;
                             $totalOpsteContractAmount = 0;
 
                             foreach ($object->contracts()->where('type_id', App\Models\Contract\Contract::TYPE_MAIN)->get() as $contract) {
-                                $totalMaterialContractAmount += $contract->getMaterialAmount();
-                                $totalRadContractAmount += $contract->getRadAmount();
-                                $totalOpsteContractAmount += $contract->getOpsteAmount();
+                                $totalContractAmount += $contract->getAmount('RUB');
+                                $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
+                                $totalRadContractAmount += $contract->getRadAmount('RUB');
+                                $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
                             }
 
                             $receivePayments = $object->payments()
@@ -90,7 +92,6 @@
                             $totalAmount = $totalMaterialAmount + $totalRadAmount + $totalOpsteAmount;
                             $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
                             $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
-                            $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
                         @endphp
                         <tr class="object-row fw-bolder">
                             <td class="ps-2 fw-bolder cursor-pointer">
