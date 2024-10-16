@@ -150,9 +150,9 @@ class PivotSheet implements
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialContractAmount - $totalMaterialAmount);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalPaidAmount != 0 ? $totalMaterialPaidAmount / $totalPaidAmount : 0);
+        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialLeftPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '3', $totalLeftPaidAmount != 0 ? $totalMaterialLeftPaidAmount / $totalLeftPaidAmount : 0);
+        $sheet->setCellValue($this->getColumnWord($colIndex) . '3', $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
 
         $sheet->setCellValue('B4', $totalRadContractAmount);
         $sheet->setCellValue('C4', $totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount : 0);
@@ -167,9 +167,9 @@ class PivotSheet implements
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadContractAmount - $totalRadAmount);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalPaidAmount != 0 ? $totalRadPaidAmount / $totalPaidAmount : 0);
+        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadLeftPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '4', $totalLeftPaidAmount != 0 ? $totalRadLeftPaidAmount / $totalLeftPaidAmount : 0);
+        $sheet->setCellValue($this->getColumnWord($colIndex) . '4', $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
 
         $sheet->setCellValue('B5', $totalOpsteContractAmount);
         $sheet->setCellValue('C5', $totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount : 0);
@@ -184,9 +184,9 @@ class PivotSheet implements
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteContractAmount - $totalOpsteAmount);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpstePaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalPaidAmount != 0 ? $totalOpstePaidAmount / $totalPaidAmount : 0);
+        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
         $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteLeftPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '5', $totalLeftPaidAmount != 0 ? $totalOpsteLeftPaidAmount / $totalLeftPaidAmount : 0);
+        $sheet->setCellValue($this->getColumnWord($colIndex) . '5', $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
 
         $sheet->getStyle('B2:B5')->getNumberFormat()->setFormatCode('#,##0');
 

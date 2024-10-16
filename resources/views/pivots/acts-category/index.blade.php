@@ -67,14 +67,16 @@
                         $totalRadAmount = $acts->sum('rad_amount');
                         $totalOpsteAmount = $acts->sum('opste_amount');
 
+                        $totalContractAmount = 0;
                         $totalMaterialContractAmount = 0;
                         $totalRadContractAmount = 0;
                         $totalOpsteContractAmount = 0;
 
                         foreach (App\Models\Contract\Contract::whereIn('object_id', $activeObjectIds)->where('type_id', App\Models\Contract\Contract::TYPE_MAIN)->get() as $contract) {
-                            $totalMaterialContractAmount += $contract->getMaterialAmount();
-                            $totalRadContractAmount += $contract->getRadAmount();
-                            $totalOpsteContractAmount += $contract->getOpsteAmount();
+                            $totalContractAmount += $contract->getAmount('RUB');
+                            $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
+                            $totalRadContractAmount += $contract->getRadAmount('RUB');
+                            $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
                         }
 
                         $totalMaterialPaidAmount = 0;
@@ -100,7 +102,6 @@
                         $totalAmount = $totalMaterialAmount + $totalRadAmount + $totalOpsteAmount;
                         $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
                         $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
-                        $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
                     @endphp
 
                     <tbody class="text-gray-600 fw-bold fs-7">
