@@ -28,6 +28,7 @@ class CashFlowController extends Controller
         $reasons = ReceivePlan::getReasons();
         $planPaymentGroups = PlanPaymentGroup::all();
         $CFPlanPayments = PlanPayment::all();
+        $otherPlanPayments = PlanPayment::getOther();
         $CFPlanPaymentEntries = PlanPaymentEntry::all();
         $periods = $this->receivePlanService->getPeriods();
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
@@ -48,7 +49,7 @@ class CashFlowController extends Controller
             compact(
                 'periods', 'objects', 'plans',
                'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
-                'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable'
+                'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments'
             )
         );
     }

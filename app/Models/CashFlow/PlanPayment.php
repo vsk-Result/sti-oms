@@ -2,9 +2,12 @@
 
 namespace App\Models\CashFlow;
 
+use App\Models\Company;
 use App\Models\Object\BObject;
+use App\Services\FinanceReport\CreditService;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,5 +37,26 @@ class PlanPayment extends Model implements Audit
     public function group(): BelongsTo
     {
         return $this->belongsTo(PlanPaymentGroup::class, 'group_id');
+    }
+
+    public static function getOther(): array
+    {
+        $company = Company::getSTI();
+        $currentDate = Carbon::now();
+        $creditService = new CreditService();
+        $creditsFromService = $creditService->getCredits($currentDate, $company);
+
+        $creditDebt = 0;
+
+        foreach ($creditsFromService as $credit) {
+            if ($credit['bank'] === 'ПАО "Росбанк"' && $credit['contract'] === 'Овердрафт') {
+                $creditDebt = $credit['paid'] ?? 0;
+                break;
+            }
+        }
+
+        return [
+            'Погашение овердрафта' => $creditDebt
+        ];
     }
 }

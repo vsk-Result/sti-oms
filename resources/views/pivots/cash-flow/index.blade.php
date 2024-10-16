@@ -103,7 +103,7 @@
                                     $amount = $plans->where('date', $period['start'])->where('reason_id', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
                                     $total += $amount;
                                 @endphp
-                                <th class="min-w-250px text-right fst-italic">
+                                <th class="min-w-250px text-right fst-italic cf-comment">
                                     {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
                                 </th>
                             @endforeach
@@ -125,7 +125,10 @@
                                     $amount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
                                     $total += $amount;
                                 @endphp
-                                <th class="min-w-250px text-right fst-italic">
+                                <th class="min-w-250px text-right fst-italic cf-comment">
+{{--                                    <button type="button" class="btn btn-secondary my-2 me-5" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="It's very engaging. Right?">--}}
+{{--                                        Popover on top--}}
+{{--                                    </button>--}}
                                     {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
                                 </th>
                             @endforeach
@@ -272,6 +275,36 @@
                             @include('pivots.cash-flow.partial.plan_payment_row', $payment)
                         @endforeach
 
+                        @foreach($otherPlanPayments as $paymentName => $paymentAmount)
+                            <tr class="plan-payment">
+                                <td class="ps-2">
+                                    {{ $paymentName }}
+                                </td>
+                                <td></td>
+
+                                @php
+                                    $total = 0;
+                                @endphp
+                                @foreach($periods as $index => $period)
+                                    @php
+                                        if ($index === 0) {
+                                            $amount = $paymentAmount;
+                                        } else {
+                                            $amount = 0;
+                                        }
+                                        $total += $amount;
+                                    @endphp
+
+                                    <td class="text-right">
+                                        {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                                @endforeach
+
+                                <td class="text-right pe-2">
+                                    {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                </td>
+                            </tr>
+                        @endforeach
+
                         @can('index cash-flow-plan-payments')
                             <tr class="plan-payment">
                                 <td class="ps-2">
@@ -310,7 +343,7 @@
                             @foreach($periods as $index => $period)
                                 @php
                                     if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments);
                                     } else {
                                         $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                     }
@@ -326,20 +359,20 @@
                             </td>
                         </tr>
 
-                        <tr class="object-row plan-payment">
-                            <td class="ps-2 fw-bolder">Итого расходов по месяцам:</td>
-                            <td></td>
+{{--                        <tr class="object-row plan-payment">--}}
+{{--                            <td class="ps-2 fw-bolder">Итого расходов по месяцам:</td>--}}
+{{--                            <td></td>--}}
 
-                            @foreach($periods as $period)
-                                @php
-                                    //                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');
-                                @endphp
+{{--                            @foreach($periods as $period)--}}
+{{--                                @php--}}
+{{--                                    //                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');--}}
+{{--                                @endphp--}}
 
-                                <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>
-                            @endforeach
+{{--                                <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>--}}
+{{--                            @endforeach--}}
 
-                            <td class="text-right pe-2"></td>
-                        </tr>
+{{--                            <td class="text-right pe-2"></td>--}}
+{{--                        </tr>--}}
 
                         <tr class="object-row plan-payment">
                             <td class="ps-2 fw-bolder">Сальдо (без учета целевых авансов) по неделям:</td>
@@ -350,7 +383,7 @@
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
                                     if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments);
                                     } else {
                                         $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                     }
@@ -377,7 +410,7 @@
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
                                     if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments);
                                     } else {
                                         $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                                     }
@@ -557,6 +590,13 @@
                 }
             );
         }
+
+        // $('.cf-comment').each(function() {
+        //     $(this).addClass('position-relative');
+        //     $(this).append(`<button title="Комментарий" type="button" class="btn btn-icon btn-sm btn-light btn-cf-comment" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="It's very engaging. Right?">
+        //
+        //                     </button>`);
+        // });
     </script>
 @endpush
 

@@ -324,6 +324,21 @@ td > a.show-link:hover {
     right: -3px !important;
 }
 
+/* Кнопка комментария cash flow */
+.btn-cf-comment {
+    display: none !important;
+    background-color: #fff !important;
+    width: 10px !important;
+    height: 10px !important;
+    position: absolute !important;
+    top: 6px !important;
+    left: 8px !important;
+}
+
+td.cf-comment:hover .btn-cf-comment, th.cf-comment:hover .btn-cf-comment {
+    display: inline-flex !important;
+}
+
 .pivot-box:hover .btn-copy {
     display: inline-flex !important;
 }

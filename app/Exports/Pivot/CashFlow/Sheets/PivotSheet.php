@@ -65,6 +65,7 @@ class PivotSheet implements
 
         $planPaymentGroups = PlanPaymentGroup::all();
         $CFPlanPayments = PlanPayment::all();
+        $otherPlanPayments = PlanPayment::getOther();
         $CFPlanPaymentEntries = PlanPaymentEntry::all();
         $reasons = ReceivePlan::getReasons();
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
@@ -203,6 +204,30 @@ class PivotSheet implements
             $row++;
         }
 
+        foreach($otherPlanPayments as $paymentName => $paymentAmount) {
+            $sheet->setCellValue('A' . $row, $paymentName);
+            $sheet->getRowDimension($row)->setRowHeight(30);
+
+            $total = 0;
+            $columnIndex = 2;
+            foreach($periods as $index => $period) {
+
+                $column = $this->getColumnWord($columnIndex);
+                if ($index === 0) {
+                    $amount = $paymentAmount;
+                } else {
+                    $amount = 0;
+                }
+                $total += $amount;
+
+                $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+                $columnIndex++;
+            }
+
+            $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
+            $row++;
+        }
+
         $sheet->getRowDimension($row)->setRowHeight(5);
         $row++;
 
@@ -215,7 +240,7 @@ class PivotSheet implements
 
             $column = $this->getColumnWord($columnIndex);
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments);
             } else {
                 $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
@@ -243,7 +268,7 @@ class PivotSheet implements
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments);
             } else {
                 $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
@@ -268,7 +293,7 @@ class PivotSheet implements
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount');
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments);
             } else {
                 $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
