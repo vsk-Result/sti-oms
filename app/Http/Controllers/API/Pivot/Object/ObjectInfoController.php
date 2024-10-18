@@ -43,6 +43,8 @@ class ObjectInfoController extends Controller
                 'contractors_debts' => 0,
                 'contractors_debts_gu' => 0,
                 'providers_debts' => 0,
+                'provider_debt_fix' => 0,
+                'provider_debt_float' => 0,
                 'service_debts' => 0,
                 'salary_debts' => 0,
                 'tax_debts' => 0,
@@ -102,6 +104,8 @@ class ObjectInfoController extends Controller
             $contractorDebtsAmount = $inf['contractor_debt'];
             $contractorDebtsAmountGU = $inf['contractor_debt_gu'];
             $providerDebtsAmount = $inf['provider_debt'];
+            $providerDebtsAmountFix = $inf['provider_debt_fix'];
+            $providerDebtsAmountFloat = $inf['provider_debt_float'];
             $serviceDebtsAmount = $inf['service_debt'];
             $salaryDebtsAmount = $inf['workers_salary_debt'];
             $totalDebts = $contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount + $contractorDebtsAmountGU + $salaryDebtsAmount;
@@ -112,6 +116,8 @@ class ObjectInfoController extends Controller
                 'contractors_debts' => $contractorDebtsAmount,
                 'contractors_debts_gu' => $contractorDebtsAmountGU,
                 'providers_debts' => $providerDebtsAmount,
+                'provider_debt_fix' => $providerDebtsAmountFix,
+                'provider_debt_float' => $providerDebtsAmountFloat,
                 'service_debts' => $serviceDebtsAmount,
                 'salary_debts' => $salaryDebtsAmount,
                 'total_debts' => $totalDebts,
@@ -120,6 +126,8 @@ class ObjectInfoController extends Controller
             $info['total']['contractors_debts'] += $contractorDebtsAmount;
             $info['total']['contractors_debts_gu'] += $contractorDebtsAmountGU;
             $info['total']['providers_debts'] += $providerDebtsAmount;
+            $info['total']['provider_debt_fix'] += $providerDebtsAmountFix;
+            $info['total']['provider_debt_float'] += $providerDebtsAmountFloat;
             $info['total']['service_debts'] += $serviceDebtsAmount;
             $info['total']['salary_debts'] += $salaryDebtsAmount;
             $info['total']['total_debts'] += $totalDebts;
