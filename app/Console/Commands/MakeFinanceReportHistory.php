@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exports\Finance\FinanceReport\Export;
 use App\Models\Company;
 use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
@@ -14,6 +15,7 @@ use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Status;
 use App\Models\TaxPlanItem;
+use App\Services\Contract\ActService;
 use App\Services\Contract\ContractService;
 use App\Services\CRONProcessService;
 use App\Services\CurrencyExchangeRateService;
@@ -28,6 +30,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MakeFinanceReportHistory extends Command
 {
@@ -44,6 +47,7 @@ class MakeFinanceReportHistory extends Command
     private ContractService $contractService;
     private ObjectPlanPaymentService $objectPlanPaymentService;
     private GeneralReportService $generalReportService;
+    private ActService $actService;
 
     public function __construct(
         AccountBalanceService $accountBalanceService,
@@ -55,7 +59,8 @@ class MakeFinanceReportHistory extends Command
         CurrencyExchangeRateService $currencyExchangeService,
         ContractService $contractService,
         ObjectPlanPaymentService $objectPlanPaymentService,
-        GeneralReportService $generalReportService
+        GeneralReportService $generalReportService,
+        ActService $actService
     ) {
         parent::__construct();
         $this->accountBalanceService = $accountBalanceService;
@@ -68,6 +73,7 @@ class MakeFinanceReportHistory extends Command
         $this->objectPlanPaymentService = $objectPlanPaymentService;
         $this->CRONProcessService = $CRONProcessService;
         $this->generalReportService = $generalReportService;
+        $this->actService = $actService;
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
@@ -878,6 +884,40 @@ class MakeFinanceReportHistory extends Command
         $financeReportHistory->update(compact('balances', 'credits', 'loans', 'deposits', 'objects_new'));
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Создание прошло успешно');
+
+        Log::channel('custom_imports_log')->debug('[INFO] Выгрущка снимка финансового отчета в Excel');
+
+        $fileName = 'Финансовый_отчет_' . now()->format('d_m_Y') . '.xlsx';
+
+        $balancesInfo = json_decode($financeReportHistory->balances);
+        $creditsInfo = json_decode($financeReportHistory->credits);
+        $loansInfo = json_decode($financeReportHistory->loans);
+        $depositsInfo = json_decode($financeReportHistory->deposits);
+        $objectsInfo = json_decode($financeReportHistory->objects_new);
+        $loansGroupInfo = FinanceReport::getLoansGroupInfo();
+
+        Excel::store(
+            new Export(
+                [
+                    'balancesInfo' => $balancesInfo,
+                    'creditsInfo' => $creditsInfo,
+                    'loansInfo' => $loansInfo,
+                    'depositsInfo' => $depositsInfo,
+                    'objectsInfo' => $objectsInfo,
+                    'loansGroupInfo' => $loansGroupInfo,
+                ],
+                [
+                    'show_closed_objects' => false,
+                    'act_service' => $this->actService,
+                ]
+            ),
+            '/exports/finance/' . $fileName,
+            'public',
+            \Maatwebsite\Excel\Excel::XLSX
+        );
+
+        Log::channel('custom_imports_log')->debug('[SUCCESS] Экспорт прошел успешно');
+
         $this->CRONProcessService->successProcess($this->signature);
 
         return 0;
