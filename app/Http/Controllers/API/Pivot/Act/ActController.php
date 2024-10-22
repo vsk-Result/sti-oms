@@ -29,17 +29,6 @@ class ActController extends Controller
             return response()->json([], 403);
         }
 
-        if (empty($request->object_id)) {
-            $objectList = BObject::active()->orderBy('code')->get();
-            $objects = [];
-
-            foreach ($objectList as $object) {
-                $objects[$object->id] = $object->getName();
-            }
-
-            return response()->json(compact('objects'));
-        }
-
         $pivot = $this->actService->getPivot($request->object_id);
 
         return response()->json(compact('pivot'));
