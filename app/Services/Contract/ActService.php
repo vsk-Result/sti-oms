@@ -37,6 +37,14 @@ class ActService
                     'RUB' => 0,
                     'EUR' => 0,
                 ],
+                'avanses_fix' => [
+                    'RUB' => 0,
+                    'EUR' => 0,
+                ],
+                'avanses_float' => [
+                    'RUB' => 0,
+                    'EUR' => 0,
+                ],
                 'gu' => [
                     'RUB' => 0,
                     'EUR' => 0,
@@ -68,6 +76,12 @@ class ActService
             $avansesAmount['RUB'] = $totalInfo['avanses_left_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount']['RUB'];
             $avansesAmount['EUR'] = $totalInfo['avanses_left_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount']['EUR'];
 
+            $avansesAmountFix['RUB'] = $totalInfo['avanses_left_amount_fix']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount_fix']['RUB'];
+            $avansesAmountFix['EUR'] = $totalInfo['avanses_left_amount_fix']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount_fix']['EUR'];
+
+            $avansesAmountFloat['RUB'] = $totalInfo['avanses_left_amount_float']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount_float']['RUB'];
+            $avansesAmountFloat['EUR'] = $totalInfo['avanses_left_amount_float']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount_float']['EUR'];
+
             $guAmount['RUB'] = $totalInfo['avanses_acts_deposites_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['RUB'];
             $guAmount['EUR'] = $totalInfo['avanses_acts_deposites_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['EUR'];
 
@@ -91,6 +105,14 @@ class ActService
                     'RUB' => $avansesAmount['RUB'],
                     'EUR' => $avansesAmount['EUR'],
                 ],
+                'avanses_fix' => [
+                    'RUB' => $avansesAmountFix['RUB'],
+                    'EUR' => $avansesAmountFix['EUR'],
+                ],
+                'avanses_float' => [
+                    'RUB' => $avansesAmountFloat['RUB'],
+                    'EUR' => $avansesAmountFloat['EUR'],
+                ],
                 'gu' => [
                     'RUB' => $guAmount['RUB'],
                     'EUR' => $guAmount['EUR'],
@@ -101,6 +123,10 @@ class ActService
             $pivot['total']['acts']['EUR'] += $actsAmount['EUR'];
             $pivot['total']['avanses']['RUB'] += $avansesAmount['RUB'];
             $pivot['total']['avanses']['EUR'] += $avansesAmount['EUR'];
+            $pivot['total']['avanses_fix']['RUB'] += $avansesAmountFix['RUB'];
+            $pivot['total']['avanses_fix']['EUR'] += $avansesAmountFix['EUR'];
+            $pivot['total']['avanses_float']['RUB'] += $avansesAmountFloat['RUB'];
+            $pivot['total']['avanses_float']['EUR'] += $avansesAmountFloat['EUR'];
             $pivot['total']['gu']['RUB'] += $guAmount['RUB'];
             $pivot['total']['gu']['EUR'] += $guAmount['EUR'];
         }

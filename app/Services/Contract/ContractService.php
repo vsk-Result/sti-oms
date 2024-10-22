@@ -54,6 +54,9 @@ class ContractService
             $total['avanses_received_amount_fix'][$currency] = 0;
             $total['avanses_received_amount_float'][$currency] = 0;
             $total['avanses_left_amount'][$currency] = 0;
+            $total['avanses_left_amount_fix'][$currency] = 0;
+            $total['avanses_left_amount_float'][$currency] = 0;
+            $total['avanses_left_amount'][$currency] = 0;
             $total['acts_amount'][$currency] = 0;
             $total['avanses_acts_paid_amount'][$currency] = 0;
             $total['avanses_acts_left_paid_amount'][$currency] = 0;
@@ -74,7 +77,15 @@ class ContractService
                 }
 
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
-                $total['avanses_left_amount'][$currency] += $contract->getAvansesLeftAmount($currency);
+
+                $avansesLeftAmount =  $contract->getAvansesLeftAmount($currency);
+                $total['avanses_left_amount'][$currency] += $avansesLeftAmount;
+                if ($contract->isFloat()) {
+                    $total['avanses_left_amount_float'][$currency] += $avansesLeftAmount;
+                } else {
+                    $total['avanses_left_amount_fix'][$currency] += $avansesLeftAmount;
+                }
+
                 $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount($currency);
                 $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount($currency);
@@ -100,7 +111,13 @@ class ContractService
                 }
 
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
-                $total['avanses_left_amount'][$currency] += $contract->getAvansesLeftAmount($currency);
+                $avansesLeftAmount =  $contract->getAvansesLeftAmount($currency);
+                $total['avanses_left_amount'][$currency] += $avansesLeftAmount;
+                if ($contract->isFloat()) {
+                    $total['avanses_left_amount_float'][$currency] += $avansesLeftAmount;
+                } else {
+                    $total['avanses_left_amount_fix'][$currency] += $avansesLeftAmount;
+                }
                 $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount($currency);
                 $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount($currency);
