@@ -25,7 +25,7 @@ class ActService
         $this->currencyService = $currencyService;
     }
 
-    public function getPivot(int | string | null $id = null): array
+    public function getPivot(int | string | null $id = null, array | null $objectIds = null): array
     {
         $pivot = [
             'total' => [
@@ -57,6 +57,10 @@ class ActService
 
         if ($id) {
             $objectsQuery->where('id', $id);
+        }
+
+        if ($objectIds) {
+            $objectsQuery->whereIn('id', $objectIds);
         }
 
         $objects = $objectsQuery->active()
