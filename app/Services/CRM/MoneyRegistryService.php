@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services\CRM;
+
 use App\Imports\CRM\MoneyRegistry\Import;
 use App\Models\CRM\Avans;
 use App\Models\CRM\AvansImport;
@@ -9,7 +10,6 @@ use App\Models\CRM\Employee;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
-
 
 class MoneyRegistryService
 {
@@ -20,7 +20,7 @@ class MoneyRegistryService
         $isImported = false;
         $avansImports = AvansImport::where('date', $data['date'])->with('items', 'items.avans')->get();
         foreach ($avansImports as $avansImport) {
-            if ($data['total'] == $avansImport->getTotal()) {
+            if ($data['total'] == $avansImport->getTotal() && $data['importType'] == $avansImport->type) {
                 $isImported = true;
                 break;
             }

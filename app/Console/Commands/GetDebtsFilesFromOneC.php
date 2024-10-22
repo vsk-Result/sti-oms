@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class GetFilesFromOneC extends Command
+class GetDebtsFilesFromOneC extends Command
 {
-    protected $signature = 'oms:get-files-from-one-c';
+    protected $signature = 'oms:get-debts-files-from-one-c';
 
     protected $description = 'Скачивает файлы по долгам из 1С в папку';
 
