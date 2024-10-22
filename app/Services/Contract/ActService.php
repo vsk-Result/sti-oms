@@ -25,7 +25,7 @@ class ActService
         $this->currencyService = $currencyService;
     }
 
-    public function getPivot(int | string | null $id = null, array | null $objectIds = null): array
+    public function getPivot(array | null $objectIds = null): array
     {
         $pivot = [
             'total' => [
@@ -54,10 +54,6 @@ class ActService
         ];
 
         $objectsQuery = BObject::query();
-
-        if ($id) {
-            $objectsQuery->where('id', $id);
-        }
 
         if ($objectIds) {
             $objectsQuery->whereIn('id', $objectIds);

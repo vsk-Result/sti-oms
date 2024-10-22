@@ -33,17 +33,15 @@ class ActController extends Controller
             return response()->json(['error' => 'Отсутствует access_objects'], 403);
         }
 
-        if ($request->has('object_id')) {
-            return response()->json(['pivot' => $this->actService->getPivot($request->object_id)]);
-        }
-
-        $accessObjects = null;
+        $objectIds = null;
         if ($request->get('access_objects') !== '*') {
-            $accessObjects = explode(',', $request->get('access_objects'));
+            $objectIds = explode(',', $request->get('access_objects'));
         }
 
-        $pivot = $this->actService->getPivot(null, $accessObjects);
+        if ($request->has('object_id')) {
+            $objectIds = [$request->get('object_id')];
+        }
 
-        return response()->json(compact('pivot'));
+        return response()->json(['pivot' => $this->actService->getPivot($objectIds)]);
     }
 }
