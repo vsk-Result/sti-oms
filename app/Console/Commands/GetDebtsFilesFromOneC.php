@@ -59,6 +59,7 @@ class GetDebtsFilesFromOneC extends Command
 
         Artisan::call('oms:contractor-debts-from-excel');
         Artisan::call('oms:service-debts-from-excel');
+        Artisan::call('oms:import-crm-money-registry-from-excel');
 
         return 0;
     }
