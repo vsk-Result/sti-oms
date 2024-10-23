@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use ZipArchive;
 
 class ImportCRMMoneyRegistryFromExcel extends Command
@@ -67,20 +68,20 @@ class ImportCRMMoneyRegistryFromExcel extends Command
 
             if (str_contains($fileName, 'imported')) {
                 Log::channel('custom_imports_log')->debug('[INFO] Файл "' . $fileName . '.' . $extension . '" содержит imported. Файл перемещен в imported.');
-                Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '.' . $extension);
+                Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '__' . Str::random(5) . '.' . $extension);
                 continue;
             }
 
             try {
                 if ($this->moneyRegistryService->isRegistryWasImported($file)) {
                     Log::channel('custom_imports_log')->debug('[INFO] Файл "' . $fileName . '.' . $extension . '" ранее уже был подгружен. Файл перемещен в imported.');
-                    Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '_imported.' . $extension);
+                    Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '__' . Str::random(5) . '_imported.' . $extension);
                     continue;
                 }
 
                 $this->moneyRegistryService->importRegistry($file);
                 $importedCount++;
-                Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '_imported.' . $extension);
+                Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '__' . Str::random(5) . '_imported.' . $extension);
 
                 Log::channel('custom_imports_log')->debug('[INFO] Файл ' . $fileName . '.' . $extension . ' успешно загружен');
             } catch (\Exception $e) {
