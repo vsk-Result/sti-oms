@@ -421,7 +421,8 @@ class MakeFinanceReportHistory extends Command
                     }
 
                     if ($object->code === '288') {
-                        $dolgFactUderjannogoGU = $customerDebtInfo['avanses_acts_deposites_amount']['RUB'];
+                        // Стефан дал инфо в телеге 23.10.2024
+                        $dolgFactUderjannogoGU = 13175716.79;
                         $dolgFactUderjannogoGUWithoutNDS = $dolgFactUderjannogoGU - round($dolgFactUderjannogoGU / 6, 2);
                     }
 
@@ -433,6 +434,15 @@ class MakeFinanceReportHistory extends Command
                     if (!empty($object->closing_date) && $object->status_id === Status::STATUS_BLOCKED) {
                         $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                         $ostatokPoDogovoruSZakazchikomWithoutNDS = $dolgFactUderjannogoGUWithoutNDS;
+                    }
+
+                    if ($object->code === '288') {
+                        // Стефан дал инфо в телеге 23.10.2024
+                        $ostatokPoDogovoruSZakazchikom = 10443970.23;
+                        $ostatokPoDogovoruSZakazchikomWithoutNDS = $ostatokPoDogovoruSZakazchikom - round($ostatokPoDogovoruSZakazchikom / 6, 2);
+
+                        $dolgZakazchikovZaVipolnenieRaboti = 0;
+                        $dolgZakazchikovZaVipolnenieRabotiWithoutNDS = 0;
                     }
 
 //                    $taxDebtAmount = TaxPlanItem::where('object_id', $object->id)
