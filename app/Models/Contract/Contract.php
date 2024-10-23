@@ -654,7 +654,7 @@ class Contract extends Model implements HasMedia, Audit
     public function getNotworkLeftAmount(string $currency = null): string|array
     {
         $manualReplaceConfigForGES2 = [
-            '4/П-2020/02-ОРСО' => 8404489.40
+            '4/П-2020/02-ОРСО' => 0
         ];
 
         if ($this->object_id === 5) {
