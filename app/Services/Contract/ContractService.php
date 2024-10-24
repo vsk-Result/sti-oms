@@ -26,7 +26,7 @@ class ContractService
     {
         $contractQuery = Contract::query();
 
-//        $contractQuery->where('type_id', Contract::TYPE_MAIN);
+        $contractQuery->where('type_id', Contract::TYPE_MAIN);
 
         if (! empty($requestData['name'])) {
             $contractQuery->where('name', 'LIKE', '%' . $requestData['name'] . '%');
