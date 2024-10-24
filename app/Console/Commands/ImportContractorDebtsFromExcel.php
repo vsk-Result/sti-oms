@@ -37,34 +37,34 @@ class ImportContractorDebtsFromExcel extends Command
         Log::channel('custom_imports_log')->debug('[START] Загрузка долгов по поставщикам из Excel (из 1С)');
 
         // Путь до файла с автоматической загрузкой
-        $importFilePath = storage_path() . '/app/public/public/TabelOMS_(XLSX).xlsx';
+//        $importFilePath = storage_path() . '/app/public/public/TabelOMS_(XLSX).xlsx';
 
         //Путь до файла с ручной загрузкой
-        $importManualFilePath = storage_path() . '/app/public/public/objects-debts-manuals/TabelOMS_(XLSX).xlsx';
+        $importFilePath = storage_path() . '/app/public/public/objects-debts-manuals/TabelOMS_(XLSX).xlsx';
 
-        if (! File::exists($importFilePath)) {
-            $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл';
-            Log::channel('custom_imports_log')->debug($errorMessage);
+//        if (! File::exists($importFilePath)) {
+//            $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл';
+//            Log::channel('custom_imports_log')->debug($errorMessage);
 
-            if (! File::exists($importManualFilePath)) {
-                $errorMessage = '[ERROR] Файл для загрузки "' . $importManualFilePath . '" не найден';
+            if (! File::exists($importFilePath)) {
+                $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден';
                 Log::channel('custom_imports_log')->debug($errorMessage);
 
                 $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
                 return 0;
             }
-        }
+//        }
 
         // Самый новый файл будет являться актуальным при загрузке
-        if (! File::exists($importFilePath)) {
-            $importFilePath = $importManualFilePath;
-        } else {
-            if (File::exists($importManualFilePath)) {
-                if (File::lastModified($importManualFilePath) > File::lastModified($importFilePath)) {
-                    $importFilePath = $importManualFilePath;
-                }
-            }
-        }
+//        if (! File::exists($importFilePath)) {
+//            $importFilePath = $importManualFilePath;
+//        } else {
+//            if (File::exists($importManualFilePath)) {
+//                if (File::lastModified($importManualFilePath) > File::lastModified($importFilePath)) {
+//                    $importFilePath = $importManualFilePath;
+//                }
+//            }
+//        }
 
         try {
             $importStatus = $this->debtImportService->createImport(['file' => new UploadedFile($importFilePath, 'TabelOMS_(XLSX).xlsx')]);
