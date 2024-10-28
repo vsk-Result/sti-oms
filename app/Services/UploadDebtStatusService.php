@@ -205,10 +205,10 @@ class UploadDebtStatusService
         $updatedInfo = [];
 
         $serviceInfo = self::$commandsAndFiles['oms:service-debts-from-excel'][0];
-        $updatedInfo['service'] = $this->getLastUpdatedDate($serviceInfo['path'], $serviceInfo['file']);
+        $updatedInfo['service'] = $this->getManualLastUpdatedDate($serviceInfo['path'], $serviceInfo['file']);
 
         $providersInfo = self::$commandsAndFiles['oms:contractor-debts-from-excel'][0];
-        $updatedInfo['providers'] = $this->getLastUpdatedDate($providersInfo['path'], $providersInfo['file']);
+        $updatedInfo['providers'] = $this->getManualLastUpdatedDate($providersInfo['path'], $providersInfo['file']);
 
         $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
         $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
@@ -270,6 +270,18 @@ class UploadDebtStatusService
         return File::lastModified($importManualFilePath) > File::lastModified($importFilePath)
             ? Carbon::parse(File::lastModified($importManualFilePath))->format('d.m.Y')
             : Carbon::parse(File::lastModified($importFilePath))->format('d.m.Y');
+    }
+
+    public function getManualLastUpdatedDate(string $path, string $filename): string
+    {
+        //Путь до файла с ручной загрузкой
+        $importManualFilePath = storage_path() . '/app/public/public/objects-debts-manuals/' . $filename;
+
+        if (! File::exists($importManualFilePath)) {
+            return '-';
+        }
+
+        return Carbon::parse(File::lastModified($importManualFilePath))->format('d.m.Y');
     }
 
     public function getActualLink(string $path, string $filename): string
