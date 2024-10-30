@@ -9,7 +9,7 @@ class FinanceReport
         return [
             '361' => 0.1139,
             '365' => 0.1,
-            '373' => 0.423,
+            '373' => 0.00423,
         ][$objectCode] ?? 0;
     }
 
