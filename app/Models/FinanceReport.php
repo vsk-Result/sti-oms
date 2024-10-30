@@ -9,6 +9,7 @@ class FinanceReport
         return [
             '361' => 0.1139,
             '365' => 0.1,
+            '373' => 0.423,
         ][$objectCode] ?? 0;
     }
 
@@ -24,6 +25,7 @@ class FinanceReport
             'Общие расходы (8,20%)' => 'prognoz_general',
             'Услуги (5%)' => 'prognoz_service',
             'Консалтинг' => 'prognoz_consalting',
+            'Консалтинг по завершении работ' => 'prognoz_consalting_after_work',
         ];
     }
 
@@ -38,7 +40,8 @@ class FinanceReport
             'prognoz_podryad' => 0,
             'prognoz_general' => 0.082,
             'prognoz_service' => 0.05,
-            'prognoz_consalting' => 0
+            'prognoz_consalting' => 0,
+            'prognoz_consalting_after_work' => 0,
         ][$field];
     }
 
