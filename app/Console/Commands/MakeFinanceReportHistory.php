@@ -482,7 +482,7 @@ class MakeFinanceReportHistory extends Command
                         $this->objectPlanPaymentService->makeDefaultPaymentsForObject($object->id);
                     }
 
-                    $checkPlanPaymentsToCreate = ['planProfitability', 'planProfitability_material', 'planProfitability_rad', 'prognoz_material_fix', 'prognoz_material_float'];
+                    $checkPlanPaymentsToCreate = ['planProfitability', 'planProfitability_material', 'planProfitability_rad', 'prognoz_material_fix', 'prognoz_material_float', 'prognoz_consalting_after_work'];
 
                     foreach ($checkPlanPaymentsToCreate as $value) {
                         if (!$object->planPayments()->where('field', $value)->first()) {
@@ -508,6 +508,11 @@ class MakeFinanceReportHistory extends Command
                         if ($field === 'prognoz_consalting') {
                             $prognozAmount = -$ostatokPoDogovoruSZakazchikom * FinanceReport::getPrognozConsaltingPercentForObject($object->code);
                             $prognozAmountWithoutNDS = -$ostatokPoDogovoruSZakazchikomWithoutNDS * FinanceReport::getPrognozConsaltingPercentForObject($object->code);
+                        }
+
+                        if ($field === 'prognoz_consalting_after_work' && $object->code !== '373') {
+                            $prognozAmount = 0;
+                            $prognozAmountWithoutNDS = 0;
                         }
 
                         if ($field === 'prognoz_podryad') {
