@@ -6,6 +6,8 @@ use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Services\Contract\ActService;
+use App\Services\CurrencyExchangeRateService;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -20,11 +22,13 @@ class PivotSheet implements
 {
     private BObject $object;
     private ActService $actService;
+    private CurrencyExchangeRateService $currencyExchangeService;
 
-    public function __construct(ActService $actService, BObject $object)
+    public function __construct(ActService $actService, BObject $object, CurrencyExchangeRateService $currencyExchangeService)
     {
         $this->actService = $actService;
         $this->object = $object;
+        $this->currencyExchangeService = $currencyExchangeService;
     }
 
     public function title(): string
@@ -36,7 +40,8 @@ class PivotSheet implements
     {
         $object = $this->object;
         $total = [];
-        $acts = $this->actService->filterActs(['object_id' => [$object->id]], $total, false);
+        $acts = $this->actService->filterActs(['object_id' => [$object->id], 'currency' => 'RUB'], $total, false);
+        $actsEUR = $this->actService->filterActs(['object_id' => [$object->id], 'currency' => 'EUR'], $total, false);
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
 
@@ -46,11 +51,11 @@ class PivotSheet implements
         $sheet->getRowDimension(4)->setRowHeight(30);
         $sheet->getRowDimension(5)->setRowHeight(30);
 
-        $lastColumnIndex = $acts->count() + 10;
-        $lastColumn = $this->getColumnWord($lastColumnIndex);
+        $lastColumnIndex = $acts->count() + $actsEUR->count() + 10;
+        $lastColumn = $sheet->getColumnDimensionByColumn($lastColumnIndex)->getColumnIndex();
 
         for ($i = 1; $i <= $lastColumnIndex; $i++) {
-            $column = $this->getColumnWord($i);
+            $column = $sheet->getColumnDimensionByColumn($i)->getColumnIndex();
             $sheet->getColumnDimension($column)->setWidth(30);
         }
 
@@ -63,17 +68,22 @@ class PivotSheet implements
 
         $colIndex = 4;
         foreach ($acts as $act) {
-            $column = $this->getColumnWord($colIndex++);
-            $sheet->setCellValue($column . '1', 'Акт ' . $act->number);
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
+            $sheet->setCellValue($column . '1', 'Акт ' . $act->number  . ' (RUB)');
         }
 
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '1', 'Итого выполнение');
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '1', '% выполнение');
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '1', 'Остаток к выполнению');
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '1', 'Оплата');
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '1', '% оплаты');
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '1', 'Остаток к оплате');
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '1', '% остатка к оплате');
+        foreach ($actsEUR as $act) {
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
+            $sheet->setCellValue($column . '1', 'Акт ' . $act->number  . ' (EUR)');
+        }
+
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '1', 'Итого выполнение');
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '1', '% выполнение');
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '1', 'Остаток к выполнению');
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '1', 'Оплата');
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '1', '% оплаты');
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '1', 'Остаток к оплате');
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex)->getColumnIndex() . '1', '% остатка к оплате');
 
         $sheet->getStyle('A3:A5')->getFont()->setItalic(true);
         $sheet->getStyle('A2:' . $lastColumn . '2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
@@ -83,29 +93,60 @@ class PivotSheet implements
         $sheet->setCellValue( 'A4', 'Работы');
         $sheet->setCellValue( 'A5', 'Накладные');
 
+        $EURExchangeRate = $this->currencyExchangeService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
+
         $totalMaterialAmount = $acts->sum('amount');
         $totalRadAmount = $acts->sum('rad_amount');
         $totalOpsteAmount = $acts->sum('opste_amount');
 
+        if ($EURExchangeRate) {
+            $totalMaterialAmount += $actsEUR->sum('amount') * $EURExchangeRate->rate;
+            $totalRadAmount += $actsEUR->sum('rad_amount') * $EURExchangeRate->rate;
+            $totalOpsteAmount += $actsEUR->sum('opste_amount') * $EURExchangeRate->rate;
+        }
+
+        $totalContractAmount = 0;
         $totalMaterialContractAmount = 0;
         $totalRadContractAmount = 0;
         $totalOpsteContractAmount = 0;
 
         foreach ($object->contracts()->where('type_id', Contract::TYPE_MAIN)->get() as $contract) {
-            $totalMaterialContractAmount += $contract->getMaterialAmount();
-            $totalRadContractAmount += $contract->getRadAmount();
-            $totalOpsteContractAmount += $contract->getOpsteAmount();
+            $totalContractAmount += $contract->getAmount('RUB');
+            $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
+            $totalRadContractAmount += $contract->getRadAmount('RUB');
+            $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
+
+            if ($EURExchangeRate) {
+                $totalContractAmount += $contract->getAmount('EUR') * $EURExchangeRate->rate;
+                $totalMaterialContractAmount += $contract->getMaterialAmount('EUR') * $EURExchangeRate->rate;
+                $totalRadContractAmount += $contract->getRadAmount('EUR') * $EURExchangeRate->rate;
+                $totalOpsteContractAmount += $contract->getOpsteAmount('EUR') * $EURExchangeRate->rate;
+            }
         }
 
-        $receivePayments = $object->payments()
+        $receivePaymentsRUB = $object->payments()
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
             ->where('company_id', 1)
             ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+            ->where('currency', 'RUB')
             ->get();
 
-        $totalMaterialPaidAmount = $receivePayments->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
-        $totalRadPaidAmount = $receivePayments->where('category', Payment::CATEGORY_RAD)->sum('amount');
-        $totalOpstePaidAmount = $receivePayments->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+        $totalMaterialPaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
+        $totalRadPaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_RAD)->sum('amount');
+        $totalOpstePaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+
+        if ($EURExchangeRate) {
+            $receivePaymentsEUR = $object->payments()
+                ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                ->where('company_id', 1)
+                ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                ->where('currency', 'EUR')
+                ->get();
+
+            $totalMaterialPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_MATERIAL)->sum('currency_amount') * $EURExchangeRate->rate;
+            $totalRadPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_RAD)->sum('currency_amount') * $EURExchangeRate->rate;
+            $totalOpstePaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_OPSTE)->sum('currency_amount') * $EURExchangeRate->rate;
+        }
 
         $totalMaterialLeftPaidAmount = $totalMaterialContractAmount - $totalMaterialPaidAmount;
         $totalRadLeftPaidAmount = $totalRadContractAmount - $totalRadPaidAmount;
@@ -114,7 +155,16 @@ class PivotSheet implements
         $totalAmount = $totalMaterialAmount + $totalRadAmount + $totalOpsteAmount;
         $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
         $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
-        $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
+
+        $totalPaidAmountPercent = $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0;
+        $totalMaterialPaidAmountPercent = $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0;
+        $totalRadPaidAmountPercent = $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0;
+        $totalOpstePaidAmountPercent = $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0;
+
+        $totalAmountPercent = $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0;
+        $totalMaterialAmountPercent = $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0;
+        $totalRadAmountPercent = $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0;
+        $totalOpsteAmountPercent = $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0;
 
 
         $sheet->setCellValue('B2', $totalContractAmount);
@@ -122,90 +172,113 @@ class PivotSheet implements
 
         $colIndex = 4;
         foreach ($acts as $act) {
-            $column = $this->getColumnWord($colIndex++);
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
+            $sheet->setCellValue($column . '2', $act->getAmount());
+            $sheet->getColumnDimension($column)->setOutlineLevel(1)
+                ->setVisible(false)
+                ->setCollapsed(true);
+        }
+        foreach ($actsEUR as $act) {
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
             $sheet->setCellValue($column . '2', $act->getAmount());
             $sheet->getColumnDimension($column)->setOutlineLevel(1)
                 ->setVisible(false)
                 ->setCollapsed(true);
         }
 
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '2', $totalAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '2', $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '2', $totalContractAmount - $totalAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '2', $totalPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '2', $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '2', $totalLeftPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '2', $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '2', $totalAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '2', $totalAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '2', $totalContractAmount - $totalAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '2', $totalPaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '2', $totalPaidAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '2', $totalLeftPaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex)->getColumnIndex() . '2', $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
 
         $sheet->setCellValue('B3', $totalMaterialContractAmount);
         $sheet->setCellValue('C3', $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
 
         $colIndex = 4;
         foreach ($acts as $act) {
-            $column = $this->getColumnWord($colIndex++);
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
+            $sheet->setCellValue($column . '3', $act->amount);
+        }
+        foreach ($actsEUR as $act) {
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
             $sheet->setCellValue($column . '3', $act->amount);
         }
 
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialContractAmount - $totalMaterialAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '3', $totalMaterialLeftPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '3', $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '3', $totalMaterialAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '3', $totalMaterialAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '3', $totalMaterialContractAmount - $totalMaterialAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '3', $totalMaterialPaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '3', $totalMaterialPaidAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '3', $totalMaterialLeftPaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex)->getColumnIndex() . '3', $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
 
         $sheet->setCellValue('B4', $totalRadContractAmount);
         $sheet->setCellValue('C4', $totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount : 0);
 
         $colIndex = 4;
         foreach ($acts as $act) {
-            $column = $this->getColumnWord($colIndex++);
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
+            $sheet->setCellValue($column . '4', $act->rad_amount);
+        }
+        foreach ($actsEUR as $act) {
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
             $sheet->setCellValue($column . '4', $act->rad_amount);
         }
 
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadContractAmount - $totalRadAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '4', $totalRadLeftPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '4', $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '4', $totalRadAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '4', $totalRadAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '4', $totalRadContractAmount - $totalRadAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '4', $totalRadPaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '4', $totalRadPaidAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '4', $totalRadLeftPaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex)->getColumnIndex() . '4', $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
 
         $sheet->setCellValue('B5', $totalOpsteContractAmount);
         $sheet->setCellValue('C5', $totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount : 0);
 
         $colIndex = 4;
         foreach ($acts as $act) {
-            $column = $this->getColumnWord($colIndex++);
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
+            $sheet->setCellValue($column . '5', $act->opste_amount);
+        }
+        foreach ($actsEUR as $act) {
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
             $sheet->setCellValue($column . '5', $act->opste_amount);
         }
 
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteContractAmount - $totalOpsteAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpstePaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
-        $sheet->setCellValue($this->getColumnWord($colIndex++) . '5', $totalOpsteLeftPaidAmount);
-        $sheet->setCellValue($this->getColumnWord($colIndex) . '5', $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '5', $totalOpsteAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '5', $totalOpsteAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '5', $totalOpsteContractAmount - $totalOpsteAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '5', $totalOpstePaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '5', $totalOpstePaidAmountPercent);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex() . '5', $totalOpsteLeftPaidAmount);
+        $sheet->setCellValue($sheet->getColumnDimensionByColumn($colIndex)->getColumnIndex() . '5', $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
 
         $sheet->getStyle('B2:B5')->getNumberFormat()->setFormatCode('#,##0');
 
         $colIndex = 4;
         foreach ($acts as $act) {
-            $column = $this->getColumnWord($colIndex++);
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
+            $sheet->getStyle($column . '2:' . $column . '5')->getNumberFormat()->setFormatCode('#,##0');
+        }
+        foreach ($actsEUR as $act) {
+            $column = $sheet->getColumnDimensionByColumn($colIndex++)->getColumnIndex();
             $sheet->getStyle($column . '2:' . $column . '5')->getNumberFormat()->setFormatCode('#,##0');
         }
 
-        $sheet->getStyle($this->getColumnWord($colIndex) . '2:' . $this->getColumnWord($colIndex) . '5')->getNumberFormat()->setFormatCode('#,##0');
-        $sheet->getStyle($this->getColumnWord($colIndex + 2) . '2:' . $this->getColumnWord($colIndex + 2) . '5')->getNumberFormat()->setFormatCode('#,##0');
-        $sheet->getStyle($this->getColumnWord($colIndex + 3) . '2:' . $this->getColumnWord($colIndex + 3) . '5')->getNumberFormat()->setFormatCode('#,##0');
-        $sheet->getStyle($this->getColumnWord($colIndex + 5) . '2:' . $this->getColumnWord($colIndex + 5) . '5')->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle($sheet->getColumnDimensionByColumn($colIndex)->getColumnIndex() . '2:' . $sheet->getColumnDimensionByColumn($colIndex)->getColumnIndex() . '5')->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle($sheet->getColumnDimensionByColumn($colIndex + 2)->getColumnIndex() . '2:' . $sheet->getColumnDimensionByColumn($colIndex + 2)->getColumnIndex() . '5')->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle($sheet->getColumnDimensionByColumn($colIndex + 3)->getColumnIndex() . '2:' . $sheet->getColumnDimensionByColumn($colIndex + 3)->getColumnIndex() . '5')->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle($sheet->getColumnDimensionByColumn($colIndex + 5)->getColumnIndex() . '2:' . $sheet->getColumnDimensionByColumn($colIndex + 5)->getColumnIndex() . '5')->getNumberFormat()->setFormatCode('#,##0');
 
 
         $sheet->getStyle('C2:C5')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
-        $sheet->getStyle($this->getColumnWord($colIndex + 1) . '2:' . $this->getColumnWord($colIndex + 1) . '5')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
-        $sheet->getStyle($this->getColumnWord($colIndex + 4) . '2:' . $this->getColumnWord($colIndex + 4) . '5')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
-        $sheet->getStyle($this->getColumnWord($colIndex + 6) . '2:' . $this->getColumnWord($colIndex + 6) . '5')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle($sheet->getColumnDimensionByColumn($colIndex + 1)->getColumnIndex() . '2:' . $sheet->getColumnDimensionByColumn($colIndex + 1)->getColumnIndex() . '5')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle($sheet->getColumnDimensionByColumn($colIndex + 4)->getColumnIndex() . '2:' . $sheet->getColumnDimensionByColumn($colIndex + 4)->getColumnIndex() . '5')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
+        $sheet->getStyle($sheet->getColumnDimensionByColumn($colIndex + 6)->getColumnIndex() . '2:' . $sheet->getColumnDimensionByColumn($colIndex + 6)->getColumnIndex() . '5')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);
 
         $sheet->getStyle('A1:' . $lastColumn . '5')->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'b7b7b7']]]
@@ -218,10 +291,5 @@ class PivotSheet implements
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setFitToWidth(1);
         $sheet->getPageSetup()->setFitToHeight(1);
-    }
-
-    private function getColumnWord($n) {
-        $n--;
-        return ($n<26) ? chr(ord('A') + $n) : 'A' .  chr(ord('A') + $n % 26);
     }
 }

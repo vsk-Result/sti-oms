@@ -6,6 +6,8 @@ use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Services\Contract\ActService;
+use App\Services\CurrencyExchangeRateService;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -18,12 +20,7 @@ class PivotSheet implements
     WithTitle,
     WithStyles
 {
-    private ActService $actService;
-
-    public function __construct(ActService $actService)
-    {
-        $this->actService = $actService;
-    }
+    public function __construct(private ActService $actService, private CurrencyExchangeRateService $currencyExchangeRateService) {}
 
     public function title(): string
     {
@@ -70,28 +67,46 @@ class PivotSheet implements
 
         $total = [];
 
-        $filteredObjects = BObject::active()->orderBy('code')->get();
+        $filteredObjects = BObject::active()->whereNotIn('code', ['353', '346', '362', '368', '359'])->orderBy('code')->get();
         $activeObjectIds = $filteredObjects->pluck('id')->toArray();
         $activeObjects = BObject::whereIn('id', $activeObjectIds)->orderByDesc('code')->get();
-        $acts = $this->actService->filterActs(['object_id' => $activeObjectIds], $total, false);
+        $acts = $this->actService->filterActs(['object_id' => $activeObjectIds, 'currency' => 'RUB'], $total, false);
+        $actsEUR = $this->actService->filterActs(['object_id' => $activeObjectIds, 'currency' => 'EUR'], $total, false);
 
         $sheet->setCellValue( 'A2', 'Итого');
         $sheet->setCellValue( 'A3', 'Материалы');
         $sheet->setCellValue( 'A4', 'Работы');
         $sheet->setCellValue( 'A5', 'Накладные');
 
+        $EURExchangeRate = $this->currencyExchangeRateService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
+
         $totalMaterialAmount = $acts->sum('amount');
         $totalRadAmount = $acts->sum('rad_amount');
         $totalOpsteAmount = $acts->sum('opste_amount');
 
+        if ($EURExchangeRate) {
+            $totalMaterialAmount += $actsEUR->sum('amount') * $EURExchangeRate->rate;
+            $totalRadAmount += $actsEUR->sum('rad_amount') * $EURExchangeRate->rate;
+            $totalOpsteAmount += $actsEUR->sum('opste_amount') * $EURExchangeRate->rate;
+        }
+
+        $totalContractAmount = 0;
         $totalMaterialContractAmount = 0;
         $totalRadContractAmount = 0;
         $totalOpsteContractAmount = 0;
 
         foreach (Contract::whereIn('object_id', $activeObjectIds)->where('type_id', Contract::TYPE_MAIN)->get() as $contract) {
-            $totalMaterialContractAmount += $contract->getMaterialAmount();
-            $totalRadContractAmount += $contract->getRadAmount();
-            $totalOpsteContractAmount += $contract->getOpsteAmount();
+            $totalContractAmount += $contract->getAmount('RUB');
+            $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
+            $totalRadContractAmount += $contract->getRadAmount('RUB');
+            $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
+
+            if ($EURExchangeRate) {
+                $totalContractAmount += $contract->getAmount('EUR') * $EURExchangeRate->rate;
+                $totalMaterialContractAmount += $contract->getMaterialAmount('EUR') * $EURExchangeRate->rate;
+                $totalRadContractAmount += $contract->getRadAmount('EUR') * $EURExchangeRate->rate;
+                $totalOpsteContractAmount += $contract->getOpsteAmount('EUR') * $EURExchangeRate->rate;
+            }
         }
 
         $totalMaterialPaidAmount = 0;
@@ -99,15 +114,29 @@ class PivotSheet implements
         $totalOpstePaidAmount = 0;
 
         foreach ($activeObjects as $aobject) {
-            $receivePayments = $aobject->payments()
+            $receivePaymentsRUB = $aobject->payments()
                 ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
                 ->where('company_id', 1)
                 ->whereIn('organization_sender_id', $aobject->customers->pluck('id')->toArray())
+                ->where('currency', 'RUB')
                 ->get();
 
-            $totalMaterialPaidAmount += $receivePayments->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
-            $totalRadPaidAmount += $receivePayments->where('category', Payment::CATEGORY_RAD)->sum('amount');
-            $totalOpstePaidAmount += $receivePayments->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+            $totalMaterialPaidAmount += $receivePaymentsRUB->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
+            $totalRadPaidAmount += $receivePaymentsRUB->where('category', Payment::CATEGORY_RAD)->sum('amount');
+            $totalOpstePaidAmount += $receivePaymentsRUB->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+
+            if ($EURExchangeRate) {
+                $receivePaymentsEUR = $aobject->payments()
+                    ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                    ->where('company_id', 1)
+                    ->whereIn('organization_sender_id', $aobject->customers->pluck('id')->toArray())
+                    ->where('currency', 'EUR')
+                    ->get();
+
+                $totalMaterialPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_MATERIAL)->sum('currency_amount') * $EURExchangeRate->rate;
+                $totalRadPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_RAD)->sum('currency_amount') * $EURExchangeRate->rate;
+                $totalOpstePaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_OPSTE)->sum('currency_amount') * $EURExchangeRate->rate;
+            }
         }
 
         $totalMaterialLeftPaidAmount = $totalMaterialContractAmount - $totalMaterialPaidAmount;
@@ -117,7 +146,6 @@ class PivotSheet implements
         $totalAmount = $totalMaterialAmount + $totalRadAmount + $totalOpsteAmount;
         $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
         $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
-        $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
 
 
         $sheet->setCellValue('B2', $totalContractAmount);
@@ -162,30 +190,61 @@ class PivotSheet implements
 
         $row = 6;
         foreach($activeObjects as $object) {
-            $acts = $object->acts;
+            $acts = $object->acts()->where('currency', 'RUB')->get();
+            $actsEUR = $object->acts()->where('currency', 'EUR')->get();
+
             $totalMaterialAmount = $acts->sum('amount');
             $totalRadAmount = $acts->sum('rad_amount');
             $totalOpsteAmount = $acts->sum('opste_amount');
 
+            if ($EURExchangeRate) {
+                $totalMaterialAmount += $actsEUR->sum('amount') * $EURExchangeRate->rate;
+                $totalRadAmount += $actsEUR->sum('rad_amount') * $EURExchangeRate->rate;
+                $totalOpsteAmount += $actsEUR->sum('opste_amount') * $EURExchangeRate->rate;
+            }
+
+            $totalContractAmount = 0;
             $totalMaterialContractAmount = 0;
             $totalRadContractAmount = 0;
             $totalOpsteContractAmount = 0;
 
             foreach ($object->contracts()->where('type_id', Contract::TYPE_MAIN)->get() as $contract) {
-                $totalMaterialContractAmount += $contract->getMaterialAmount();
-                $totalRadContractAmount += $contract->getRadAmount();
-                $totalOpsteContractAmount += $contract->getOpsteAmount();
+                $totalContractAmount += $contract->getAmount('RUB');
+                $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
+                $totalRadContractAmount += $contract->getRadAmount('RUB');
+                $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
+
+                if ($EURExchangeRate) {
+                    $totalContractAmount += $contract->getAmount('EUR') * $EURExchangeRate->rate;
+                    $totalMaterialContractAmount += $contract->getMaterialAmount('EUR') * $EURExchangeRate->rate;
+                    $totalRadContractAmount += $contract->getRadAmount('EUR') * $EURExchangeRate->rate;
+                    $totalOpsteContractAmount += $contract->getOpsteAmount('EUR') * $EURExchangeRate->rate;
+                }
             }
 
-            $receivePayments = $object->payments()
+            $receivePaymentsRUB = $object->payments()
                 ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
                 ->where('company_id', 1)
                 ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                ->where('currency', 'RUB')
                 ->get();
 
-            $totalMaterialPaidAmount = $receivePayments->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
-            $totalRadPaidAmount = $receivePayments->where('category',Payment::CATEGORY_RAD)->sum('amount');
-            $totalOpstePaidAmount = $receivePayments->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+            $totalMaterialPaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
+            $totalRadPaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_RAD)->sum('amount');
+            $totalOpstePaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
+
+            if ($EURExchangeRate) {
+                $receivePaymentsEUR = $object->payments()
+                    ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                    ->where('company_id', 1)
+                    ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                    ->where('currency', 'EUR')
+                    ->get();
+
+                $totalMaterialPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_MATERIAL)->sum('currency_amount') * $EURExchangeRate->rate;
+                $totalRadPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_RAD)->sum('currency_amount') * $EURExchangeRate->rate;
+                $totalOpstePaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_OPSTE)->sum('currency_amount') * $EURExchangeRate->rate;
+            }
 
             $totalMaterialLeftPaidAmount = $totalMaterialContractAmount - $totalMaterialPaidAmount;
             $totalRadLeftPaidAmount = $totalRadContractAmount - $totalRadPaidAmount;
@@ -194,8 +253,6 @@ class PivotSheet implements
             $totalAmount = $totalMaterialAmount + $totalRadAmount + $totalOpsteAmount;
             $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
             $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
-            $totalContractAmount = $totalMaterialContractAmount + $totalRadContractAmount + $totalOpsteContractAmount;
-
 
             $sheet->getRowDimension($row)->setRowHeight(40);
             $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);

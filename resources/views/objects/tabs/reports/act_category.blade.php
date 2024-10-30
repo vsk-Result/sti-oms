@@ -43,6 +43,9 @@
                             @foreach($acts as $act)
                                 <th class="min-w-150px collapse-col" data-trigger="act_detail" style="display: none;">Акт {{ $act->number }}</th>
                             @endforeach
+                            @foreach($actsEUR as $act)
+                                <th class="min-w-150px collapse-col" data-trigger="act_detail" style="display: none;">Акт {{ $act->number }}</th>
+                            @endforeach
 
                             <th class="min-w-200px collapse-trigger cursor-pointer" data-trigger="act_detail">
                                 <span class="fs-5 fw-bolder">+</span>
@@ -58,10 +61,20 @@
                     </thead>
 
                     <tbody class="text-gray-600 fw-bold fs-7">
+                        @inject('currencyExchangeService', 'App\Services\CurrencyExchangeRateService')
+
                         @php
+                            $EURExchangeRate = $currencyExchangeService->getExchangeRate(\Carbon\Carbon::now()->format('Y-m-d'), 'EUR');
+
                             $totalMaterialAmount = $acts->sum('amount');
                             $totalRadAmount = $acts->sum('rad_amount');
                             $totalOpsteAmount = $acts->sum('opste_amount');
+
+                            if ($EURExchangeRate) {
+                                $totalMaterialAmount += $actsEUR->sum('amount') * $EURExchangeRate->rate;
+                                $totalRadAmount += $actsEUR->sum('rad_amount') * $EURExchangeRate->rate;
+                                $totalOpsteAmount += $actsEUR->sum('opste_amount') * $EURExchangeRate->rate;
+                            }
 
                             $totalContractAmount = 0;
                             $totalMaterialContractAmount = 0;
@@ -73,17 +86,38 @@
                                 $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
                                 $totalRadContractAmount += $contract->getRadAmount('RUB');
                                 $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
+
+                                if ($EURExchangeRate) {
+                                    $totalContractAmount += $contract->getAmount('EUR') * $EURExchangeRate->rate;
+                                    $totalMaterialContractAmount += $contract->getMaterialAmount('EUR') * $EURExchangeRate->rate;
+                                    $totalRadContractAmount += $contract->getRadAmount('EUR') * $EURExchangeRate->rate;
+                                    $totalOpsteContractAmount += $contract->getOpsteAmount('EUR') * $EURExchangeRate->rate;
+                                }
                             }
 
-                            $receivePayments = $object->payments()
+                            $receivePaymentsRUB = $object->payments()
                                 ->where('payment_type_id', App\Models\Payment::PAYMENT_TYPE_NON_CASH)
                                 ->where('company_id', 1)
                                 ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                                ->where('currency', 'RUB')
                                 ->get();
 
-                            $totalMaterialPaidAmount = $receivePayments->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('amount');
-                            $totalRadPaidAmount = $receivePayments->where('category', \App\Models\Payment::CATEGORY_RAD)->sum('amount');
-                            $totalOpstePaidAmount = $receivePayments->where('category', \App\Models\Payment::CATEGORY_OPSTE)->sum('amount');
+                            $totalMaterialPaidAmount = $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('amount');
+                            $totalRadPaidAmount = $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_RAD)->sum('amount');
+                            $totalOpstePaidAmount = $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_OPSTE)->sum('amount');
+
+                            if ($EURExchangeRate) {
+                                $receivePaymentsEUR = $object->payments()
+                                    ->where('payment_type_id', App\Models\Payment::PAYMENT_TYPE_NON_CASH)
+                                    ->where('company_id', 1)
+                                    ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
+                                    ->where('currency', 'EUR')
+                                    ->get();
+
+                                $totalMaterialPaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('currency_amount') * $EURExchangeRate->rate;
+                                $totalRadPaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_RAD)->sum('currency_amount') * $EURExchangeRate->rate;
+                                $totalOpstePaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_OPSTE)->sum('currency_amount') * $EURExchangeRate->rate;
+                            }
 
                             $totalMaterialLeftPaidAmount = $totalMaterialContractAmount - $totalMaterialPaidAmount;
                             $totalRadLeftPaidAmount = $totalRadContractAmount - $totalRadPaidAmount;
@@ -113,6 +147,9 @@
                             <td class="cell-center">100%</td>
                             @foreach($acts as $act)
                                 <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->getAmount(), 'RUB', 0, true) }}</td>
+                            @endforeach
+                            @foreach($actsEUR as $act)
+                                <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->getAmount(), 'EUR', 0, true) }}</td>
                             @endforeach
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalAmount, 'RUB', 0, true) }}
@@ -146,6 +183,9 @@
                             </td>
                             @foreach($acts as $act)
                                 <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->amount, 'RUB', 0, true) }}</td>
+                            @endforeach
+                            @foreach($actsEUR as $act)
+                                <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->amount, 'EUR', 0, true) }}</td>
                             @endforeach
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalMaterialAmount, 'RUB', 0, true) }}
@@ -181,6 +221,9 @@
                             @foreach($acts as $act)
                                 <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->rad_amount, 'RUB', 0, true) }}</td>
                             @endforeach
+                            @foreach($actsEUR as $act)
+                                <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->rad_amount, 'EUR', 0, true) }}</td>
+                            @endforeach
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalRadAmount, 'RUB', 0, true) }}
                             </td>
@@ -214,6 +257,9 @@
                             </td>
                             @foreach($acts as $act)
                                 <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->opste_amount, 'RUB', 0, true) }}</td>
+                            @endforeach
+                            @foreach($actsEUR as $act)
+                                <td class="cell-center collapse-col" data-trigger="act_detail" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($act->opste_amount, 'EUR', 0, true) }}</td>
                             @endforeach
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalOpsteAmount, 'RUB', 0, true) }}

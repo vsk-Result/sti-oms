@@ -146,6 +146,10 @@ class ActService
             $actQuery->whereIn('object_id', $requestData['object_id']);
         }
 
+        if (isset($requestData['currency'])) {
+            $actQuery->where('currency', $requestData['currency']);
+        }
+
         if (! empty($requestData['sort_by'])) {
             if ($requestData['sort_by'] == 'contract_id') {
                 $actQuery->orderBy(Contract::select('name')->whereColumn('contracts.id', 'acts.contract_id'), $requestData['sort_direction'] ?? 'asc');

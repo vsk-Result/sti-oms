@@ -19,7 +19,9 @@ class ActCategoryController extends Controller
     public function index(BObject $object): View
     {
         $total = [];
-        $acts = $this->actService->filterActs(['object_id' => [$object->id]], $total, false);
-        return view('objects.tabs.reports.act_category', compact('acts', 'object'));
+        $acts = $this->actService->filterActs(['object_id' => [$object->id], 'currency' => 'RUB'], $total, false);
+        $actsEUR = $this->actService->filterActs(['object_id' => [$object->id], 'currency' => 'EUR'], $total, false);
+
+        return view('objects.tabs.reports.act_category', compact('acts', 'object', 'actsEUR'));
     }
 }
