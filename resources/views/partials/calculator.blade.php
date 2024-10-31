@@ -32,6 +32,10 @@
             });
 
             $(document).on('click', '.for-calc', function(e) {
+                if ($(this).css('cursor') !== 'pointer') {
+                    return true;
+                }
+
                 e.preventDefault();
 
                 const amount = $(this).text().trim();

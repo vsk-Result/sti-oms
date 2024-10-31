@@ -203,7 +203,7 @@ class UploadDebtStatusService
     public function uploadDebts(array $requestData): void
     {
         Storage::putFileAs('public/objects-debts-manuals', $requestData['file'], $requestData['filename']);
-        Artisan::call($requestData['command']);
+//        Artisan::call($requestData['command']);
     }
 
     public function getUpdatedInfoForObject(BObject $object): array

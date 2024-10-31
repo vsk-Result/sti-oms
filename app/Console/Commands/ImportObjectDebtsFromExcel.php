@@ -44,7 +44,7 @@ class ImportObjectDebtsFromExcel extends Command
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
-            'Ежедневно в 19:00'
+            'Каждые 15 минут'
         );
         $this->organizationService = $organizationService;
         $this->sanitizer = $sanitizer;

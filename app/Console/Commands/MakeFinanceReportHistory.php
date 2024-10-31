@@ -547,7 +547,11 @@ class MakeFinanceReportHistory extends Command
                             }
                         }
 
-                        $total[$year][$object->code][$field] = $prognozAmount;
+                        if ($field === 'prognoz_consalting_after_work') {
+                            $total[$year][$object->code]['prognoz_consalting'] += $prognozAmount;
+                        } else {
+                            $total[$year][$object->code][$field] = $prognozAmount;
+                        }
 
                         if (in_array($field, ['prognoz_material_fix', 'prognoz_material_float'])) {
                             continue;

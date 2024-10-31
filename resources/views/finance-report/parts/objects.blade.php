@@ -19,7 +19,7 @@
     $percentField = 'general_balance_to_receive_percentage';
     $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
     $exceptFields = [
-        'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty', 'office_service', 'general_balance_material'
+        'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty', 'office_service', 'general_balance_material', 'prognoz_consalting_after_work'
     ];
 
     foreach ($infos as $field) {
@@ -141,9 +141,9 @@
                                                         @endif
                                                     @else
                                                         @if ($field === 'contractor_debt_gu' && $object->code === '000')
-                                                            <a class="border-bottom-dashed" href="/storage/public/objects-debts-manuals/000.xlsx" target="_blank" download="">{{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}</a>
+                                                            <a class="border-bottom-dashed" href="{{ route('files.download', ['file' => base64_encode('public/objects-debts-manuals/000.xlsx')]) }}">{{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}</a>
                                                         @elseif ($field === 'dolgFactUderjannogoGU' && $object->code === '000')
-                                                            <a class="border-bottom-dashed" href="/storage/public/objects-debts-manuals/customer_gu.xlsx" target="_blank" download="">{{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}</a>
+                                                            <a class="border-bottom-dashed" href="{{ route('files.download', ['file' => base64_encode('public/objects-debts-manuals/customer_gu.xlsx')]) }}">{{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}</a>
                                                         @else
                                                             {{ !is_valid_amount_in_range($value) ? '-' : \App\Models\CurrencyExchangeRate::format($value, 'RUB') }}
                                                         @endif

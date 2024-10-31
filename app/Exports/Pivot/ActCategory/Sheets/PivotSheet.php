@@ -20,7 +20,7 @@ class PivotSheet implements
     WithTitle,
     WithStyles
 {
-    public function __construct(private ActService $actService, private CurrencyExchangeRateService $currencyExchangeRateService) {}
+    public function __construct(private ActService $actService) {}
 
     public function title(): string
     {
@@ -78,7 +78,8 @@ class PivotSheet implements
         $sheet->setCellValue( 'A4', 'Работы');
         $sheet->setCellValue( 'A5', 'Накладные');
 
-        $EURExchangeRate = $this->currencyExchangeRateService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
+        $currencyExchangeRateService = new CurrencyExchangeRateService();
+        $EURExchangeRate = $currencyExchangeRateService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
 
         $totalMaterialAmount = $acts->sum('amount');
         $totalRadAmount = $acts->sum('rad_amount');

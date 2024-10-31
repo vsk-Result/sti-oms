@@ -75,7 +75,7 @@ class ObjectPivotSheet implements
         $percentField = 'general_balance_to_receive_percentage';
         $percentFields = ['time_percent', 'complete_percent', 'money_percent', 'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'];
         $exceptFields = [
-            'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty', 'office_service', 'general_balance_material'
+            'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty', 'office_service', 'general_balance_material', 'prognoz_consalting_after_work'
         ];
 
         foreach ($infos as $field) {

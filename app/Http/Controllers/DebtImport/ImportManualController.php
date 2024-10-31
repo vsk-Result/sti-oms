@@ -37,7 +37,7 @@ class ImportManualController extends Controller
 //        }
 
         // Запустим крон задачу на импорт долгов по подрядчикам
-        Artisan::call('oms:objects-debts-from-excel');
+//        Artisan::call('oms:objects-debts-from-excel');
 
         return redirect()->back();
     }
