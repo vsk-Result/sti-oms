@@ -42,32 +42,32 @@ class PivotSheet implements
         $sheet->setCellValue('F1', 'Гарантийное удержание');
 
         $sheet->setCellValue('A2', 'Итого');
-        $sheet->setCellValue('B2', $this->pivot['total']['acts'][$this->currency] + $this->pivot['total']['avanses'][$this->currency] + $this->pivot['total']['gu'][$this->currency]);
-        $sheet->setCellValue('C2', $this->pivot['total']['acts'][$this->currency]);
-        $sheet->setCellValue('D2', $this->pivot['total']['avanses_float'][$this->currency]);
-        $sheet->setCellValue('E2', $this->pivot['total']['avanses_fix'][$this->currency]);
-        $sheet->setCellValue('F2', $this->pivot['total']['gu'][$this->currency]);
+        $sheet->setCellValue('B2', $this->pivot['total']['acts'] + $this->pivot['total']['avanses'] + $this->pivot['total']['gu']);
+        $sheet->setCellValue('C2', $this->pivot['total']['acts']);
+        $sheet->setCellValue('D2', $this->pivot['total']['avanses_float']);
+        $sheet->setCellValue('E2', $this->pivot['total']['avanses_fix']);
+        $sheet->setCellValue('F2', $this->pivot['total']['gu']);
 
-        $sheet->getStyle('B2')->getFont()->setColor(new Color(($this->pivot['total']['acts'][$this->currency] + $this->pivot['total']['avanses'][$this->currency] + $this->pivot['total']['gu'][$this->currency]) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-        $sheet->getStyle('C2')->getFont()->setColor(new Color($this->pivot['total']['acts'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-        $sheet->getStyle('D2')->getFont()->setColor(new Color($this->pivot['total']['avanses_float'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-        $sheet->getStyle('E2')->getFont()->setColor(new Color($this->pivot['total']['avanses_fix'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-        $sheet->getStyle('F2')->getFont()->setColor(new Color($this->pivot['total']['gu'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+        $sheet->getStyle('B2')->getFont()->setColor(new Color(($this->pivot['total']['acts'] + $this->pivot['total']['avanses'] + $this->pivot['total']['gu']) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+        $sheet->getStyle('C2')->getFont()->setColor(new Color($this->pivot['total']['acts'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+        $sheet->getStyle('D2')->getFont()->setColor(new Color($this->pivot['total']['avanses_float'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+        $sheet->getStyle('E2')->getFont()->setColor(new Color($this->pivot['total']['avanses_fix'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+        $sheet->getStyle('F2')->getFont()->setColor(new Color($this->pivot['total']['gu'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
         $rowIndex = 3;
         foreach ($this->pivot['entries'] as $entry) {
             $sheet->setCellValue('A' . $rowIndex, $entry['object']['name']);
-            $sheet->setCellValue('B' . $rowIndex, $entry['acts'][$this->currency] + $entry['avanses'][$this->currency] + $entry['gu'][$this->currency]);
-            $sheet->setCellValue('C' . $rowIndex, $entry['acts'][$this->currency] === 0 ? '' : $entry['acts'][$this->currency]);
-            $sheet->setCellValue('D' . $rowIndex, $entry['avanses_float'][$this->currency] === 0 ? '' : $entry['avanses_float'][$this->currency]);
-            $sheet->setCellValue('E' . $rowIndex, $entry['avanses_fix'][$this->currency] === 0 ? '' : $entry['avanses_fix'][$this->currency]);
-            $sheet->setCellValue('F' . $rowIndex, $entry['gu'][$this->currency] === 0 ? '' : $entry['gu'][$this->currency]);
+            $sheet->setCellValue('B' . $rowIndex, $entry['acts'] + $entry['avanses'] + $entry['gu']);
+            $sheet->setCellValue('C' . $rowIndex, $entry['acts'] === 0 ? '' : $entry['acts']);
+            $sheet->setCellValue('D' . $rowIndex, $entry['avanses_float'] === 0 ? '' : $entry['avanses_float']);
+            $sheet->setCellValue('E' . $rowIndex, $entry['avanses_fix'] === 0 ? '' : $entry['avanses_fix']);
+            $sheet->setCellValue('F' . $rowIndex, $entry['gu'] === 0 ? '' : $entry['gu']);
 
-            $sheet->getStyle('B' . $rowIndex)->getFont()->setColor(new Color(($entry['acts'][$this->currency] + $entry['avanses'][$this->currency] + $entry['gu'][$this->currency]) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $sheet->getStyle('C' . $rowIndex)->getFont()->setColor(new Color($entry['acts'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $sheet->getStyle('D' . $rowIndex)->getFont()->setColor(new Color($entry['avanses_float'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $sheet->getStyle('E' . $rowIndex)->getFont()->setColor(new Color($entry['avanses_fix'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $sheet->getStyle('F' . $rowIndex)->getFont()->setColor(new Color($entry['gu'][$this->currency] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getStyle('B' . $rowIndex)->getFont()->setColor(new Color(($entry['acts'] + $entry['avanses'] + $entry['gu']) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getStyle('C' . $rowIndex)->getFont()->setColor(new Color($entry['acts'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getStyle('D' . $rowIndex)->getFont()->setColor(new Color($entry['avanses_float'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getStyle('E' . $rowIndex)->getFont()->setColor(new Color($entry['avanses_fix'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getStyle('F' . $rowIndex)->getFont()->setColor(new Color($entry['gu'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
             $sheet->getRowDimension($rowIndex)->setRowHeight(20);
             $rowIndex++;

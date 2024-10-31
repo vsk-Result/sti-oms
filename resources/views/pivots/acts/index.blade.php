@@ -45,29 +45,19 @@
                         <tr class="fw-bolder" style="background-color: #f7f7f7;">
                             <th class="ps-4 br hl" style="vertical-align: middle;">Итого</th>
                             <th class="hl text-right">
-                                <span class="{{ ($pivot['total']['acts']['RUB'] + $pivot['total']['avanses']['RUB'] + $pivot['total']['gu']['RUB']) > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format(($pivot['total']['acts']['RUB'] + $pivot['total']['avanses']['RUB'] + $pivot['total']['gu']['RUB']), 'RUB') }}</span>
-                                <br>
-                                <span class="{{ ($pivot['total']['acts']['EUR'] + $pivot['total']['avanses']['EUR'] + $pivot['total']['gu']['EUR']) > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format(($pivot['total']['acts']['EUR'] + $pivot['total']['avanses']['EUR'] + $pivot['total']['gu']['EUR']), 'EUR') }}</span>
+                                <span class="{{ ($pivot['total']['acts'] + $pivot['total']['avanses'] + $pivot['total']['gu']) > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format(($pivot['total']['acts'] + $pivot['total']['avanses'] + $pivot['total']['gu']), 'RUB') }}</span>
                             </th>
                             <th class="hl text-right">
-                                <span class="{{ $pivot['total']['acts']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts']['RUB'], 'RUB') }}</span>
-                                <br>
-                                <span class="{{ $pivot['total']['acts']['EUR'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts']['EUR'], 'EUR') }}</span>
+                                <span class="{{ $pivot['total']['acts'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['acts'], 'RUB') }}</span>
                             </th>
                             <th class="hl text-right">
-                                <span class="{{ $pivot['total']['avanses_float']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses_float']['RUB'], 'RUB') }}</span>
-                                <br>
-                                <span class="{{ $pivot['total']['avanses_float']['EUR'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses_float']['EUR'], 'EUR') }}</span>
+                                <span class="{{ $pivot['total']['avanses_float'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses_float'], 'RUB') }}</span>
                             </th>
                             <th class="hl text-right">
-                                <span class="{{ $pivot['total']['avanses_fix']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses_fix']['RUB'], 'RUB') }}</span>
-                                <br>
-                                <span class="{{ $pivot['total']['avanses_fix']['EUR'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses_fix']['EUR'], 'EUR') }}</span>
+                                <span class="{{ $pivot['total']['avanses_fix'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['avanses_fix'], 'RUB') }}</span>
                             </th>
                             <th class="hl text-right pe-4">
-                                <span class="{{ $pivot['total']['gu']['RUB'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['gu']['RUB'], 'RUB') }}</span>
-                                <br>
-                                <span class="{{ $pivot['total']['gu']['EUR'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['gu']['EUR'], 'EUR') }}</span>
+                                <span class="{{ $pivot['total']['gu'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['gu'], 'RUB') }}</span>
                             </th>
                         </tr>
                     </thead>
@@ -82,78 +72,38 @@
                                     @endif
                                 </td>
                                 <td class="hl text-right {{ $loop->first ? 'bt' : '' }}">
-                                    @if (($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']) != 0)
-                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ ($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']) > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']), 'RUB', 0, true) }}</span></a>
+                                    @if (($entry['acts'] + $entry['avanses'] + $entry['gu']) != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ ($entry['acts'] + $entry['avanses'] + $entry['gu']) > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format(($entry['acts'] + $entry['avanses'] + $entry['gu']), 'RUB', 0, true) }}</span></a>
                                     @else
-                                        {{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['RUB'] + $entry['avanses']['RUB'] + $entry['gu']['RUB']), 'RUB', 0, true) }}
-                                    @endif
-                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
-                                        <br>
-                                        @if (($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']) != 0)
-                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ ($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']) > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']), 'EUR', 0, true) }}</span></a>
-                                        @else
-                                            {{ \App\Models\CurrencyExchangeRate::format(($entry['acts']['EUR'] + $entry['avanses']['EUR'] + $entry['gu']['EUR']), 'EUR', 0, true) }}
-                                        @endif
+                                        {{ \App\Models\CurrencyExchangeRate::format(($entry['acts'] + $entry['avanses'] + $entry['gu']), 'RUB', 0, true) }}
                                     @endif
                                 </td>
                                 <td class="bl text-right {{ $loop->first ? 'bt' : '' }}">
-                                    @if ($entry['acts']['RUB'] != 0)
-                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['acts']['RUB'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['acts']['RUB'], 'RUB', 0, true) }}</span></a>
+                                    @if ($entry['acts'] != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['acts'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['acts'], 'RUB', 0, true) }}</span></a>
                                     @else
-                                        {{ \App\Models\CurrencyExchangeRate::format($entry['acts']['RUB'], 'RUB', 0, true) }}
-                                    @endif
-                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
-                                        <br>
-                                        @if ($entry['acts']['EUR'] != 0)
-                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['acts']['EUR'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['acts']['EUR'], 'EUR', 0, true) }}</span></a>
-                                        @else
-                                            {{ \App\Models\CurrencyExchangeRate::format($entry['acts']['EUR'], 'EUR', 0, true) }}
-                                        @endif
+                                        {{ \App\Models\CurrencyExchangeRate::format($entry['acts'], 'RUB', 0, true) }}
                                     @endif
                                 </td>
                                 <td class="bl text-right {{ $loop->first ? 'bt' : '' }}">
-                                    @if ($entry['avanses_float']['RUB'] != 0)
-                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses_float']['RUB'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses_float']['RUB'], 'RUB', 0, true) }}</span></a>
+                                    @if ($entry['avanses_float'] != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses_float'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses_float'], 'RUB', 0, true) }}</span></a>
                                     @else
-                                        {{ \App\Models\CurrencyExchangeRate::format($entry['avanses_float']['RUB'], 'RUB', 0, true) }}
-                                    @endif
-                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
-                                        <br>
-                                        @if ($entry['avanses_float']['EUR'] != 0)
-                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses_float']['EUR'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses_float']['EUR'], 'EUR', 0, true) }}</span></a>
-                                        @else
-                                            {{ \App\Models\CurrencyExchangeRate::format($entry['avanses_float']['EUR'], 'EUR', 0, true) }}
-                                        @endif
+                                        {{ \App\Models\CurrencyExchangeRate::format($entry['avanses_float'], 'RUB', 0, true) }}
                                     @endif
                                 </td>
                                 <td class="bl text-right {{ $loop->first ? 'bt' : '' }}">
-                                    @if ($entry['avanses_fix']['RUB'] != 0)
-                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses_fix']['RUB'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses_fix']['RUB'], 'RUB', 0, true) }}</span></a>
+                                    @if ($entry['avanses_fix'] != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses_fix'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses_fix'], 'RUB', 0, true) }}</span></a>
                                     @else
-                                        {{ \App\Models\CurrencyExchangeRate::format($entry['avanses_fix']['RUB'], 'RUB', 0, true) }}
-                                    @endif
-                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
-                                        <br>
-                                        @if ($entry['avanses_fix']['EUR'] != 0)
-                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['avanses_fix']['EUR'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['avanses_fix']['EUR'], 'EUR', 0, true) }}</span></a>
-                                        @else
-                                            {{ \App\Models\CurrencyExchangeRate::format($entry['avanses_fix']['EUR'], 'EUR', 0, true) }}
-                                        @endif
+                                        {{ \App\Models\CurrencyExchangeRate::format($entry['avanses_fix'], 'RUB', 0, true) }}
                                     @endif
                                 </td>
                                 <td class="bl text-right {{ $loop->first ? 'bt' : '' }} pe-4">
-                                    @if ($entry['gu']['RUB'] != 0)
-                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['gu']['RUB'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['gu']['RUB'], 'RUB', 0, true) }}</span></a>
+                                    @if ($entry['gu'] != 0)
+                                        <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['gu'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['gu'], 'RUB', 0, true) }}</span></a>
                                     @else
-                                        {{ \App\Models\CurrencyExchangeRate::format($entry['gu']['RUB'], 'RUB', 0, true) }}
-                                    @endif
-                                    @if ($entry['object']['name'] === '346 | Октафарма - Скопин')
-                                        <br>
-                                        @if ($entry['gu']['EUR'] != 0)
-                                            <a href="{{ route('objects.show', $entry['object']['id']) }}/contracts?object_id%5B%5D={{ $entry['object']['id'] }}"><span class="bb cursor-pointer {{ $entry['gu']['EUR'] > 0 ? 'text-success fw-bolder' : 'text-danger fw-bolder' }}">{{ \App\Models\CurrencyExchangeRate::format($entry['gu']['EUR'], 'EUR', 0, true) }}</span></a>
-                                        @else
-                                            {{ \App\Models\CurrencyExchangeRate::format($entry['gu']['EUR'], 'EUR', 0, true) }}
-                                        @endif
+                                        {{ \App\Models\CurrencyExchangeRate::format($entry['gu'], 'RUB', 0, true) }}
                                     @endif
                                 </td>
                             </tr>

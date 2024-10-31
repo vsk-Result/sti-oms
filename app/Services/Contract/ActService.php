@@ -16,39 +16,17 @@ use App\Models\Currency;
 
 class ActService
 {
-    private Sanitizer $sanitizer;
-    private CurrencyExchangeRateService $currencyService;
-
-    public function __construct(Sanitizer $sanitizer, CurrencyExchangeRateService $currencyService)
-    {
-        $this->sanitizer = $sanitizer;
-        $this->currencyService = $currencyService;
-    }
+    public function __construct(private Sanitizer $sanitizer, private CurrencyExchangeRateService $currencyExchangeService) {}
 
     public function getPivot(array | null $objectIds = null): array
     {
         $pivot = [
             'total' => [
-                'acts' => [
-                    'RUB' => 0,
-                    'EUR' => 0,
-                ],
-                'avanses' => [
-                    'RUB' => 0,
-                    'EUR' => 0,
-                ],
-                'avanses_fix' => [
-                    'RUB' => 0,
-                    'EUR' => 0,
-                ],
-                'avanses_float' => [
-                    'RUB' => 0,
-                    'EUR' => 0,
-                ],
-                'gu' => [
-                    'RUB' => 0,
-                    'EUR' => 0,
-                ],
+                'acts' => 0,
+                'avanses' => 0,
+                'avanses_fix' => 0,
+                'avanses_float' => 0,
+                'gu' => 0,
             ],
             'entries' => [],
         ];
@@ -64,71 +42,64 @@ class ActService
             ->with('guaranteePayments')
             ->get();
 
-        $contractService = new ContractService($this->sanitizer, $this->currencyService);
+        $EURExchangeRate = $this->currencyExchangeService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
+
+        $contractService = new ContractService($this->sanitizer, $this->currencyExchangeService);
 
         foreach ($objects as $object) {
             $totalInfo = [];
             $contractService->filterContracts(['object_id' => [$object->id]], $totalInfo);
 
-            $actsAmount['RUB'] = $totalInfo['avanses_acts_left_paid_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_left_paid_amount']['RUB'];
-            $actsAmount['EUR'] = $totalInfo['avanses_acts_left_paid_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_left_paid_amount']['EUR'];
+            $actsAmount = $totalInfo['avanses_acts_left_paid_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_left_paid_amount']['RUB'];
+            $actsAmountEUR = $totalInfo['avanses_acts_left_paid_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_left_paid_amount']['EUR'];
 
-            $avansesAmount['RUB'] = $totalInfo['avanses_left_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount']['RUB'];
-            $avansesAmount['EUR'] = $totalInfo['avanses_left_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount']['EUR'];
+            $avansesAmount = $totalInfo['avanses_left_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount']['RUB'];
+            $avansesAmountEUR = $totalInfo['avanses_left_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount']['EUR'];
 
-            $avansesAmountFix['RUB'] = $totalInfo['avanses_left_amount_fix']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount_fix']['RUB'];
-            $avansesAmountFix['EUR'] = $totalInfo['avanses_left_amount_fix']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount_fix']['EUR'];
+            $avansesAmountFix = $totalInfo['avanses_left_amount_fix']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount_fix']['RUB'];
+            $avansesAmountFixEUR = $totalInfo['avanses_left_amount_fix']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount_fix']['EUR'];
 
-            $avansesAmountFloat['RUB'] = $totalInfo['avanses_left_amount_float']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount_float']['RUB'];
-            $avansesAmountFloat['EUR'] = $totalInfo['avanses_left_amount_float']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount_float']['EUR'];
+            $avansesAmountFloat = $totalInfo['avanses_left_amount_float']['RUB'] < 0 ? 0 : $totalInfo['avanses_left_amount_float']['RUB'];
+            $avansesAmountFloatEUR = $totalInfo['avanses_left_amount_float']['EUR'] < 0 ? 0 : $totalInfo['avanses_left_amount_float']['EUR'];
 
-            $guAmount['RUB'] = $totalInfo['avanses_acts_deposites_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['RUB'];
-            $guAmount['EUR'] = $totalInfo['avanses_acts_deposites_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['EUR'];
+            $guAmount = $totalInfo['avanses_acts_deposites_amount']['RUB'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['RUB'];
+            $guAmountEUR = $totalInfo['avanses_acts_deposites_amount']['EUR'] < 0 ? 0 : $totalInfo['avanses_acts_deposites_amount']['EUR'];
 
-            if ($actsAmount['RUB'] == 0 && $actsAmount['EUR'] == 0 && $avansesAmount['RUB'] == 0 && $avansesAmount['EUR'] == 0 && $guAmount['RUB'] == 0 && $guAmount['EUR'] == 0) {
+            if ($EURExchangeRate) {
+                $actsAmount += $actsAmountEUR * $EURExchangeRate->rate;
+                $avansesAmount += $avansesAmountEUR * $EURExchangeRate->rate;
+                $avansesAmountFix += $avansesAmountFixEUR * $EURExchangeRate->rate;
+                $avansesAmountFloat += $avansesAmountFloatEUR * $EURExchangeRate->rate;
+                $guAmount += $guAmountEUR * $EURExchangeRate->rate;
+            }
+
+            if (($actsAmount + $avansesAmount + $guAmount) == 0) {
                 continue;
             }
 
-            $guAmount['RUB'] -= $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
-            $guAmount['EUR'] -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount');
+            $guAmount -= $object->guaranteePayments->where('currency', 'RUB')->sum('amount');
+
+            if ($EURExchangeRate) {
+                $guAmount -= $object->guaranteePayments->where('currency', 'EUR')->sum('amount') * $EURExchangeRate->rate;
+            }
 
             $pivot['entries'][] = [
                 'object' => [
                     'id' => $object->id,
                     'name' => $object->getName()
                 ],
-                'acts' => [
-                    'RUB' => $actsAmount['RUB'],
-                    'EUR' => $actsAmount['EUR'],
-                ],
-                'avanses' => [
-                    'RUB' => $avansesAmount['RUB'],
-                    'EUR' => $avansesAmount['EUR'],
-                ],
-                'avanses_fix' => [
-                    'RUB' => $avansesAmountFix['RUB'],
-                    'EUR' => $avansesAmountFix['EUR'],
-                ],
-                'avanses_float' => [
-                    'RUB' => $avansesAmountFloat['RUB'],
-                    'EUR' => $avansesAmountFloat['EUR'],
-                ],
-                'gu' => [
-                    'RUB' => $guAmount['RUB'],
-                    'EUR' => $guAmount['EUR'],
-                ]
+                'acts' => $actsAmount,
+                'avanses' => $avansesAmount,
+                'avanses_fix' => $avansesAmountFix,
+                'avanses_float' => $avansesAmountFloat,
+                'gu' => $guAmount
             ];
 
-            $pivot['total']['acts']['RUB'] += $actsAmount['RUB'];
-            $pivot['total']['acts']['EUR'] += $actsAmount['EUR'];
-            $pivot['total']['avanses']['RUB'] += $avansesAmount['RUB'];
-            $pivot['total']['avanses']['EUR'] += $avansesAmount['EUR'];
-            $pivot['total']['avanses_fix']['RUB'] += $avansesAmountFix['RUB'];
-            $pivot['total']['avanses_fix']['EUR'] += $avansesAmountFix['EUR'];
-            $pivot['total']['avanses_float']['RUB'] += $avansesAmountFloat['RUB'];
-            $pivot['total']['avanses_float']['EUR'] += $avansesAmountFloat['EUR'];
-            $pivot['total']['gu']['RUB'] += $guAmount['RUB'];
-            $pivot['total']['gu']['EUR'] += $guAmount['EUR'];
+            $pivot['total']['acts'] += $actsAmount;
+            $pivot['total']['avanses'] += $avansesAmount;
+            $pivot['total']['avanses_fix'] += $avansesAmountFix;
+            $pivot['total']['avanses_float'] += $avansesAmountFloat;
+            $pivot['total']['gu'] += $guAmount;
         }
 
         return $pivot;

@@ -18,7 +18,6 @@ class Export implements WithMultipleSheets
     {
         return [
             new PivotSheet('Сводная RUB', $this->pivot, 'RUB'),
-            new PivotSheet('Сводная EUR', $this->pivot, 'EUR'),
         ];
     }
 }
