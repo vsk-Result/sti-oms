@@ -75,7 +75,7 @@ class AnalyticsSheet implements
             'pay_cash', 'pay_non_cash', 'total_debts', 'customer_debts', 'pay_customers', 'pay_transfer', 'pay_empty', 'office_service', 'general_balance_material',
             'general_balance_salary', 'general_balance_tax', 'general_balance_material', 'general_balance_service',
             'planProfitability', 'planProfitability_material', 'planProfitability_rad', 'time_percent', 'complete_percent', 'money_percent',
-            'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent'
+            'plan_ready_percent', 'fact_ready_percent', 'deviation_plan_percent', 'prognoz_consalting_after_work'
         ];
 
         $infos = FinanceReport::getInfoFields();
