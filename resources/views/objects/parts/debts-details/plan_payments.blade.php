@@ -3,6 +3,7 @@
 {{--        @continue($planPayment->amount > -1 && $planPayment->amount < 1)--}}
         @continue(empty(\App\Models\FinanceReport::getNameForField($planPayment->field)))
         @continue($planPayment->field === 'prognoz_consalting' && $planPayment->amount == 0)
+        @continue($planPayment->field === 'prognoz_consalting_after_work' && $object->code !== '373')
 
         <div class="d-flex flex-row justify-content-between">
             <strong>
