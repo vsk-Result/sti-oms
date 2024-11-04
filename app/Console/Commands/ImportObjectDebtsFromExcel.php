@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Helpers\Sanitizer;
+use App\Imports\DebtImport\Import;
 use App\Imports\DebtImport\ObjectImport;
 use App\Models\Company;
 use App\Models\Debt\Debt;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ImportObjectDebtsFromExcel extends Command
 {
@@ -31,6 +33,74 @@ class ImportObjectDebtsFromExcel extends Command
     private Sanitizer $sanitizer;
     private DebtService $debtService;
     private PivotObjectDebtService $pivotObjectDebtService;
+
+    private array $objects = [
+        'Бамиленд' => '279',
+        'Боско' => '309',
+        'Белые столбы' => '308',
+        'Пестово' => '320',
+        'Реномэ' => '323',
+        'Погодинка' => '327',
+        'ДТ Термо' => '27.1',
+        'Общий' => '27.1',
+        'ЦМТ' => '322',
+        'Бродский' => '338',
+        'Октафарма' => '346',
+        'Октофарма' => '346',
+        'Новороссийск' => '354',
+        'Николино' => '344',
+        'Ритц' => '342',
+        'Патриот' => '349',
+        'Патриот ' => '349',
+        'патриот' => '349',
+        'Париот' => '349',
+        'Башня Эволюция' => '268',
+        'Скандинавский' => '335',
+        'Мост' => '317',
+        'Спуск' => '325',
+        'Эвалар-2' => '352',
+        'Ордынка' => '304',
+        'Пречистенка' => '298',
+        'НИИ Транснефть' => '257',
+        'Москва' => '27.1',
+        'Гута' => '332',
+        'Садовые кварталы' => '321',
+        'Роза Росса' => '350',
+        'Роза Роса' => '350',
+        'Сухаревская' => '353',
+        'Погодинская' => '327',
+        'Москва  ' => '27.1',
+        'Склад СТИ' => '27.1',
+        'Москва (Склад)' => '27.1',
+        'Скопин' => '346',
+        'Башня Федерации' => '292',
+        'ВТБ Арена Парк' => '355',
+        'Динамо' => '355',
+        'Эвалар' => '352',
+        'Прачечная' => '288',
+        'ГЭС-2' => '288',
+        'Мост ' => '317',
+        'Мос' => '317',
+        'Завидово' => '358',
+        'ДТ-Термо' => '27.1',
+        'Магнитогорск' => '359',
+        'Магнитогорск (Ф)' => '359',
+        'Магнитогорск (И)' => '359',
+        'Магнитогорск (ф)' => '359',
+        'Магнитогорск (и)' => '359',
+        'Магнитогорск Ф' => '359',
+        'Магнитогорск И' => '359',
+        'Магнитогорск ф' => '359',
+        'Магнитогорск и' => '359',
+        'Магнитогорск ИЦ' => '359',
+        'Магнитогорск.И' => '359',
+        'Магнитогорск.Ф' => '359',
+        'Тинькофф' => '360',
+        'Домодедово' => '308',
+        'Кастанаевская' => '303',
+        '367 Офис Веспер' => '367',
+        '371. ЗИЛ' => '371',
+    ];
 
     public function __construct(
         OrganizationService $organizationService,
@@ -209,7 +279,7 @@ class ImportObjectDebtsFromExcel extends Command
                         'object_worktype_id' => null,
                         'organization_id' => $organization->id,
                         'date' => $import->date,
-                        'amount' => -$amountDebt,
+                        'amount' => 0,
                         'guarantee' => -$guarantee,
                         'avans' => -$avans,
                         'amount_without_nds' => $amountDebtWithoutDNS,
@@ -244,6 +314,109 @@ class ImportObjectDebtsFromExcel extends Command
                 $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
                 continue;
             }
+        }
+
+        // Путь до файла с загрузкой долгов по подрядчикам из 1С
+        $importFilePath = storage_path() . '/app/public/public/objects-debts-manuals/Raboty(XLSX).xlsx';
+
+        try {
+            $importData = Excel::toArray(new Import(), $importFilePath);
+
+            $debtRows = $importData['TDSheet'];
+
+            unset($debtRows[0]);
+
+            foreach ($debtRows as $row) {
+                $organizationName = trim($row[3]);
+                $organizationType = trim($row[4]);
+                $objectName = trim($row[11]);
+                $amountDebt = trim($row[13]);
+
+                if (empty($amountDebt)) {
+                    continue;
+                }
+
+                if (empty($objectName)) {
+                    continue;
+                }
+
+                if ($organizationType !== 'РАБОТЫ') {
+                    continue;
+                }
+
+                $organization = $this->organizationService->getOrCreateOrganization([
+                    'inn' => null,
+                    'name' => $organizationName,
+                    'company_id' => null,
+                    'kpp' => null
+                ]);
+
+                $objectCode = $this->getObjectCodeFromFullName($objectName);
+
+                if (! in_array($objectCode, $availableCodes)) {
+                    continue;
+                }
+
+                $object = BObject::where('code', $objectCode)->first();
+                if (! $object) {
+                    $this->destroyImport($import);
+                    return 'Объекта "' . $objectName . '" нет в системе ОМС.';
+                }
+
+                $dueDate = null;
+                $comment = trim($row[18]);
+                if (is_numeric($row[15])) {
+                    $dueDate = Carbon::parse(Date::excelToDateTimeObject($row[15]))->format('Y-m-d');
+                } else if (is_string($row[15])) {
+                    try {
+                        $dueDate = Carbon::parse($row[15])->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[15];
+                    }
+                } else {
+                    if (! empty($row[15])) {
+                        $comment .= ' СРОК ОПЛАТЫ СЧЁТА: ' . $row[15];
+                    }
+                }
+
+                if (! empty($row[16])) {
+                    $comment .= ' АКТ ЗА МЕСЯЦ: ' . $row[16];
+                }
+
+                $comment .= ' || Валюта: ' . $row[14];
+
+                $invoiceAmount = $row[8] ?? 0;
+                $invoiceAmount = (string)$invoiceAmount;
+                $invoiceAmount = str_replace(' ', '', $invoiceAmount);
+                $invoiceAmount = str_replace(',', '.', $invoiceAmount);
+                $invoiceAmount = (float)$invoiceAmount;
+
+                $this->debtService->createDebt([
+                    'import_id' => $import->id,
+                    'type_id' => Debt::TYPE_SERVICE,
+                    'company_id' => $import->company_id,
+                    'object_id' => $object->id,
+                    'object_worktype_id' => null,
+                    'organization_id' => $organization->id,
+                    'date' => $import->date,
+                    'amount' => -$row[13],
+                    'amount_without_nds' => -($row[21] ?? 0),
+                    'status_id' => Status::STATUS_ACTIVE,
+                    'category' => trim($row[16]),
+                    'code' => trim($row[10]),
+                    'invoice_number' => trim($row[6]) . ' от ' . $row[7],
+                    'order_author' => trim($row[1]),
+                    'description' => trim($row[2]) . ': ' . trim($row[5]),
+                    'comment' => $comment,
+                    'invoice_payment_due_date' => $dueDate,
+                    'invoice_amount' => $invoiceAmount
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            $errorMessage = '[ERROR] Не удалось загрузить файлRaboty(XLSX).xlsx: ' . $e->getMessage();
+            Log::channel('custom_imports_log')->debug($errorMessage);
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
         }
 
         $objectIds = BObject::whereIn('code', $availableCodes)->pluck('id')->toArray();
@@ -340,5 +513,14 @@ class ImportObjectDebtsFromExcel extends Command
                 'unwork_avans' => $neotrabotAvans,
             ]);
         }
+    }
+
+    private function getObjectCodeFromFullName(string $objectName): string
+    {
+        if (isset($this->objects[$objectName])) {
+            return $this->objects[$objectName];
+        }
+
+        return mb_substr($objectName, 0, mb_strpos($objectName, ','));
     }
 }
