@@ -393,7 +393,7 @@ class ImportObjectDebtsFromExcel extends Command
 
                 $this->debtService->createDebt([
                     'import_id' => $import->id,
-                    'type_id' => Debt::TYPE_SERVICE,
+                    'type_id' => Debt::TYPE_CONTRACTOR,
                     'company_id' => $import->company_id,
                     'object_id' => $object->id,
                     'object_worktype_id' => null,
@@ -414,7 +414,7 @@ class ImportObjectDebtsFromExcel extends Command
             }
 
         } catch (\Exception $e) {
-            $errorMessage = '[ERROR] Не удалось загрузить файлRaboty(XLSX).xlsx: ' . $e->getMessage();
+            $errorMessage = '[ERROR] Не удалось загрузить файл Raboty(XLSX).xlsx: ' . $e->getMessage();
             Log::channel('custom_imports_log')->debug($errorMessage);
             $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
         }
