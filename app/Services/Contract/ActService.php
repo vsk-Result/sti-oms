@@ -75,6 +75,10 @@ class ActService
                 $guAmount += $guAmountEUR * $EURExchangeRate->rate;
             }
 
+            if ($object->code === '000') {
+                $guAmount = $object->guarantees()->sum('amount') - $object->guaranteePayments()->sum('amount');
+            }
+
             if (($actsAmount + $avansesAmount + $guAmount) == 0) {
                 continue;
             }
