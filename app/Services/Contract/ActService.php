@@ -35,12 +35,14 @@ class ActService
 
         if ($objectIds) {
             $objectsQuery->whereIn('id', $objectIds);
+        } else {
+            $objectsQuery->where(function($q) {
+                $q->active();
+                $q->orWhere('code', '000');
+            });
         }
 
-        $objects = $objectsQuery->active()
-            ->orderByDesc('code')
-            ->with('guaranteePayments')
-            ->get();
+        $objects = $objectsQuery->orderByDesc('code')->with('guaranteePayments')->get();
 
         $EURExchangeRate = $this->currencyExchangeService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
 
