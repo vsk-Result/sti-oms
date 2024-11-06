@@ -29,11 +29,29 @@ class MoneyRegistryService
         return $isImported;
     }
 
-    public function importRegistry(UploadedFile | string $file): void
+    public function importRegistry(UploadedFile | string $file): array
     {
+        $errors = [];
+
         $importData = Excel::toArray(new Import(), $file);
         $data = $this->getDataFromImport($importData['Лист_1']);
         $paydate = $this->getPaydate($data['payMonth']);
+
+        foreach ($data['employees'] as $employeeInfo) {
+            $uid = substr($employeeInfo['uid'], -5);
+            $employee = Employee::where('unique', $uid)->first();
+
+            if (! $employee) {
+                $errors[] = [
+                    'uid' => $employeeInfo['uid'],
+                    'name' => $employeeInfo['name']
+                ];
+            }
+        }
+
+        if (count($errors) > 0) {
+            return $errors;
+        }
 
         $import = new AvansImport();
         $import->user_id = 1;
@@ -48,10 +66,6 @@ class MoneyRegistryService
         foreach ($data['employees'] as $employeeInfo) {
             $uid = substr($employeeInfo['uid'], -5);
             $employee = Employee::where('unique', $uid)->first();
-
-            if (! $employee) {
-                continue;
-            }
 
             $code = $employeeInfo['code'];
             if (is_null($code)) {
@@ -85,6 +99,8 @@ class MoneyRegistryService
 //            $item->description = $employeeInfo['type'];
             $item->save();
         }
+
+        return [];
     }
 
     public function getDataFromImport(array $importData): array

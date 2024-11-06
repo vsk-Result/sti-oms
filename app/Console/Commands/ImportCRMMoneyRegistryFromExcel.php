@@ -5,9 +5,11 @@ namespace App\Console\Commands;
 use App\Services\CRM\MoneyRegistryService;
 use App\Services\CRONProcessService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZipArchive;
@@ -62,6 +64,8 @@ class ImportCRMMoneyRegistryFromExcel extends Command
         $importedCount = 0;
         $files = Storage::files('public/crm-registry');
 
+        $errors = [];
+
         foreach ($files as $file) {
             $fileName = File::name($file);
             $extension = File::extension($file);
@@ -79,7 +83,18 @@ class ImportCRMMoneyRegistryFromExcel extends Command
                     continue;
                 }
 
-                $this->moneyRegistryService->importRegistry($file);
+                $importErrors = $this->moneyRegistryService->importRegistry($file);
+
+                if (count($importErrors) > 0) {
+                    $errors[] = [
+                        'file' => $fileName . '.' . $extension,
+                        'employees' => $importErrors
+                    ];
+
+                    Log::channel('custom_imports_log')->debug('[ERROR] Файл ' . $fileName . '.' . $extension . ' не был загружен из за проблем с сотрудниками');
+                    continue;
+                }
+
                 $importedCount++;
                 Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '__' . Str::random(5) . '_imported.' . $extension);
 
@@ -88,8 +103,24 @@ class ImportCRMMoneyRegistryFromExcel extends Command
                 $errorMessage = '[ERROR] Не удалось загрузить файл ' . $fileName . ' - ' . $e->getMessage();
                 Log::channel('custom_imports_log')->debug($errorMessage);
                 $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-                return 0;
+                continue;
             }
+        }
+
+        if (count($errors) > 0) {
+            try {
+                Mail::send('emails.crm-registry.employees', compact('errors'), function ($m) {
+                    $m->from('support@st-ing.com', 'OMS Support');
+                    $m->subject('OMS. Ошибки в загрузке реестров для CRM');
+                    $m->to('dmitry.samsonov@dttermo.ru');
+                });
+            } catch(Exception $e){
+                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на email: "' . $e->getMessage());
+            }
+
+            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            Log::channel('custom_imports_log')->debug('[ERROR] Не все файлы были загружены успешно');
+            return 0;
         }
 
         $this->CRONProcessService->successProcess($this->signature);
