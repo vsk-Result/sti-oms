@@ -153,6 +153,8 @@ class ImportObjectDebtsFromExcel extends Command
             'status_id' => Status::STATUS_ACTIVE
         ]);
 
+        $objectCodesWithAmount = [];
+
         foreach ($availableCodes as $code) {
             Log::channel('custom_imports_log')->debug('[INFO] Загружается файл ' . $code . '.xlsx');
 
@@ -207,19 +209,44 @@ class ImportObjectDebtsFromExcel extends Command
                     continue;
                 }
 
-                foreach ($importData['OMS'] as $row) {
+                $organizationIndex = null;
+                $contractIndex = null;
+                $amountIndex = null;
+                $guaranteeIndex = null;
+                $neotrabotAvansIndex = null;
+                $avansIndex = null;
+                $ndsIndex = null;
+                $balanceContractIndex = null;
+
+                foreach ($importData['OMS'] as $index => $row) {
+                    if ($index === 0) {
+                        $organizationIndex = $this->getTitleIndex('Контрагент', $row);
+                        $contractIndex = $this->getTitleIndex('Договор', $row);
+                        $amountIndex = $this->getTitleIndex('смр', $row);
+                        $guaranteeIndex = $this->getTitleIndex('Гарантийное удержание', $row);
+                        $neotrabotAvansIndex = $this->getTitleIndex('Неотработанный аванс', $row);
+                        $avansIndex = $this->getTitleIndex('Авансы к оплате', $row);
+                        $ndsIndex = $this->getTitleIndex('ндс', $row);
+                        $balanceContractIndex = $this->getTitleIndex('Остаток к оплате по договору', $row);
+                        continue;
+                    }
+
                     if (empty($row[0]) || $row[0] === 'Контрагент' || $row[0] === 'Общий итог' || $row[0] === 'Итого') {
                         continue;
                     }
 
-                    $organizationName = $this->sanitizer->set($row[0])->get();
-                    $contract = $this->sanitizer->set($row[1])->get();
-                    $amountDebt = $row[2];
-                    $guarantee = $row[3];
-                    $avans = $row[4];
-                    $nds = mb_strtolower($row[5] ?? '');
-                    $balanceContract = $row[6] ?? 0;
-                    $neotrabotAvans = $row[7] ?? 0;
+                    $organizationName = $this->sanitizer->set($row[$organizationIndex])->get();
+                    $contract = $this->sanitizer->set($row[$contractIndex])->get();
+                    $amountDebt = is_null($amountIndex) ? 0 : $row[$amountIndex];
+                    $guarantee = is_null($guaranteeIndex) ? 0 : $row[$guaranteeIndex];
+                    $avans = is_null($avansIndex) ? 0 : $row[$avansIndex];
+                    $nds = is_null($ndsIndex) ? '' : mb_strtolower($row[$ndsIndex]);
+                    $balanceContract = is_null($balanceContractIndex) ? 0 : $row[$balanceContractIndex];
+                    $neotrabotAvans =  is_null($neotrabotAvansIndex) ? 0 : $row[$neotrabotAvansIndex];
+
+                    if (! is_null($amountIndex)) {
+                        $objectCodesWithAmount[] = $code;
+                    }
 
                     if (empty($amountDebt)) {
                         $amountDebt = 0;
@@ -279,7 +306,7 @@ class ImportObjectDebtsFromExcel extends Command
                         'object_worktype_id' => null,
                         'organization_id' => $organization->id,
                         'date' => $import->date,
-                        'amount' => 0,
+                        'amount' => $amountDebt,
                         'guarantee' => -$guarantee,
                         'avans' => -$avans,
                         'amount_without_nds' => $amountDebtWithoutDNS,
@@ -331,6 +358,11 @@ class ImportObjectDebtsFromExcel extends Command
                 $organizationType = trim($row[4]);
                 $objectName = trim($row[11]);
                 $amountDebt = trim($row[13]);
+                $type = trim($row[23]) ?? '';
+
+                if ($type === 'Аванс') {
+                    continue;
+                }
 
                 if (empty($amountDebt)) {
                     continue;
@@ -344,6 +376,12 @@ class ImportObjectDebtsFromExcel extends Command
                     continue;
                 }
 
+                $objectCode = $this->getObjectCodeFromFullName($objectName);
+
+                if (in_array($objectCode, $objectCodesWithAmount)) {
+                    continue;
+                }
+
                 $organization = $this->organizationService->getOrCreateOrganization([
                     'inn' => null,
                     'name' => $organizationName,
@@ -351,7 +389,6 @@ class ImportObjectDebtsFromExcel extends Command
                     'kpp' => null
                 ]);
 
-                $objectCode = $this->getObjectCodeFromFullName($objectName);
 
                 if (! in_array($objectCode, $availableCodes)) {
                     continue;
@@ -522,5 +559,16 @@ class ImportObjectDebtsFromExcel extends Command
         }
 
         return mb_substr($objectName, 0, mb_strpos($objectName, ','));
+    }
+
+    private function getTitleIndex(string $title, array $headers): int | null
+    {
+        foreach ($headers as $index => $header) {
+            if (str_contains(mb_strtolower($header), mb_strtolower($title))) {
+                return $index;
+            }
+        }
+
+        return null;
     }
 }
