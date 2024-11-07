@@ -306,7 +306,7 @@ class ImportObjectDebtsFromExcel extends Command
                         'object_worktype_id' => null,
                         'organization_id' => $organization->id,
                         'date' => $import->date,
-                        'amount' => $amountDebt,
+                        'amount' => -$amountDebt,
                         'guarantee' => -$guarantee,
                         'avans' => -$avans,
                         'amount_without_nds' => $amountDebtWithoutDNS,
