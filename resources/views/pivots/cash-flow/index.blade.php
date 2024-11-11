@@ -57,6 +57,7 @@
                         class="table table-bordered align-middle table-row-dashed fs-6 gy-3 table-cf"
                         data-update-payment-url="{{ route('pivots.cash_flow.plan_payments.entries.store') }}"
                         data-update-payment-table-url="{{ route('pivots.cash_flow.plan_payments.table.index') }}"
+                        data-update-comment-url="{{ route('pivots.cash_flow.comments.update') }}"
                 >
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
@@ -102,8 +103,22 @@
                                 @php
                                     $amount = $plans->where('date', $period['start'])->where('reason_id', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
                                     $total += $amount;
+
+                                    $comment = \App\Models\CashFlow\Comment::where('period', $period['format'])
+                                        ->where('type_id', \App\Models\CashFlow\Comment::TYPE_RECEIVE)
+                                        ->where('target_info', ';Целевые авансы')
+                                        ->first();
                                 @endphp
-                                <th class="min-w-250px text-right fst-italic cf-comment">
+                                <th
+                                        class="min-w-250px text-right fst-italic cf-comment"
+                                        data-comment="{{ $comment->text ?? '' }}"
+                                        data-comment-id="{{ $comment->id ?? null }}"
+                                        data-type-id="{{ \App\Models\CashFlow\Comment::TYPE_RECEIVE }}"
+                                        data-period="{{ $period['format'] }}"
+                                        data-reason="Целевые авансы"
+                                        data-object="null"
+                                >
+                                    <div class="comment-marker {{ $comment ? 'has-comment' : '' }}"></div>
                                     {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
                                 </th>
                             @endforeach
@@ -124,8 +139,21 @@
                                 @php
                                     $amount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
                                     $total += $amount;
+
+                                    $comment = \App\Models\CashFlow\Comment::where('period', $period['format'])
+                                        ->where('type_id', \App\Models\CashFlow\Comment::TYPE_RECEIVE)
+                                        ->where('target_info', ';Прочие поступления')
+                                        ->first();
                                 @endphp
-                                <th class="min-w-250px text-right fst-italic cf-comment">
+                                <th class="min-w-250px text-right fst-italic cf-comment"
+                                    data-comment="{{ $comment->text ?? '' }}"
+                                    data-comment-id="{{ $comment->id ?? null }}"
+                                    data-type-id="{{ \App\Models\CashFlow\Comment::TYPE_RECEIVE }}"
+                                    data-period="{{ $period['format'] }}"
+                                    data-reason="Прочие поступления"
+                                    data-object="null"
+                                >
+                                    <div class="comment-marker {{ $comment ? 'has-comment' : '' }}"></div>
 {{--                                    <button type="button" class="btn btn-secondary my-2 me-5" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="It's very engaging. Right?">--}}
 {{--                                        Popover on top--}}
 {{--                                    </button>--}}
@@ -196,9 +224,24 @@
 
 
                                             $total += $amount;
+
+                                            $comment = \App\Models\CashFlow\Comment::where('period', $period['format'])
+                                                ->where('type_id', \App\Models\CashFlow\Comment::TYPE_RECEIVE)
+                                                ->where('target_info', $object->code . ';' . $reason)
+                                                ->first();
                                         @endphp
 
-                                        <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
+                                        <td class="text-right fs-8 fst-italic cf-comment"
+                                            data-comment="{{ $comment->text ?? '' }}"
+                                            data-comment-id="{{ $comment->id ?? null }}"
+                                            data-type-id="{{ \App\Models\CashFlow\Comment::TYPE_RECEIVE }}"
+                                            data-period="{{ $period['format'] }}"
+                                            data-reason="{{ $reason }}"
+                                            data-object="{{ $object->code }}"
+                                        >
+                                            <div class="comment-marker {{ $comment ? 'has-comment' : '' }}"></div>
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                                        </td>
                                     @endforeach
 
                                     <td class="text-right fs-8 fst-italic pe-2">
@@ -293,10 +336,24 @@
                                             $amount = 0;
                                         }
                                         $total += $amount;
+
+                                        $comment = \App\Models\CashFlow\Comment::where('period', $period['format'])
+                                            ->where('type_id', \App\Models\CashFlow\Comment::TYPE_PAYMENT)
+                                            ->where('target_info', ';' . $paymentName)
+                                            ->first();
                                     @endphp
 
-                                    <td class="text-right">
+                                    <td class="text-right cf-comment"
+                                        data-comment="{{ $comment->text ?? '' }}"
+                                        data-comment-id="{{ $comment->id ?? null }}"
+                                        data-type-id="{{ \App\Models\CashFlow\Comment::TYPE_PAYMENT }}"
+                                        data-period="{{ $period['format'] }}"
+                                        data-reason="{{ $paymentName }}"
+                                        data-object="null"
+                                    >
+                                        <div class="comment-marker {{ $comment ? 'has-comment' : '' }}"></div>
                                         {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                                    </td>
                                 @endforeach
 
                                 <td class="text-right pe-2">
@@ -591,12 +648,59 @@
             );
         }
 
-        // $('.cf-comment').each(function() {
-        //     $(this).addClass('position-relative');
-        //     $(this).append(`<button title="Комментарий" type="button" class="btn btn-icon btn-sm btn-light btn-cf-comment" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="It's very engaging. Right?">
-        //
-        //                     </button>`);
-        // });
+        $('.cf-comment').on('dblclick', function() {
+            $('.cf-comment-container').hide();
+            const $that = $(this);
+
+            const outerWidth = $that.outerWidth();
+            $that.addClass('position-relative');
+            $that.append(
+                `
+                    <div class="cf-comment-container" style="left: ${(outerWidth - 200) / 2}px">
+                        <textarea name="cf_comment" rows="3" placeholder="Введите комментарий"></textarea>
+                    </div>
+                `
+            );
+
+            const typeId = $that.data('type-id');
+            const commentId = $that.data('comment-id');
+            const period = $that.data('period');
+            const object = $that.data('object');
+            const reason = $that.data('reason');
+            const url = $('.table-cf').data('update-comment-url');
+
+            const initialComment = ''+$that.data('comment') ?? '';
+
+            $that.find('textarea').val(initialComment).focus();
+
+            $that.find('textarea').on('blur', function() {
+                const comment = ''+$(this).val();
+
+                if (comment === initialComment) {
+                    $(this).parent().remove();
+                    return true;
+                }
+
+                mainApp.sendAJAX(
+                    url,
+                    'POST',
+                    {typeId, period, object, reason, comment, commentId},
+                    (data) => {
+                        $(this).parent().parent().data('comment', comment);
+                        $(this).parent().parent().data('comment-id', data.comment_id);
+                        $(this).parent().remove();
+
+                        if (! $that.find('.comment-marker').hasClass('has-comment')) {
+                            $that.find('.comment-marker').addClass('has-comment');
+                        }
+
+                        if (comment.length === 0) {
+                            $that.find('.comment-marker').removeClass('has-comment');
+                        }
+                    }
+                );
+            });
+        });
     </script>
 @endpush
 

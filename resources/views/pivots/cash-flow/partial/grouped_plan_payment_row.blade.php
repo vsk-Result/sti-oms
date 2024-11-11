@@ -44,9 +44,22 @@
                 $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
             $total += $amount;
+
+            $comment = \App\Models\CashFlow\Comment::where('period', $period['format'])
+                    ->where('type_id', \App\Models\CashFlow\Comment::TYPE_PAYMENT)
+                    ->where('target_info', ($payment->object->code ?? '') . ';' . $gr . ';' . $payment->name)
+                    ->first();
         @endphp
 
-        <td class="text-right">
+        <td class="text-right cf-comment"
+            data-comment="{{ $comment->text ?? '' }}"
+            data-comment-id="{{ $comment->id ?? null }}"
+            data-type-id="{{ \App\Models\CashFlow\Comment::TYPE_PAYMENT }}"
+            data-period="{{ $period['format'] }}"
+            data-reason="{{ $gr . ';' . $payment->name }}"
+            data-object="{{ $payment->object->code ?? 'null' }}"
+        >
+            <div class="comment-marker {{ $comment ? 'has-comment' : '' }}"></div>
             @if (auth()->user()->can('index cash-flow-plan-payments'))
                 <input
                         type="text"
@@ -59,6 +72,7 @@
             @else
                 {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
             @endif
+        </td>
     @endforeach
 
     <td class="text-right pe-2">

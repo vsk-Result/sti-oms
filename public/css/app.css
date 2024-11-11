@@ -325,14 +325,67 @@ td > a.show-link:hover {
 }
 
 /* Кнопка комментария cash flow */
-.btn-cf-comment {
-    display: none !important;
-    background-color: #fff !important;
-    width: 10px !important;
-    height: 10px !important;
-    position: absolute !important;
-    top: 6px !important;
-    left: 8px !important;
+.cf-comment {
+    position: relative;
+}
+
+.comment-marker {
+    display: none;
+}
+
+.comment-marker.has-comment {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: hidden;
+    margin-top: -.75rem;
+    margin-bottom: -.75rem;
+    margin-left: -.75rem;
+}
+
+.comment-marker.has-comment:before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-color: orange;
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    transform: rotate(45deg);
+}
+
+.cf-comment-container {
+    background-color: #fff;
+    width: 200px;
+    height: 75px;
+    position: absolute;
+    top: -82px;
+    border: 1px solid #aaa;
+    border-radius: 12px;
+}
+
+.cf-comment-container:after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    bottom: -6px;
+    left: calc(50% - 5px);
+    background: #fff;
+    transform: rotate(45deg);
+    border-block-end: 1px solid #aaa;
+    border-inline-end: 1px solid #aaa;
+}
+
+.cf-comment-container textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+    resize: none;
+    outline: none;
+    padding: 8px;
 }
 
 td.cf-comment:hover .btn-cf-comment, th.cf-comment:hover .btn-cf-comment {
