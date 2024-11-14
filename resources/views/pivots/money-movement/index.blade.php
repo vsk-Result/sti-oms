@@ -76,6 +76,20 @@
                                 </div>
 
                                 <div class="form-group mb-3">
+                                    <label class="form-label">Тип оплат</label>
+                                    <select
+                                            name="payment_type_id[]"
+                                            class="form-select form-select-solid"
+                                            data-control="select2"
+                                            multiple
+                                    >
+                                        @foreach($paymentTypes as $typeId => $type)
+                                            <option value="{{ $typeId }}">{{ $type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3">
                                     <label class="form-label">Объект</label>
                                     <select
                                         id="filter-object"
@@ -91,6 +105,11 @@
                                             <option value="{{ $object->id }}" >{{ $object->getName() }}</option>
                                         @endforeach
                                     </select>
+                                </div>
+
+                                <div class="form-check form-check-custom form-check-solid mb-3 fw-bold fs-6 mt-4">
+                                    <input name="need_group_by_objects" class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                    <label class="form-check-label" for="flexCheckChecked">Добавить разбивку по объектам в контрагентах</label>
                                 </div>
 
                                 <div class="d-flex py-3">

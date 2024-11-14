@@ -24,7 +24,9 @@ class ExportController extends Controller
             'period' => $request->get('period', ''),
             'object_id' => $request->get('object_id', []),
             'bank_id' => $request->get('bank_id', []),
-            'organization_id' => $request->get('organization_id', [])
+            'payment_type_id' => $request->get('payment_type_id', []),
+            'organization_id' => $request->get('organization_id', []),
+            'need_group_by_objects' => $request->has('need_group_by_objects')
         ];
 
         $isTaskInReady = $this->scheduleExportService->isTaskReady(

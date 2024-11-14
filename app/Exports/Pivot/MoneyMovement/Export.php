@@ -22,8 +22,11 @@ class Export implements WithMultipleSheets
 {
     private Builder $payments;
 
+    private bool $needGroupByObjects;
+
     public function __construct(array $filterData)
     {
+        $this->needGroupByObjects = $filterData['need_group_by_objects'] ?? false;
         $paymentService = new PaymentService(new Sanitizer(), new OrganizationService(new Sanitizer()), new CurrencyExchangeRateService());
 
         $payments = $paymentService->filterPayments($filterData);
@@ -45,13 +48,22 @@ class Export implements WithMultipleSheets
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', 3000);
 
-        return [
+        $baseSheets = [
             new PivotObjectSheet((clone $this->payments)),
             new PaymentSheet((clone $this->payments)),
-            new PivotOrganizationReceiveSheet((clone $this->payments)),
-            new PivotOrganizationReceiveWithObjectSheet((clone $this->payments)),
-            new PivotOrganizationPaymentSheet((clone $this->payments)),
-            new PivotOrganizationPaymentWithObjectSheet((clone $this->payments)),
         ];
+
+        $additionalSheets = $this->needGroupByObjects
+            ? [
+                new PivotOrganizationReceiveWithObjectSheet((clone $this->payments)),
+                new PivotOrganizationPaymentWithObjectSheet((clone $this->payments)),
+            ]
+            : [
+                new PivotOrganizationReceiveSheet((clone $this->payments)),
+                new PivotOrganizationPaymentSheet((clone $this->payments)),
+
+            ];
+
+        return array_merge($baseSheets, $additionalSheets);
     }
 }

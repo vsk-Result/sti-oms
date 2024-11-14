@@ -27,8 +27,42 @@ class PaymentController extends Controller
         $this->paymentService = $paymentService;
     }
 
-    public function index(Request $request): View
+    public function index(Request $request): View | JsonResponse
     {
+        if ($request->ajax()) {
+            if (empty($request->get('search')) && $request->get('type') === 'select') {
+                return response()->json();
+            }
+
+            $paymentQuery = Payment::query();
+
+            if ($request->get('type') === 'НДФЛ') {
+                $paymentQuery->where('type_id', Payment::TYPE_GENERAL)
+                    ->where('company_id', 1)
+                    ->where(function($q) {
+                        $q->where('description', 'LIKE', '%Налог на доходы физ. лиц%');
+                        $q->orWhere('description', 'LIKE', '%Налог на доходы физических лиц%');
+                        $q->orWhere('description', 'LIKE', '%НДФЛ%');
+                    })
+                    ->where('description', 'NOT LIKE', '%аренд%')
+                    ->where('description', 'LIKE', '%' . $request->get('search') . '%');
+            } else if ($request->get('type') === 'Страховые взносы') {
+                $paymentQuery->where('type_id', Payment::TYPE_GENERAL)
+                    ->where('company_id', 1)
+                    ->where('description', 'LIKE', '%Страховые взносы%')
+                    ->where('description', 'LIKE', '%' . $request->get('search') . '%');
+            }
+
+            $paymentList = $paymentQuery->orderByDesc('date')->take(30)->get();
+
+            $payments = [];
+            foreach ($paymentList as $payment) {
+                $payments[$payment->id] = sprintf('%s | %s | %s', $payment->getDateFormatted(), $payment->getAmount(), $payment->description);
+            }
+
+            return response()->json(compact('payments'));
+        }
+
         $objects = BObject::orderBy('code')->get();
 
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
