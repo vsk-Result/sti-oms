@@ -150,6 +150,20 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">НДС</label>
+                                <select
+                                    name="nds"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterPaymentModal"
+                                >
+                                    <option value="all">Все</option>
+                                    <option value="with_nds" {{ request()->input('nds') === 'with_nds' ? 'selected' : '' }}>С НДС</option>
+                                    <option value="without_nds" {{ request()->input('nds') === 'without_nds' ? 'selected' : '' }}>Без НДС</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">

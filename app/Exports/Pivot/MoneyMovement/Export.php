@@ -32,7 +32,7 @@ class Export implements WithMultipleSheets
         $payments = $paymentService->filterPayments($filterData);
 
         $exceptOrganizations = Organization::whereIn('name', ['Общество с ограниченной ответственностью "БИЗНЕС АКТИВ"'])->pluck('id')->toArray();
-        $exceptPaymentIds = Payment::where('category', Payment::CATEGORY_TRANSFER)->where(function($q) use($exceptOrganizations) {
+        $exceptPaymentIds = Payment::where('type_id', Payment::TYPE_TRANSFER)->where(function($q) use($exceptOrganizations) {
             $q->where('description', 'LIKE', '%перевод собственных денежных средств%');
             $q->orWhere('description', 'LIKE', '%перевод собственных средств%');
             $q->orWhere('description', 'LIKE', '%депозит%');

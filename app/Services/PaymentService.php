@@ -221,6 +221,21 @@ class PaymentService
             }
         }
 
+        if (isset($requestData['nds'])) {
+            if ($requestData['nds'] === 'without_nds') {
+                $exceptPaymentIds = Payment::where('type_id', Payment::TYPE_TRANSFER)->where(function($q) {
+                    $q->where('description', 'LIKE', '%перевод собственных денежных средств%');
+                    $q->orWhere('description', 'LIKE', '%перевод собственных средств%');
+                    $q->orWhere('description', 'LIKE', '%перевод займа%');
+                    $q->orWhere('description', 'LIKE', '%вовзрат займа%');
+                    $q->orWhere('description', 'LIKE', '%депозит%');
+                })->pluck('id')->toArray();
+                $paymentQuery->whereNotIn('id', $exceptPaymentIds)->whereColumn('amount', 'amount_without_nds');
+            } else if ($requestData['nds'] === 'with_nds') {
+                $paymentQuery->whereColumn('amount', '<>', 'amount_without_nds');
+            }
+        }
+
         if (! empty($requestData['sort_by'])) {
             if ($requestData['sort_by'] == 'company_id') {
                 $paymentQuery->orderBy(Company::select('name')->whereColumn('companies.id', 'payments.company_id'), $requestData['sort_direction'] ?? 'asc');
