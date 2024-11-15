@@ -217,6 +217,7 @@ class ImportObjectDebtsFromExcel extends Command
                 $avansIndex = null;
                 $ndsIndex = null;
                 $balanceContractIndex = null;
+                $innIndex = null;
 
                 foreach ($importData['OMS'] as $index => $row) {
                     if ($index === 0) {
@@ -228,6 +229,7 @@ class ImportObjectDebtsFromExcel extends Command
                         $avansIndex = $this->getTitleIndex('Авансы к оплате', $row);
                         $ndsIndex = $this->getTitleIndex('ндс', $row);
                         $balanceContractIndex = $this->getTitleIndex('Остаток к оплате по договору', $row);
+                        $innIndex = $this->getTitleIndex('ИНН', $row);
                         continue;
                     }
 
@@ -243,6 +245,7 @@ class ImportObjectDebtsFromExcel extends Command
                     $nds = is_null($ndsIndex) ? '' : mb_strtolower($row[$ndsIndex]);
                     $balanceContract = is_null($balanceContractIndex) ? 0 : $row[$balanceContractIndex];
                     $neotrabotAvans =  is_null($neotrabotAvansIndex) ? 0 : $row[$neotrabotAvansIndex];
+                    $inn = is_null($innIndex) ? '' : trim($row[$innIndex]);
 
                     if (! is_null($amountIndex)) {
                         $objectCodesWithAmount[] = $code;
@@ -250,6 +253,7 @@ class ImportObjectDebtsFromExcel extends Command
 
                     if (empty($amountDebt)) {
                         $amountDebt = 0;
+                        $avans = 0;
                     }
                     if (empty($guarantee)) {
                         $guarantee = 0;
@@ -290,7 +294,7 @@ class ImportObjectDebtsFromExcel extends Command
                     }
 
                     $organization = $this->organizationService->getOrCreateOrganization([
-                        'inn' => null,
+                        'inn' => $inn,
                         'name' => $organizationName,
                         'company_id' => null,
                         'kpp' => null
@@ -358,9 +362,10 @@ class ImportObjectDebtsFromExcel extends Command
                 $organizationType = trim($row[4]);
                 $objectName = trim($row[11]);
                 $amountDebt = trim($row[13]);
-                $type = trim($row[23]) ?? '';
+                $inn = trim($row[22] ?? '');
+                $type = trim($row[23] ?? '');
 
-                if ($type === 'Аванс') {
+                if ($type === 'Гарантийное удержание') {
                     continue;
                 }
 
@@ -383,7 +388,7 @@ class ImportObjectDebtsFromExcel extends Command
                 }
 
                 $organization = $this->organizationService->getOrCreateOrganization([
-                    'inn' => null,
+                    'inn' => $inn,
                     'name' => $organizationName,
                     'company_id' => null,
                     'kpp' => null
@@ -436,8 +441,9 @@ class ImportObjectDebtsFromExcel extends Command
                     'object_worktype_id' => null,
                     'organization_id' => $organization->id,
                     'date' => $import->date,
-                    'amount' => -$row[13],
-                    'amount_without_nds' => -($row[21] ?? 0),
+                    'amount' => $type !== 'Аванс' ? -$row[13] : 0,
+                    'amount_without_nds' => $type !== 'Аванс' ? (-$row[13] ?? 0) : 0,
+                    'avans' => $type === 'Аванс' ? -$row[13] : 0,
                     'status_id' => Status::STATUS_ACTIVE,
                     'category' => trim($row[16]),
                     'code' => trim($row[10]),
