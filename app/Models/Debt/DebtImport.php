@@ -47,6 +47,10 @@ class DebtImport extends Model
 
     public function getFileLink(): string
     {
+        if ($this->type_id === self::TYPE_OBJECT) {
+            return 'storage/public/objects-debts-manuals/Raboty(XLSX).xlsx';
+        }
+
         return 'storage/' . $this->file;
     }
 
