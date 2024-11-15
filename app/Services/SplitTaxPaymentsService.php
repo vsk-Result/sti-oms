@@ -29,6 +29,8 @@ class SplitTaxPaymentsService
             return 'Сумма налогов в файле превышает сумму выбранных оплат на ' . CurrencyExchangeRate::format($totalsDiff, 'RUB');
         }
 
+        return '';
+
         $objectCodes = [];
         $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
 

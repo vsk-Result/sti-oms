@@ -389,6 +389,14 @@
                         </a>
                     </div>
                 @endcan
+
+                @if (auth()->id() === 1 || auth()->id() === 12)
+                    <div class="menu-item">
+                        <a href="{{ route('tax_split.index') }}" class="menu-link {{ request()->is('tax-split*') ? 'active' : '' }}">
+                            <span class="menu-title">Разбивка налогов</span>
+                        </a>
+                    </div>
+                @endif
             @endcan
 
             @can('show admin-sidebar-menu')

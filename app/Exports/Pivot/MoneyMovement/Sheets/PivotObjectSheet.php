@@ -61,8 +61,8 @@ class PivotObjectSheet implements
             'receive' => 0,
             'payment' => 0,
         ];
-        foreach ($objectIds as $objectId) {
-            $object = $objects->where('id', $objectId)->first();
+        foreach ($objects as $object) {
+            $objectId = $object->id;
             $objectName = $object ? $object->getName() : 'Не определен_' . $objectId;
 
             $total = (clone $this->payments)->where('object_id', $objectId)->sum('amount');
