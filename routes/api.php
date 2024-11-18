@@ -15,6 +15,7 @@ use App\Http\Controllers\API\Pivot\Bank\BankController;
 use App\Http\Controllers\API\Object\DebtController as ODebtController;
 use App\Http\Controllers\API\Object\DebtV2Controller;
 use App\Http\Controllers\API\Object\BalanceController;
+use App\Http\Controllers\API\Object\ManagerController;
 use App\Http\Controllers\API\Debt\OrganizationController;
 use App\Http\Controllers\API\Finance\FinanceReportExportController;
 use App\Http\Controllers\API\Pivot\TaxPlan\TaxPlanExportController;
@@ -54,6 +55,7 @@ Route::get('pivots/tax-plan/export', [TaxPlanExportController::class, 'index']);
 Route::get('objects/debts', [ODebtController::class, 'index']);
 Route::get('objects/debts-v2', [DebtV2Controller::class, 'index']);
 Route::get('objects/balance', [BalanceController::class, 'index']);
+Route::get('objects/managers', [ManagerController::class, 'index']);
 
 Route::get('debts/organizations', [OrganizationController::class, 'index']);
 

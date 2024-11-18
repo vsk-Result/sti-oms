@@ -41,6 +41,7 @@
         <div id="kt_content_container" class="d-flex flex-column-fluid align-items-stretch container-fluid">
 
             @include('sidebars.main')
+            @include('sidebars.managers_objects')
 
             <div class="wrapper d-flex flex-column flex-row-fluid mt-5 mt-lg-10" id="kt_wrapper">
                 <div class="content flex-column-fluid" id="kt_content">
