@@ -9,6 +9,7 @@ use App\Models\CashFlow\PlanPaymentEntry;
 use App\Models\Status;
 use App\Models\TaxPlanItem;
 use App\Services\ReceivePlanService;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -21,7 +22,7 @@ class ExportController extends Controller
         $this->receivePlanService = $receivePlanService;
     }
 
-    public function store(): BinaryFileResponse
+    public function store(Request $request): BinaryFileResponse
     {
 //        if (auth()->id() === 1) {
 //            $periods = $this->receivePlanService->getPeriods();
@@ -55,6 +56,6 @@ class ExportController extends Controller
 //            }
 //        }
 
-        return Excel::download(new Export($this->receivePlanService), 'Отчет CASH FLOW.xlsx');
+        return Excel::download(new Export($this->receivePlanService, $request->all()), 'Отчет CASH FLOW.xlsx');
     }
 }

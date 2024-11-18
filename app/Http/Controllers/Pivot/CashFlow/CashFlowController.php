@@ -10,7 +10,9 @@ use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
 use App\Services\CashFlow\NotificationService;
 use App\Services\ReceivePlanService;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 
 class CashFlowController extends Controller
 {
@@ -23,14 +25,14 @@ class CashFlowController extends Controller
         $this->notificationService = $notificationService;
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $reasons = ReceivePlan::getReasons();
         $planPaymentGroups = PlanPaymentGroup::all();
         $CFPlanPayments = PlanPayment::all();
         $otherPlanPayments = PlanPayment::getOther();
         $CFPlanPaymentEntries = PlanPaymentEntry::all();
-        $periods = $this->receivePlanService->getPeriods();
+        $periods = $this->receivePlanService->getPeriods(null, $request->get('period'));
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
 
         $activeObjectIds = BObject::active()->orderBy('code')->pluck('id')->toArray();
@@ -44,10 +46,12 @@ class CashFlowController extends Controller
         $historyNotifications = $this->notificationService->getHistoryNotifications();
         $hasUnreadNotifications = $this->notificationService->hasUnreadNotifications();
 
+        $period = Carbon::parse($periods[0]['start'])->format('d.m.Y') . ' - ' . Carbon::parse(end($periods)['end'])->format('d.m.Y');
+
         return view(
             'pivots.cash-flow.index',
             compact(
-                'periods', 'objects', 'plans',
+                'periods', 'objects', 'plans', 'period',
                'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
                 'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments'
             )

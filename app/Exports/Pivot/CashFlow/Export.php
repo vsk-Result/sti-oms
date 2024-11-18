@@ -8,17 +8,12 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class Export implements WithMultipleSheets
 {
-    private ReceivePlanService $receivePlanService;
-
-    public function __construct(ReceivePlanService $receivePlanService)
-    {
-        $this->receivePlanService = $receivePlanService;
-    }
+    public function __construct(private ReceivePlanService $receivePlanService, private array $requestData) {}
 
     public function sheets(): array
     {
         return [
-            new PivotSheet($this->receivePlanService),
+            new PivotSheet($this->receivePlanService, $this->requestData),
         ];
     }
 }

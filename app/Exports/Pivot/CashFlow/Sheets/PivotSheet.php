@@ -21,12 +21,7 @@ class PivotSheet implements
     WithTitle,
     WithStyles
 {
-    private ReceivePlanService $receivePlanService;
-
-    public function __construct(ReceivePlanService $receivePlanService)
-    {
-        $this->receivePlanService = $receivePlanService;
-    }
+    public function __construct(private ReceivePlanService $receivePlanService, private array $requestData) {}
 
     public function title(): string
     {
@@ -35,7 +30,7 @@ class PivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $periods = $this->receivePlanService->getPeriods();
+        $periods = $this->receivePlanService->getPeriods(null, $this->requestData['period'] ?? null);
 
         $lastColumnIndex = 2 + count($periods);
         $lastColumn = $this->getColumnWord($lastColumnIndex);

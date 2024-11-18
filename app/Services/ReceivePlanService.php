@@ -24,23 +24,28 @@ class ReceivePlanService
         $this->notificationService = $notificationService;
     }
 
-    public function getPeriods(?int $objectId = null): array
+    public function getPeriods(?int $objectId = null, ?string $initialPeriod = null): array
     {
         $periods = [];
 
-        $now = Carbon::now();
+        $start = Carbon::now();
+        $end = Carbon::now()->addMonthsNoOverflow(3)->format('Y-m-d');
+
+        if ($initialPeriod) {
+            [$startInitial, $endInitial] = explode(' - ', $initialPeriod);
+
+            $start = Carbon::parse($startInitial);
+            $end = Carbon::parse($endInitial)->format('Y-m-d');
+        }
 
         $periodId = 0;
         $periods[] = [
             'id' => $periodId++,
-            'start' => $now->startOfWeek()->format('Y-m-d'),
-            'end' => $now->endOfWeek()->format('Y-m-d'),
-            'format' => $now->startOfWeek()->format('d.m.Y') . ' - ' . $now->endOfWeek()->format('d.m.Y')
+            'start' => $start->startOfWeek()->format('Y-m-d'),
+            'end' => $start->endOfWeek()->format('Y-m-d'),
+            'format' => $start->startOfWeek()->format('d.m.Y') . ' - ' . $start->endOfWeek()->format('d.m.Y')
         ];
 
-        $months = auth()->user()->can('index cash-flow-plan-payments') ? 12 : 3;
-
-        $end = Carbon::now()->addMonthsNoOverflow($months)->format('Y-m-d');
         for ($i = 1; $i < 16; $i++) {
             $newDate = Carbon::now()->addDays($i * 7);
 
