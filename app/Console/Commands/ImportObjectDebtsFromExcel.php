@@ -218,6 +218,7 @@ class ImportObjectDebtsFromExcel extends Command
                 $ndsIndex = null;
                 $balanceContractIndex = null;
                 $innIndex = null;
+                $guaranteeDeadlineIndex = null;
 
                 foreach ($importData['OMS'] as $index => $row) {
                     if ($index === 0) {
@@ -230,6 +231,7 @@ class ImportObjectDebtsFromExcel extends Command
                         $ndsIndex = $this->getTitleIndex('ндс', $row);
                         $balanceContractIndex = $this->getTitleIndex('Остаток к оплате по договору', $row);
                         $innIndex = $this->getTitleIndex('ИНН', $row);
+                        $guaranteeDeadlineIndex = $this->getTitleIndex('срок наступил', $row);
                         continue;
                     }
 
@@ -246,6 +248,7 @@ class ImportObjectDebtsFromExcel extends Command
                     $balanceContract = is_null($balanceContractIndex) ? 0 : $row[$balanceContractIndex];
                     $neotrabotAvans =  is_null($neotrabotAvansIndex) ? 0 : $row[$neotrabotAvansIndex];
                     $inn = is_null($innIndex) ? '' : trim($row[$innIndex]);
+                    $guaranteeDeadline = is_null($guaranteeDeadlineIndex) ? 0 : $row[$guaranteeDeadlineIndex];
 
                     if (! is_null($amountIndex)) {
                         $objectCodesWithAmount[] = $code;
@@ -263,6 +266,9 @@ class ImportObjectDebtsFromExcel extends Command
                     }
                     if (empty($neotrabotAvans)) {
                         $neotrabotAvans = 0;
+                    }
+                    if (empty($guaranteeDeadline)) {
+                        $guaranteeDeadline = 0;
                     }
 
                     if (is_string($amountDebt)) {
@@ -284,6 +290,10 @@ class ImportObjectDebtsFromExcel extends Command
                     if (is_string($neotrabotAvans)) {
                         $neotrabotAvans = str_replace(',', '.', $neotrabotAvans);
                         $neotrabotAvans = (float) str_replace(' ', '', $neotrabotAvans);
+                    }
+                    if (is_string($guaranteeDeadline)) {
+                        $guaranteeDeadline = str_replace(',', '.', $guaranteeDeadline);
+                        $guaranteeDeadline = (float) str_replace(' ', '', $guaranteeDeadline);
                     }
 
                     $amountDebtWithoutDNS = -$amountDebt;
@@ -312,6 +322,7 @@ class ImportObjectDebtsFromExcel extends Command
                         'date' => $import->date,
                         'amount' => -$amountDebt,
                         'guarantee' => -$guarantee,
+                        'guarantee_deadline' => -$guaranteeDeadline,
                         'avans' => -$avans,
                         'amount_without_nds' => $amountDebtWithoutDNS,
                         'status_id' => Status::STATUS_ACTIVE,

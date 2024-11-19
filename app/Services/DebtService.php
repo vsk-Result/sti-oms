@@ -207,6 +207,7 @@ class DebtService
             'date' => $requestData['date'],
             'amount' => $requestData['amount'],
             'guarantee' => $requestData['guarantee'] ?? 0,
+            'guarantee_deadline' => $requestData['guarantee_deadline'] ?? 0,
             'avans' => $requestData['avans'] ?? 0,
             'amount_without_nds' => $requestData['amount_without_nds'],
             'status_id' => $requestData['status_id'],

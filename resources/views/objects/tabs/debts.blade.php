@@ -313,6 +313,7 @@
                                     @if ($hasObjectImport)
                                         <th class="w-150px text-end">Неотр. аванс</th>
                                         <th class="w-150px text-end">ГУ</th>
+                                        <th class="w-150px text-end">в т.ч. ГУ срок наступил</th>
                                         <th class="w-150px text-end pe-2">Авансы к оплате</th>
                                         <th class="w-175px text-end">Долг за СМР</th>
                                     @else
@@ -331,6 +332,11 @@
                                         <th class="w-150px text-end hl">
                                             <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                 {{ number_format($ds->sum('guarantee'), 2, ',', ' ') }}
+                                            </a>
+                                        </th>
+                                        <th class="w-150px text-end hl">
+                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                {{ number_format($ds->sum('guarantee_deadline'), 2, ',', ' ') }}
                                             </a>
                                         </th>
                                         <th class="w-150px text-end pe-2 hl">
@@ -363,10 +369,12 @@
 
                                         $avans = 0;
                                         $guarantee = 0;
+                                        $guaranteeDeadline = 0;
                                         $unworkAvans = 0;
                                         if ($hasObjectImport) {
                                             $avans = $ds->where('organization_id', $organizationId)->sum('avans');
                                             $guarantee = $ds->where('organization_id', $organizationId)->sum('guarantee');
+                                            $guaranteeDeadline = $ds->where('organization_id', $organizationId)->sum('guarantee_deadline');
                                             $unworkAvans = $ds->where('organization_id', $organizationId)->sum('unwork_avans');
                                         }
 
@@ -396,6 +404,9 @@
                                                     <span class="fw-boldest text-end">{{ number_format($guarantee, 2, ',', ' ') }}</span>
                                                 </td>
                                                 <td class="text-danger text-end pe-2">
+                                                    <span class="fw-boldest text-end">{{ number_format($guaranteeDeadline, 2, ',', ' ') }}</span>
+                                                </td>
+                                                <td class="text-danger text-end pe-2">
                                                     <span class="fw-boldest text-end">{{ number_format($avans, 2, ',', ' ') }}</span>
                                                 </td>
                                             @else
@@ -407,6 +418,11 @@
                                                 <td class="text-danger text-end pe-2">
                                                     <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
                                                         {{ number_format($guarantee, 2, ',', ' ') }}
+                                                    </a>
+                                                </td>
+                                                <td class="text-danger text-end pe-2">
+                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
+                                                        {{ number_format($guaranteeDeadline, 2, ',', ' ') }}
                                                     </a>
                                                 </td>
                                                 <td class="text-danger text-end pe-2">
