@@ -76,7 +76,7 @@ class BankGuaranteeService
         }
 
         $query->with('company', 'object', 'contract', 'contract.acts', 'contract.avansesReceived', 'organization');
-        $query->orderByDesc('object_id');
+        $query->orderBy('status_id')->orderByDesc('updated_at');
 
         return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
