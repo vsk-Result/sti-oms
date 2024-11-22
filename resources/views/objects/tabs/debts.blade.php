@@ -364,6 +364,7 @@
                                     $contractorDebts = [];
                                     foreach ($debts['contractor']->debts as $organization => $amount) {
                                         $organizationId = substr($organization, 0, strpos($organization, '::'));
+                                        $type = \App\Models\Debt\DebtManual::TYPE_CONTRACTOR;
                                         $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
 
                                         if (!isset($contractorDebts[$organization])) {
