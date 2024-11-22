@@ -50,7 +50,7 @@
     </div>
 
     <div class="row g-6 g-xl-9">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             @if ($object->code === '288')
 
                 @php
@@ -360,8 +360,39 @@
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($debts['contractor']->debts as $organization => $amount)
+                                @php
+                                    $contractorDebts = [];
+                                    foreach ($debts['contractor']->debts as $organization => $amount) {
+                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
+                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
+
+                                        if (!isset($contractorDebts[$organization])) {
+                                            $contractorDebts[$organization] = [
+                                                'amount' => 0,
+                                                'total' => 0,
+                                            ];
+                                        }
+
+                                        $avans = 0;
+                                        if ($hasObjectImport) {
+                                            $avans = $ds->where('organization_id', $organizationId)->sum('avans');
+                                        }
+
+                                        if ($debtManual & $hasObjectImport) {
+                                            $avans = $debtManual->avans;
+                                        }
+
+                                        $contractorDebts[$organization]['amount'] += $amount + $avans;
+                                        $contractorDebts[$organization]['total'] += $amount + $avans;
+                                    }
+
+                                    $contractorTotalAmounts = array_column($contractorDebts, 'total');
+                                    array_multisort($contractorTotalAmounts, SORT_ASC, $contractorDebts);
+                                @endphp
+
+                                @forelse($contractorDebts as $organization => $amountInfo)
                                     @php
+                                        $amount = $amountInfo['amount'];
                                         $type = \App\Models\Debt\DebtManual::TYPE_CONTRACTOR;
                                         $organizationId = substr($organization, 0, strpos($organization, '::'));
                                         $organizationName = substr($organization, strpos($organization, '::') + 2);
@@ -464,7 +495,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2">
+                                        <td colspan="4">
                                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                                 Долги отсутствуют
                                             </p>
@@ -475,7 +506,12 @@
                         </table>
                     </div>
                 </div>
+            @endif
+        </div>
+    </div>
 
+    <div class="row g-6 g-xl-9">
+        <div class="col-lg-6">
                 <div class="card card-flush h-lg-100">
                     <div class="card-header mt-6 align-items-baseline">
                         <div class="card-title">
@@ -543,7 +579,6 @@
                         </table>
                     </div>
                 </div>
-            @endif
         </div>
 
         <div class="col-lg-6">
@@ -772,11 +807,13 @@
                                             $providerDebts[$organizationName] = [
                                                 'fix' => 0,
                                                 'float' => 0,
+                                                'total' => 0,
                                                 'organization_id' => $debt->organization_id,
                                             ];
                                         }
 
                                         $providerDebts[$organizationName]['fix'] += $debt->amount;
+                                        $providerDebts[$organizationName]['total'] += $debt->amount;
                                     }
                                     foreach ($debts['provider']->debts_float as $debt) {
                                         $organizationName = $debt->organization->name;
@@ -784,12 +821,17 @@
                                             $providerDebts[$organizationName] = [
                                                 'fix' => 0,
                                                 'float' => 0,
+                                                'total' => 0,
                                                 'organization_id' => $debt->organization_id,
                                             ];
                                         }
 
                                         $providerDebts[$organizationName]['float'] += $debt->amount;
+                                        $providerDebts[$organizationName]['total'] += $debt->amount;
                                     }
+
+                                    $providerTotalAmounts = array_column($providerDebts, 'total');
+                                    array_multisort($providerTotalAmounts, SORT_ASC, $providerDebts);
                                 @endphp
                                 @forelse($providerDebts as $organizationName => $debtAmount)
 {{--                                    @php--}}
