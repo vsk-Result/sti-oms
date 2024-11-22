@@ -30,7 +30,7 @@ class ExportController extends Controller
             abort(404);
         }
 
-        $date = Carbon::parse($request->get('date'));
+        $date = Carbon::parse($request->get('balance_date', now()));
         $financeReportHistory = FinanceReportHistory::where('date', $date->format('Y-m-d'))->first();
 
         if (!$financeReportHistory) {
@@ -57,7 +57,7 @@ class ExportController extends Controller
                     'loansGroupInfo' => $loansGroupInfo,
                 ],
                 [
-                    'show_closed_objects' => false,
+                    'show_closed_objects' => $request->has('show_closed_objects'),
                     'act_service' => $this->actService,
                 ]
             ),

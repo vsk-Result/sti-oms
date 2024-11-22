@@ -40,7 +40,6 @@ class Export implements WithMultipleSheets
         ];
 
         $years = array_merge(['Свод' => $years['Активные']], $years);
-
         foreach ($years as $y => $objects) {
             $sheetName = $y;
             $pivotInfo = [
@@ -51,6 +50,10 @@ class Export implements WithMultipleSheets
 
             if ($y === 'Свод') {
                 $year = 'Активные';
+            }
+
+            if ($y === 'Закрытые') {
+                $year = 'Закрытые';
             }
 
             $sheets[] = new ObjectPivotSheet($sheetName, $pivotInfo, $year);
