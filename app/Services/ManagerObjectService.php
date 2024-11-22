@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Imports\ManagerObject\ManagerObjectImport;
+use App\Models\Object\BObject;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ManagerObjectService
@@ -18,9 +19,11 @@ class ManagerObjectService
         unset($importData[0]);
         $managers = [];
         foreach ($importData as $data) {
+            $objectCode = $data[0] == '27' ? '27.1' : $data[0];
             $manager = [
                 'object_code' => $data[0],
                 'object_name' => $data[1],
+                'object_boss' => BObject::find($objectCode)->responsible_name ?? '',
                 'names' => [],
                 'emails' => [],
             ];
