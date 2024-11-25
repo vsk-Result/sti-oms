@@ -324,6 +324,7 @@
 
                         @foreach($CFPlanPayments as $payment)
                             @continue(!is_null($payment->group_id))
+                            @continue(!is_null($payment->group_id))
 
                             @include('pivots.cash-flow.partial.plan_payment_row', $payment)
                         @endforeach

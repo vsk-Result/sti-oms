@@ -1,4 +1,8 @@
-<tr class="plan-payment">
+@php
+    $total = $payment->entries->where('date', '<=', last($periods)['end'])->sum('amount');
+@endphp
+
+<tr class="plan-payment {{ $total === 0 && auth()->id() !== 12 ? 'd-none' : '' }}">
     <td class="ps-2">
         <span class="{{ auth()->user()->can('index cash-flow-plan-payments') ? 'cursor-pointer plan-payment-name' : '' }}">{{ $payment->name }}</span>
         @can('index cash-flow-plan-payments')
@@ -33,9 +37,6 @@
         @endif
     </td>
 
-    @php
-        $total = 0;
-    @endphp
     @foreach($periods as $index => $period)
         @php
             if ($index === 0) {
@@ -43,7 +44,6 @@
             } else {
                 $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
             }
-            $total += $amount;
 
             $comment = \App\Models\CashFlow\Comment::where('period', $period['format'])
                     ->where('type_id', \App\Models\CashFlow\Comment::TYPE_PAYMENT)
