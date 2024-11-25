@@ -24,6 +24,7 @@ class ManagerObjectService
                 'object_code' => $data[0],
                 'object_name' => $data[1],
                 'object_boss' => BObject::where('code', $objectCode)->first()?->responsible_name ?? '',
+                'object_boss_email' => BObject::where('code', $objectCode)->first()?->responsible_email ?? '',
                 'names' => [],
                 'emails' => [],
             ];
