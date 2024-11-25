@@ -2,7 +2,7 @@
     $total = $payment->entries->where('date', '<=', last($periods)['end'])->sum('amount');
 @endphp
 
-<tr class="plan-payment {{ $total === 0 && auth()->id() !== 12 ? 'd-none' : '' }}">
+<tr class="plan-payment {{ !is_valid_amount_in_range($total) && auth()->id() !== 12 ? 'd-none' : '' }}">
     <td class="ps-2">
         <span class="{{ auth()->user()->can('index cash-flow-plan-payments') ? 'cursor-pointer plan-payment-name' : '' }}">{{ $payment->name }}</span>
         @can('index cash-flow-plan-payments')
