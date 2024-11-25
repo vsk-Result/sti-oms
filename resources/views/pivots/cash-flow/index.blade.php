@@ -330,7 +330,7 @@
                         @endforeach
 
                         @foreach($otherPlanPayments as $paymentName => $paymentAmount)
-                            <tr class="plan-payment">
+                            <tr class="plan-payment {{ !is_valid_amount_in_range($paymentAmount) ? 'd-none' : '' }}">
                                 <td class="ps-2">
                                     {{ $paymentName }}
                                 </td>
