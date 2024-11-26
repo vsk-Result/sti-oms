@@ -21,6 +21,7 @@ use App\Http\Controllers\Object\UserController;
 use App\Http\Controllers\Object\WriteoffController;
 use App\Http\Controllers\Object\Report\ActCategory\ActCategoryController;
 use App\Http\Controllers\Object\Report\ActCategory\ExportController as ActCategoryExportController;
+use App\Http\Controllers\Object\Report\PaymentsReceive\PaymentsReceiveController;
 
 // Экспорт объекта в Excel
 
@@ -101,7 +102,12 @@ Route::post('objects/{object}/receive-plan/export', [ReceivePlanExportController
 Route::get('objects/{object}/check', [CheckController::class, 'index'])->name('objects.check.index');
 
 // Отчеты
+
 // Отчет по актам
 
 Route::get('objects/{object}/reports/act-category', [ActCategoryController::class, 'index'])->name('objects.reports.act_category.index');
 Route::post('objects/{object}/reports/act-category/export', [ActCategoryExportController::class, 'store'])->name('objects.reports.act_category.export.store');
+
+// Отчет по приходам и расходам
+
+Route::get('objects/{object}/reports/payments-receive', [PaymentsReceiveController::class, 'index'])->name('objects.reports.payments_receive.index');

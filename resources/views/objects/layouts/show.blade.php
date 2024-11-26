@@ -16,7 +16,7 @@
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/pivot') ? 'active' : '' }}" href="{{ route('objects.pivot.index', $object) }}">Сводная информация</a>--}}
 {{--                        </li>--}}
                             <li class="nav-item">
-                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/payments') ? 'active' : '' }}" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">Оплаты</a>
+                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/payments') || request()->is('*/reports/payments-receive') ? 'active' : '' }}" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">Оплаты</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/writeoffs') ? 'active' : '' }}" href="{{ route('objects.writeoffs.index', $object) }}?object_id%5B%5D={{ $object->id }}">Списания</a>

@@ -66,12 +66,12 @@
                                     <path d="M18.75 8.25H17.75C17.1977 8.25 16.75 8.69772 16.75 9.25C16.75 9.80228 17.1977 10.25 17.75 10.25C18.3023 10.25 18.75 10.6977 18.75 11.25V18.25C18.75 18.8023 18.3023 19.25 17.75 19.25H5.75C5.19772 19.25 4.75 18.8023 4.75 18.25V11.25C4.75 10.6977 5.19771 10.25 5.75 10.25C6.30229 10.25 6.75 9.80228 6.75 9.25C6.75 8.69772 6.30229 8.25 5.75 8.25H4.75C3.64543 8.25 2.75 9.14543 2.75 10.25V19.25C2.75 20.3546 3.64543 21.25 4.75 21.25H18.75C19.8546 21.25 20.75 20.3546 20.75 19.25V10.25C20.75 9.14543 19.8546 8.25 18.75 8.25Z" fill="#C4C4C4"></path>
                                 </svg>
                             </span>
-                        Экспорт в Excel
+                        Экспорт
                     </a>
                 </form>
 
                 @can('create payments')
-                    <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}" class="create-payment btn btn-light-primary">
+                    <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}" class="create-payment btn btn-light-primary me-3">
                             <span class="svg-icon svg-icon-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
@@ -79,9 +79,33 @@
                                     <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
                                 </svg>
                             </span>
-                        Новая оплата
+                        Новая
                     </a>
                 @endcan
+
+                @if (isset($object) && in_array(auth()->id(), [1, 8, 16]))
+                    <button type="button"
+                            class="btn btn-bg-light btn-color-info"
+                            data-kt-menu-trigger="click"
+                            data-kt-menu-placement="bottom-start"
+                    >
+                    <span class="svg-icon svg-icon-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path opacity="0.3" d="M11 11H13C13.6 11 14 11.4 14 12V21H10V12C10 11.4 10.4 11 11 11ZM16 3V21H20V3C20 2.4 19.6 2 19 2H17C16.4 2 16 2.4 16 3Z" fill="black"></path>
+                            <path d="M21 20H8V16C8 15.4 7.6 15 7 15H5C4.4 15 4 15.4 4 16V20H3C2.4 20 2 20.4 2 21C2 21.6 2.4 22 3 22H21C21.6 22 22 21.6 22 21C22 20.4 21.6 20 21 20Z" fill="black"></path>
+                        </svg>
+                    </span>
+                        Отчеты
+                    </button>
+
+                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                        <div class="menu-item px-3">
+                            <a href="{{ route('objects.reports.payments_receive.index', $object) }}" class="menu-link px-3">
+                                Отчет по приходам и расходам
+                            </a>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
