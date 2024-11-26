@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Debt\DebtImport;
+use App\Models\Status;
 use App\Services\CRONProcessService;
 use App\Services\DebtImportService;
 use Carbon\Carbon;
@@ -66,6 +68,11 @@ class ImportServiceDebtsFromExcel extends Command
             }
         }
 
+        $prevImport = DebtImport::where('date', Carbon::now()->format('Y-m-d'))
+            ->where('type_id', DebtImport::TYPE_SERVICE_1C)
+            ->where('status_id', Status::STATUS_ACTIVE)
+            ->first();
+
         try {
             $importStatus = $this->debtImportService->createImport(['file' => new UploadedFile($importFilePath, 'Uslugi(XLSX).xlsx')], 'service');
         } catch (\Exception $e) {
@@ -84,6 +91,10 @@ class ImportServiceDebtsFromExcel extends Command
 
         Log::channel('custom_imports_log')->debug('[SUCCESS] Файл успешно загружен');
         $this->CRONProcessService->successProcess($this->signature);
+
+        if ($prevImport) {
+            $prevImport->delete();
+        }
 
         return 0;
     }
