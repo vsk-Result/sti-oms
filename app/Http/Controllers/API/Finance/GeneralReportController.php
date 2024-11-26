@@ -30,6 +30,7 @@ class GeneralReportController extends Controller
         $items = $this->generalReportService->getItems($years);
 
         $data = [];
+        $total = [];
         foreach ($items as $categoryItem) {
             foreach ($categoryItem['codes']['receive'] as $receiveItem) {
                 foreach ($receiveItem['years'] as $year => $yearAmount) {
@@ -37,7 +38,12 @@ class GeneralReportController extends Controller
                         $data[$year][$categoryItem['name']]['receive'][$receiveItem['name']] = 0;
                     }
 
+                    if (! isset($total[$year])) {
+                        $total[$year] = 0;
+                    }
+
                     $data[$year][$categoryItem['name']]['receive'][$receiveItem['name']] += $yearAmount;
+                    $total[$year] += $yearAmount;
                 }
             }
 
@@ -47,10 +53,17 @@ class GeneralReportController extends Controller
                         $data[$year][$categoryItem['name']]['pay'][$payItem['name']] = 0;
                     }
 
+                    if (! isset($total[$year])) {
+                        $total[$year] = 0;
+                    }
+
                     $data[$year][$categoryItem['name']]['pay'][$payItem['name']] += $yearAmount;
+                    $total[$year] += $yearAmount;
                 }
             }
         }
+
+        $data['total'] = $total;
 
         return response()->json(compact('data'));
     }
