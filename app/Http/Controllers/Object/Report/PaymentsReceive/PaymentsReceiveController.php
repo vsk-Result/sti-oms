@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Object\BObject;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 
 class PaymentsReceiveController extends Controller
 {
-    public function index(BObject $object): View
+    public function index(BObject $object, Request $request): View
     {
         $info = [];
         $infoForChartByDay = [];
@@ -22,7 +23,16 @@ class PaymentsReceiveController extends Controller
             'close' => 0,
         ];
 
-        foreach ($object->payments()->orderBy('date')->get()->groupBy('date') as $date => $payments) {
+        $period = $request->get('period');
+
+        if ($period) {
+            $period = explode(' - ', $period);
+            $objectPayments = $object->payments()->whereBetween('date', [Carbon::parse($period[0]), Carbon::parse($period[1])])->orderBy('date')->get();
+        } else {
+            $objectPayments = $object->payments()->orderBy('date')->get();
+        }
+
+        foreach ($objectPayments->groupBy('date') as $date => $payments) {
             $pay = round($payments->where('amount', '<', 0)->sum('amount'));
             $receive = round($payments->where('amount', '>=', 0)->sum('amount'));
             $balance = $pay + $receive;
@@ -54,9 +64,12 @@ class PaymentsReceiveController extends Controller
             $info[$date] = compact('date','pay', 'receive', 'balance', 'capital');
         }
 
-        $infoForChart = json_encode($infoForChartByDay);
-        $infoForChartByMonth = json_encode($infoForChartByMonth);
+        if ($request->get('details_type', 'by_day') === 'by_day') {
+            $infoForChart = json_encode($infoForChartByDay);
+        } elseif ($request->get('details_type', 'by_day') === 'by_month') {
+            $infoForChart = json_encode($infoForChartByMonth);
+        }
 
-        return view('objects.tabs.reports.payments_receive', compact('object', 'info', 'infoForChart', 'infoForChartByMonth'));
+        return view('objects.tabs.reports.payments_receive', compact('object', 'info', 'infoForChart'));
     }
 }
