@@ -28,6 +28,7 @@
         <div class="card-body p-0 ps-0">
             <div id="chartdiv"
                  data-info-for-chart="{{ $infoForChart }}"
+                 data-info-filter-by-month="{{ request()->input('details_type', 'by_day') === 'by_month' }}"
             ></div>
 
             <h3 class="my-14">Таблица с данными</h3>
@@ -46,8 +47,8 @@
 
                     <tbody class="text-gray-600 fw-bold fs-7">
                         @foreach($info as $row)
-                            <tr class="object-row fw-bolder">
-                                <td class="ps-2 fw-bolder cursor-pointer">
+                            <tr class="fw-bolder">
+                                <td class="ps-2 fw-bolder">
                                     {{ \Carbon\Carbon::parse($row['date'])->format('d.m.Y') }}
                                 </td>
                                 <td class="text-end">
@@ -56,10 +57,10 @@
                                 <td class="text-end">
                                     {{ \App\Models\CurrencyExchangeRate::format($row['pay'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end {{ $row['balance'] < 0 ? 'text-danger' : 'text-success' }}">
                                     {{ \App\Models\CurrencyExchangeRate::format($row['balance'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="text-end pe-2">
+                                <td class="text-end pe-2 {{ $row['balance'] < 0 ? 'text-danger' : 'text-success' }}">
                                     {{ \App\Models\CurrencyExchangeRate::format($row['capital'], 'RUB', 0, true) }}
                                 </td>
                             </tr>
@@ -143,6 +144,9 @@
                 })
             );
 
+            const filter_by_month = $('#chartdiv').data('info-filter-by-month') == 1;
+
+
 // Add series
 // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
             var series1 = chart.series.push(
@@ -161,15 +165,18 @@
                 })
             );
 
-            // series1.bullets.push(function () {
-            //     var bulletCircle = am5.Circle.new(root, {
-            //         radius: 5,
-            //         fill: series1.get("fill")
-            //     });
-            //     return am5.Bullet.new(root, {
-            //         sprite: bulletCircle
-            //     })
-            // })
+            if (filter_by_month) {
+                series1.bullets.push(function () {
+                    var bulletCircle = am5.Circle.new(root, {
+                        radius: 3,
+                        fill: series1.get("fill")
+                    });
+                    return am5.Bullet.new(root, {
+                        sprite: bulletCircle
+                    })
+                })
+            }
+
 
             series1.fills.template.setAll({
                 fillOpacity: 0.2,
@@ -222,6 +229,18 @@
                     })
                 })
             );
+
+            if (filter_by_month) {
+                series2.bullets.push(function () {
+                    var bulletCircle = am5.Circle.new(root, {
+                        radius: 3,
+                        fill: series2.get("fill")
+                    });
+                    return am5.Bullet.new(root, {
+                        sprite: bulletCircle
+                    })
+                })
+            }
 
             // series2.bullets.push(function () {
             //     var label = am5.Label.new(root, {

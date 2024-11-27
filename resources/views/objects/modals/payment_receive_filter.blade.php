@@ -39,8 +39,8 @@
                                     data-control="select2"
                                     data-dropdown-parent="#filterPaymentReceiveModal"
                                 >
-                                    <option value="by_day" {{ request()->input('details_type') === 'by_day' ? 'selected' : '' }}>По дням</option>
-                                    <option value="by_month" {{ request()->input('details_type') === 'by_month' ? 'selected' : '' }}>По месяцам</option>
+                                    <option value="by_day" {{ request()->input('details_type', 'by_day') === 'by_day' ? 'selected' : '' }}>По дням</option>
+                                    <option value="by_month" {{ request()->input('details_type', 'by_day') === 'by_month' ? 'selected' : '' }}>По месяцам</option>
                                 </select>
                             </div>
                         </div>
