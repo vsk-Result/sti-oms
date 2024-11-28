@@ -20,7 +20,7 @@ class CashCheckController extends Controller
         return view('crm-cash-checks.index', compact('uncheckedChecks'));
     }
 
-    public function create(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $check = $this->cashCheckService->findCashCheck($request->toArray());
 
