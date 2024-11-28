@@ -87,7 +87,7 @@ class CashCheck extends Model implements Audit
 
     public function scopeUnchecked($query)
     {
-        return $query->whereIn('status_id', [self::STATUS_UNCKECKED, self::STATUS_CHECKING]);
+        return $query->whereIn('status_id', [self::STATUS_UNCKECKED, self::STATUS_CHECKING, self::STATUS_CHECKED]);
     }
 
     public function getFormattedPeriod(): string
