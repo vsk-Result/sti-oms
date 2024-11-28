@@ -22,6 +22,7 @@ use App\Http\Controllers\API\Pivot\TaxPlan\TaxPlanExportController;
 use App\Http\Controllers\API\Gromisoft\Employees\EmployeeController;
 use App\Http\Controllers\API\Finance\GeneralReportController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CashCheck\CashCheckController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,4 +69,6 @@ Route::get('exports/finance/finance-report', [FinanceReportExportController::cla
 Route::get('finance/general-report', [GeneralReportController::class, 'index']);
 
 Route::post('v1/gromisoft/employees', [EmployeeController::class, 'index']);
+
+Route::get('/crm-cash-check/create', [CashCheckController::class, 'store'])->name('crm_cash_check.store');
 
