@@ -32,7 +32,7 @@ class CashCheckController extends Controller
         }
 
         $check = $this->cashCheckService->createCashCheck($request->toArray());
-        $this->cashCheckService->addCheckManagers($check, [auth()->id()]);
+        $this->cashCheckService->addCheckManagers($check, [1]);
 
         return response()->json(['isset_cash_check' => false]);
     }
