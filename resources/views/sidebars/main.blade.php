@@ -12,7 +12,7 @@
 
         <div class="menu menu-column menu-active-bg menu-hover-bg menu-title-gray-700 fs-6 menu-rounded w-100" id="#kt_aside_menu" data-kt-menu="true">
 
-            @if(auth()->user()->can('index payment-imports') || auth()->user()->can('index debt-imports'))
+            @if(auth()->user()->can('index payment-imports') || auth()->user()->can('index debt-imports') || auth()->user()->can('index crm-cash-check'))
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
                         <span class="menu-section text-muted text-uppercase fs-7 fw-bolder">Загрузки</span>
@@ -31,6 +31,14 @@
                     <div class="menu-item">
                         <a href="{{ route('debt_imports.index') }}" class="menu-link {{ request()->is('debt-imports*') ? 'active' : '' }}">
                             <span class="menu-title">Загрузки долгов</span>
+                        </a>
+                    </div>
+                @endcan
+
+                @can('index crm-cash-check')
+                    <div class="menu-item">
+                        <a href="{{ route('crm_cash_check.index') }}" class="menu-link {{ request()->is('crm-cash-check*') ? 'active' : '' }}">
+                            <span class="menu-title">Проверка касс CRM</span>
                         </a>
                     </div>
                 @endcan

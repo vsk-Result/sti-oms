@@ -164,7 +164,7 @@ class CRMCostClosureImportService
         return ! empty($this->error);
     }
 
-    private function getCategoryFromKostCode($code, $description)
+    public function getCategoryFromKostCode($code, $description)
     {
         $salary = ['7.17', '7.18', '7.26', '7.26.1', '7.26.2', '7.17.1', '7.17.2'];
         $provider = [

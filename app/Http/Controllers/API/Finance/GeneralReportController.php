@@ -18,13 +18,13 @@ class GeneralReportController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (! $request->has('verify_hash')) {
-            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
-        }
-
-        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
-        }
+//        if (! $request->has('verify_hash')) {
+//            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+//        }
+//
+//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+//            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+//        }
 
         $years = ['2024', '2023', '2022', '2021'];
         $items = $this->generalReportService->getItems($years);
@@ -38,12 +38,17 @@ class GeneralReportController extends Controller
                         $data[$year][$categoryItem['name']]['receive'][$receiveItem['name']] = 0;
                     }
 
-                    if (! isset($total[$year])) {
-                        $total[$year] = 0;
+                    if (! isset($total[$year][$categoryItem['name']])) {
+                        $total[$year][$categoryItem['name']] = 0;
+                    }
+
+                    if (! isset($total[$year]['total'])) {
+                        $total[$year]['total'] = 0;
                     }
 
                     $data[$year][$categoryItem['name']]['receive'][$receiveItem['name']] += $yearAmount;
-                    $total[$year] += $yearAmount;
+                    $total[$year][$categoryItem['name']] += $yearAmount;
+                    $total[$year]['total'] += $yearAmount;
                 }
             }
 
@@ -53,12 +58,17 @@ class GeneralReportController extends Controller
                         $data[$year][$categoryItem['name']]['pay'][$payItem['name']] = 0;
                     }
 
-                    if (! isset($total[$year])) {
-                        $total[$year] = 0;
+                    if (! isset($total[$year][$categoryItem['name']])) {
+                        $total[$year][$categoryItem['name']] = 0;
+                    }
+
+                    if (! isset($total[$year]['total'])) {
+                        $total[$year]['total'] = 0;
                     }
 
                     $data[$year][$categoryItem['name']]['pay'][$payItem['name']] += $yearAmount;
-                    $total[$year] += $yearAmount;
+                    $total[$year][$categoryItem['name']] += $yearAmount;
+                    $total[$year]['total'] += $yearAmount;
                 }
             }
         }

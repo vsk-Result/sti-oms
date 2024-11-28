@@ -1,0 +1,128 @@
+<?php
+
+namespace App\Services\CashCheck;
+
+use App\Models\CashCheck\CashCheck;
+use App\Models\CashCheck\Manager;
+use App\Models\Object\BObject;
+use App\Services\PaymentImport\Type\CRMCostClosureImportService;
+
+class CashCheckService
+{
+    public function __construct(private CRMCostClosureImportService $CRMCostClosureImportService) {}
+
+    public function createCashCheck(array $requestData): CashCheck
+    {
+        return CashCheck::create([
+            'crm_user_id' => $requestData['crm_user_id'],
+            'crm_cost_id' => $requestData['crm_cost_id'],
+            'period' => $requestData['period'],
+            'status_id' => CashCheck::STATUS_UNCKECKED
+        ]);
+    }
+
+    public function findCashCheck(array $requestData): CashCheck | null
+    {
+        return CashCheck::where('period', $requestData['period'])->where('crm_cost_id', $requestData['crm_cost_id'])->first();
+    }
+
+    public function addCheckManagers(CashCheck $check, array $requestData): void
+    {
+        foreach ($requestData as $managerId) {
+            $this->addCheckManager($check, ['manager_id' => $managerId]);
+        }
+    }
+
+    public function addCheckManager(CashCheck $check, array $requestData): void
+    {
+        Manager::create([
+            'check_id' => $check->id,
+            'manager_id' => $requestData['manager_id'],
+            'status_id' => Manager::STATUS_UNCKECKED
+        ]);
+    }
+
+    public function managerUncheck(Manager $manager): void
+    {
+        $manager->update([
+            'status_id' => Manager::STATUS_UNCKECKED
+        ]);
+
+        $this->updateCashCheckStatus($manager->check);
+    }
+
+    public function managerCheck(Manager $manager): void
+    {
+        $manager->update([
+            'status_id' => Manager::STATUS_CHECKED
+        ]);
+
+        $this->updateCashCheckStatus($manager->check);
+    }
+
+    public function updateCashCheckStatus(CashCheck $check): void
+    {
+        $checkCount = 0;
+        foreach ($check->managers as $manager) {
+            $checkCount += (int) $manager->isChecked();
+        }
+
+        $status = CashCheck::STATUS_UNCKECKED;
+
+        if ($checkCount === $check->managers->count()) {
+            $status = CashCheck::STATUS_CHECKED;
+        } elseif ($checkCount > 0) {
+            $status = CashCheck::STATUS_CHECKING;
+        }
+
+        $check->update([
+            'status_id' => $status
+        ]);
+    }
+
+    public function getCashCheckDetails(CashCheck $check): array
+    {
+        $payments = [];
+
+        $items = $check->crmCost->items()
+            ->where('date', 'LIKE', $check->period . '%')
+            ->where('is_close', false)
+            ->with('object', 'avans')
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
+
+        foreach ($items as $item) {
+            if (isset($codesWithoutWorktype[$item->object->code])) {
+                $objectCode = $codesWithoutWorktype[$item->object->code];
+            } else {
+                $objectCode = $item->object->code;
+
+                if (str_contains($item->object->code, '.')) {
+                    $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
+                }
+            }
+
+            $objectName = BObject::where('code', $objectCode)->first()?->name ?? 'Нет в ОМС';
+
+            $category = $item->category;
+            if (empty($category)) {
+                $category = $this->CRMCostClosureImportService->getCategoryFromKostCode($item->getKostCode(), $item->information);
+            }
+
+            $payments[] = [
+                'date' => $item->date,
+                'object_name' => $objectName,
+                'object_code' => $objectCode,
+                'code' => $item->getKostCode(),
+                'organization' => $item->client,
+                'description' => $item->avans ? ($item->information . ' - ' . $item->avans->employee->getFullName()) : $item->information,
+                'amount' => $item->sum,
+                'category' => $category
+            ];
+        }
+
+        return $payments;
+    }
+}
