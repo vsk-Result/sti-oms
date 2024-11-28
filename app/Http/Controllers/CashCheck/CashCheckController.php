@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CashCheck;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashCheck\CashCheck;
+use App\Models\CashCheck\Manager;
 use App\Services\CashCheck\CashCheckService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,8 @@ class CashCheckController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        CashCheck::truncate();
+        Manager::truncate();
         $check = $this->cashCheckService->findCashCheck($request->toArray());
 
         if ($check) {
