@@ -28,7 +28,7 @@ class CashCheckController extends Controller
             return response()->json(['isset_cash_check' => true, 'cash_check_status' => $check->status_id]);
         }
 
-        $this->cashCheckService->createCashCheck($request->toArray());
+        $check = $this->cashCheckService->createCashCheck($request->toArray());
         $this->cashCheckService->addCheckManagers($check, [auth()->id()]);
 
         return response()->json(['isset_cash_check' => false]);
