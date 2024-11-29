@@ -18,13 +18,13 @@ class GeneralReportController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-//        if (! $request->has('verify_hash')) {
-//            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
-//        }
-//
-//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-//            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
-//        }
+        if (! $request->has('verify_hash')) {
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+        }
+
+        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+        }
 
         $years = ['2024', '2023', '2022', '2021'];
         $items = $this->generalReportService->getItems($years);
@@ -74,6 +74,71 @@ class GeneralReportController extends Controller
         }
 
         $data['total'] = $total;
+
+        $info = [];
+
+        foreach ($data as $year => $in) {
+            $infoItem = [
+                'year' => $year,
+                'total' => 0,
+                'items'=> []
+            ];
+
+            foreach ($in as $categoryName => $inn) {
+                $item = [
+                    'name' => $categoryName,
+                    'total' => 0,
+                    'items' => [],
+                ];
+
+                $receiveItem = [
+                    'name' => 'receive',
+                    'total' => 0,
+                    'items' => [],
+                ];
+
+                $payItem = [
+                    'name' => 'pay',
+                    'total' => 0,
+                    'items' => [],
+                ];
+
+                if (isset($inn['receive'])) {
+                    foreach ($inn['receive'] as $codeName => $amount) {
+                        $receiveItem['items'][] = [
+                            'name' => $codeName,
+                            'value' => $amount
+                        ];
+
+                        $receiveItem['total'] += $amount;
+                        $item['total'] += $amount;
+                        $infoItem['total'] += $amount;
+                    }
+                }
+
+                if (isset($inn['pay'])) {
+                    foreach ($inn['pay'] as $codeName => $amount) {
+                        $payItem['items'][] = [
+                            'name' => $codeName,
+                            'value' => $amount
+                        ];
+
+                        $payItem['total'] += $amount;
+                        $item['total'] += $amount;
+                        $infoItem['total'] += $amount;
+                    }
+                }
+
+                $item['items'][] = $receiveItem;
+                $item['items'][] = $payItem;
+
+                $infoItem['items'][] = $item;
+            }
+
+            $info[] = $infoItem;
+        }
+
+        $data = $info;
 
         return response()->json(compact('data'));
     }
