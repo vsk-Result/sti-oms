@@ -95,17 +95,30 @@ class CashCheckService
         $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
 
         foreach ($items as $item) {
-            if (isset($codesWithoutWorktype[$item->object->code])) {
-                $objectCode = $codesWithoutWorktype[$item->object->code];
+            if ($item->type_id === 1 && ! $item->object) {
+                $objectCode = 'Трансфер';
+                $objectName = '';
+            } else if ($item->type_id === 2 && ! $item->object) {
+                $objectCode = 'Трансфер';
+                $objectName = '';
             } else {
-                $objectCode = $item->object->code;
+                if ($item->object) {
+                    if (isset($codesWithoutWorktype[$item->object->code])) {
+                        $objectCode = $codesWithoutWorktype[$item->object->code];
+                    } else {
+                        $objectCode = $item->object->code;
 
-                if (str_contains($item->object->code, '.')) {
-                    $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
+                        if (str_contains($item->object->code, '.')) {
+                            $objectCode = substr($objectCode, 0, strpos($objectCode, '.'));
+                        }
+                    }
+
+                    $objectName = BObject::where('code', $objectCode)->first()?->name ?? 'Нет в ОМС';
+                } else {
+                    $objectCode = 'Нет в ОМС';
+                    $objectName = '';
                 }
             }
-
-            $objectName = BObject::where('code', $objectCode)->first()?->name ?? 'Нет в ОМС';
 
             $category = $item->category;
             if (empty($category)) {
