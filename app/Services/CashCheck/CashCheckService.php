@@ -140,7 +140,7 @@ class CashCheckService
         return $payments;
     }
 
-    public function getCheckedToEmailChecks(): CashCheck
+    public function getCheckedToEmailChecks()
     {
         return CashCheck::checked()->notSended()->readyToSend()->get();
     }
