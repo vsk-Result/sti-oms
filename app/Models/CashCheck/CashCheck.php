@@ -86,6 +86,15 @@ class CashCheck extends Model implements Audit
         ];
     }
 
+    public function getEmailStatusColor(): array
+    {
+        return [
+            self::EMAIL_SEND_STATUS_NOT_SEND => 'danger',
+            self::EMAIL_SEND_STATUS_SEND_WITH_ERROR => 'warning',
+            self::EMAIL_SEND_STATUS_SEND => 'success'
+        ];
+    }
+
     public function isChecked(): bool
     {
         return $this->status_id === self::STATUS_CHECKED;

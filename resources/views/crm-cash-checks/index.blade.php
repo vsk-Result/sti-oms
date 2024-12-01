@@ -70,6 +70,7 @@
                                         </td>
                                         <td>
                                             <span class="badge badge-{{ $check->getStatusColor() }} fw-bolder">{{ $check->getStatus() }}</span>
+                                            <span class="badge badge-{{ $check->getEmailStatusColor() }} fw-bolder">{{ $check->getEmailStatus() }}</span>
                                         </td>
                                     </tr>
                                 @empty
