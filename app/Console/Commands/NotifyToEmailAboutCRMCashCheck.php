@@ -35,7 +35,7 @@ class NotifyToEmailAboutCRMCashCheck extends Command
 
         $checks = $this->cashCheckService->getCheckedToEmailChecks();
 
-        Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . $checks->count() . 'заявок к отправке');
+        Log::channel('custom_imports_log')->debug('[INFO] Найдено ' . $checks->count() . ' заявок к отправке');
 
         $successSended = 0;
         foreach ($checks as $check) {
