@@ -23,7 +23,7 @@ class NotifyToEmailAboutCRMCashCheck extends Command
         $this->CRONProcessService->createProcess(
             $this->signature,
             $this->description,
-            'Каждые 15 минут'
+            'Каждые 10 минут'
         );
     }
 
