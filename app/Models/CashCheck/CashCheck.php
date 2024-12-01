@@ -139,7 +139,7 @@ class CashCheck extends Model implements Audit
 
     public function isSended(): bool
     {
-        return $this->where('email_send_status_id', self::EMAIL_SEND_STATUS_SEND);
+        return $this->email_send_status_id === self::EMAIL_SEND_STATUS_SEND;
     }
 
     public function getFormattedPeriod(): string
