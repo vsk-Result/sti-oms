@@ -137,6 +137,11 @@ class CashCheck extends Model implements Audit
         return $query->where('updated_at', '<=', now()->subHour());
     }
 
+    public function isSended(): bool
+    {
+        return $this->where('email_send_status_id', self::EMAIL_SEND_STATUS_SEND);
+    }
+
     public function getFormattedPeriod(): string
     {
         return Carbon::parse($this->period . '-01')->format('F Y');

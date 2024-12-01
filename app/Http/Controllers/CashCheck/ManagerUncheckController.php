@@ -13,6 +13,10 @@ class ManagerUncheckController extends Controller
 
     public function index(Manager $manager): RedirectResponse
     {
+        if ($manager->check->isSended()) {
+            return redirect()->back();
+        }
+
         $this->cashCheckService->managerUncheck($manager);
 
         return redirect()->back();

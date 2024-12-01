@@ -53,10 +53,12 @@
                                                                 <span class="text-gray-900 text-hover-primary fs-7 fw-bold">
                                                                     @if ($manager->isUser())
                                                                         <span class="fw-boldest">Вы</span>
-                                                                        @if ($manager->isChecked())
-                                                                            <a href="{{ route('crm_cash_check.manager.uncheck', $manager) }}" class="fw-boldest text-danger text-decoration-underline">Отменить проверку</a>
-                                                                        @else
-                                                                            <a href="{{ route('crm_cash_check.manager.check', $manager) }}" class="fw-boldest text-success text-decoration-underline">Подтвердить проверку</a>
+                                                                        @if (! $manager->check->isSended())
+                                                                            @if ($manager->isChecked())
+                                                                                <a href="{{ route('crm_cash_check.manager.uncheck', $manager) }}" class="fw-boldest text-danger text-decoration-underline">Отменить проверку</a>
+                                                                            @else
+                                                                                <a href="{{ route('crm_cash_check.manager.check', $manager) }}" class="fw-boldest text-success text-decoration-underline">Подтвердить проверку</a>
+                                                                            @endif
                                                                         @endif
                                                                     @else
                                                                         {{ $manager->manager->name }}
