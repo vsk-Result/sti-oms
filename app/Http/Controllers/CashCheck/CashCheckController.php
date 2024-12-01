@@ -23,8 +23,6 @@ class CashCheckController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        CashCheck::truncate();
-        Manager::truncate();
         $check = $this->cashCheckService->findCashCheck($request->toArray());
 
         if ($check) {
