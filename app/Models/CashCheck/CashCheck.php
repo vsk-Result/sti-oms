@@ -59,6 +59,11 @@ class CashCheck extends Model implements Audit
         return $this->getStatusColors()[$this->status_id];
     }
 
+    public function getEmailStatusColor(): string
+    {
+        return $this->getEmailStatusColors()[$this->email_send_status_id];
+    }
+
     public function getStatuses(): array
     {
         return [
@@ -86,7 +91,7 @@ class CashCheck extends Model implements Audit
         ];
     }
 
-    public function getEmailStatusColor(): array
+    public function getEmailStatusColors(): array
     {
         return [
             self::EMAIL_SEND_STATUS_NOT_SEND => 'danger',
