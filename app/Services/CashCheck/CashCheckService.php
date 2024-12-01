@@ -17,7 +17,8 @@ class CashCheckService
             'crm_user_id' => $requestData['crm_user_id'],
             'crm_cost_id' => $requestData['crm_cost_id'],
             'period' => $requestData['period'],
-            'status_id' => CashCheck::STATUS_UNCKECKED
+            'email_send_status_id' => CashCheck::EMAIL_SEND_STATUS_NOT_SEND,
+            'status_id' => CashCheck::STATUS_UNCKECKED,
         ]);
     }
 
@@ -124,5 +125,24 @@ class CashCheckService
         }
 
         return $payments;
+    }
+
+    public function getCheckedToEmailChecks(): CashCheck
+    {
+        return CashCheck::checked()->notSended()->readyToSend()->get();
+    }
+
+    public function checkSended(CashCheck $check)
+    {
+        $check->update([
+            'email_send_status_id' => CashCheck::EMAIL_SEND_STATUS_SEND
+        ]);
+    }
+
+    public function checkSendedWithError(CashCheck $check)
+    {
+        $check->update([
+            'email_send_status_id' => CashCheck::EMAIL_SEND_STATUS_SEND_WITH_ERROR
+        ]);
     }
 }

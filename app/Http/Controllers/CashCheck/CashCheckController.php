@@ -4,7 +4,7 @@ namespace App\Http\Controllers\CashCheck;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashCheck\CashCheck;
-use App\Models\CashCheck\Manager;
+use App\Models\CRM\Cost;
 use App\Services\CashCheck\CashCheckService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -25,6 +25,7 @@ class AddCrmCashChecksTable extends Migration
             $table->unsignedTinyInteger('crm_user_id');
             $table->unsignedTinyInteger('crm_cost_id');
             $table->string('period', 30);
+            $table->boolean('email_send_status_id')->default(true);
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();
         });

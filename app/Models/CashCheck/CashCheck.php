@@ -18,12 +18,16 @@ class CashCheck extends Model implements Audit
     protected $table = 'crm_cash_checks';
 
     protected $fillable = [
-        'crm_user_id', 'crm_cost_id', 'period', 'status_id'
+        'crm_user_id', 'crm_cost_id', 'period', 'status_id', 'email_send_status_id'
     ];
 
     const STATUS_UNCKECKED = 0;
     const STATUS_CHECKING = 1;
     const STATUS_CHECKED = 2;
+
+    const EMAIL_SEND_STATUS_NOT_SEND = 0;
+    const EMAIL_SEND_STATUS_SEND_WITH_ERROR = 1;
+    const EMAIL_SEND_STATUS_SEND = 2;
 
     public function crmUser(): BelongsTo
     {
@@ -38,6 +42,11 @@ class CashCheck extends Model implements Audit
     public function managers(): HasMany
     {
         return $this->hasMany(Manager::class, 'check_id');
+    }
+
+    public function getEmailStatus(): string
+    {
+        return $this->getEmailStatuses()[$this->email_send_status_id];
     }
 
     public function getStatus(): string
@@ -56,6 +65,15 @@ class CashCheck extends Model implements Audit
             self::STATUS_UNCKECKED => 'Не проверен',
             self::STATUS_CHECKING => 'Проверяется',
             self::STATUS_CHECKED => 'Проверен'
+        ];
+    }
+
+    public function getEmailStatuses(): array
+    {
+        return [
+            self::EMAIL_SEND_STATUS_NOT_SEND => 'Не отправлен',
+            self::EMAIL_SEND_STATUS_SEND_WITH_ERROR => 'Отправлено с ошибкой',
+            self::EMAIL_SEND_STATUS_SEND => 'Отправлено'
         ];
     }
 
@@ -88,6 +106,21 @@ class CashCheck extends Model implements Audit
     public function scopeUnchecked($query)
     {
         return $query->whereIn('status_id', [self::STATUS_UNCKECKED, self::STATUS_CHECKING, self::STATUS_CHECKED]);
+    }
+
+    public function scopeChecked($query)
+    {
+        return $query->whereIn('status_id', [self::STATUS_CHECKED]);
+    }
+
+    public function scopeNotSended($query)
+    {
+        return $query->whereIn('email_send_status_id', [self::EMAIL_SEND_STATUS_NOT_SEND, self::EMAIL_SEND_STATUS_SEND_WITH_ERROR]);
+    }
+
+    public function scopeReadyToSend($query)
+    {
+        return $query->where('updated_at', '<=', now()->subHour());
     }
 
     public function getFormattedPeriod(): string
