@@ -38,7 +38,7 @@
                                         </td>
                                         <td>{{ $detail['description'] }}</td>
                                         <td>
-                                            <span class="{{ $detail['amount'] >= 0 ? 'text-success' : 'text-danger' }}">{{ $detail['amount'] }}</span>
+                                            <span class="{{ $detail['amount'] >= 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($detail['amount'], 'RUB') }}</span>
                                         </td>
                                         <td>{{ $detail['category'] }}</td>
                                     </tr>
