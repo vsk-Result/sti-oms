@@ -112,6 +112,10 @@ class CashCheck extends Model implements Audit
 
     public function scopeForManager($query, int $managerId)
     {
+        if (auth()->user()->hasRole('super-admin')) {
+            return $query;
+        }
+
         return $query->whereHas('managers', function ($q) use ($managerId) {
             return $q->where('manager_id', $managerId);
         });
