@@ -4,7 +4,6 @@ namespace App\Http\Controllers\CashCheck;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashCheck\CashCheck;
-use App\Models\CashCheck\Manager;
 use App\Services\CashCheck\CashCheckService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,8 +15,6 @@ class CashCheckController extends Controller
 
     public function index(): View
     {
-        CashCheck::truncate();
-        Manager::truncate();
         $uncheckedChecks = CashCheck::forManager(auth()->id())->unchecked()->get();
 
         return view('crm-cash-checks.index', compact('uncheckedChecks'));

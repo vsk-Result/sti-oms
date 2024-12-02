@@ -113,7 +113,10 @@ class CashCheck extends Model implements Audit
     public function scopeForManager($query, int $managerId)
     {
         return $query->whereHas('managers', function ($q) use ($managerId) {
-            return $q->where('manager_id', $managerId);
+            return $q->where(function($qq) use ($managerId) {
+                $qq->where('manager_id', $managerId);
+                $qq->orWhere('manager_id', 1);
+            });
         });
     }
 
