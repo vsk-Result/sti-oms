@@ -59,7 +59,7 @@ class Export implements WithMultipleSheets
             $sheets[] = new ObjectPivotSheet($sheetName, $pivotInfo, $year);
         }
 
-        $sheets[] = new \App\Exports\Pivot\ActCategory\Sheets\PivotSheet($this->config['act_service']);
+        $sheets[] = new \App\Exports\Pivot\ActCategory\Sheets\PivotSheet($this->config['act_service'], []);
 
 //        $objects = BObject::active()
 //            ->orderByDesc('code')
