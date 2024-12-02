@@ -20,7 +20,7 @@ class PivotSheet implements
     WithTitle,
     WithStyles
 {
-    public function __construct(private ActService $actService) {}
+    public function __construct(private ActService $actService, private array $requestData) {}
 
     public function title(): string
     {
@@ -68,6 +68,15 @@ class PivotSheet implements
         $total = [];
 
         $filteredObjects = BObject::active()->whereNotIn('code', ['353', '346', '362', '368', '359'])->orderBy('code')->get();
+
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $filteredObjects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
+        if (isset($this->requestData['object_id'])) {
+            $filteredObjects = BObject::whereIn('id', $this->requestData['object_id'])->orderBy('code')->get();
+        }
+
         $activeObjectIds = $filteredObjects->pluck('id')->toArray();
         $activeObjects = BObject::whereIn('id', $activeObjectIds)->orderByDesc('code')->get();
         $acts = $this->actService->filterActs(['object_id' => $activeObjectIds, 'currency' => 'RUB'], $total, false);

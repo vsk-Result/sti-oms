@@ -423,6 +423,10 @@
                                                 $guarantee = $debtManual->guarantee;
                                             }
                                         }
+
+                                        if (! is_valid_amount_in_range($avans + $guarantee + $unworkAvans + $amount)) {
+                                            continue;
+                                        }
                                     @endphp
 
                                     <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">

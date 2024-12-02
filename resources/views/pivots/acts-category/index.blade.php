@@ -23,7 +23,7 @@
                 </button>
 
                 <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                    <form action="{{ route('pivots.acts_category.exports.store') }}" method="POST" class="hidden">
+                    <form action="{{ route('pivots.acts_category.exports.store') . (strpos(request()->fullUrl(), '?') !== false ? substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) : '') }}" method="POST" class="hidden">
                         @csrf
                         <a
                                 href="javascript:void(0);"
