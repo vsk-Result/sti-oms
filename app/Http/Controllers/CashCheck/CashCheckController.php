@@ -29,7 +29,8 @@ class CashCheckController extends Controller
         }
 
         $check = $this->cashCheckService->createCashCheck($request->toArray());
-        $this->cashCheckService->addCheckManagers($check, [1]);
+        $managers = $this->cashCheckService->getManagersForCheckFromExcel($check);
+        $this->cashCheckService->addCheckManagers($check, $managers);
 
         return response()->json(['isset_cash_check' => false]);
     }

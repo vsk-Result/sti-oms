@@ -2,13 +2,21 @@
 
 namespace App\Services\CashCheck;
 
+use App\Imports\ManagerObject\CostManagerImport;
 use App\Models\CashCheck\CashCheck;
 use App\Models\CashCheck\Manager;
 use App\Models\Object\BObject;
+use App\Models\User;
 use App\Services\PaymentImport\Type\CRMCostClosureImportService;
+use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CashCheckService
 {
+    private const FILE_PATH = 'public/objects-debts-manuals/';
+    private const FILE_NAME = 'costs_managers.xlsx';
+    private const DEFAULT_MANAGER_EMAILS = ['aleksandra.kondakova@st-ing.com'];
+
     public function __construct(private CRMCostClosureImportService $CRMCostClosureImportService) {}
 
     public function createCashCheck(array $requestData): CashCheck
@@ -36,11 +44,22 @@ class CashCheckService
 
     public function addCheckManager(CashCheck $check, array $requestData): void
     {
-        Manager::create([
+        $manager = Manager::create([
             'check_id' => $check->id,
             'manager_id' => $requestData['manager_id'],
             'status_id' => Manager::STATUS_UNCKECKED
         ]);
+
+        try {
+            Mail::send('emails.crm-cash-check.manager_notify', compact('check'), function ($m) use ($check, $manager) {
+                $m->from('support@st-ing.com', 'OMS Support');
+                $m->subject('OMS. Новая заявка на закрытый период');
+
+//                    $m->to($manager->manager->email);
+                $m->to('result007@yandex.ru');
+            });
+        } catch(Exception $e){
+        }
     }
 
     public function managerUncheck(Manager $manager): void
@@ -157,5 +176,26 @@ class CashCheckService
         $check->update([
             'email_send_status_id' => CashCheck::EMAIL_SEND_STATUS_SEND_WITH_ERROR
         ]);
+    }
+
+    public function getManagersForCheckFromExcel(CashCheck $check): array
+    {
+        $importData = Excel::toArray(new CostManagerImport(), storage_path() . '/app/public/' . self::FILE_PATH . self::FILE_NAME);
+        $importData = $importData['Лист1'];
+
+        unset($importData[0]);
+
+        $managers = [];
+        foreach ($importData as $data) {
+            if ($check->crm_cost_id === $data[0]) {
+                $managers[] = $data[3];
+            }
+        }
+
+        if (count($managers) === 0) {
+            $managers = User::whereIn('email', self::DEFAULT_MANAGER_EMAILS)->pluck('id')->toArray();
+        }
+
+        return $managers;
     }
 }
