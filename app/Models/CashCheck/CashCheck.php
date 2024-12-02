@@ -148,6 +148,20 @@ class CashCheck extends Model implements Audit
 
     public function getFormattedPeriod(): string
     {
-        return Carbon::parse($this->period . '-01')->format('F Y');
+        $period = Carbon::parse($this->period . '-01')->format('F Y');
+        $period = str_replace('January', 'Январь', $period);
+        $period = str_replace('February', 'Февраль', $period);
+        $period = str_replace('March', 'Март', $period);
+        $period = str_replace('April', 'Апрель', $period);
+        $period = str_replace('May', 'Май', $period);
+        $period = str_replace('June', 'Июнь', $period);
+        $period = str_replace('July', 'Июль', $period);
+        $period = str_replace('August', 'Август', $period);
+        $period = str_replace('September', 'Сентябрь', $period);
+        $period = str_replace('October', 'Октябрь', $period);
+        $period = str_replace('November', 'Ноябрь', $period);
+        $period = str_replace('December', 'Декабрь', $period);
+
+        return $period;
     }
 }
