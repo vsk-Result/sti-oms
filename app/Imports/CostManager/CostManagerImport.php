@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Imports\ManagerObject;
+namespace App\Imports\CostManager;
 
 use App\Imports\Sheets\SheetForArray;
 use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;

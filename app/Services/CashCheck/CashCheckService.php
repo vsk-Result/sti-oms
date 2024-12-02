@@ -2,7 +2,7 @@
 
 namespace App\Services\CashCheck;
 
-use App\Imports\ManagerObject\CostManagerImport;
+use App\Imports\CostManager\CostManagerImport;
 use App\Models\CashCheck\CashCheck;
 use App\Models\CashCheck\Manager;
 use App\Models\Object\BObject;
