@@ -44,7 +44,7 @@ class NotifyToEmailAboutCRMCashCheck extends Command
                     $m->from('support@st-ing.com', 'OMS Support');
                     $m->subject('OMS. Закрытый период ' . $check->getFormattedPeriod() . ' можно закрыть');
 
-//                    $m->to($check->crmUser->email);
+                    $m->to($check->crmUser->email);
                     $m->to('result007@yandex.ru');
                 });
 
