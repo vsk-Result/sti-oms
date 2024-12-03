@@ -3,12 +3,14 @@
 use App\Http\Controllers\CashCheck\CashCheckController;
 use App\Http\Controllers\CashCheck\ManagerCheckController;
 use App\Http\Controllers\CashCheck\ManagerUncheckController;
+use App\Http\Controllers\CashCheck\ManagerResetController;
 
 // Проверка касс CRM
 
 Route::get('/crm-cash-check', [CashCheckController::class, 'index'])->name('crm_cash_check.index');
 //Route::get('/crm-cash-check/create', [CashCheckController::class, 'store'])->name('crm_cash_check.store');
 Route::get('/crm-cash-check/{check}/show', [CashCheckController::class, 'show'])->name('crm_cash_check.show');
+Route::get('/crm-cash-check/{check}/reset', [ManagerResetController::class, 'store'])->name('crm_cash_check.manager.reset');
 
 // Отметка менеджеров о прочтении
 

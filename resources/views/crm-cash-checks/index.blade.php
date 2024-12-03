@@ -69,6 +69,10 @@
                                                     </div>
                                                 @endforeach
                                             </div>
+
+                                            @if (auth()->id() === 1)
+                                                <a href="{{ route('crm_cash_check.manager.reset', $check) }}" class="fw-boldest text-warning text-decoration-underline">Обновить менеджеров</a>
+                                            @endif
                                         </td>
                                         <td>
                                             <span class="badge badge-{{ $check->getStatusColor() }} fw-bolder">{{ $check->getStatus() }}</span>
