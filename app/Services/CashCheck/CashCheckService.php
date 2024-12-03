@@ -187,7 +187,7 @@ class CashCheckService
 
         $managers = [];
         foreach ($importData as $data) {
-            if ($check->crm_cost_id === $data[0]) {
+            if ($check->crm_cost_id == $data[0]) {
                 $managers[] = $data[3];
             }
         }
