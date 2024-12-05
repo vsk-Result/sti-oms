@@ -69,7 +69,7 @@ class PivotSheet implements
 
         $filteredObjects = BObject::active()->whereNotIn('code', ['353', '346', '362', '368', '359'])->orderBy('code')->get();
 
-        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+        if (auth()->user() && auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
             $filteredObjects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 

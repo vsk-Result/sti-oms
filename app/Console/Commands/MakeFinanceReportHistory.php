@@ -495,10 +495,7 @@ class MakeFinanceReportHistory extends Command
                         }
                     }
 
-                    $pp = $object->planPayments;
-                    if ($pp->where(''))
-
-                        $prognozTotal = 0;
+                    $prognozTotal = 0;
                     $prognozTotalWithoutNDS = 0;
                     $prognozFields = FinanceReport::getPrognozFields();
                     foreach ($prognozFields as $field) {
@@ -544,6 +541,16 @@ class MakeFinanceReportHistory extends Command
                                 }
 
                                 break;
+                            }
+                        }
+
+                        if ($field === 'prognoz_material') {
+                            $prognozAmount = $object->planPayments->whereIn('field', ['prognoz_material_fix', 'prognoz_material_float'])->sum('amount');
+                            $p = $object->planPayments->where('field', 'prognoz_material')->first();
+                            if ($p) {
+                                $p->update([
+                                    'amount' => $prognozAmount
+                                ]);
                             }
                         }
 

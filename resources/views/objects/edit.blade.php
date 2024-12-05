@@ -222,7 +222,7 @@
                                             <label class="form-label fw-bolder text-dark fs-6">{{ $name }}</label>
                                             <input
                                                 class="amount-mask form-control form-control-lg form-control-solid"
-                                                type="text"
+                                                type="{{ $field === 'prognoz_material' ? 'hidden' : 'text' }}"
                                                 value="{{ old($field, $planPayment->isAutoCalculation() ? null : $planPayment->amount) }}"
                                                 name="{{ $field }}"
                                             />
