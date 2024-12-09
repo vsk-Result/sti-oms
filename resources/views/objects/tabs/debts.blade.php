@@ -383,7 +383,7 @@
                                             $avans = $debtManual->avans;
                                         }
 
-                                        $contractorDebts[$organization]['amount'] += $amount + $avans;
+                                        $contractorDebts[$organization]['amount'] += $amount;
                                         $contractorDebts[$organization]['total'] += $amount + $avans;
                                     }
 
