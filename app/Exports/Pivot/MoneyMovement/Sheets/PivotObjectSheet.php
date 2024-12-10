@@ -52,7 +52,7 @@ class PivotObjectSheet implements
         $sheet->getStyle('A1:D2')->getFont()->setBold(true);
         $sheet->mergeCells('A1:D1');
 
-        $objectIds = (clone $this->payments)->groupBy('object_id')->pluck('object_id')->toArray();
+        $objectIds = (clone $this->payments)->where('type_id', Payment::TYPE_OBJECT)->groupBy('object_id')->pluck('object_id')->toArray();
         $objects = BObject::whereIn('id', $objectIds)->orderByDesc('code')->get();
 
         $row = 3;
@@ -65,25 +65,51 @@ class PivotObjectSheet implements
             $objectId = $object->id;
             $objectName = $object ? $object->getName() : 'Не определен_' . $objectId;
 
-            $total = (clone $this->payments)->where('object_id', $objectId)->sum('amount');
-            $receive = (clone $this->payments)->where('object_id', $objectId)->where('amount', '>=', 0)->sum('amount');
+            $total = (clone $this->payments)->where('type_id', Payment::TYPE_OBJECT)->where('object_id', $objectId)->sum('amount');
+            $receive = (clone $this->payments)->where('type_id', Payment::TYPE_OBJECT)->where('object_id', $objectId)->where('amount', '>=', 0)->sum('amount');
             $payment = $total - $receive;
 
             $sum['total'] += $total;
             $sum['receive'] += $receive;
             $sum['payment'] += $payment;
 
-            $sheet->setCellValue('A' . $row, $objectName);
-            $sheet->setCellValue('B' . $row, $receive);
-            $sheet->setCellValue('C' . $row, $payment);
-            $sheet->setCellValue('D' . $row, $total);
-
-            $sheet->getRowDimension($row)->setRowHeight(30);
-            $sheet->getStyle('B' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
-            $sheet->getStyle('C' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
-            $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($total < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $row++;
+            $sheet = $this->fillRow($sheet, $row++, [
+                'object_name' => $objectName,
+                'receive' => $receive,
+                'payment' => $payment,
+                'total' => $total,
+            ]);
         }
+
+        $total = (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->sum('amount');
+        $receive = (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '>=', 0)->sum('amount');
+        $payment = $total - $receive;
+
+        $sum['total'] += $total;
+        $sum['receive'] += $receive;
+        $sum['payment'] += $payment;
+
+        $sheet = $this->fillRow($sheet, $row++, [
+            'object_name' => 'Трансфер',
+            'receive' => $receive,
+            'payment' => $payment,
+            'total' => $total,
+        ]);
+
+        $total = (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->sum('amount');
+        $receive = (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '>=', 0)->sum('amount');
+        $payment = $total - $receive;
+
+        $sum['total'] += $total;
+        $sum['receive'] += $receive;
+        $sum['payment'] += $payment;
+
+        $sheet = $this->fillRow($sheet, $row++, [
+            'object_name' => 'Общие затраты',
+            'receive' => $receive,
+            'payment' => $payment,
+            'total' => $total,
+        ]);
 
         $sheet->setCellValue('A' . $row, 'Итого');
         $sheet->setCellValue('B' . $row, $sum['receive']);
@@ -106,5 +132,21 @@ class PivotObjectSheet implements
         $sheet->getStyle('A2:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
 
         $sheet->getStyle('B3:D' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+    }
+
+    private function fillRow($sheet, $row, $data)
+    {
+        $sheet->setCellValue('A' . $row, $data['object_name']);
+        $sheet->setCellValue('B' . $row, $data['receive']);
+        $sheet->setCellValue('C' . $row, $data['payment']);
+        $sheet->setCellValue('D' . $row, $data['total']);
+
+        $sheet->getRowDimension($row)->setRowHeight(30);
+
+        $sheet->getStyle('B' . $row)->getFont()->setColor(new Color(Color::COLOR_DARKGREEN));
+        $sheet->getStyle('C' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+        $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($data['total'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+        return $sheet;
     }
 }
