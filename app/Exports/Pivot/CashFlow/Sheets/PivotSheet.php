@@ -32,7 +32,7 @@ class PivotSheet implements
     {
         $periods = $this->receivePlanService->getPeriods(null, $this->requestData['period'] ?? null);
 
-        $lastColumnIndex = 2 + count($periods);
+        $lastColumnIndex = 3 + count($periods);
         $lastColumn = $this->getColumnWord($lastColumnIndex);
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
@@ -54,6 +54,8 @@ class PivotSheet implements
         $sheet->setCellValue('A3', '         Целевые авансы');
         $sheet->setCellValue('A4', '         Прочие поступления');
 
+        $sheet->setCellValue('B2', 'Код');
+
         $sheet->getStyle('A2:' . $lastColumn . '2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
         $sheet->getStyle('A3:'. $lastColumn . '4')->getFont()->setItalic(true);
         $sheet->getStyle('A3:'. $lastColumn . '4')->getFont()->setSize(11);
@@ -70,7 +72,7 @@ class PivotSheet implements
 
         $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
 
-        $columnIndex = 2;
+        $columnIndex = 3;
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $sheet->setCellValue($column . '1', $period['format']);
@@ -83,7 +85,7 @@ class PivotSheet implements
         $total = 0;
         $targetAvansTotal = 0;
         $otherTotal = 0;
-        $columnIndex = 2;
+        $columnIndex = 3;
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = $plans->where('date', $period['start'])->sum('amount');
@@ -118,11 +120,12 @@ class PivotSheet implements
             }
 
             $sheet->setCellValue('A' . $row, $object->name);
+            $sheet->setCellValue('B' . $row, $object->code);
             $sheet->getRowDimension($row)->setRowHeight(30);
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-            $columnIndex = 2;
+            $columnIndex = 3;
             foreach($periods as $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -149,7 +152,7 @@ class PivotSheet implements
                 $sheet->getStyle('A' . $row . ':'. $lastColumn . $row)->getFont()->setSize(11);
 
                 $total = 0;
-                $columnIndex = 2;
+                $columnIndex = 3;
                 foreach($periods as $period) {
 
                     $column = $this->getColumnWord($columnIndex);
@@ -177,10 +180,11 @@ class PivotSheet implements
 
         foreach($CFPlanPayments as $payment) {
             $sheet->setCellValue('A' . $row, $payment->name);
+            $sheet->setCellValue('B' . $row, $payment->object->code ?? '');
             $sheet->getRowDimension($row)->setRowHeight(30);
 
             $total = 0;
-            $columnIndex = 2;
+            $columnIndex = 3;
             foreach($periods as $index => $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -204,7 +208,7 @@ class PivotSheet implements
             $sheet->getRowDimension($row)->setRowHeight(30);
 
             $total = 0;
-            $columnIndex = 2;
+            $columnIndex = 3;
             foreach($periods as $index => $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -230,7 +234,7 @@ class PivotSheet implements
         $sheet->getRowDimension($row)->setRowHeight(30);
 
         $total = 0;
-        $columnIndex = 2;
+        $columnIndex = 3;
         foreach($periods as $index => $period) {
 
             $column = $this->getColumnWord($columnIndex);
@@ -256,7 +260,7 @@ class PivotSheet implements
         $sheet->setCellValue('A' . $row, 'Сальдо (без учета целевых авансов) по неделям:');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
-        $columnIndex = 2;
+        $columnIndex = 3;
         foreach($periods as $index => $period) {
 
             $column = $this->getColumnWord($columnIndex);
@@ -281,7 +285,7 @@ class PivotSheet implements
         $sheet->getRowDimension($row)->setRowHeight(30);
 
         $prev = 0;
-        $columnIndex = 2;
+        $columnIndex = 3;
         foreach($periods as $index => $period) {
 
             $column = $this->getColumnWord($columnIndex);
@@ -304,12 +308,14 @@ class PivotSheet implements
 
 
         $sheet->getStyle('A1:' . 'A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left');
-        $sheet->getStyle('B2:' . $lastColumn . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('C2:' . $lastColumn . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('B' . ($row - 1) . ':' . $lastColumn . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
+
+        $sheet->getStyle('B1:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
 
         $sheet->getStyle('A' . ($row - 3) . ':' . $lastColumn . $row)->getFont()->setBold(true);
 
-        $sheet->getStyle('B2:' . $lastColumn . $row)->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('C2:' . $lastColumn . $row)->getNumberFormat()->setFormatCode('#,##0');
 
         $sheet->getStyle('A' . ($row - 3) . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
