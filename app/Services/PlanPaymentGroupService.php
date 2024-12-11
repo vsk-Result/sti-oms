@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Helpers\Sanitizer;
 use App\Models\CashFlow\PlanPayment;
-use App\Models\CashFlow\PlanPaymentEntry;
 use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Status;
 
@@ -21,6 +20,7 @@ class PlanPaymentGroupService
     {
         PlanPaymentGroup::create([
             'name' => $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get(),
+            'object_id' => $requestData['object_id'],
             'status_id' => Status::STATUS_ACTIVE,
         ]);
     }
@@ -42,6 +42,10 @@ class PlanPaymentGroupService
                     ]);
                 }
             }
+
+            $group->update([
+                'object_id' => $requestData['objects'][$groupId]
+            ]);
         }
     }
 

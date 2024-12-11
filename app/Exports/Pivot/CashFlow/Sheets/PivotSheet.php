@@ -7,7 +7,6 @@ use App\Models\CashFlow\PlanPaymentEntry;
 use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
-use App\Models\TaxPlanItem;
 use App\Services\ReceivePlanService;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -178,12 +177,131 @@ class PivotSheet implements
         $sheet->getRowDimension($row)->setRowHeight(5);
         $row++;
 
+        $sheet->setCellValue('A' . $row, 'РАСХОДЫ ИТОГО, в том числе:');
+        $sheet->getRowDimension($row)->setRowHeight(30);
+
+        $total = 0;
+        $columnIndex = 3;
+        foreach($periods as $index => $period) {
+
+            $column = $this->getColumnWord($columnIndex);
+            if ($index === 0) {
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments);
+            } else {
+                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
+            }
+
+            $total += $amount;
+
+            $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+            $columnIndex++;
+        }
+
+        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
+        $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
+        $row++;
+
+        $planGroupedPaymentAmount = [];
+        foreach ($planPaymentGroups as $group) {
+            if ($group->payments->count() === 0) {
+                continue;
+            }
+            $planGroupedPaymentAmount[$group->name] = [];
+
+            foreach ($group->payments as $payment) {
+                foreach($periods as $index => $period) {
+                    if ($index === 0) {
+                        $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
+                    } else {
+                        $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
+                    }
+
+                    if (! isset($planGroupedPaymentAmount[$group->name][$period['id']])) {
+                        $planGroupedPaymentAmount[$group->name][$period['id']] = 0;
+                    }
+                    $planGroupedPaymentAmount[$group->name][$period['id']] += $amount;
+                }
+            }
+        }
+
+        foreach($planPaymentGroups as $group) {
+            if ($group->payments->count() === 0) {
+                continue;
+            }
+
+            $sheet->setCellValue('A' . $row, $group->name . ' ИТОГО:');
+            $sheet->setCellValue('B' . $row, $group->object->code ?? '');
+            $sheet->getRowDimension($row)->setRowHeight(30);
+
+            $groupTotal = 0;
+            $columnIndex = 3;
+            foreach($periods as $period) {
+                $column = $this->getColumnWord($columnIndex);
+                $amount = $planGroupedPaymentAmount[$group->name][$period['id']];
+                $groupTotal += $amount;
+
+                $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+                $columnIndex++;
+            }
+
+            $sheet->setCellValue($lastColumn . $row, $groupTotal != 0 ? $groupTotal : '');
+            $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
+            $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+
+            $row++;
+
+            foreach($group->payments as $payment) {
+                $total = $payment->entries->where('date', '<=', last($periods)['end'])->sum('amount');
+
+                if (!is_valid_amount_in_range($total)) {
+                    continue;
+                }
+
+                $sheet->setCellValue('A' . $row, '        ' . $payment->name);
+                $sheet->setCellValue('B' . $row, $payment->object->code ?? '');
+                $sheet->getRowDimension($row)->setRowHeight(30);
+
+                $columnIndex = 3;
+                foreach($periods as $index => $period) {
+
+                    $column = $this->getColumnWord($columnIndex);
+                    if ($index === 0) {
+                        $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
+                    } else {
+                        $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
+                    }
+
+                    $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+                    $columnIndex++;
+                }
+
+                $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
+                $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setSize(11);
+                $sheet->getStyle('A' . $row . ':'. $lastColumn . $row)->getFont()->setItalic(true);
+
+                $sheet->getRowDimension($row)->setOutlineLevel(1)
+                    ->setVisible(true)
+                    ->setCollapsed(false);
+                $row++;
+            }
+        }
+
         foreach($CFPlanPayments as $payment) {
+            if (!is_null($payment->group_id)) {
+                continue;
+            }
+
+            $total = $payment->entries->where('date', '<=', last($periods)['end'])->sum('amount');
+
+            if (!is_valid_amount_in_range($total)) {
+                continue;
+            }
+
             $sheet->setCellValue('A' . $row, $payment->name);
             $sheet->setCellValue('B' . $row, $payment->object->code ?? '');
             $sheet->getRowDimension($row)->setRowHeight(30);
 
-            $total = 0;
             $columnIndex = 3;
             foreach($periods as $index => $period) {
 
@@ -193,7 +311,6 @@ class PivotSheet implements
                 } else {
                     $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                 }
-                $total += $amount;
 
                 $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
                 $columnIndex++;

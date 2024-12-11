@@ -267,7 +267,6 @@
                         </tr>
 
                         @php
-                            $periodsAmount = [];
                             $planGroupedPaymentAmount = [];
                             foreach ($planPaymentGroups as $group) {
                                 if ($group->payments->count() === 0) {
@@ -298,7 +297,7 @@
                                     <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $group->name }}">+</span>
                                     {{ $group->name }}
                                 </td>
-                                <td></td>
+                                <td>{{ $group->object->code ?? '' }}</td>
 
                                 @php
                                     $groupTotal = 0;
@@ -323,7 +322,6 @@
                         @endforeach
 
                         @foreach($CFPlanPayments as $payment)
-                            @continue(!is_null($payment->group_id))
                             @continue(!is_null($payment->group_id))
 
                             @include('pivots.cash-flow.partial.plan_payment_row', $payment)
