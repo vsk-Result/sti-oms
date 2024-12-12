@@ -94,9 +94,15 @@ class MakeFinanceReportHistory extends Command
         $objectsFromGromisoft = [
             '367' => '367. БЦ Легенда Цветного - Vesper Office',
             '363' => 'Аэропорт Елизово Камчатка',
-            '361' => 'Гостиница Кемерово (первый этап)',
+            '361' => 'Гостиница Кемерово (первый этап, второй этап)',
             '358' => 'Гостиница Меркурий Завидово',
             '360' => 'Тинькофф',
+            '376' => 'Сбербанк',
+            '372' => 'Офис продаж VESPER',
+            '369' => 'МОНОСПЕЙС',
+            '373' => 'ДЕТСКИЙ ЦЕНТР МАГНИТОГОРСК',
+            '374' => '374. Офис компании GRAND LINE - Обнинск',
+            '365' => '365. AEROFLOT OFFICE - Tverskaya',
         ];
 
         $hash = md5(date('dmY'));
@@ -570,6 +576,11 @@ class MakeFinanceReportHistory extends Command
 
                     $prognozBalance = $objectBalance + $ostatokPoDogovoruSZakazchikom - $dolgFactUderjannogoGU + $prognozTotal;
                     $prognozBalanceWithoutNDS = $objectBalanceWithoutNDS + $ostatokPoDogovoruSZakazchikomWithoutNDS - $dolgFactUderjannogoGUWithoutNDS + $prognozTotalWithoutNDS;
+
+                    if ($object->code === '000') {
+                        $prognozBalance = $objectBalance;
+                        $prognozBalanceWithoutNDS = $objectBalanceWithoutNDS;
+                    }
 
                     //----------------------------------------
 

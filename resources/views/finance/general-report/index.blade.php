@@ -120,7 +120,7 @@
                                 @foreach($categoryItem['codes']['receive'] as $codeItem)
                                     <tr class="collapse-row" data-trigger="{{ $categoryItem['name'] }}" style="display: none;">
                                         <td colspan="2"></td>
-                                        <td class="collapse-col">{{ $codeItem['name'] }}</td>
+                                        <td class="collapse-col"><a target="_blank" href="{{ route('payments.index') . '?code%5B%5D=' . $codeItem['code'] }}">{{ $codeItem['name'] }}</a></td>
                                         <td class="hl text-right {{ $codeItem['amount'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($codeItem['amount'], 'RUB', 0, true) }}</td>
                                         @foreach($years as $year)
                                             <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($codeItem['years'][$year], 'RUB', 0, true) }}</td>
@@ -140,7 +140,7 @@
                                 @foreach($categoryItem['codes']['pay'] as $codeItem)
                                     <tr class="collapse-row" data-trigger="{{ $categoryItem['name'] }}" style="display: none;">
                                         <td colspan="2"></td>
-                                        <td class="collapse-col">{{ $codeItem['name'] }}</td>
+                                        <td class="collapse-col"><a target="_blank" href="{{ route('payments.index') . '?code%5B%5D=' . $codeItem['code'] }}">{{ $codeItem['name'] }}</a></td>
                                         <td class="hl text-right {{ $codeItem['amount'] > 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($codeItem['amount'], 'RUB', 0, true) }}</td>
                                         @foreach($years as $year)
                                             <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($codeItem['years'][$year], 'RUB', 0, true) }}</td>

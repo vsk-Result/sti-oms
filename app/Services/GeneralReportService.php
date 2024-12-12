@@ -53,6 +53,7 @@ class GeneralReportService
                 return ($codesWithId[$a->code] ?? 0) - ($codesWithId[$b->code] ?? 0);
             })->groupBy('code') as $code => $groupedPaymentsByCode) {
                 $codeItem = [
+                    'code' => $code,
                     'name' => empty($code) ? 'Не указана' : KostCode::getTitleByCode($code),
                     'amount' => (clone $groupedPaymentsByCode)->whereBetween('date', [$years[count($years) - 1] . '-01-01', $years[0] . '-12-31'])->sum('amount')
                 ];
@@ -72,6 +73,7 @@ class GeneralReportService
                 return ($codesWithId[$a->code] ?? 0) - ($codesWithId[$b->code] ?? 0);
             })->groupBy('code') as $code => $groupedPaymentsByCode) {
                 $codeItem = [
+                    'code' => $code,
                     'name' => empty($code) ? 'Не указана' : KostCode::getTitleByCode($code),
                     'amount' => (clone $groupedPaymentsByCode)->whereBetween('date', [$years[count($years) - 1] . '-01-01', $years[0] . '-12-31'])->sum('amount')
                 ];
