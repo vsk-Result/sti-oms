@@ -2,6 +2,7 @@
 
 namespace App\Exports\Pivot\Act;
 
+use App\Exports\Pivot\Act\Sheets\PivotClosedSheet;
 use App\Exports\Pivot\Act\Sheets\PivotSheet;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -18,6 +19,7 @@ class Export implements WithMultipleSheets
     {
         return [
             new PivotSheet('Сводная RUB', $this->pivot, 'RUB'),
+            new PivotClosedSheet('Закрытые объекты'),
         ];
     }
 }
