@@ -37,6 +37,8 @@ class Export implements WithMultipleSheets
             $q->orWhere('description', 'LIKE', '%перевод собственных средств%');
             $q->orWhere('description', 'LIKE', '%депозит%');
             $q->orWhere('description', 'LIKE', '%для зачисления заработной платы%');
+            $q->orWhere('description', 'LIKE', '%на выплату зарплаты%');
+            $q->orWhere('description', 'LIKE', '%на выплату аванса%');
             $q->orWhereIn('organization_receiver_id', $exceptOrganizations);
             $q->orWhereIn('organization_sender_id', $exceptOrganizations);
         })->pluck('id')->toArray();
