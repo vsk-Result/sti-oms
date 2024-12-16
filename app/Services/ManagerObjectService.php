@@ -17,28 +17,41 @@ class ManagerObjectService
         $importData = $importData['Лист1'];
 
         unset($importData[0]);
+
+
         $managers = [];
-        foreach ($importData as $data) {
+        $currentObject = null;
+        $currentManager = null;
+        foreach ($importData as $index => $data) {
             $objectCode = $data[0] == '27' ? '27.1' : $data[0];
-            $manager = [
-                'object_code' => $data[0],
-                'object_name' => $data[1],
-                'object_boss' => BObject::where('code', $objectCode)->first()?->responsible_name ?? '',
-                'object_boss_email' => BObject::where('code', $objectCode)->first()?->responsible_email ?? '',
-                'object_boss_phone' => BObject::where('code', $objectCode)->first()?->responsible_phone ?? '',
-                'names' => [],
-                'emails' => [],
-            ];
 
-            foreach (explode("\n", $data[2]) as $managerName) {
-                $manager['names'][] = $managerName;
+            if ($objectCode !== $currentObject) {
+                if (! is_null($currentManager)) {
+                    $managers[] = $currentManager;
+                }
+
+                $manager = [
+                    'object_code' => $data[0],
+                    'object_name' => $data[1],
+                    'object_boss' => BObject::where('code', $objectCode)->first()?->responsible_name ?? '',
+                    'object_boss_email' => BObject::where('code', $objectCode)->first()?->responsible_email ?? '',
+                    'object_boss_phone' => BObject::where('code', $objectCode)->first()?->responsible_phone ?? '',
+                    'names' => [],
+                    'emails' => [],
+                    'phones' => [],
+                ];
+
+                $currentObject = $objectCode;
+                $currentManager = $manager;
             }
 
-            foreach (explode("\n", $data[3]) as $managerName) {
-                $manager['emails'][] = $managerName;
-            }
+            $currentManager['names'][] = $data[2];
+            $currentManager['emails'][] = $data[3];
+            $currentManager['phones'][] = $data[4];
 
-            $managers[] = $manager;
+            if ($index === count($importData)) {
+                $managers[] = $currentManager;
+            }
         }
 
         return $managers;

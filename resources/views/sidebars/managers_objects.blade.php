@@ -1,7 +1,7 @@
 <button id="kt_explore_toggle_ao" class="explore-toggle btn btn-sm bg-body btn-color-gray-700 btn-active-primary shadow-sm position-fixed px-5 fw-bolder zindex-2 top-75 mt-17 end-0 transform-90 rounded-top-0" title="Финансовые менеджеры" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-trigger="hover">
     <span id="kt_explore_toggle_label">Финансовые менеджеры</span>
 </button>
-<div id="kt_explore" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="explore" data-kt-drawer-activate="true" data-kt-drawer-overlay="false" data-kt-drawer-width="{default:'800px', 'lg': '800px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_explore_toggle_ao" data-kt-drawer-close="#kt_explore_close">
+<div id="kt_explore" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="explore" data-kt-drawer-activate="true" data-kt-drawer-overlay="false" data-kt-drawer-width="{default:'1000px', 'lg': '1000px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_explore_toggle_ao" data-kt-drawer-close="#kt_explore_close">
     <div class="card shadow-none rounded-0 w-100">
         <div class="card-header" id="kt_explore_header">
             <h3 class="card-title fw-bolder text-gray-700">
@@ -32,6 +32,7 @@
                                     <th style="max-width: 220px;">Объект</th>
                                     <th style="max-width: 185px;">Фин.менеджер для согласования счетов / договоров</th>
                                     <th style="max-width: 250px;">Почта</th>
+                                    <th style="max-width: 250px;">Телефон</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -50,6 +51,12 @@
                                         <td>
                                             @foreach($manager['emails'] as $email)
                                                 <a href="mailto:{{ $email }}">{{ $email }}</a>
+                                                <br>
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            @foreach($manager['phones'] as $phone)
+                                                <a href="tel:{{ str_replace(' ', '', $phone) }}">{{ $phone }}</a>
                                                 <br>
                                             @endforeach
                                         </td>
