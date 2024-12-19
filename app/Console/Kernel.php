@@ -25,7 +25,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('oms:contractor-debts-from-excel')->dailyAt('19:00');
-        $schedule->command('oms:dt-debts-from-excel')->dailyAt('19:30');
         $schedule->command('oms:transfer-organizations-payments-from-excel')->twiceDaily(13, 18);
         $schedule->command('oms:update-loans-history-payments')->twiceDaily(13, 18);
         $schedule->command('oms:check-bank-guarantee-date-expired')->dailyAt('07:00');
