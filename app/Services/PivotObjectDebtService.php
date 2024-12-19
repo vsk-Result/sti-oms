@@ -156,7 +156,7 @@ class PivotObjectDebtService
             $result = [];
 
             foreach ($debts as $debt) {
-                $id = $debt->organization_id . '::' . $debt->organization->name;
+                $id = $debt->organization_id . '::' . $debt->organization?->name ?? 'Не определено';
                 if (! isset($result[$id])) {
                     $result[$id] = 0;
                 }
