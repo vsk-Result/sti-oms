@@ -101,6 +101,7 @@ class ImportObjectDebtsFromExcel extends Command
         '367 Офис Веспер' => '367',
         '371. ЗИЛ' => '371',
         '372. Офис Веспер Тверская' => '372',
+        '376. Сбер К32' => '376',
     ];
 
     public function __construct(
