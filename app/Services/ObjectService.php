@@ -7,6 +7,7 @@ use App\Models\FinanceReport;
 use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
 use App\Models\Object\PlanPayment;
+use App\Models\Object\ResponsiblePerson;
 use App\Models\Payment;
 use App\Models\Status;
 use Carbon\Carbon;
@@ -89,6 +90,53 @@ class ObjectService
         }
 
         $object->customers()->sync($requestData['customer_id'] ?? []);
+
+        $currentPersonIds = $object->responsiblePersons()->pluck('id', 'id')->toArray();
+
+        if (! empty($requestData['isset_person_name'])) {
+            foreach ($requestData['isset_person_name'] as $personId => $personName) {
+                $person = ResponsiblePerson::find($personId);
+
+                $name = $this->sanitizer->set($personName)->upperCaseAllFirstWords()->get();
+                $email = $this->sanitizer->set($requestData['isset_person_email'][$personId])->get();
+                $phone = $this->sanitizer->set($requestData['isset_person_phone'][$personId])->get();
+                $positionId = $requestData['isset_person_position'][$personId];
+
+                $person->update([
+                    'fullname' => $name,
+                    'position_id' => $positionId,
+                    'email' => $email,
+                    'phone' => $phone,
+                ]);
+
+                unset($currentPersonIds[$personId]);
+            }
+        }
+
+        foreach ($currentPersonIds as $personId) {
+            $person = ResponsiblePerson::find($personId);
+            $person->delete();
+        }
+
+        if (! empty($requestData['person_name'])) {
+            foreach ($requestData['person_name'] as $index => $personName) {
+                $name = $this->sanitizer->set($personName)->upperCaseAllFirstWords()->get();
+                $email = $this->sanitizer->set($requestData['person_email'][$index])->get();
+                $phone = $this->sanitizer->set($requestData['person_phone'][$index])->get();
+                $positionId = $requestData['person_position'][$index];
+
+                if (! empty($name)) {
+                    ResponsiblePerson::create([
+                        'object_id' => $object->id,
+                        'fullname' => $name,
+                        'position_id' => $positionId,
+                        'email' => $email,
+                        'phone' => $phone,
+                        'status_id' => Status::STATUS_ACTIVE,
+                    ]);
+                }
+            }
+        }
     }
 
     public static function getGeneralCostsByPeriod(string $startDate, string $endDate, int $bonus = 0): array

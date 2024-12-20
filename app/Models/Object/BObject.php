@@ -85,6 +85,11 @@ class BObject extends Model implements Audit
         return $this->hasMany(Payment::class, 'object_id');
     }
 
+    public function responsiblePersons(): HasMany
+    {
+        return $this->hasMany(ResponsiblePerson::class, 'object_id');
+    }
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'object_user', 'user_id', 'object_id');

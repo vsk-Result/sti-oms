@@ -103,7 +103,7 @@ class PivotObjectDebtService
 
     public function updatePivotDebtForAllObjects(): void
     {
-        $objects = BObject::orderByDesc('code')->take(15)->get();
+        $objects = BObject::orderByDesc('code')->get();
 
         foreach ($objects as $object) {
             $this->updatePivotDebtForObject($object->id);

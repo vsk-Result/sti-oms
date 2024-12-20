@@ -7,6 +7,8 @@ use App\Http\Requests\Object\StoreObjectRequest;
 use App\Http\Requests\Object\UpdateObjectRequest;
 use App\Models\FinanceReport;
 use App\Models\Object\BObject;
+use App\Models\Object\ResponsiblePerson;
+use App\Models\Object\ResponsiblePersonPosition;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Status;
@@ -87,7 +89,10 @@ class ObjectController extends Controller
         } else {
             $prognozFields = FinanceReport::getPrognozFields();
         }
-        return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields'));
+
+        $positions = ResponsiblePersonPosition::getPositions();
+
+        return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields', 'positions'));
     }
 
     public function update(BObject $object, UpdateObjectRequest $request): RedirectResponse
