@@ -271,7 +271,7 @@
                                                 <th class="min-w-150px">ФИО</th>
                                                 <th class="min-w-150px">Должность</th>
                                                 <th class="min-w-150px">Email</th>
-                                                <th class="min-w-150px">Phone</th>
+                                                <th class="min-w-150px">Телефон</th>
                                                 <th class="min-w-150px rounded-end pe-4">Действие</th>
                                             </tr>
                                             </thead>
