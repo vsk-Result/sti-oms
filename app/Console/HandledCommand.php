@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 class HandledCommand extends Command
 {
     protected string $period;
+    protected bool $needNotifyErrors;
 
     private string $botId;
     private array $errors;
@@ -42,6 +43,7 @@ class HandledCommand extends Command
 //
 //        $this->logChannel = Log::channel($this->signature);
 
+        $this->needNotifyErrors = true;
         $this->logChannel = Log::channel('custom_imports_log');
         $this->botId = (string) config('services.telegram-bot-api.channel_id_for_scheduler');
         $this->CRONProcessService = new CRONProcessService();
@@ -92,7 +94,10 @@ class HandledCommand extends Command
         $errorMessage = implode("\n\n", $this->errors);
 
         $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-        Notification::send([$this->botId], new SchedulerExecuted($this->signature, '🛑', $errorMessage));
+
+        if ($this->needNotifyErrors) {
+            Notification::send([$this->botId], new SchedulerExecuted($this->signature, '🛑', $errorMessage));
+        }
     }
 
     protected function sendInfoMessage(string $message): void

@@ -19,6 +19,7 @@ class CheckAvansesReceivedFromPayments extends HandledCommand
     public function __construct(private ContractAvansReceivedService $avansReceivedService)
     {
         parent::__construct();
+        $this->needNotifyErrors = false;
     }
 
     public function handle()
