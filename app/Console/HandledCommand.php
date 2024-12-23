@@ -89,7 +89,7 @@ class HandledCommand extends Command
             return;
         }
 
-        $errorMessage = implode("\n", $this->errors);
+        $errorMessage = implode("\n\n", $this->errors);
 
         $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
         Notification::send([$this->botId], new SchedulerExecuted($this->signature, '🛑', $errorMessage));

@@ -157,7 +157,7 @@ class ImportObjectDebtsFromExcel extends HandledCommand
                 $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xls';
 
                 if (! File::exists($importFilePath)) {
-                    $this->sendErrorMessage('Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл ' . $code . '.xlsx');
+                    $this->sendInfoMessage('Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл ' . $code . '.xlsx');
 
                     if (! File::exists($importManualFilePath)) {
                         $this->sendErrorMessage('Файл для загрузки "' . $importManualFilePath . '" не найден');
