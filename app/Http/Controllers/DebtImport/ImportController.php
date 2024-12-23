@@ -4,30 +4,23 @@ namespace App\Http\Controllers\DebtImport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
-use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
-use App\Models\Object\BObject;
 use App\Services\DebtImportService;
-use App\Services\DebtService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\DebtImport\StoreDebtImportRequest;
-use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
-    private DebtImportService $importService;
-    private DebtService $debtService;
-
-    public function __construct(DebtImportService $importService, DebtService $debtService)
-    {
-        $this->importService = $importService;
-        $this->debtService = $debtService;
-    }
+    public function __construct(private DebtImportService $importService) {}
 
     public function index(): View
     {
-        $imports = DebtImport::with('company', 'debts', 'createdBy')->orderByDesc('date')->orderByDesc('id')->paginate(15);
+        $imports = DebtImport::with('company', 'debts', 'createdBy')
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->paginate(15);
+
         return view('debt-imports.index', compact('imports'));
     }
 
@@ -40,10 +33,12 @@ class ImportController extends Controller
     public function store(StoreDebtImportRequest $request): RedirectResponse
     {
         $status = $this->importService->createImport($request->toArray());
+
         if ($status !== 'ok') {
             session()->flash('status', $status);
             return redirect()->back();
         }
+
         return redirect()->route('debt_imports.index');
     }
 

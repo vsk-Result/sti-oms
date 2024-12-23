@@ -322,7 +322,7 @@ class ImportObjectDebtsFromExcel extends HandledCommand
                 }
 
             } catch (\Exception $e) {
-                $this->sendErrorMessage('Не удалось загрузить файл: "' . $e->getMessage());
+                $this->sendErrorMessage('Не удалось загрузить файл ' . $importFilePath . ': "' . $e->getMessage());
                 continue;
             }
 
