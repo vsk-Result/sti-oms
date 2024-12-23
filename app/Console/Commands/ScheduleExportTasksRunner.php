@@ -2,34 +2,24 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\ScheduleExport;
-use App\Services\CRONProcessService;
 use App\Services\ScheduleExportService;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ScheduleExportTasksRunner extends Command
+class ScheduleExportTasksRunner extends HandledCommand
 {
     protected $signature = 'oms:schedule-export-tasks-runner';
 
     protected $description = 'Обрабатывает задачи планировщика формирования отчетов и отправляет результат на почту пользователя';
 
-    private ScheduleExportService $scheduleExportService;
+    protected string $period = 'Каждую минуту';
 
-    public function __construct(CRONProcessService $CRONProcessService, ScheduleExportService $scheduleExportService)
+    public function __construct(private ScheduleExportService $scheduleExportService)
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Каждую минуту'
-        );
-        $this->scheduleExportService = $scheduleExportService;
     }
 
     public function handle()
@@ -38,9 +28,11 @@ class ScheduleExportTasksRunner extends Command
             return 0;
         }
 
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Запуск обработки задач планировщика формирования отчетов');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $taskToRun = $this->scheduleExportService->getTaskToRun();
 
@@ -49,7 +41,7 @@ class ScheduleExportTasksRunner extends Command
         ]);
 
         try {
-            Log::channel('custom_imports_log')->debug('[INFO] Формирование отчета "' . $taskToRun->name . '"');
+            $this->sendInfoMessage('Формирование отчета "' . $taskToRun->name . '"');
 
             $data = (array) json_decode($taskToRun->data);
 
@@ -61,10 +53,8 @@ class ScheduleExportTasksRunner extends Command
                 'status_id' => ScheduleExport::STATUS_CANCELED
             ]);
 
-            $errorMessage = '[ERROR] Не удалось сформировать отчет: "' . $taskToRun->name . ' - ' . $e->getMessage();
-
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось сформировать отчет: "' . $taskToRun->name . ' - ' . $e->getMessage());
+            $this->endProcess();
 
             return 0;
         }
@@ -73,7 +63,7 @@ class ScheduleExportTasksRunner extends Command
             'status_id' => ScheduleExport::STATUS_DONE
         ]);
 
-        Log::channel('custom_imports_log')->debug('[INFO] Отчет "' . $taskToRun->name . '" успешно сформирован');
+        $this->sendInfoMessage('Отчет "' . $taskToRun->name . '" успешно сформирован');
 
         try {
             $userName = $taskToRun->createdBy->name;
@@ -81,7 +71,7 @@ class ScheduleExportTasksRunner extends Command
             $email = $taskToRun->createdBy->email;
             $filepath = storage_path('') . '/app/public/' . $filename;
 
-            Log::channel('custom_imports_log')->debug('[INFO] Отправка отчета "' . $taskToRun->name . '" на email "' . $email . '"');
+            $this->sendInfoMessage('Отправка отчета "' . $taskToRun->name . '" на email "' . $email . '"');
 
             Mail::send('emails.schedule-exports', compact('exportName', 'userName'), function ($m) use ($exportName, $filepath, $email) {
                 $m->from('support@st-ing.com', 'OMS Отчет сформирован');
@@ -91,17 +81,14 @@ class ScheduleExportTasksRunner extends Command
                 $m->to($email);
             });
         } catch(Exception $e){
-            $errorMessage = '[ERROR] Не удалось отправить отчет "' . $taskToRun->name . '" email "' . $email . '": ' . $e->getMessage();
-
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-
+            $this->sendErrorMessage('Не удалось отправить отчет "' . $taskToRun->name . '" email "' . $email . '": ' . $e->getMessage());
+            $this->endProcess();
             return 0;
         }
 
-        $this->CRONProcessService->successProcess($this->signature);
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Отчет "' . $taskToRun->name . '" успешно отправлен на email "' . $email . '"');
+        $this->sendInfoMessage('Отчет "' . $taskToRun->name . '" успешно отправлен на email "' . $email . '"');
 
+        $this->endProcess();
 
         return 0;
     }

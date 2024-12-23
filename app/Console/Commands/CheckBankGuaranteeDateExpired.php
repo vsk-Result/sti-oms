@@ -2,52 +2,42 @@
 
 namespace App\Console\Commands;
 
-use App\Console\BaseNotifyCommand;
+use App\Console\HandledCommand;
 use App\Models\Object\BObject;
 use App\Services\BankGuaranteeService;
-use App\Services\CRONProcessService;
 use App\Services\DepositService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
+class CheckBankGuaranteeDateExpired extends HandledCommand
 {
     protected $signature = 'oms:check-bank-guarantee-date-expired';
 
     protected $description = 'Проверка окончания сроков действий банковских гарантиий';
 
-    private BankGuaranteeService $bankGuaranteeService;
+    protected string $period = 'Ежедневно в 07:00';
 
-    private DepositService $depositService;
-
-    public function __construct(BankGuaranteeService $bankGuaranteeService, DepositService $depositService, CRONProcessService $CRONProcessService)
-    {
+    public function __construct(
+        private BankGuaranteeService $bankGuaranteeService,
+        private DepositService $depositService
+    ) {
         parent::__construct();
-        $this->commandName = 'Проверка окончания сроков действий БГ и депозитов';
-        $this->bankGuaranteeService = $bankGuaranteeService;
-        $this->depositService = $depositService;
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 07:00'
-        );
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] ' . $this->description);
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         try {
             $checkInfo = $this->bankGuaranteeService->checkExpired();
             $depositsCheckInfo = $this->depositService->checkExpired();
         } catch (\Exception $e) {
-            $errorMessage = 'Не удалось провести проверку: ' . $e->getMessage();
-            $this->sendErrorNotification($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось провести проверку: ' . $e->getMessage());
+            $this->endProcess();
             return 0;
         }
 
@@ -64,8 +54,8 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
             $message .= 'Истек срок действия БГ <strong>' . $info['number'] . '</strong>, дата окончания: <strong>' . $date . '</strong>' . PHP_EOL;
             $expiredBGCount++;
 
-            Log::channel('custom_imports_log')->debug('[INFO] Истек срок действия банковской гарантии #' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $date);
-            Log::channel('custom_imports_log')->debug('[INFO] Банковская гарантия #' . $info['id'] . ' переведена в архив');
+            $this->sendInfoMessage('Истек срок действия банковской гарантии #' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $date);
+            $this->sendInfoMessage('Банковская гарантия #' . $info['id'] . ' переведена в архив');
 
             $object = BObject::find($info['object_id']);
 
@@ -80,11 +70,11 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
                                 ->subject('OMS. ' . $mes);
                         });
                     } catch(\Exception $e){
-                        Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на ' . $user->email . ': "' . $e->getMessage());
+                        $this->sendErrorMessage('Не удалось отправить уведомление на ' . $user->email . ': "' . $e->getMessage());
                     }
                 }
             } else {
-                Log::channel('custom_imports_log')->debug('[ERROR] Не найден объект #' . $info['object_id']);
+                $this->sendErrorMessage('Не найден объект #' . $info['object_id']);
             }
         }
 
@@ -97,8 +87,8 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
             $message .= 'Истек срок действия депозита по БГ <strong>' . $info['number'] . '</strong>, дата окончания: <strong>' . $date . '</strong>' . PHP_EOL;
             $expiredDepositCount++;
 
-            Log::channel('custom_imports_log')->debug('[INFO] Истек срок действия депозита по БГ#' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $date);
-            Log::channel('custom_imports_log')->debug('[INFO] Банковская гарантия #' . $info['id'] . ' переведена в архив');
+            $this->sendInfoMessage('Истек срок действия депозита по БГ#' . $info['id'] . ', номер: ' . $info['number'] . ', дата окончания: ' . $date);
+            $this->sendInfoMessage('Банковская гарантия #' . $info['id'] . ' переведена в архив');
 
             $object = BObject::find($info['object_id']);
 
@@ -113,11 +103,11 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
                                 ->subject('OMS. ' . $mes);
                         });
                     } catch(\Exception $e){
-                        Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на ' . $user->email . ': "' . $e->getMessage());
+                        $this->sendErrorMessage('Не удалось отправить уведомление на ' . $user->email . ': "' . $e->getMessage());
                     }
                 }
             } else {
-                Log::channel('custom_imports_log')->debug('[ERROR] Не найден объект #' . $info['object_id']);
+                $this->sendErrorMessage('Не найден объект #' . $info['object_id']);
             }
         }
 
@@ -126,8 +116,8 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
             $message .= 'Истек срок действия депозита, дата окончания: <strong>' . $date . '</strong>' . PHP_EOL;
             $expiredDepositCount++;
 
-            Log::channel('custom_imports_log')->debug('[INFO] Истек срок действия депозита, дата окончания: ' . $date);
-            Log::channel('custom_imports_log')->debug('[INFO] Депозит #' . $info['id'] . ' переведен в архив');
+            $this->sendInfoMessage('Истек срок действия депозита, дата окончания: ' . $date);
+            $this->sendInfoMessage('Депозит #' . $info['id'] . ' переведен в архив');
 
             $object = BObject::find($info['object_id']);
 
@@ -142,25 +132,26 @@ class CheckBankGuaranteeDateExpired extends BaseNotifyCommand
 //                                ->subject('OMS. ' . $mes);
 //                        });
 //                    } catch(\Exception $e){
-//                        Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на ' . $user->email . ': "' . $e->getMessage());
+//                        $this->sendErrorMessage('Не удалось отправить уведомление на ' . $user->email . ': "' . $e->getMessage());
 //                    }
 //                }
             } else {
-                Log::channel('custom_imports_log')->debug('[ERROR] Не найден объект #' . $info['object_id']);
+                $this->sendErrorMessage('Не найден объект #' . $info['object_id']);
             }
         }
 
         if ($expiredBGCount === 0 && $expiredDepositCount === 0) {
-            $this->sendSuccessNotification('Истекших сроков действия не обнаружено');
+            $this->sendInfoMessage('Истекших сроков действия не обнаружено');
         } else {
             $message.= PHP_EOL . '-------' . PHP_EOL;
             $message.= $expiredBGCount . ' БГ с истекшим сроком' . PHP_EOL;
             $message.= $expiredDepositCount . ' депозитов с истекшим сроком' . PHP_EOL;
-            $this->sendSuccessNotification($message);
+            $this->sendInfoMessage($message);
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Проверка прошла успешно');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage('Проверка прошла успешно');
+
+        $this->endProcess();
 
         return 0;
     }

@@ -2,40 +2,32 @@
 
 namespace App\Console\Commands;
 
-use App\Console\BaseNotifyCommand;
+use App\Console\HandledCommand;
 use App\Models\Contract\Contract;
 use App\Models\CurrencyExchangeRate;
 use App\Models\Guarantee;
-use App\Models\GuaranteePayment;
 use App\Models\Object\BObject;
-use App\Models\Status;
-use App\Services\CRONProcessService;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
-class CreateGuaranteeForContract extends BaseNotifyCommand
+class CreateGuaranteeForContract extends HandledCommand
 {
     protected $signature = 'oms:create-guarantee-for-contract';
 
     protected $description = 'Создает или обновляет информацию по гарантийным удержаниям для договоров';
 
-    public function __construct(CRONProcessService $CRONProcessService)
+    protected string $period = 'Ежедневно в 13:00 и в 18:00';
+
+    public function __construct()
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 13:00 и в 18:00'
-        );
-        $this->commandName = 'Создания/изменение ГУ для договоров';
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Создает или обновляет информацию по гарантийным удержаниям для договоров');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $createdGuaranteesCount = 0;
         $updatedGuaranteesCount = 0;
@@ -100,8 +92,9 @@ class CreateGuaranteeForContract extends BaseNotifyCommand
             $message = 'Обработка прошла без изменений';
         }
 
-        $this->sendSuccessNotification($message);
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage($message);
+
+        $this->endProcess();
 
         return 0;
     }

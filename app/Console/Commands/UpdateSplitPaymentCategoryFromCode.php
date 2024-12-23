@@ -2,35 +2,29 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Payment;
-use App\Services\CRONProcessService;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
-class UpdateSplitPaymentCategoryFromCode extends Command
+class UpdateSplitPaymentCategoryFromCode extends HandledCommand
 {
     protected $signature = 'oms:update-split-payment-category-from-code';
 
     protected $description = 'Исправляет категории в оплатах, разбитых из CRM на основе статей зартат';
 
+    protected string $period = 'Вручную';
 
-    public function __construct(CRONProcessService $CRONProcessService)
+    public function __construct()
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Вручную'
-        );
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Исправление категорий в оплатах, разбитых из CRM на основе статей зартат');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $count = 0;
         Payment::where('was_split', true)->chunk(1000, function($payments) use (&$count){
@@ -46,10 +40,10 @@ class UpdateSplitPaymentCategoryFromCode extends Command
             }
         });
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправлено ' . $count . ' категорий оплат из CRM');
+        $this->sendInfoMessage('Исправлено ' . $count . ' категорий оплат из CRM');
+        $this->sendInfoMessage('Исправление категорий оплат завершено');
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправление категорий оплат завершено');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->endProcess();
 
         return 0;
     }

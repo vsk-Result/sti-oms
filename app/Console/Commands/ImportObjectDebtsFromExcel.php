@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Helpers\Sanitizer;
 use App\Imports\DebtImport\Import;
 use App\Imports\DebtImport\ObjectImport;
@@ -11,28 +12,22 @@ use App\Models\Debt\DebtImport;
 use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
 use App\Models\Status;
-use App\Services\CRONProcessService;
 use App\Services\DebtService;
 use App\Services\OrganizationService;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class ImportObjectDebtsFromExcel extends Command
+class ImportObjectDebtsFromExcel extends HandledCommand
 {
     protected $signature = 'oms:objects-debts-from-excel';
 
     protected $description = 'Загружает долги по подрядчикам объектов из Excel';
 
-    private OrganizationService $organizationService;
-    private Sanitizer $sanitizer;
-    private DebtService $debtService;
-    private PivotObjectDebtService $pivotObjectDebtService;
+    protected string $period = 'Каждые 15 минут';
 
     private array $objects = [
         'Бамиленд' => '279',
@@ -105,39 +100,29 @@ class ImportObjectDebtsFromExcel extends Command
     ];
 
     public function __construct(
-        OrganizationService $organizationService,
-        Sanitizer $sanitizer,
-        DebtService $debtService,
-        CRONProcessService $CRONProcessService,
-        PivotObjectDebtService $pivotObjectDebtService
+        private OrganizationService $organizationService,
+        private Sanitizer $sanitizer,
+        private DebtService $debtService,
+        private PivotObjectDebtService $pivotObjectDebtService
     ) {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Каждые 15 минут'
-        );
-        $this->organizationService = $organizationService;
-        $this->sanitizer = $sanitizer;
-        $this->debtService = $debtService;
-        $this->pivotObjectDebtService = $pivotObjectDebtService;
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Загрузка долгов по подрядчикам объектов из Excel');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $availableCodes = BObject::getCodesForContractorImportDebts();
 
         $company = Company::getSTI();
 
         if (!$company) {
-            $errorMessage = 'В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"';
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('В системе ОМС не найдена компания ООО "Строй Техно Инженеринг"');
+            $this->endProcess();
             return 0;
         }
 
@@ -158,7 +143,7 @@ class ImportObjectDebtsFromExcel extends Command
         $objectCodesWithAmount = [];
 
         foreach ($availableCodes as $code) {
-            Log::channel('custom_imports_log')->debug('[INFO] Загружается файл ' . $code . '.xlsx');
+            $this->sendInfoMessage('Загружается файл ' . $code . '.xlsx');
 
             // Путь до файла с автоматической загрузкой
             $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xlsx';
@@ -167,19 +152,15 @@ class ImportObjectDebtsFromExcel extends Command
             $importManualFilePath = storage_path() . '/app/public/public/objects-debts-manuals/' . $code . '.xlsx';
 
             if (! File::exists($importFilePath)) {
-                Log::channel('custom_imports_log')->debug('[INFO] Не загрузился файл ' . $code . '.xlsx, загружается файл ' . $code . '.xls');
+                $this->sendInfoMessage('Не загрузился файл ' . $code . '.xlsx, загружается файл ' . $code . '.xls');
 
                 $importFilePath = storage_path() . '/app/public/public/objects-debts/' . $code . '.xls';
 
                 if (! File::exists($importFilePath)) {
-                    $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл ' . $code . '.xlsx';
-                    Log::channel('custom_imports_log')->debug($errorMessage);
+                    $this->sendErrorMessage('Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл ' . $code . '.xlsx');
 
                     if (! File::exists($importManualFilePath)) {
-                        $errorMessage = '[ERROR] Файл для загрузки "' . $importManualFilePath . '" не найден';
-                        Log::channel('custom_imports_log')->debug($errorMessage);
-                        $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-//                        return 0;
+                        $this->sendErrorMessage('Файл для загрузки "' . $importManualFilePath . '" не найден');
                         continue;
                     }
                 }
@@ -200,9 +181,7 @@ class ImportObjectDebtsFromExcel extends Command
                 $importData = Excel::toArray(new ObjectImport(), $importFilePath);
 
                 if (!isset($importData['OMS'])) {
-                    $errorMessage = '[ERROR] В загружаемом файле отсутствует лист OMS';
-                    Log::channel('custom_imports_log')->debug($errorMessage);
-                    $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                    $this->sendErrorMessage('В загружаемом файле отсутствует лист OMS');
                     continue;
                 }
 
@@ -343,9 +322,7 @@ class ImportObjectDebtsFromExcel extends Command
                 }
 
             } catch (\Exception $e) {
-                $errorMessage = '[ERROR] Не удалось загрузить файл: "' . $e->getMessage();
-                Log::channel('custom_imports_log')->debug($errorMessage);
-                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                $this->sendErrorMessage('Не удалось загрузить файл: "' . $e->getMessage());
                 continue;
             }
 
@@ -353,9 +330,7 @@ class ImportObjectDebtsFromExcel extends Command
                 $newFileName = $import->id . '_' . $code . '.xlsx';
                 Storage::putFileAs('debt-imports/objects', $importFilePath, $newFileName);
             } catch (\Exception $e) {
-                $errorMessage = '[ERROR] Не удалось сохранить файл: "' . $e->getMessage();
-                Log::channel('custom_imports_log')->debug($errorMessage);
-                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                $this->sendErrorMessage('Не удалось сохранить файл: "' . $e->getMessage());
                 continue;
             }
         }
@@ -470,22 +445,25 @@ class ImportObjectDebtsFromExcel extends Command
             }
 
         } catch (\Exception $e) {
-            $errorMessage = '[ERROR] Не удалось загрузить файл Raboty(XLSX).xlsx: ' . $e->getMessage();
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось загрузить файл Raboty(XLSX).xlsx: ' . $e->getMessage());
         }
 
         $objectIds = BObject::whereIn('code', $availableCodes)->pluck('id')->toArray();
         DebtManual::whereIn('object_id', $objectIds)->delete();
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Импорт прошел успешно');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage('Импорт прошел успешно');
 
         if ($prevImport) {
             $prevImport->delete();
         }
 
-        $this->pivotObjectDebtService->updatePivotDebtForAllObjects();
+        try {
+            $this->pivotObjectDebtService->updatePivotDebtForAllObjects();
+        } catch (\Exception $e) {
+            $this->sendErrorMessage('Не удалось обновить сводную: ' . $e->getMessage());
+        }
+
+        $this->endProcess();
 
         return 0;
     }

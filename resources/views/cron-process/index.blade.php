@@ -16,6 +16,7 @@
                                 <th class="min-w-125px">Команда</th>
                                 <th class="min-w-125px">Название</th>
                                 <th class="min-w-125px">Период выполнения</th>
+                                <th class="min-w-125px">Дата последнего запуска</th>
                                 <th class="min-w-125px">Дата последнего выполнения</th>
                                 <th class="min-w-125px">Статус</th>
                             </tr>
@@ -32,13 +33,14 @@
                                             @endif
                                         </td>
                                         <td>{{ $process->period }}</td>
+                                        <td>{{ $process->getLastRunningDate() }}</td>
                                         <td>{{ $process->getLastExecutedDate() }}</td>
                                         <td>
-                                            @include('partials.status', ['status' => $process->getStatus()])
+                                            <span class="badge badge-{{ $process->getStatusColor() }} fw-bolder">{{ $process->getStatus() }}</span>
 
-                                            @if ($process->status_id === \App\Models\Status::STATUS_BLOCKED)
-                                                <p class="text-danger fs-7 mt-2">{{ $process->last_error }}</p>
-                                            @endif
+{{--                                            @if ($process->status_id === \App\Models\Status::STATUS_BLOCKED)--}}
+{{--                                                <p class="text-danger fs-7 mt-2">{{ $process->last_error }}</p>--}}
+{{--                                            @endif--}}
                                         </td>
                                     </tr>
                                 @endforeach

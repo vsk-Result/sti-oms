@@ -115,8 +115,8 @@ return [
         ],
 
         'custom_imports_log' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/imports.log'),
+            'driver' => 'daily',
+            'path' => storage_path('logs/imports/imports.log'),
             'level' => 'debug'
         ],
 

@@ -2,42 +2,33 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Payment;
-use App\Services\CRONProcessService;
 use App\Services\PaymentService;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
-class UpdatePaymentCategory extends Command
+class UpdatePaymentCategory extends HandledCommand
 {
     protected $signature = 'oms:update-payment-category';
 
     protected $description = 'Исправляет категории оплат и заполняет пустые';
 
-    private PaymentService $paymentService;
+    protected string $period = 'Вручную';
 
-    public function __construct(CRONProcessService $CRONProcessService, PaymentService $paymentService)
+    public function __construct(private PaymentService $paymentService)
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Вручную'
-        );
-        $this->paymentService = $paymentService;
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Исправляет категории оплат и заполняет пусты');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
 
-        Log::channel('custom_imports_log')->debug('[INFO] Старт исправления категорий оплат');
+        $this->startProcess();
 
-        Log::channel('custom_imports_log')->debug('[INFO] Заполнение пустых категорий');
+        $this->sendInfoMessage('Старт исправления категорий оплат');
+        $this->sendInfoMessage('Заполнение пустых категорий');
 
         $this->paymentService->loadCategoriesList();
 
@@ -60,9 +51,8 @@ class UpdatePaymentCategory extends Command
             }
         });
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправлено ' . $count . ' оплат с пустой категорией');
-
-        Log::channel('custom_imports_log')->debug('[INFO] Исправление некорректных категорий');
+        $this->sendInfoMessage('Исправлено ' . $count . ' оплат с пустой категорией');
+        $this->sendInfoMessage('Исправление некорректных категорий');
 
         $count = 0;
 //        Payment::where(function($q) {
@@ -83,10 +73,10 @@ class UpdatePaymentCategory extends Command
 //            }
 //        });
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправлено ' . $count . ' оплат с некорректной категорией');
+        $this->sendInfoMessage('Исправлено ' . $count . ' оплат с некорректной категорией');
+        $this->sendInfoMessage('Исправление категорий оплатах завершено');
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправление категорий оплатах завершено');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->endProcess();
 
         return 0;
     }

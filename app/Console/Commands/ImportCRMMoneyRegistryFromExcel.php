@@ -2,64 +2,50 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Services\CRM\MoneyRegistryService;
-use App\Services\CRONProcessService;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZipArchive;
 
-class ImportCRMMoneyRegistryFromExcel extends Command
+class ImportCRMMoneyRegistryFromExcel extends HandledCommand
 {
     protected $signature = 'oms:import-crm-money-registry-from-excel';
 
     protected $description = 'Загружает зарплатные реестры в CRM из Excel';
 
-    private MoneyRegistryService $moneyRegistryService;
+    protected string $period = 'Каждый час';
 
-    public function __construct(MoneyRegistryService $moneyRegistryService, CRONProcessService $CRONProcessService)
+    public function __construct(private MoneyRegistryService $moneyRegistryService)
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Каждый час'
-        );
-        $this->moneyRegistryService = $moneyRegistryService;
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Загрузка зарплатных реестров в CRM из Excel');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
 
-        Log::channel('custom_imports_log')->debug('[INFO] Попытка разорхивировать файл с реестрами Payments.zip');
+        $this->startProcess();
+
+        $this->sendInfoMessage('Попытка разорхивировать файл с реестрами Payments.zip');
 
         $zip = new ZipArchive();
         $status = $zip->open(storage_path('app/public/public/objects-debts-manuals/Payments.zip'));
         if ($status !== true) {
-            $errorMessage = '[ERROR] Не удалось разорхивировать файл Payments.zip: ' . $status;
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось разорхивировать файл Payments.zip: ' . $status);
         }
 
         try {
             $zip->extractTo(storage_path('app/public/public/crm-registry/'));
             $zip->close();
         } catch (\Exception $e) {
-            $errorMessage = '[ERROR] Не удалось разорхивировать файл Payments.zip: ' . $e->getMessage();
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось разорхивировать файл Payments.zip: ' . $e->getMessage());
         }
-
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Рахорхивирование прошло успешно');
 
         $importedCount = 0;
         $files = Storage::files('public/crm-registry');
@@ -71,14 +57,14 @@ class ImportCRMMoneyRegistryFromExcel extends Command
             $extension = File::extension($file);
 
             if (str_contains($fileName, 'imported')) {
-                Log::channel('custom_imports_log')->debug('[INFO] Файл "' . $fileName . '.' . $extension . '" содержит imported. Файл перемещен в imported.');
+                $this->sendInfoMessage('Файл "' . $fileName . '.' . $extension . '" содержит imported. Файл перемещен в imported.');
                 Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '__' . Str::random(5) . '.' . $extension);
                 continue;
             }
 
             try {
                 if ($this->moneyRegistryService->isRegistryWasImported($file)) {
-                    Log::channel('custom_imports_log')->debug('[INFO] Файл "' . $fileName . '.' . $extension . '" ранее уже был подгружен. Файл перемещен в imported.');
+                    $this->sendInfoMessage('Файл "' . $fileName . '.' . $extension . '" ранее уже был подгружен. Файл перемещен в imported.');
                     Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '__' . Str::random(5) . '_imported.' . $extension);
                     continue;
                 }
@@ -91,18 +77,17 @@ class ImportCRMMoneyRegistryFromExcel extends Command
                         'employees' => $importErrors
                     ];
 
-                    Log::channel('custom_imports_log')->debug('[ERROR] Файл ' . $fileName . '.' . $extension . ' не был загружен из за проблем с сотрудниками');
+                    $this->sendErrorMessage('Файл ' . $fileName . '.' . $extension . ' не был загружен из за проблем с сотрудниками');
                     continue;
                 }
 
                 $importedCount++;
                 Storage::move('public/crm-registry/' . $fileName . '.' . $extension, 'public/crm-registry/imported/' . $fileName . '__' . Str::random(5) . '_imported.' . $extension);
 
-                Log::channel('custom_imports_log')->debug('[INFO] Файл ' . $fileName . '.' . $extension . ' успешно загружен');
+                $this->sendInfoMessage('Файл ' . $fileName . '.' . $extension . ' успешно загружен');
             } catch (\Exception $e) {
-                $errorMessage = '[ERROR] Не удалось загрузить файл ' . $fileName . ' - ' . $e->getMessage();
-                Log::channel('custom_imports_log')->debug($errorMessage);
-                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                $this->sendErrorMessage('Не удалось загрузить файл ' . $fileName . ' - ' . $e->getMessage());
+
                 continue;
             }
         }
@@ -115,21 +100,22 @@ class ImportCRMMoneyRegistryFromExcel extends Command
                     $m->to('dmitry.samsonov@dttermo.ru');
                 });
             } catch(Exception $e){
-                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на email: "' . $e->getMessage());
+                $this->sendErrorMessage('Не удалось отправить уведомление об ошибке загрузки на email: "' . $e->getMessage());
             }
 
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-            Log::channel('custom_imports_log')->debug('[ERROR] Не все файлы были загружены успешно');
+            $this->sendErrorMessage('Не все файлы были загружены успешно');
+            $this->endProcess();
+
             return 0;
         }
 
-        $this->CRONProcessService->successProcess($this->signature);
-
         if ($importedCount === 0) {
-            Log::channel('custom_imports_log')->debug('[SUCCESS] Файлы для загрузки не обнаружены');
+            $this->sendInfoMessage('Файлы для загрузки не обнаружены');
         } else {
-            Log::channel('custom_imports_log')->debug('[SUCCESS] Файлы успешно загружены');
+            $this->sendInfoMessage('Файлы успешно загружены');
         }
+
+        $this->endProcess();
 
         return 0;
     }

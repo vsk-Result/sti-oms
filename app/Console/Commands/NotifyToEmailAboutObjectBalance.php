@@ -2,33 +2,24 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Object\BObject;
-use App\Services\CRONProcessService;
 use App\Services\ObjectBalanceExportService;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class NotifyToEmailAboutObjectBalance extends Command
+class NotifyToEmailAboutObjectBalance extends HandledCommand
 {
     protected $signature = 'oms:notify-to-email-about-object-balance';
 
     protected $description = 'Отправляет на почту сотрудникам информацию о балансе объектов';
 
-    private ObjectBalanceExportService $balanceExportService;
+    protected string $period = 'Ежедневно в 15:00';
 
-    public function __construct(CRONProcessService $CRONProcessService, ObjectBalanceExportService $balanceExportService)
+    public function __construct(private ObjectBalanceExportService $balanceExportService)
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 15:00'
-        );
-        $this->balanceExportService = $balanceExportService;
     }
 
     public function handle()
@@ -37,9 +28,11 @@ class NotifyToEmailAboutObjectBalance extends Command
             return 0;
         }
 
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Отправка на почту сотрудникам информацию о балансе объектов');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $alwaysInCopy = ['oksana.dashenko@st-ing.com', 'enes@st-ing.com', 'result007@yandex.ru'];
         $notificationConfig = [
@@ -73,8 +66,8 @@ class NotifyToEmailAboutObjectBalance extends Command
                         $m->to($receiver);
                     }
                 });
-            } catch(Exception $e){
-                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на email: "' . $e->getMessage());
+            } catch(Exception $e) {
+                $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
             }
         }
 
@@ -94,10 +87,10 @@ class NotifyToEmailAboutObjectBalance extends Command
                 }
             });
         } catch(Exception $e){
-            Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить общее уведомление на email: "' . $e->getMessage());
+            $this->sendErrorMessage('Не удалось отправить общее уведомление на email: "' . $e->getMessage());
         }
 
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->endProcess();
 
         return 0;
     }

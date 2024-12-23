@@ -2,37 +2,31 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Payment;
-use App\Services\CRONProcessService;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
-class UpdateWrongPaymentCode extends Command
+class UpdateWrongPaymentCode extends HandledCommand
 {
     protected $signature = 'oms:update-wrong-payment-code';
 
     protected $description = 'Исправляет некорректные статьи затрат в оплатах';
 
+    protected string $period = 'Ежедневно в 20:00';
 
-    public function __construct(CRONProcessService $CRONProcessService)
+    public function __construct()
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 20:00'
-        );
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Исправление некорректных статей затрат в оплатах');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
 
-        Log::channel('custom_imports_log')->debug('[INFO] Старт исправления оплат с запятой');
+        $this->startProcess();
+
+        $this->sendInfoMessage('Старт исправления оплат с запятой');
 
         $count = 0;
         Payment::where('code', 'LIKE', '%,%')->chunk(1000, function($payments) use (&$count){
@@ -44,7 +38,7 @@ class UpdateWrongPaymentCode extends Command
             }
         });
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправлено ' . $count . ' оплат с запятой');
+        $this->sendInfoMessage('Исправлено ' . $count . ' оплат с запятой');
 
         $count = 0;
         Payment::where('code', 'LIKE', '%..%')->chunk(1000, function($payments) use (&$count){
@@ -56,7 +50,7 @@ class UpdateWrongPaymentCode extends Command
             }
         });
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправлено ' . $count . ' оплат с двумя точками');
+        $this->sendInfoMessage('Исправлено ' . $count . ' оплат с двумя точками');
 
         $count = 0;
         Payment::where('code', 'LIKE', '% %')->chunk(1000, function($payments) use (&$count){
@@ -68,7 +62,7 @@ class UpdateWrongPaymentCode extends Command
             }
         });
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправлено ' . $count . ' оплат с пробелами');
+        $this->sendInfoMessage('Исправлено ' . $count . ' оплат с пробелами');
 
         $count = 0;
         Payment::where('code', 'LIKE', '%.%')->chunk(1000, function($payments) use (&$count){
@@ -82,10 +76,11 @@ class UpdateWrongPaymentCode extends Command
             }
         });
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправлено ' . $count . ' оплат с последней точкой');
+        $this->sendInfoMessage('Исправлено ' . $count . ' оплат с последней точкой');
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Исправление статей затрат в оплатах завершено');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage('Исправление статей затрат в оплатах завершено');
+
+        $this->endProcess();
 
         return 0;
     }

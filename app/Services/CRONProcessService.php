@@ -12,15 +12,18 @@ class CRONProcessService
 {
     public function getCronProcesses(): Collection
     {
-        return CRONProcess::latest('last_executed_date')->get();
+        return CRONProcess::latest('last_running_date')->get();
     }
 
-    public function createProcess(string $command, string $title, string $period): void
+    public function isProcessRunning(string $command): bool
     {
-        if (!Schema::hasTable('cron_processes')) {
-            return;
-        }
+        $process = CRONProcess::where('command', $command)->first();
 
+        return $process && $process->isRunning();
+    }
+
+    public function handleProcess(string $command, string $title, string $period)
+    {
         $process = CRONProcess::where('command', $command)->first();
 
         if ($process) {
@@ -36,35 +39,33 @@ class CRONProcessService
             'command' => $command,
             'title' => $title,
             'period' => $period,
+            'status_id' => CRONProcess::STATUS_NEW
+        ]);
+    }
+
+    public function runProcess(string $command): void
+    {
+        CRONProcess::where('command', $command)->update([
+            'last_error' => '',
+            'last_running_date' => now(),
+            'status_id' => CRONProcess::STATUS_RUNNING,
         ]);
     }
 
     public function successProcess(string $command): void
     {
-        $process = CRONProcess::where('command', $command)->first();
-
-        if (!$process) {
-            return;
-        }
-
-        $process->update([
-            'last_executed_date' => Carbon::now(),
-            'status_id' => Status::STATUS_ACTIVE
+        CRONProcess::where('command', $command)->update([
+            'last_executed_date' => now(),
+            'status_id' => CRONProcess::STATUS_SUCCESS
         ]);
     }
 
     public function failedProcess(string $command, string $errorMessage): void
     {
-        $process = CRONProcess::where('command', $command)->first();
-
-        if (!$process) {
-            return;
-        }
-        $process->update([
-            'last_executed_date' => Carbon::now(),
+        CRONProcess::where('command', $command)->update([
+            'last_executed_date' => now(),
             'last_error' => $errorMessage,
-            'status_id' => Status::STATUS_BLOCKED
+            'status_id' => CRONProcess::STATUS_ERROR
         ]);
-
     }
 }

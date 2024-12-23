@@ -2,38 +2,30 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\CRM\Cost;
-use App\Services\CRONProcessService;
-use App\Services\ObjectBalanceExportService;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
-class NotifyToEmailAboutUnclosedCRMCostClosures extends Command
+class NotifyToEmailAboutUnclosedCRMCostClosures extends HandledCommand
 {
     protected $signature = 'oms:notify-to-email-about-unclosed-crm-cost-closures';
 
     protected $description = 'Отправляет на почту пользователям CRM просьбу закрыть кассу';
 
-    private ObjectBalanceExportService $balanceExportService;
+    protected string $period = 'Ежедневно в 10:00';
 
-    public function __construct(CRONProcessService $CRONProcessService, ObjectBalanceExportService $balanceExportService)
+    public function __construct()
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 10:00'
-        );
-        $this->balanceExportService = $balanceExportService;
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Отправка на почту пользователям CRM просьбу закрыть кассу');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $closures = [];
         $nowMonth = Carbon::now()->format('Y-m') . '-01';
@@ -79,7 +71,7 @@ class NotifyToEmailAboutUnclosedCRMCostClosures extends Command
             }
         }
 
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->endProcess();
 
         return 0;
     }

@@ -2,37 +2,30 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Object\BObject;
-use App\Models\Payment;
-use App\Services\CRONProcessService;
-use App\Services\ObjectService;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
-class UpdateGeneralCosts extends Command
+class UpdateGeneralCosts extends HandledCommand
 {
     protected $signature = 'oms:update-general-costs';
 
     protected $description = 'Обновляет общие затраты объектов';
 
-    public function __construct(CRONProcessService $CRONProcessService)
+    protected string $period = 'Каждые 30 минут';
+
+    public function __construct()
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Каждые 30 минут'
-        );
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Обновляет общие затраты объектов');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         try {
             $periodsByYears = [
@@ -173,14 +166,14 @@ class UpdateGeneralCosts extends Command
             Cache::put('general_costs', $info);
 
         } catch (\Exception $e) {
-            $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Ошибка в вычислениях: ' . $e->getMessage());
+            $this->endProcess();
             return 0;
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Данные успешно обновлены');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage('Данные успешно обновлены');
+
+        $this->endProcess();
 
         return 0;
     }

@@ -2,27 +2,34 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Contract\Contract;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Services\Contract\ContractAvansReceivedService;
-use App\Services\CRONProcessService;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
-class CheckAvansesReceivedFromPayments extends Command
+class CheckAvansesReceivedFromPayments extends HandledCommand
 {
     protected $signature = 'oms:check-avanses-received-from-payments';
 
     protected $description = 'Определяет и создает полученные авансы от заказчиков в оплатах';
 
-    public function __construct(ContractAvansReceivedService $avansReceivedService, CRONProcessService $CRONProcessService)
+    protected string $period = 'Ежедневно в 13:00 и в 18:00';
+
+    public function __construct(private ContractAvansReceivedService $avansReceivedService)
     {
         parent::__construct();
-        $this->avansReceivedService = $avansReceivedService;
-        $this->CRONProcessService = $CRONProcessService;
-        $this->checkItems = [
+    }
+
+    public function handle()
+    {
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
+
+        $checkItems = [
             [
                 'id' => 1,
                 'organization_name' => 'АО "ТИНЬКОФФ БАНК"',
@@ -63,45 +70,23 @@ class CheckAvansesReceivedFromPayments extends Command
                 'active' => true
             ]
         ];
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 13:00 и в 18:00'
-        );
-    }
-
-    public function handle()
-    {
-        if (count($this->checkItems) === 0) {
-            return 0;
-        }
-
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Определяет и создает полученные авансы от заказчиков в оплатах');
 
         $createdAvansesCount = 0;
-        foreach ($this->checkItems as $checkItem) {
+        foreach ($checkItems as $checkItem) {
             if (! $checkItem['active']) {
                 continue;
             }
 
             $organization = Organization::where('name', $checkItem['organization_name'])->first();
             if (! $organization) {
-                $errorMessage = '[ERROR] [ID: #' . $checkItem['id'] . '] Не удалось найти контрагента: "' . $checkItem['organization_name'];
-                Log::channel('custom_imports_log')->debug($errorMessage);
-                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-
-                return 0;
+                $this->sendErrorMessage('[ID: #' . $checkItem['id'] . '] Не удалось найти контрагента: "' . $checkItem['organization_name']);
+                continue;
             }
 
             $contract = Contract::where('name', $checkItem['contract_name'])->first();
             if (! $contract) {
-                $errorMessage = '[ERROR] [ID: #' . $checkItem['id'] . '] Не удалось найти контракт: "' . $checkItem['contract_name'];
-                Log::channel('custom_imports_log')->debug($errorMessage);
-                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-
-                return 0;
+                $this->sendErrorMessage('[ID: #' . $checkItem['id'] . '] Не удалось найти контракт: "' . $checkItem['contract_name']);
+                continue;
             }
 
             $paymentQuery = Payment::query();
@@ -138,13 +123,10 @@ class CheckAvansesReceivedFromPayments extends Command
                         'description' => 'Создано автоматически из оплаты #' . $payment->id,
                     ]);
                     $createdAvansesCount++;
-                    Log::channel('custom_imports_log')->debug('[SUCCESS] [ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] [RECEIVED-AVANS-ID: #' . $createdAvans->id . '] Аванс успешно создан');
+                    $this->sendInfoMessage('[ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] [RECEIVED-AVANS-ID: #' . $createdAvans->id . '] Аванс успешно создан');
                 } catch (\Exception $e) {
-                    $errorMessage = '[ERROR] [ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] Не удалось создать полученный аванс: "' . $e->getMessage();
-                    Log::channel('custom_imports_log')->debug($errorMessage);
-                    $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
-
-                    return 0;
+                    $this->sendErrorMessage('[ID: #' . $checkItem['id'] . '] [PAYMENT-ID: #' . $payment->id . '] Не удалось создать полученный аванс: "' . $e->getMessage());
+                    continue;
                 }
             }
 
@@ -156,8 +138,9 @@ class CheckAvansesReceivedFromPayments extends Command
             }
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] ' . $createdAvansesCount . ' полученных авансов успешно создано');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage($createdAvansesCount . ' полученных авансов успешно создано');
+
+        $this->endProcess();
 
         return 0;
     }

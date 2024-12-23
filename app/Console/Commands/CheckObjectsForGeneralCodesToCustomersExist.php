@@ -2,36 +2,31 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
-use App\Services\CRONProcessService;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class CheckObjectsForGeneralCodesToCustomersExist extends Command
+class CheckObjectsForGeneralCodesToCustomersExist extends HandledCommand
 {
     protected $signature = 'oms:check-objects-for-general-codes-to-customers-exist';
 
     protected $description = 'Проверяет объекты для расчета общих затрат на наличие заказчиков';
 
-    public function __construct(CRONProcessService $CRONProcessService)
+    protected string $period = 'Ежедневно в 07:00';
+
+    public function __construct()
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 07:00'
-        );
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Проверка объектов для расчета общих затрат на наличие заказчиков');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $codes = GeneralCost::getObjectCodesForGeneralCosts();
         $objects = BObject::whereIn('code', $codes)->with('customers')->orderBy('code')->get();
@@ -40,7 +35,7 @@ class CheckObjectsForGeneralCodesToCustomersExist extends Command
         foreach ($objects as $object) {
             if ($object->customers->count() === 0) {
                 $invalidObjects[] = $object->getName();
-                Log::channel('custom_imports_log')->debug('[ERROR] У объекта ' . $object->getName() . ' не указаны заказчики');
+                $this->sendErrorMessage('У объекта ' . $object->getName() . ' не указаны заказчики');
             }
         }
 
@@ -51,13 +46,14 @@ class CheckObjectsForGeneralCodesToCustomersExist extends Command
                     $m->to('result007@yandex.ru')
                         ->subject('OMS. Проблемные объекты для расчета общих затрат');
                 });
-            } catch(\Exception $e){
-                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на email: "' . $e->getMessage());
+            } catch(\Exception $e) {
+                $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
             }
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] ' . count($invalidObjects) . ' проблемных объектов выявлено');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage(count($invalidObjects) . ' проблемных объектов выявлено');
+
+        $this->endProcess();
 
         return 0;
     }

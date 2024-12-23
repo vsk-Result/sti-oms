@@ -2,35 +2,30 @@
 
 namespace App\Console\Commands;
 
-use App\Services\CRONProcessService;
-use Carbon\Carbon;
-use Illuminate\Console\Command;
+use App\Console\HandledCommand;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
-class GetDebtsFilesFromOneC extends Command
+class GetDebtsFilesFromOneC extends HandledCommand
 {
     protected $signature = 'oms:get-debts-files-from-one-c';
 
     protected $description = 'Скачивает файлы по долгам из 1С в папку';
 
-    public function __construct(CRONProcessService $CRONProcessService)
+    protected string $period = 'Каждый час';
+
+    public function __construct()
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Каждый час'
-        );
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Скачивание файлов по долгам из 1С в папку');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         try {
             $response = Http::withBasicAuth('WebService', 'Vi7je7da')->post('https://1c.st-ing.com/prod_STI_usp/hs/USPServices/Universal', [
@@ -40,22 +35,22 @@ class GetDebtsFilesFromOneC extends Command
             $data = json_decode($response->getBody()->getContents(), true);
 
             foreach ($data as $fileInfo) {
-                Log::channel('custom_imports_log')->debug('Попытка скачать файл ' . $fileInfo['Name']);
+                $this->sendInfoMessage('Попытка скачать файл ' . $fileInfo['Name']);
 
                 $path = storage_path('app/public/public/objects-debts-manuals/');
                 file_put_contents(($path . $fileInfo['Name'] . '.' . $fileInfo['Extension']), base64_decode($fileInfo['Data']));
 
-                Log::channel('custom_imports_log')->debug('Файл ' . $fileInfo['Name'] . ' успешно скачан');
+                $this->sendInfoMessage('Файл ' . $fileInfo['Name'] . ' успешно скачан');
             }
         } catch (\Exception $e) {
-            $errorMessage = '[ERROR] Не удалось скачать файлы: "' . $e->getMessage();
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось скачать файлы: "' . $e->getMessage());
+            $this->endProcess();
             return 0;
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Файлы успешно скачены');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage('Файлы успешно скачены');
+
+        $this->endProcess();
 
         Artisan::call('oms:contractor-debts-from-excel');
         Artisan::call('oms:service-debts-from-excel');

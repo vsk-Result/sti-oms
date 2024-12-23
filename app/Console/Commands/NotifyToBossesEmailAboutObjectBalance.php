@@ -2,40 +2,33 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Models\Object\BObject;
-use App\Services\CRONProcessService;
 use App\Services\ObjectBalanceExportService;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class NotifyToBossesEmailAboutObjectBalance extends Command
+class NotifyToBossesEmailAboutObjectBalance extends HandledCommand
 {
     protected $signature = 'oms:notify-to-bosses-email-about-object-balance';
 
     protected $description = 'Отправляет на почту руководителям информацию о балансе объектов';
 
-    private ObjectBalanceExportService $balanceExportService;
+    protected string $period = 'По понедельникам в 16:00';
 
-    public function __construct(CRONProcessService $CRONProcessService, ObjectBalanceExportService $balanceExportService)
+    public function __construct(private ObjectBalanceExportService $balanceExportService)
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'По понедельникам в 16:00'
-        );
-        $this->balanceExportService = $balanceExportService;
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Отправка на почту руководителям информацию о балансе объектов');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $notificationConfig = [
             '353' => ['oleg.kalin@st-ing.com'], // Сухаревская (ЖК "Лайон Гейт")
@@ -68,11 +61,11 @@ class NotifyToBossesEmailAboutObjectBalance extends Command
                     }
                 });
             } catch(Exception $e){
-                Log::channel('custom_imports_log')->debug('[ERROR] Не удалось отправить уведомление на email: "' . $e->getMessage());
+                $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
             }
         }
 
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->endProcess();
 
         return 0;
     }

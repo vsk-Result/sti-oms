@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Console\HandledCommand;
 use App\Exports\Finance\FinanceReport\Export;
 use App\Models\Company;
 use App\Models\Debt\Debt;
@@ -17,7 +18,6 @@ use App\Models\Status;
 use App\Models\TaxPlanItem;
 use App\Services\Contract\ActService;
 use App\Services\Contract\ContractService;
-use App\Services\CRONProcessService;
 use App\Services\CurrencyExchangeRateService;
 use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\FinanceReport\CreditService;
@@ -28,66 +28,40 @@ use App\Services\ObjectPlanPaymentService;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
-class MakeFinanceReportHistory extends Command
+class MakeFinanceReportHistory extends HandledCommand
 {
     protected $signature = 'oms:make-finance-report-history';
 
     protected $description = 'Создает снимок финансового отчета для истории';
 
-    private AccountBalanceService $accountBalanceService;
-    private CreditService $creditService;
-    private LoanService $loanService;
-    private DepositService $depositeService;
-    private PivotObjectDebtService $pivotObjectDebtService;
-    private CurrencyExchangeRateService $currencyExchangeService;
-    private ContractService $contractService;
-    private ObjectPlanPaymentService $objectPlanPaymentService;
-    private GeneralReportService $generalReportService;
-    private ActService $actService;
+    protected string $period = 'Ежедневно каждые 10 минут';
 
     public function __construct(
-        AccountBalanceService $accountBalanceService,
-        CreditService $creditService,
-        LoanService $loanService,
-        DepositService $depositeService,
-        CRONProcessService $CRONProcessService,
-        PivotObjectDebtService $pivotObjectDebtService,
-        CurrencyExchangeRateService $currencyExchangeService,
-        ContractService $contractService,
-        ObjectPlanPaymentService $objectPlanPaymentService,
-        GeneralReportService $generalReportService,
-        ActService $actService
+        private AccountBalanceService $accountBalanceService,
+        private CreditService $creditService,
+        private LoanService $loanService,
+        private DepositService $depositeService,
+        private PivotObjectDebtService $pivotObjectDebtService,
+        private CurrencyExchangeRateService $currencyExchangeService,
+        private ContractService $contractService,
+        private ObjectPlanPaymentService $objectPlanPaymentService,
+        private GeneralReportService $generalReportService,
+        private ActService $actService
     ) {
         parent::__construct();
-        $this->accountBalanceService = $accountBalanceService;
-        $this->creditService = $creditService;
-        $this->loanService = $loanService;
-        $this->depositeService = $depositeService;
-        $this->pivotObjectDebtService = $pivotObjectDebtService;
-        $this->currencyExchangeService = $currencyExchangeService;
-        $this->contractService = $contractService;
-        $this->objectPlanPaymentService = $objectPlanPaymentService;
-        $this->CRONProcessService = $CRONProcessService;
-        $this->generalReportService = $generalReportService;
-        $this->actService = $actService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно каждые 10 минут'
-        );
     }
 
     public function handle()
     {
         ini_set('memory_limit', '-1');
 
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Создание снимка финансового отчета для истории');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $pivotInfoFromGromisoft = [];
 
@@ -118,16 +92,14 @@ class MakeFinanceReportHistory extends Command
                 $pivotInfoFromGromisoft = json_decode($response->getBody(), true);
             }
         } catch (\Throwable $e) {
-            $errorMessage = '[ERROR] Не удалось загрузить данные из https://sti.gromitsoft.space/api/v1/projects';
-            Log::channel('custom_imports_log')->debug($errorMessage);
+            $this->sendErrorMessage('Не удалось загрузить данные из https://sti.gromitsoft.space/api/v1/projects: ' . $e->getMessage());
         }
 
         $company = Company::getSTI();
 
         if ( !$company) {
-            $errorMessage = '[ERROR] Компания ООО "Строй Техно Инженеринг" не найдена в системе';
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Компания ООО "Строй Техно Инженеринг" не найдена в системе');
+            $this->endProcess();
             return 0;
         }
 
@@ -891,10 +863,8 @@ class MakeFinanceReportHistory extends Command
                 $summary[$year]['general_balance_service'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] * $summary[$year]['general_balance'];
             }
         } catch (\Exception $e) {
-            $errorMessage = '[ERROR] Ошибка в вычислениях: ' . $e->getMessage();
-            $errorMessage = mb_substr($errorMessage, 0, 2000);
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Ошибка в расчете: ' . $e->getMessage());
+            $this->endProcess();
             return 0;
         }
 
@@ -920,9 +890,8 @@ class MakeFinanceReportHistory extends Command
         $financeReportHistory = FinanceReportHistory::where('date', $date)->first();
         $financeReportHistory->update(compact('balances', 'credits', 'loans', 'deposits', 'objects_new'));
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Создание прошло успешно');
-
-        Log::channel('custom_imports_log')->debug('[INFO] Выгрущка снимка финансового отчета в Excel');
+        $this->sendInfoMessage('Создание прошло успешно');
+        $this->sendInfoMessage('Выгрущка снимка финансового отчета в Excel');
 
         $fileName = 'Финансовый_отчет_' . now()->format('d_m_Y') . '.xlsx';
 
@@ -953,9 +922,9 @@ class MakeFinanceReportHistory extends Command
             \Maatwebsite\Excel\Excel::XLSX
         );
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Экспорт прошел успешно');
+        $this->sendInfoMessage('Экспорт прошел успешно');
 
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->endProcess();
 
         return 0;
     }

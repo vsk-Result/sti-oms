@@ -2,39 +2,32 @@
 
 namespace App\Console\Commands;
 
-use App\Services\CRONProcessService;
+use App\Console\HandledCommand;
 use App\Services\DebtImportService;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 
-class ImportDTDebtsFromExcel extends Command
+class ImportDTDebtsFromExcel extends HandledCommand
 {
     protected $signature = 'oms:dt-debts-from-excel';
 
     protected $description = 'Загружает долги по ДТ Термо из Excel';
 
-    private DebtImportService $debtImportService;
+    protected string $period = 'Ежедневно в 19:30';
 
-    public function __construct(DebtImportService $debtImportService, CRONProcessService $CRONProcessService)
+    public function __construct(private DebtImportService $debtImportService)
     {
         parent::__construct();
-        $this->CRONProcessService = $CRONProcessService;
-        $this->CRONProcessService->createProcess(
-            $this->signature,
-            $this->description,
-            'Ежедневно в 19:30'
-        );
-        $this->debtImportService = $debtImportService;
     }
 
     public function handle()
     {
-        Log::channel('custom_imports_log')->debug('-----------------------------------------------------');
-        Log::channel('custom_imports_log')->debug('[DATETIME] ' . Carbon::now()->format('d.m.Y H:i:s'));
-        Log::channel('custom_imports_log')->debug('[START] Загрузка долгов по ДТ Термо из Excel');
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         // Путь до файла с автоматической загрузкой
         $importFilePath = storage_path() . '/app/public/public/objects-debts/DT.xlsx';
@@ -43,14 +36,11 @@ class ImportDTDebtsFromExcel extends Command
         $importManualFilePath = storage_path() . '/app/public/public/objects-debts-manuals/DT.xlsx';
 
         if (! File::exists($importFilePath)) {
-            $errorMessage = '[ERROR] Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл';
-            Log::channel('custom_imports_log')->debug($errorMessage);
+            $this->sendInfoMessage('Файл для загрузки "' . $importFilePath . '" не найден, загружается ручной файл');
 
             if (! File::exists($importManualFilePath)) {
-                $errorMessage = '[ERROR] Файл для загрузки "' . $importManualFilePath . '" не найден';
-                Log::channel('custom_imports_log')->debug($errorMessage);
-
-                $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+                $this->sendInfoMessage('Файл для загрузки "' . $importManualFilePath . '" не найден');
+                $this->endProcess();
                 return 0;
             }
         }
@@ -73,21 +63,20 @@ class ImportDTDebtsFromExcel extends Command
                 'file' => new UploadedFile($importFilePath, 'DT.xlsx')
             ]);
         } catch (\Exception $e) {
-            $errorMessage = '[ERROR] Не удалось загрузить файл: "' . $e->getMessage();
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось загрузить файл: "' . $e->getMessage());
+            $this->endProcess();
             return 0;
         }
 
         if ($importStatus !== 'ok') {
-            $errorMessage = '[ERROR] Не удалось загрузить файл: "' . $importStatus;
-            Log::channel('custom_imports_log')->debug($errorMessage);
-            $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
+            $this->sendErrorMessage('Не удалось загрузить файл: "' . $importStatus);
+            $this->endProcess();
+
             return 0;
         }
 
-        Log::channel('custom_imports_log')->debug('[SUCCESS] Файл успешно загружен');
-        $this->CRONProcessService->successProcess($this->signature);
+        $this->sendInfoMessage('Файл успешно загружен');
+        $this->endProcess();
 
         return 0;
     }
