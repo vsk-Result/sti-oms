@@ -10,9 +10,18 @@ use Illuminate\Support\Facades\Schema;
 
 class CRONProcessService
 {
+    const FREEZE_TIME_LIMIT_MINUTES = 45;
+
     public function getCronProcesses(): Collection
     {
         return CRONProcess::orderBy('status_id')->get();
+    }
+
+    public function isProcessFrozen(string $command): bool
+    {
+        $process = CRONProcess::where('command', $command)->first();
+
+        return $process->isRunning() && now()->diff(Carbon::parse($process->last_running_date))->i >= self::FREEZE_TIME_LIMIT_MINUTES;
     }
 
     public function isProcessRunning(string $command): bool
@@ -57,6 +66,16 @@ class CRONProcessService
         CRONProcess::where('command', $command)->update([
             'last_executed_date' => now(),
             'status_id' => CRONProcess::STATUS_SUCCESS
+        ]);
+    }
+
+    public function unfreezingProcess(string $command): void
+    {
+        CRONProcess::where('command', $command)->update([
+            'last_error' => '',
+            'last_executed_date' => null,
+            'last_running_date' => null,
+            'status_id' => CRONProcess::STATUS_NEW
         ]);
     }
 

@@ -58,6 +58,12 @@ class HandledCommand extends Command
 
     protected function isProcessRunning(): bool
     {
+        if ( $this->CRONProcessService->isProcessFrozen($this->signature)) {
+            $this->CRONProcessService->unfreezingProcess($this->signature);
+
+            return false;
+        }
+
         return $this->CRONProcessService->isProcessRunning($this->signature);
     }
 
