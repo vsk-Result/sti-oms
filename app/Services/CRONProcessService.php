@@ -12,7 +12,7 @@ class CRONProcessService
 {
     public function getCronProcesses(): Collection
     {
-        return CRONProcess::latest('last_running_date')->get();
+        return CRONProcess::orderBy('status_id')->get();
     }
 
     public function isProcessRunning(string $command): bool
