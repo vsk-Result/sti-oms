@@ -21,7 +21,7 @@ class CRONProcessService
     {
         $process = CRONProcess::where('command', $command)->first();
 
-        return $process->isRunning() && now()->diff(Carbon::parse($process->last_running_date))->i >= self::FREEZE_TIME_LIMIT_MINUTES;
+        return $process->isRunning() && ($this->isOverLimit($process->last_running_date) || $this->isOverLimit($process->last_executed_date));
     }
 
     public function isProcessRunning(string $command): bool
@@ -86,5 +86,10 @@ class CRONProcessService
             'last_error' => $errorMessage,
             'status_id' => CRONProcess::STATUS_ERROR
         ]);
+    }
+
+    private function isOverLimit($date): bool
+    {
+        return now()->diff(Carbon::parse($date))->i >= self::FREEZE_TIME_LIMIT_MINUTES;
     }
 }

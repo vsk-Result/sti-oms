@@ -48,16 +48,16 @@ class HandledCommand extends Command
         $this->botId = (string) config('services.telegram-bot-api.channel_id_for_scheduler');
         $this->CRONProcessService = new CRONProcessService();
         $this->errors = [];
+    }
 
+    protected function isProcessRunning(): bool
+    {
         $this->CRONProcessService->handleProcess(
             $this->signature,
             $this->description,
             $this->period
         );
-    }
 
-    protected function isProcessRunning(): bool
-    {
         if ($this->CRONProcessService->isProcessFrozen($this->signature)) {
             $this->CRONProcessService->unfreezingProcess($this->signature);
 
