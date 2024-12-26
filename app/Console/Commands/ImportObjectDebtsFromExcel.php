@@ -202,10 +202,6 @@ class ImportObjectDebtsFromExcel extends HandledCommand
                 $guaranteeDeadlineIndex = null;
 
                 foreach ($importData['OMS'] as $index => $row) {
-                    if ($index === 0 && empty($row[0])) {
-                        break;
-                    }
-
                     if ($index === 0) {
                         $organizationIndex = $this->getTitleIndex('Контрагент', $row);
                         $contractIndex = $this->getTitleIndex('Договор', $row);
@@ -218,6 +214,10 @@ class ImportObjectDebtsFromExcel extends HandledCommand
                         $innIndex = $this->getTitleIndex('ИНН', $row);
                         $guaranteeDeadlineIndex = $this->getTitleIndex('срок наступил', $row);
                         continue;
+                    }
+
+                    if (is_null($organizationIndex)) {
+                        break;
                     }
 
                     if (empty($row[0]) || $row[0] === 'Контрагент' || $row[0] === 'Общий итог' || $row[0] === 'Итого') {
