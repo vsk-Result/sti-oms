@@ -357,8 +357,6 @@
                                         $closedInfo[$year]['general_amount'] = 0;
                                     }
 
-
-
                                     foreach($infoArray as $index => $info) {
                                         if (!isset($closedInfo[$index]['cuming_amount'])) {
                                             $closedInfo[$index]['cuming_amount'] = 0;
@@ -412,9 +410,12 @@
                                     <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$year]['general_amount'], 'RUB', 0, true) }}</td>
 
                                     @foreach($infoArray as $index => $info)
-                                        <td style="display: none;" class="text-success bl text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['cuming_amount'], 'RUB', 0, true) }}</td>
-                                        <td style="display: none;" class="text-center percent grouped-by-year" data-year="{{ $year }}">{{ number_format(($closedInfo[$index]['cuming_amount'] > 0 ? abs($closedInfo[$index]['general_amount'] / $closedInfo[$index]['cuming_amount']) : 0) * 100, 2) }}%</td>
-                                        <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['general_amount'], 'RUB', 0, true) }}</td>
+{{--                                        <td style="display: none;" class="text-success bl text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['cuming_amount'], 'RUB', 0, true) }}</td>--}}
+{{--                                        <td style="display: none;" class="text-center percent grouped-by-year" data-year="{{ $year }}">{{ number_format(($closedInfo[$index]['cuming_amount'] > 0 ? abs($closedInfo[$index]['general_amount'] / $closedInfo[$index]['cuming_amount']) : 0) * 100, 2) }}%</td>--}}
+{{--                                        <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($closedInfo[$index]['general_amount'], 'RUB', 0, true) }}</td>--}}
+                                            <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}"></td>
+                                            <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}"></td>
+                                            <td style="display: none;" class="text-danger br text-right grouped-by-year" data-year="{{ $year }}"></td>
                                     @endforeach
                                 @endforeach
                             </tr>

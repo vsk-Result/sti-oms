@@ -242,10 +242,8 @@ class ObjectService
                     if ($object->closing_date >= $startDate && $object->closing_date <= $endDate) {
                         $closingDates[] = $object->closing_date;
                     }
-                    $finalObjects->push($object);
-                } else {
-                    $finalObjects->push($object);
                 }
+                $finalObjects->push($object);
             }
         }
 
@@ -284,6 +282,7 @@ class ObjectService
                 ->sum('amount');
             $generalTotalAmount += $bonus;
 
+
             $sumCumings = 0;
             $cumings = [];
             foreach ($finalObjects as $object) {
@@ -302,15 +301,17 @@ class ObjectService
                     if (! isset($result[$object->id])) {
                         $result[$object->id] = [
                             'cuming_amount' => 0,
+                            'percent' => 0,
                             'general_amount' => 0
                         ];
                     }
                 }
             }
 
+
             foreach ($cumings as $objectId => $cuming) {
-                $result[$objectId]['cuming_amount'] = $result[$objectId]['cuming_amount'] + $cuming['cuming'];
-                $result[$objectId]['general_amount'] = $result[$objectId]['general_amount'] + ($cuming['cuming'] / $sumCumings * $generalTotalAmount);
+                $result[$objectId]['cuming_amount'] += $cuming['cuming'];
+                $result[$objectId]['general_amount'] += ($cuming['cuming'] / $sumCumings * $generalTotalAmount);
             }
         }
 
