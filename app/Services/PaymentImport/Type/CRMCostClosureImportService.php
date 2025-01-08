@@ -166,6 +166,8 @@ class CRMCostClosureImportService
 
     public function getCategoryFromKostCode($code, $description)
     {
+        return Payment::CATEGORY_RAD;
+
         $salary = ['7.17', '7.18', '7.26', '7.26.1', '7.26.2', '7.17.1', '7.17.2'];
         $provider = [
             '1.1.6', '1.1.7', '1.2.4', '2.1.1', '2.1.10', '2.1.2', '2.1.7', '2.2', '2.2.4', '3', '3.1.2',

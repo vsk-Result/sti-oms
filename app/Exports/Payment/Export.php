@@ -2,6 +2,7 @@
 
 namespace App\Exports\Payment;
 
+use App\Exports\Payment\Sheets\BackupSheet;
 use App\Exports\Payment\Sheets\KostCodePivot;
 use App\Exports\Payment\Sheets\PaymentSheet;
 use App\Exports\Payment\Sheets\PivotSheet;
@@ -30,6 +31,12 @@ class Export implements WithMultipleSheets
         if (count($objectIds) === 1) {
             $object = BObject::find($objectIds[0]);
             $objectName = $object ? $object->getName() : '';
+        }
+
+        if (auth()->id() === 1) {
+            return [
+                new BackupSheet('История'),
+            ];
         }
 
         return [

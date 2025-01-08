@@ -412,7 +412,7 @@ class PaymentService
             $amountGroupedByObjectCode[$item->avans->code] += $item->avans->value;
         }
 
-        $costCode = $avansImport->type === 'Зарплата' ? '7.17' : '7.26';
+        $costCode = $avansImport->type === 'Зарплата' ? '7.9' : '7.8';
 
         $company = Company::find(1);
         $organizationSenderId = $company->organizations()->first()->id;
@@ -647,38 +647,38 @@ class PaymentService
         }
 
         if ($payment) {
-            if (array_key_exists('code', $requestData)) {
-                if ($payment->object && $payment->object->code === '27.1') {
-                    if (
-                        !(str_contains($requestData['code'], '6.') ||
-                        str_contains($requestData['code'], '7.') ||
-                        str_contains($requestData['code'], '8.') ||
-                        str_contains($requestData['code'], '9.') ||
-                        str_contains($requestData['code'], '10.') ||
-                        str_contains($requestData['code'], '5.10'))
-                    ) {
-                        $this->error = 'Оплата на объекте 27.1 может иметь следующие стати затрат (5.10, 6, 7, 8, 9, 10). Данные о статье затрат не сохранятся.';
-                        unset($requestData['code']);
-                    }
-                }
-            }
+//            if (array_key_exists('code', $requestData)) {
+//                if ($payment->object && $payment->object->code === '27.1') {
+//                    if (
+//                        !(str_contains($requestData['code'], '6.') ||
+//                        str_contains($requestData['code'], '7.') ||
+//                        str_contains($requestData['code'], '8.') ||
+//                        str_contains($requestData['code'], '9.') ||
+//                        str_contains($requestData['code'], '10.') ||
+//                        str_contains($requestData['code'], '5.10'))
+//                    ) {
+//                        $this->error = 'Оплата на объекте 27.1 может иметь следующие стати затрат (5.10, 6, 7, 8, 9, 10). Данные о статье затрат не сохранятся.';
+//                        unset($requestData['code']);
+//                    }
+//                }
+//            }
 
             if (array_key_exists('object_code', $requestData)) {
                 if ($requestData['object_code'] === '27.1') {
-                    if (
-                        !(str_contains($payment->code, '6.') ||
-                            str_contains($payment->code, '7.') ||
-                            str_contains($payment->code, '8.') ||
-                            str_contains($payment->code, '9.') ||
-                            str_contains($payment->code, '10.') ||
-                            str_contains($payment->code, '5.10'))
-                    ) {
-                        $this->error = 'Оплата на объекте 27.1 может иметь следующие стати затрат (5.10, 6, 7, 8, 9, 10). Данные об объекте не сохранятся.';
-                        unset($requestData['object_code']);
-                        unset($requestData['object_id']);
-                        unset($requestData['object_worktype_id']);
-                        unset($requestData['type_id']);
-                    }
+//                    if (
+//                        !(str_contains($payment->code, '6.') ||
+//                            str_contains($payment->code, '7.') ||
+//                            str_contains($payment->code, '8.') ||
+//                            str_contains($payment->code, '9.') ||
+//                            str_contains($payment->code, '10.') ||
+//                            str_contains($payment->code, '5.10'))
+//                    ) {
+//                        $this->error = 'Оплата на объекте 27.1 может иметь следующие стати затрат (5.10, 6, 7, 8, 9, 10). Данные об объекте не сохранятся.';
+//                        unset($requestData['object_code']);
+//                        unset($requestData['object_id']);
+//                        unset($requestData['object_worktype_id']);
+//                        unset($requestData['type_id']);
+//                    }
 
                     if (! in_array($payment->category, [Payment::CATEGORY_OPSTE, Payment::CATEGORY_SALARY, Payment::CATEGORY_MATERIAL, Payment::CATEGORY_TAX])) {
                         $this->error = 'Категория на объекте 27.1 может иметь следующие значения: Зарплата, Налоги, Материалы, Накладные/Услуги. Введенные данные не сохранятся.';

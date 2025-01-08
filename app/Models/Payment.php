@@ -225,7 +225,7 @@ class Payment extends Model implements Audit
         }
 
         // CRM зп и авансы
-        if (in_array($this->code, ['7.17', '7.26', '7.17.1', '7.17.2', '7.26.1', '7.26.2']) && $this->payment_type_id === self::PAYMENT_TYPE_NON_CASH) {
+        if (in_array($this->code, ['7.8', '7.9', '7.8.1', '7.8.2', '7.9.1', '7.9.2']) && $this->payment_type_id === self::PAYMENT_TYPE_NON_CASH) {
             return 'success';
         }
 
