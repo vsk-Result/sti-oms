@@ -11,6 +11,8 @@ class CostItem extends Model
 
     protected $connection = 'mysql_crm';
 
+    protected $fillable = ['new_cost_code'];
+
     public function object(): BelongsTo
     {
         return $this->belongsTo(CObject::class, 'object_id');
