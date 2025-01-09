@@ -117,7 +117,7 @@ class PivotSheet implements
         foreach ($periods as $index => $period) {
             $datesBetween = [$period['start_date'], $period['end_date']];
             $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
-            $generalAmount = (clone $paymentQuery)->where('code', '!=', '7.15')->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+            $generalAmount = (clone $paymentQuery)->where('code', '!=', '7.11')->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                 + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
                 + $period['bonus'];
 
