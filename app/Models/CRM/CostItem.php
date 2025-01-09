@@ -13,6 +13,8 @@ class CostItem extends Model
 
     protected $fillable = ['new_cost_code'];
 
+    public $timestamps = false;
+
     public function object(): BelongsTo
     {
         return $this->belongsTo(CObject::class, 'object_id');
