@@ -272,7 +272,7 @@ class ObjectService
         $result = [];
         foreach ($periods as $startDate => $endDate) {
             $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])
-                ->where('code', '!=', '7.15')
+                ->whereNotIn('code', ['7.11', '7.11.1', '.7.11.2'])
                 ->where('type_id', Payment::TYPE_GENERAL)
                 ->whereIn('company_id', [1, 5])
                 ->sum('amount');
@@ -377,7 +377,7 @@ class ObjectService
             $transferAmount = Payment::query()
                 ->whereBetween('date', [$startDate, $endDate])
                 ->whereIn('company_id', [1, 5])
-                ->where('code', '7.15')
+                ->whereIn('code', ['7.11', '7.11.1', '.7.11.2'])
                 ->where('type_id', Payment::TYPE_GENERAL)
                 ->sum('amount');
 
