@@ -50,11 +50,11 @@ class Export implements
 
         $sheet->getColumnDimension('A')->setWidth(25);
         $sheet->getColumnDimension('B')->setWidth(30);
-        $sheet->getColumnDimension('C')->setWidth(20);
-        $sheet->getColumnDimension('D')->setWidth(35);
-        $sheet->getColumnDimension('E')->setWidth(25);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(30);
+        $sheet->getColumnDimension('E')->setWidth(15);
         $sheet->getColumnDimension('F')->setWidth(20);
-        $sheet->getColumnDimension('G')->setWidth(100);
+        $sheet->getColumnDimension('G')->setWidth(70);
 
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
 
@@ -78,6 +78,7 @@ class Export implements
 
         $sheet->getStyle('A1:G' . $row)->applyFromArray($THINStyleArray);
         $sheet->getStyle('A1:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('D2:D' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
         $sheet->getStyle('G2:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
         $sheet->getStyle('E2:E' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
         $sheet->getStyle('A2:A' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
