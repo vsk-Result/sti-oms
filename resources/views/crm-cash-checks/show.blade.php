@@ -54,7 +54,7 @@
                                             {{ $detail['date'] }}
                                         </td>
                                         <td>
-                                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $detail['object_name'] }}">{{ $detail['object_code'] }}</span>
+                                            <span class="border-bottom-dashed" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $detail['object_name'] }}">{{ $detail['object_code'] }}</span>
                                         </td>
                                         <td>{{ $detail['code'] }}</td>
                                         <td>{{ $detail['category'] }}</td>
