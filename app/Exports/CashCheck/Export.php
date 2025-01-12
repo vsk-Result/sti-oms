@@ -64,11 +64,11 @@ class Export implements
             $sheet->setCellValue('B' . $row, $detail['object_code'] . ' - ' . $detail['object_name']);
             $sheet->setCellValue('C' . $row, $detail['code']);
             $sheet->setCellValue('D' . $row, $detail['organization']);
-            $sheet->setCellValue('E' . $row, $detail['description']);
-            $sheet->setCellValue('F' . $row, $detail['amount']);
-            $sheet->setCellValue('G' . $row, $detail['category']);
+            $sheet->setCellValue('E' . $row, $detail['amount']);
+            $sheet->setCellValue('F' . $row, $detail['category']);
+            $sheet->setCellValue('G' . $row, $detail['description']);
 
-            $sheet->getStyle('F' . $row)->getFont()->setColor(new Color($detail['amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+            $sheet->getStyle('E' . $row)->getFont()->setColor(new Color($detail['amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
 
             $sheet->getRowDimension($row)->setRowHeight(25);
@@ -78,7 +78,7 @@ class Export implements
 
         $sheet->getStyle('A1:G' . $row)->applyFromArray($THINStyleArray);
         $sheet->getStyle('A1:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('F2:F' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+        $sheet->getStyle('E2:E' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
         $sheet->getStyle('A2:A' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
 
         $sheet->setAutoFilter('A1:G' . $row);
