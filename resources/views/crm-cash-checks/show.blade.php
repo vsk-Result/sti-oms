@@ -54,7 +54,11 @@
                                             {{ $detail['date'] }}
                                         </td>
                                         <td>
-                                            <span class="border-bottom-dashed" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $detail['object_name'] }}">{{ $detail['object_code'] }}</span>
+                                            @if (! empty($detail['object_name']))
+                                                <span class="border-bottom-dashed" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $detail['object_name'] }}">{{ $detail['object_code'] }}</span>
+                                            @else
+                                                {{ $detail['object_code'] }}
+                                            @endif
                                         </td>
                                         <td>{{ $detail['code'] }}</td>
                                         <td>{{ $detail['category'] }}</td>
