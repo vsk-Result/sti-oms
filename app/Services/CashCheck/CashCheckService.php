@@ -104,6 +104,10 @@ class CashCheckService
     {
         $payments = [];
 
+        if (! $check->crmCost) {
+            return $payments;
+        }
+
         $items = $check->crmCost->items()
             ->where('date', 'LIKE', $check->period . '%')
             ->where('is_close', false)

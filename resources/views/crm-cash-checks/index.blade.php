@@ -12,23 +12,23 @@
                     <div class="card-body py-3">
                         <table class="table align-middle table-row-dashed fs-6 mb-0">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-125px">Пользователь CRM</th>
-                                <th class="min-w-125px">Касса CRM</th>
-                                <th class="min-w-125px">Закрытый период</th>
-                                <th class="min-w-125px">Информация</th>
-                                <th class="min-w-125px">Итог проверки</th>
-                                <th class="min-w-125px">Статус</th>
-                            </tr>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="min-w-125px">Пользователь CRM</th>
+                                    <th class="min-w-125px">Касса CRM</th>
+                                    <th class="min-w-125px">Закрытый период</th>
+                                    <th class="min-w-125px">Информация</th>
+                                    <th class="min-w-125px">Итог проверки</th>
+                                    <th class="min-w-125px">Статус</th>
+                                </tr>
                             </thead>
                             <tbody class="fw-bold">
                                 @forelse($uncheckedChecks as $check)
                                     <tr>
                                         <td>
-                                            {{ $check->crmUser->name }}
+                                            {{ $check->crmUser?->name ?? 'Не определено (' . $check->crm_user_id . ')' }}
                                         </td>
                                         <td>
-                                            <a target="_blank" href="http://crm.local/costs/{{ $check->crm_cost_id }}">{{ $check->crmCost->name }}</a>
+                                            <a target="_blank" href="http://crm.local/costs/{{ $check->crm_cost_id }}">{{ $check->crmCost?->name ?? 'Не определено (' . $check->crm_cost_id . ')' }}</a>
                                         </td>
                                         <td>
                                            {{ $check->getFormattedPeriod() }}
