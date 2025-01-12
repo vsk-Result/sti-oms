@@ -41,9 +41,9 @@
                                     <th class="min-w-125px">Дата</th>
                                     <th class="min-w-100px">Объект</th>
                                     <th class="min-w-70px">Статья затрат</th>
-                                    <th class="min-w-125px">Контрагент</th>
-                                    <th class="min-w-150px">Сумма</th>
                                     <th class="min-w-150px">Категория</th>
+                                    <th class="min-w-150px">Сумма</th>
+                                    <th class="min-w-125px">Контрагент</th>
                                     <th class="min-w-300px">Описание</th>
                                 </tr>
                             </thead>
@@ -57,13 +57,13 @@
                                             <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $detail['object_name'] }}">{{ $detail['object_code'] }}</span>
                                         </td>
                                         <td>{{ $detail['code'] }}</td>
-                                        <td>
-                                            {{ $detail['organization'] }}
-                                        </td>
+                                        <td>{{ $detail['category'] }}</td>
                                         <td>
                                             <span class="{{ $detail['amount'] >= 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($detail['amount'], 'RUB') }}</span>
                                         </td>
-                                        <td>{{ $detail['category'] }}</td>
+                                        <td>
+                                            {{ $detail['organization'] }}
+                                        </td>
                                         <td>{{ $detail['description'] }}</td>
                                     </tr>
                                 @empty
