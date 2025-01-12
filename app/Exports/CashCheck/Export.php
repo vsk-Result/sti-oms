@@ -78,6 +78,7 @@ class Export implements
 
         $sheet->getStyle('A1:G' . $row)->applyFromArray($THINStyleArray);
         $sheet->getStyle('A1:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('G2:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
         $sheet->getStyle('E2:E' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
         $sheet->getStyle('A2:A' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
 
