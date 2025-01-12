@@ -41,9 +41,9 @@ class Export implements
         $sheet->setCellValue('A1', 'Дата');
         $sheet->setCellValue('B1', 'Объект');
         $sheet->setCellValue('C1', 'Статья затрат');
-        $sheet->setCellValue('D1', 'Контрагент');
+        $sheet->setCellValue('D1', 'Категория');
         $sheet->setCellValue('E1', 'Сумма');
-        $sheet->setCellValue('F1', 'Категория');
+        $sheet->setCellValue('F1', 'Контрагент');
         $sheet->setCellValue('G1', 'Описание');
 
         $sheet->getRowDimension(1)->setRowHeight(35);
@@ -51,9 +51,9 @@ class Export implements
         $sheet->getColumnDimension('A')->setWidth(25);
         $sheet->getColumnDimension('B')->setWidth(30);
         $sheet->getColumnDimension('C')->setWidth(15);
-        $sheet->getColumnDimension('D')->setWidth(30);
+        $sheet->getColumnDimension('D')->setWidth(20);
         $sheet->getColumnDimension('E')->setWidth(15);
-        $sheet->getColumnDimension('F')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(30);
         $sheet->getColumnDimension('G')->setWidth(70);
 
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
@@ -63,9 +63,9 @@ class Export implements
             $sheet->setCellValue('A' . $row, Date::dateTimeToExcel(Carbon::parse($detail['date'])));
             $sheet->setCellValue('B' . $row, $detail['object_code'] . ' - ' . $detail['object_name']);
             $sheet->setCellValue('C' . $row, $detail['code']);
-            $sheet->setCellValue('D' . $row, $detail['organization']);
+            $sheet->setCellValue('D' . $row, $detail['category']);
             $sheet->setCellValue('E' . $row, $detail['amount']);
-            $sheet->setCellValue('F' . $row, $detail['category']);
+            $sheet->setCellValue('F' . $row, $detail['organization']);
             $sheet->setCellValue('G' . $row, $detail['description']);
 
             $sheet->getStyle('E' . $row)->getFont()->setColor(new Color($detail['amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
@@ -78,8 +78,7 @@ class Export implements
 
         $sheet->getStyle('A1:G' . $row)->applyFromArray($THINStyleArray);
         $sheet->getStyle('A1:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('D2:D' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
-        $sheet->getStyle('G2:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
+        $sheet->getStyle('F2:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
         $sheet->getStyle('E2:E' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
         $sheet->getStyle('A2:A' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
 
