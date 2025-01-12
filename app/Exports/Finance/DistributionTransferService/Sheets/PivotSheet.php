@@ -87,7 +87,7 @@ class PivotSheet implements
             $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
         }
 
-        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
+        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'. 'T', 'U', 'W'];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 

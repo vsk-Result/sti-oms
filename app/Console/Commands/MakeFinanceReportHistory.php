@@ -855,7 +855,7 @@ class MakeFinanceReportHistory extends HandledCommand
                 $summary[$year]['objectBalance'] += $summary[$year]['tax_debt'];
                 $summary[$year]['prognozBalance'] += $summary[$year]['tax_debt'];
 
-                $totalPercentsForGeneralCosts = $this->generalReportService->getSplitPercentsByCategory(['2024', '2023', '2022', '2021']);
+                $totalPercentsForGeneralCosts = $this->generalReportService->getSplitPercentsByCategory(['2025', '2024', '2023', '2022', '2021']);
 
                 $summary[$year]['general_balance_salary'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_SALARY] * $summary[$year]['general_balance'];
                 $summary[$year]['general_balance_tax'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_TAX] * $summary[$year]['general_balance'];

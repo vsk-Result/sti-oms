@@ -93,6 +93,13 @@
                         'bonus' => 0,
                     ],
                 ],
+                '2025' => [
+                    [
+                        'start_date' => '2025-01-01',
+                        'end_date' => '2025-12-31',
+                        'bonus' => 0,
+                    ],
+                ],
             ];
 
             $periodsByYears = array_reverse($periodsByYears, true);

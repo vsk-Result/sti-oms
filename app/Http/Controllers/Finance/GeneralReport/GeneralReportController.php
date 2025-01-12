@@ -17,7 +17,7 @@ class GeneralReportController extends Controller
 
     public function index(): View
     {
-        $years = ['2024', '2023', '2022', '2021'];
+        $years = ['2025', '2024', '2023', '2022', '2021'];
         $items = $this->generalReportService->getItems($years);
         return view('finance.general-report.index', compact('years', 'items'));
     }
