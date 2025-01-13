@@ -84,6 +84,10 @@
         .subcontract-row:hover {
             --bs-table-accent-bg: #ffe4c4 !important;
         }
+
+        .not-main-row {
+            background-color: #fff3c6 !important;
+        }
     </style>
 @endpush
 

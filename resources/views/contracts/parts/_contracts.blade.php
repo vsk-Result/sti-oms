@@ -54,7 +54,7 @@
     </td>
 </tr>
 @foreach($contracts as $contract)
-    <tr class="subcontract-row">
+    <tr class="subcontract-row {{ !$contract->isMain() && !$contract->isMainAmount() ? 'not-main-row' : '' }}">
         <td></td>
         <td class="px-3">
             @if(auth()->user()->can('edit contracts'))

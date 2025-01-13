@@ -70,5 +70,9 @@
         .show-subcontracts.show-active {
             color: #ff8100 !important
         }
+
+        .not-main-row {
+            background-color: #fff3c6 !important;
+        }
     </style>
 @endpush
