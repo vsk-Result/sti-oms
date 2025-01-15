@@ -110,7 +110,11 @@
                                 </tr>
                                 @foreach($imports as $import)
                                     <tr>
-                                        <td class="ps-3">
+
+                                        <td class="ps-3 position-relative">
+                                            @if ($import->hasInvalidBalance())
+                                                <div class="position-absolute start-0 top-0 w-4px h-100 rounded-2 bg-danger"></div>
+                                            @endif
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                                 <input class="form-check-input widget-9-check" type="checkbox" value="{{ $import->id }}">
                                             </div>
@@ -122,6 +126,11 @@
                                             @endif
                                             @if (! empty($import->description))
                                                 <button type="button" class="btn btn-sm btn-icon h-20px" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="right" title="{{ $import->description }}">
+                                                    <i class="las la-info-circle fs-3 me-2"></i>
+                                                </button>
+                                            @endif
+                                            @if ($import->hasInvalidBalance())
+                                                <button type="button" class="btn btn-sm btn-icon h-20px" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="right" title="Несовпадение баланса на {{ \App\Models\CurrencyExchangeRate::format($import->getBalanceOffset(), '') }}">
                                                     <i class="las la-info-circle fs-3 me-2"></i>
                                                 </button>
                                             @endif
@@ -138,6 +147,7 @@
                                         <td class="text-dark fw-bolder">{!! $import->company->getShortNameColored() !!}</td>
                                         <td class="text-dark fw-bolder">{{ $import->getBankName() }}</td>
                                         <td class="text-dark fw-bolder">{{ $import->payments_count }}</td>
+
                                         <td class="fw-bolder">
                                             @if($import->isStatement())
                                                 <span class="{{ $import->incoming_balance >= 0 ? 'text-success' : 'text-danger' }}">
@@ -234,4 +244,12 @@
             mainApp.initFreezeTable(2);
         });
     </script>
+@endpush
+
+@push('styles')
+    <style>
+        tr.row-danger-incoming {
+            background-color: #ffd6d6 !important;
+        }
+    </style>
 @endpush

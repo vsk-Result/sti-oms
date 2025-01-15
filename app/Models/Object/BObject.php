@@ -306,6 +306,6 @@ class BObject extends Model implements Audit
 
     public static function getCodesForContractorImportDebts()
     {
-        return ['000', '346', '349', '353', '358', '359', '360', '361', '363', '364', '365', '366', '367', '368', '369', '370', '371', '372', '373', '374', '375', '376'];
+        return array_merge(['000'], self::where('code', '>=', '346')->pluck('code')->toArray());
     }
 }

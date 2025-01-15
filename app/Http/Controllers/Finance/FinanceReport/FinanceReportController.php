@@ -7,12 +7,8 @@ use App\Models\Company;
 use App\Models\FinanceReport;
 use App\Models\FinanceReportHistory;
 use Carbon\Carbon;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use function abort;
-use function now;
-use function view;
 
 class FinanceReportController extends Controller
 {
@@ -24,7 +20,16 @@ class FinanceReportController extends Controller
             abort(404);
         }
 
-        $date = Carbon::parse($request->get('balance_date', now()));
+        if ($request->has('balance_date')) {
+            $date = Carbon::parse($request->get('balance_date'));
+        } else {
+            $date = now();
+
+            if ($fr = FinanceReportHistory::select('date')->latest('date')->first()) {
+                $date = Carbon::parse($fr->date);
+            }
+        }
+
         $financeReportHistory = FinanceReportHistory::where('date', $date->format('Y-m-d'))->first();
 
         if (!$financeReportHistory) {

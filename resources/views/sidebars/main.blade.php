@@ -27,14 +27,6 @@
                     </div>
                 @endcan
 
-                @can('index debt-imports')
-                    <div class="menu-item">
-                        <a href="{{ route('debt_imports.index') }}" class="menu-link {{ request()->is('debt-imports*') ? 'active' : '' }}">
-                            <span class="menu-title">Загрузки долгов</span>
-                        </a>
-                    </div>
-                @endcan
-
                 @can('index crm-cash-check')
                     <div class="menu-item">
                         <a href="{{ route('crm_cash_check.index') }}" class="menu-link {{ request()->is('crm-cash-check*') ? 'active' : '' }}">

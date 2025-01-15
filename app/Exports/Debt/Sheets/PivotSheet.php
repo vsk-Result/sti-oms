@@ -3,6 +3,7 @@
 namespace App\Exports\Debt\Sheets;
 
 use App\Models\Object\BObject;
+use App\Models\PivotObjectDebt;
 use App\Services\PivotObjectDebtService;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -32,8 +33,6 @@ class PivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($this->object->id);
-
         $THINStyleArray = [ 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => '0000000'],],],];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
@@ -65,15 +64,23 @@ class PivotSheet implements
         $sheet->getStyle('E1:F3')->getFont()->setBold(true);
         $sheet->getStyle('I1:J3')->getFont()->setBold(true);
 
-        $sheet->setCellValue('B1', $debts['contractor']->total_amount);
-        $sheet->setCellValue('F1', $debts['provider']->total_amount);
-        $sheet->setCellValue('J1', $debts['service']->total_amount);
+        $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR, ['with_sorted_details' => true]);
+        $providerDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER, ['with_sorted_details' => true]);
+        $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_SERVICE, ['with_sorted_details' => true]);
+
+        $sheet->setCellValue('B1', $contractorDebts['total']['total_amount']);
+        $sheet->setCellValue('F1', $providerDebts['total']['amount']);
+        $sheet->setCellValue('J1', $serviceDebts['total']['amount']);
 
         // Подрядчики
         $row = 4;
-        foreach ($debts['contractor']->debts as $organization => $amount) {
-            $sheet->setCellValue('A' . $row, substr($organization, strpos($organization, '::') + 2));
-            $sheet->setCellValue('B' . $row, $amount);
+        foreach ($contractorDebts['organizations'] as $organizationData) {
+            if (! is_valid_amount_in_range($organizationData['total_amount'])) {
+                continue;
+            }
+
+            $sheet->setCellValue('A' . $row, $organizationData['organization_name']);
+            $sheet->setCellValue('B' . $row, $organizationData['total_amount']);
 
             $sheet->getRowDimension($row)->setRowHeight(25);
             $row++;
@@ -89,9 +96,13 @@ class PivotSheet implements
 
         // Поставщики
         $row = 4;
-        foreach ($debts['provider']->debts as $organization => $amount) {
-            $sheet->setCellValue('E' . $row, substr($organization, strpos($organization, '::') + 2));
-            $sheet->setCellValue('F' . $row, $amount);
+        foreach ($providerDebts['organizations'] as $organizationData) {
+            if (! is_valid_amount_in_range($organizationData['amount'])) {
+                continue;
+            }
+
+            $sheet->setCellValue('E' . $row, $organizationData['organization_name']);
+            $sheet->setCellValue('F' . $row, $organizationData['amount']);
 
             $sheet->getRowDimension($row)->setRowHeight(25);
             $row++;
@@ -107,9 +118,13 @@ class PivotSheet implements
 
         // Услуги
         $row = 4;
-        foreach ($debts['service']->debts as $organization => $amount) {
-            $sheet->setCellValue('I' . $row, substr($organization, strpos($organization, '::') + 2));
-            $sheet->setCellValue('J' . $row, $amount);
+        foreach ($serviceDebts['organizations'] as $organizationData) {
+            if (! is_valid_amount_in_range($organizationData['amount'])) {
+                continue;
+            }
+
+            $sheet->setCellValue('I' . $row, $organizationData['organization_name']);
+            $sheet->setCellValue('J' . $row, $organizationData['amount']);
 
             $sheet->getRowDimension($row)->setRowHeight(25);
             $row++;

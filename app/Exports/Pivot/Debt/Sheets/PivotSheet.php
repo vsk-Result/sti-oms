@@ -50,13 +50,13 @@ class PivotSheet implements
         }
 
         $rowIndex = 3;
-        foreach ($this->pivot['organizations'] as $organization) {
-            $sheet->setCellValue('A' . $rowIndex, $organization->name);
-            $sheet->setCellValue('B' . $rowIndex, array_sum($this->pivot['entries'][$organization->id]));
+        foreach ($this->pivot['organizations'] as $organizationName => $amount) {
+            $sheet->setCellValue('A' . $rowIndex, $organizationName);
+            $sheet->setCellValue('B' . $rowIndex, $amount);
 
             $columnIndex = 3;
             foreach ($this->pivot['objects'] as $object) {
-                $sheet->setCellValue($this->getColumnWord($columnIndex) . $rowIndex, $this->pivot['entries'][$organization->id][$object->id] ?? '');
+                $sheet->setCellValue($this->getColumnWord($columnIndex) . $rowIndex, $this->pivot['entries'][$organizationName][$object->id] ?? '');
                 $columnIndex++;
             }
 

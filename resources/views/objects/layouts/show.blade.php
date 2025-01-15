@@ -43,11 +43,6 @@
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/receive-plan') ? 'active' : '' }}" href="{{ route('objects.receive_plan.index', $object) }}?object_id%5B%5D={{ $object->id }}">План поступлений</a>
                             </li>
                             <li class="nav-item d-flex flex-row align-items-center">
-                                @inject('objectCheckService', 'App\Services\ObjectCheckService')
-
-                                @if($objectCheckService->getCheckStatusInfo($object)['has_warning'])
-                                    <i class="fa fa-info-circle text-danger"></i>
-                                @endif
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/check') ? 'active' : '' }}" href="{{ route('objects.check.index', $object) }}?object_id%5B%5D={{ $object->id }}">Проверка</a>
                             </li>
 {{--                            <li class="nav-item">--}}

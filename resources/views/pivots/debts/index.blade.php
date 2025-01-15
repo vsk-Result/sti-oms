@@ -48,31 +48,31 @@
                             @php $i = 0; @endphp
                             @foreach($pivot['total'] as $objectId => $amount)
                                 <th class="text-danger min-w-150px hl text-right" data-index="{{ $i++ }}">
-                                    <a href="{{ route('objects.debts.index', $object) }}" class="text-danger bb cursor-pointer show-rows">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB') }}</a>
+                                    <a href="{{ route('objects.debts.index', $objectId) }}" class="text-danger bb cursor-pointer show-rows">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB') }}</a>
                                 </th>
                             @endforeach
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-bold">
-                        @forelse($pivot['organizations'] as $organization)
+                        @forelse($pivot['organizations'] as $organizationName => $am)
                             <tr>
                                 <td class="ps-4 br {{ $loop->first ? 'bt' : '' }}">
-                                    {{ $organization->name }}
+                                    {{ $organizationName }}
                                 </td>
                                 <td class="text-danger text-right hl {{ $loop->first ? 'bt' : '' }}">
-                                    {{ \App\Models\CurrencyExchangeRate::format(array_sum($pivot['entries'][$organization->id]), 'RUB') }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(array_sum($pivot['entries'][$organizationName]), 'RUB') }}
                                 </td>
                                 @php $i = 0; @endphp
                                 @foreach($pivot['objects'] as $object)
                                     <td class="text-danger text-right {{ $loop->parent->first ? 'bt' : '' }} {{ $loop->first ? ' bl' : '' }}" data-index="{{ $i++ }}">
-                                        @if (($pivot['entries'][$organization->id][$object->id] ?? 0) < 0)
-                                            @if (($pivot['manuals'][$organization->id][$object->id] ?? false) === true)
-                                                {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}
+                                        @if (($pivot['entries'][$organizationName][$object->id] ?? 0) < 0)
+                                            @if (($pivot['manuals'][$organizationName][$object->id] ?? false) === true)
+                                                {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organizationName][$object->id] ?? 0, 'RUB', 0, true) }}
                                             @else
-                                                <a href="{{ route('objects.debts.index', $object) }}" class="text-danger bb cursor-pointer">{{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}</a>
+                                                <a href="{{ route('objects.debts.index', $object) }}" class="text-danger bb cursor-pointer">{{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organizationName][$object->id] ?? 0, 'RUB', 0, true) }}</a>
                                             @endif
                                         @else
-                                            {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organization->id][$object->id] ?? 0, 'RUB', 0, true) }}
+                                            {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organizationName][$object->id] ?? 0, 'RUB', 0, true) }}
                                         @endif
                                     </td>
                                 @endforeach

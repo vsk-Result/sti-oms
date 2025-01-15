@@ -5,8 +5,6 @@ namespace App\Console\Commands;
 use App\Console\HandledCommand;
 use App\Exports\Finance\FinanceReport\Export;
 use App\Models\Company;
-use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
 use App\Models\FinanceReport;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
@@ -14,6 +12,7 @@ use App\Models\Object\BObject;
 use App\Models\Object\PlanPayment;
 use App\Models\Payment;
 use App\Models\PaymentImport;
+use App\Models\PivotObjectDebt;
 use App\Models\Status;
 use App\Models\TaxPlanItem;
 use App\Services\Contract\ActService;
@@ -224,32 +223,21 @@ class MakeFinanceReportHistory extends HandledCommand
                     $object->general_balance = $object->total_with_general_balance - $object->total_balance;
                     $object->general_balance_without_nds = $object->total_with_general_balance_without_nds - $object->total_balance_without_nds;
 
-                    $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
+                    $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR);
+                    $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER);
+                    $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE);
 
-                    $serviceDebtsAmount = $debts['service']->total_amount;
-                    $serviceDebtsAmountWithoutNDS = $debts['service']->amount_without_nds;
+                    $serviceDebtsAmount = $serviceDebts['total']['amount'];
+                    $serviceDebtsAmountWithoutNDS = $serviceDebts['total']['amount_without_nds'];
 
-                    $contractorDebtsAmount = $debts['contractor']->total_amount;
-                    $contractorDebtsAmountWithoutNDS = $debts['contractor']->amount_without_nds;
+                    $contractorDebtsAmount = $contractorDebts['total']['total_amount'];
+                    $contractorDebtsAmountWithoutNDS = $contractorDebts['total']['total_amount_without_nds'];
+                    $contractorGuaranteeDebtsAmount = $contractorDebts['total']['guarantee'];
 
-                    $contractorGuaranteeDebtsAmount = 0;
-
-                    $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-                    $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-
-                    if ($objectExistInObjectImport) {
-                        $contractorDebtsAvans = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('avans');
-                        $contractorDebtsGU = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->sum('guarantee');
-                        $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
-                        $contractorDebtsAmountWithoutNDS = $contractorDebtsAmountWithoutNDS + $contractorDebtsAvans + $contractorDebtsGU;
-
-                        $contractorGuaranteeDebtsAmount = $contractorDebtsGU;
-                    }
-
-                    $providerDebtsAmount = $debts['provider']->total_amount;
-                    $providerDebtsFixAmount = $debts['provider']->fix_amount;
-                    $providerDebtsFloatAmount = $debts['provider']->float_amount;
-                    $providerDebtsAmountWithoutNDS = $debts['provider']->amount_without_nds;
+                    $providerDebtsAmount = $providerDebts['total']['amount'];
+                    $providerDebtsFixAmount = $providerDebts['total']['amount_fix'];
+                    $providerDebtsFloatAmount = $providerDebts['total']['amount_float'];
+                    $providerDebtsAmountWithoutNDS = $providerDebts['total']['amount_without_nds'];
 
                     $ITRSalaryDebt = $object->getITRSalaryDebt();
                     $workSalaryDebt = $object->getWorkSalaryDebt();
@@ -491,8 +479,8 @@ class MakeFinanceReportHistory extends HandledCommand
                         }
 
                         if ($field === 'prognoz_podryad') {
-                            $prognozAmount = $debts['contractor']->balance_contract;
-                            $prognozAmountWithoutNDS = $debts['contractor']->balance_contract;
+                            $prognozAmount = $contractorDebts['total']['balance_contract'];
+                            $prognozAmountWithoutNDS = $contractorDebts['total']['balance_contract'];
                         }
 
                         if ($field === 'prognoz_general') {
@@ -759,8 +747,8 @@ class MakeFinanceReportHistory extends HandledCommand
                     $total[$year][$object->code]['balance_with_general_balance'] = $object->total_with_general_balance;
                     $total[$year][$object->code]['balance_with_general_balance_without_nds'] = $object->total_with_general_balance_without_nds;
 
-                    $total[$year][$object->code]['contractor_debt'] = $contractorDebtsAmount - $contractorGuaranteeDebtsAmount;
-                    $total[$year][$object->code]['contractor_debt_without_nds'] = $contractorDebtsAmountWithoutNDS - $contractorGuaranteeDebtsAmount;
+                    $total[$year][$object->code]['contractor_debt'] = $contractorDebtsAmount;
+                    $total[$year][$object->code]['contractor_debt_without_nds'] = $contractorDebtsAmountWithoutNDS;
 
                     $total[$year][$object->code]['contractor_debt_gu'] = $contractorGuaranteeDebtsAmount;
                     $total[$year][$object->code]['contractor_debt_gu_without_nds'] = $contractorGuaranteeDebtsAmount;

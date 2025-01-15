@@ -2,309 +2,159 @@
 
 namespace App\Services;
 
-use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
-use App\Models\Debt\DebtManual;
-use App\Models\Object\BObject;
-use App\Models\Organization;
 use App\Models\PivotObjectDebt;
 use App\Models\TaxPlanItem;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 
 class PivotObjectDebtService
 {
-    private BObject $object;
-
-    public function getPivotDebtForObject(int $objectId): array
+    public function getPivotDebts(int $objectId, int $debtType, ?array $options = []): array
     {
-        $date = Carbon::now()->format('Y-m-d');
-        $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
+        $withSortedDetails = $options['with_sorted_details'] ?? false;
 
-        if (!$pivot) {
-            $date = Carbon::now()->subDay()->format('Y-m-d');
-            $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
-        }
-
-        $emptyCollection = collect([
-            (object) [
-                'debts' => [],
+        $info = [
+            'sources' => [],
+            'total' => [
+                'amount' => 0,
+                'amount_without_nds' => 0,
+                'amount_fix' => 0,
+                'amount_float' => 0,
+                'unwork_avans' => 0,
+                'guarantee' => 0,
+                'guarantee_deadline' => 0,
+                'avans' => 0,
+                'balance_contract' => 0,
                 'total_amount' => 0,
-            ]
-        ])[0];
-
-        return [
-            'contractor' => $pivot ? $this->sortByAmount(json_decode($pivot->contractor), $objectId) : $emptyCollection,
-            'provider' => $pivot ? $this->sortByAmount(json_decode($pivot->provider), $objectId) : $emptyCollection,
-            'service' => $pivot ? $this->sortByAmount(json_decode($pivot->service), $objectId) : $emptyCollection,
+                'total_amount_without_nds' => 0,
+            ],
+            'organizations' => [],
         ];
-    }
 
-    public function updatePivotDebtForObject(int $objectId): void
-    {
-        $this->object = BObject::find($objectId);
+        foreach (PivotObjectDebt::getSourcesByType($debtType) as $source) {
+            $pivot = PivotObjectDebt::where('debt_type_id', $debtType)
+                ->where('object_id', $objectId)
+                ->where('debt_source_id', $source)
+                ->latest('date')
+                ->first();
 
-        $contractorDebtsInfo = $this->getContractorDebts();
+            if (! $pivot) {
+                continue;
+            }
 
-        $contractorDebts = $contractorDebtsInfo['debts'];
-        $contractorTotalAmount = array_sum($contractorDebts);
+            $info['sources'][] = [
+                'source_name' => PivotObjectDebt::getSourceName($source),
+                'uploaded_date' => Carbon::parse($pivot->date)->format('d.m.Y H:i'),
+                'filepath' => $pivot->filepath,
+            ];
+            $info['total']['amount'] += $pivot->amount;
+            $info['total']['amount_without_nds'] += $pivot->amount_without_nds;
+            $info['total']['amount_fix'] += $pivot->amount_fix;
+            $info['total']['amount_float'] += $pivot->amount_float;
+            $info['total']['unwork_avans'] += $pivot->unwork_avans;
+            $info['total']['avans'] += $pivot->avans;
+            $info['total']['guarantee'] += $pivot->guarantee;
+            $info['total']['guarantee_deadline'] += $pivot->guarantee_deadline;
+            $info['total']['balance_contract'] += $pivot->balance_contract;
 
-        if ($this->object->code === '288') {
-            $contractorTotalAmount = 0;
+            $details = json_decode($pivot->details, true) ?? [];
 
-            foreach($contractorDebts as $organization) {
-                foreach ($organization['worktype'] as $amount) {
-                    $contractorTotalAmount += $amount;
+            foreach ($details as $organizationData) {
+                if (! isset($info['organizations'][$organizationData['organization_name']])) {
+                    $info['organizations'][$organizationData['organization_name']] = [
+                        'organization_id' => $organizationData['organization_id'],
+                        'organization_name' => $organizationData['organization_name'],
+                        'unwork_avans' => 0,
+                        'balance_contract' => 0,
+                        'guarantee' => 0,
+                        'guarantee_deadline' => 0,
+                        'avans' => 0,
+                        'amount' => 0,
+                        'amount_fix' => 0,
+                        'amount_float' => 0,
+                        'amount_without_nds' => 0,
+                        'total_amount' => 0,
+                        'total_amount_without_nds' => 0,
+                    ];
                 }
+
+                $info['organizations'][$organizationData['organization_name']]['amount'] += $organizationData['amount'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['amount_fix'] += $organizationData['amount_fix'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['amount_float'] += $organizationData['amount_float'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['amount_without_nds'] += $organizationData['amount_without_nds'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['unwork_avans'] += $organizationData['unwork_avans'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['guarantee'] += $organizationData['guarantee'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['guarantee_deadline'] += $organizationData['guarantee_deadline'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['avans'] += $organizationData['avans'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['balance_contract'] += $organizationData['balance_contract'] ?? 0;
+                $info['organizations'][$organizationData['organization_name']]['total_amount'] += ($organizationData['amount'] ?? 0) + ($organizationData['avans'] ?? 0);
+                $info['organizations'][$organizationData['organization_name']]['total_amount_without_nds'] += ($organizationData['amount_without_nds'] ?? 0) + ($organizationData['avans'] ?? 0);
             }
         }
 
-        $contractorInfo = [
-            'debts' => $contractorDebts,
-            'total_amount' => $contractorTotalAmount,
-            'amount_without_nds' => $contractorDebtsInfo['amount_without_nds'],
-            'balance_contract' => $contractorDebtsInfo['balance_contract'],
-        ];
+        $info['total']['total_amount'] = $info['total']['amount'] + $info['total']['avans'];
+        $info['total']['total_amount_without_nds'] = $info['total']['amount_without_nds'] + $info['total']['avans'];
 
-        $providerDebts = $this->getProviderDebts();
-        $providerInfo = [
-            'debts' => $providerDebts['debts'],
-            'debts_fix' => $providerDebts['debts_fix'],
-            'debts_float' => $providerDebts['debts_float'],
-            'total_amount' => array_sum($providerDebts['debts']),
-            'amount_without_nds' => $providerDebts['amount_without_nds'],
-            'fix_amount' => $providerDebts['fix_amount'],
-            'float_amount' => $providerDebts['float_amount'],
-        ];
+        if ($debtType === PivotObjectDebt::DEBT_TYPE_SERVICE) {
+            $this->addAdditionalServiceDebts($objectId, $info);
+        }
 
-        $serviceDebts = $this->getServiceDebts();
-        $serviceInfo = [
-            'debts' => $serviceDebts['debts'],
-            'total_amount' => array_sum($serviceDebts['debts']),
-            'amount_without_nds' => $serviceDebts['amount_without_nds'],
-        ];
+        $info['organizations'] = $this->getClearedDetails($info['organizations']);
 
-        $date = Carbon::now()->format('Y-m-d');
-        $pivot = PivotObjectDebt::where('date', $date)->where('object_id', $objectId)->first();
-        $debts = [
-            'date' => $date,
-            'object_id' => $this->object->id,
-            'contractor' => json_encode($contractorInfo),
-            'provider' => json_encode($providerInfo),
-            'service' => json_encode($serviceInfo),
-        ];
+        if ($withSortedDetails) {
+            $info['organizations'] = $this->getSortedDetails($info['organizations']);
+        }
 
-        if ($pivot) {
-            $pivot->update($debts);
-        } else {
-            PivotObjectDebt::create($debts);
+        return $info;
+    }
+
+    public function updatePivotDebtInfo(array $data, int $debtType, int $debtSource, string $filepath): void
+    {
+        foreach ($data as $objectData) {
+            $this->updatePivotDebtForObject($objectData, $debtType, $debtSource, $filepath);
         }
     }
 
-    public function updatePivotDebtForAllObjects(): void
+    public function updatePivotDebtForObject(array $data, int $debtType, int $debtSource, string $filepath): void
     {
-        $objects = BObject::orderByDesc('code')->get();
-
-        foreach ($objects as $object) {
-            $this->updatePivotDebtForObject($object->id);
-        }
-    }
-
-    private function getContractorDebts($forApi = false): array
-    {
-        $debtManuals = DebtManual::where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $this->object->id)->with('organization')->get();
-        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-
-        $existInObjectImport = $this->object
-            ->debts()
-            ->where('import_id', $debtObjectImport?->id)
+        $pivot = PivotObjectDebt::where('date', now()->format('Y-m-d'))
+            ->where('object_id', $data['object_id'])
+            ->where('debt_type_id', $debtType)
+            ->where('debt_source_id', $debtSource)
             ->first();
 
-        if ($existInObjectImport) {
-            $debts = $this->object
-                ->debts()
-                ->where('import_id', $debtObjectImport?->id)
-                ->where('type_id', Debt::TYPE_CONTRACTOR)
-                ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
-                ->with('organization')
-                ->orderBy('amount')
-                ->get();
-        } else {
-            $debts = $this->object
-                ->debts()
-                ->whereIn('import_id', [$debtImport?->id, $debt1CImport?->id, $debtObjectImport?->id])
-                ->where('type_id', Debt::TYPE_CONTRACTOR)
-                ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
-                ->with('organization')
-                ->orderBy('amount')
-                ->get();
+        if (! $pivot) {
+            $pivot = PivotObjectDebt::create([
+                'date' => now(),
+                'object_id' => $data['object_id'],
+                'debt_type_id' => $debtType,
+                'debt_source_id' => $debtSource,
+            ]);
         }
 
-        if ($this->object->code === '288') {
-            $result = [];
-
-            foreach ($debts as $debt) {
-                if (! isset($result[$debt->organization_id]['worktype'][$debt->object_worktype_id])) {
-                    $result[$debt->organization_id]['name'] = $debt->organization->name;
-                    $result[$debt->organization_id]['worktype'][$debt->object_worktype_id] = 0;
-                }
-                $result[$debt->organization_id]['worktype'][$debt->object_worktype_id] += $debt->amount;
-            }
-        } else {
-            $result = [];
-
-            foreach ($debts as $debt) {
-                $id = $debt->organization_id . '::' . $debt->organization?->name ?? 'Не определено';
-                if (! isset($result[$id])) {
-                    $result[$id] = 0;
-                }
-                $result[$id] += $debt->amount;
-
-                if ($forApi && $existInObjectImport) {
-                    $result[$id] += $debt->avans;
-                }
-            }
-
-            foreach ($debtManuals as $debtManual) {
-                $issetDebt = $debts->where('organization_id', $debtManual->organization_id)->first();
-
-                if (! $issetDebt && isset($debtManual->organization)) {
-                    $id = $debtManual->organization_id . '::' . $debtManual->organization->name;
-                    $result[$id] = $debtManual->amount;
-
-                    if ($forApi && $existInObjectImport) {
-                        $result[$id] += $debtManual->avans;
-                    }
-                }
-            }
-
-            asort($result);
-
-            foreach ($result as $organization => $amount) {
-                $organizationId = substr($organization, 0, strpos($organization, '::'));
-                $debtManual = $debtManuals->where('organization_id', $organizationId)->first();
-
-                if ($debtManual) {
-                    $result[$organization] = $debtManual->amount;
-
-                    if ($forApi && $existInObjectImport) {
-                        $result[$organization] += $debtManual->avans;
-                    }
-                }
-            }
-        }
-
-        $amountWithoutNDS = $debts->sum('amount_without_nds');
-        $balanceContract = $debts->sum('balance_contract');
-
-        return [
-            'debts' => $result,
-            'amount_without_nds' => $amountWithoutNDS,
-            'balance_contract' => $balanceContract
-        ];
+        $pivot->update([
+            'date' => now(),
+            'filepath' => $filepath,
+            'amount' => $data['total_amount'],
+            'amount_without_nds' => $data['total_amount_without_nds'],
+            'amount_fix' => $data['total_amount_fix'] ?? 0,
+            'amount_float' => $data['total_amount_float'] ?? 0,
+            'avans' => $data['total_avans'] ?? 0,
+            'guarantee' => $data['total_guarantee'] ?? 0,
+            'guarantee_deadline' => $data['total_guarantee_deadline'] ?? 0,
+            'balance_contract' => $data['total_balance_contract'] ?? 0,
+            'unwork_avans' => $data['total_unwork_avans'] ?? 0,
+            'details' => json_encode($data['organizations'])
+        ]);
     }
 
-    private function getProviderDebts(): array
+
+    private function addAdditionalServiceDebts(int $objectId, array &$info): void
     {
-        $debtManuals = DebtManual::where('type_id', Debt::TYPE_PROVIDER)->where('object_id', $this->object->id)->with('organization')->get();
-        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
-
-        $debts = $this->object
-            ->debts()
-            ->whereIn('import_id', [$debtImport?->id, $debt1CImport?->id])
-            ->where('type_id', Debt::TYPE_PROVIDER)
-            ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
-            ->with('organization')
-            ->orderBy('amount')
-            ->get();
-
-        if ($this->object->code === '288') {
-            $result = [];
-
-            foreach ($debts as $debt) {
-                if (! isset($result[$debt->organization_id]['worktype'][$debt->object_worktype_id])) {
-                    $result[$debt->organization_id]['name'] = $debt->organization->name;
-                    $result[$debt->organization_id]['worktype'][$debt->object_worktype_id] = 0;
-                }
-                $result[$debt->organization_id]['worktype'][$debt->object_worktype_id] += $debt->amount;
-            }
-        } else {
-            $result = [];
-
-            foreach ($debts as $debt) {
-                $id = $debt->organization_id . '::' . $debt->organization->name;
-                if (! isset($result[$id])) {
-                    $result[$id] = 0;
-                }
-
-                $result[$id] += $debt->amount;
-            }
-
-            foreach ($debtManuals as $debtManual) {
-                $issetDebt = $debts->where('organization_id', $debtManual->organization_id)->first();
-
-                if (! $issetDebt) {
-                    $id = $debtManual->organization_id . '::' . $debtManual->organization->name;
-                    $result[$id] = $debtManual->amount;
-                }
-            }
-
-            asort($result);
-
-            foreach ($result as $organization => $amount) {
-                $organizationId = substr($organization, 0, strpos($organization, '::'));
-                $debtManual = $debtManuals->where('organization_id', $organizationId)->first();
-
-                if ($debtManual) {
-                    $result[$organization] = $debtManual->amount;
-                }
-            }
-        }
-
-        return [
-            'debts' => $result,
-            'debts_fix' => $debts->where('fix_float_type', '!=', 'Изменяемая часть'),
-            'debts_float' => $debts->where('fix_float_type', 'Изменяемая часть'),
-            'amount_without_nds' => $debts->sum('amount_without_nds'),
-            'fix_amount' => $debts->where('fix_float_type', '!=', 'Изменяемая часть')->sum('amount'),
-            'float_amount' => $debts->where('fix_float_type', 'Изменяемая часть')->sum('amount'),
-        ];
-    }
-
-    private function getServiceDebts($forApi = false): array
-    {
-        $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
-        $debts = $this->object
-            ->debts()
-            ->where('import_id', $debt1CServiceImport?->id)
-            ->where('type_id', Debt::TYPE_SERVICE)
-            ->orderBy(Organization::select('name')->whereColumn('organizations.id', 'debts.organization_id'))
-            ->with('organization')
-            ->orderBy('amount')
-            ->get();
-
-        $result = [];
-
-        foreach ($debts as $debt) {
-            $id = $debt->organization_id . '::' . $debt->organization->name;
-            if (! isset($result[$id])) {
-                $result[$id] = 0;
-            }
-            $result[$id] += $debt->amount;
-
-            if ($forApi) {
-                $result[$id] += $debt->avans;
-            }
-        }
-
         $komissiyaServiceAmount = 0;
         $komissiyaBGServiceAmount = 0;
         $komissiyaBG_GU_ServiceAmount = 0;
 
-        $komissiyaServiceItems = TaxPlanItem::where('object_id', $this->object->id)->where('paid', 0)->where('name', 'LIKE', '%комис%')->get();
+        $komissiyaServiceItems = TaxPlanItem::where('object_id', $objectId)->where('paid', 0)->where('name', 'LIKE', '%комис%')->get();
         foreach ($komissiyaServiceItems as $item) {
             if (mb_strpos($item->name, 'БГ') > 0 || mb_strpos($item->name, 'бг') > 0) {
 
@@ -320,62 +170,94 @@ class PivotObjectDebtService
             $komissiyaServiceAmount += $item->amount;
         }
 
-        $konsaltingServiceAmount = TaxPlanItem::where('object_id', $this->object->id)->where('paid', 0)->where('name', 'LIKE', '%консалтинг%')->sum('amount');
+        $konsaltingServiceAmount = TaxPlanItem::where('object_id', $objectId)->where('paid', 0)->where('name', 'LIKE', '%консалтинг%')->sum('amount');
 
         if ($komissiyaServiceAmount != 0) {
-            $result['null::Комиссия'] = -$komissiyaServiceAmount;
+            $info['organizations']['Комиссия'] = [
+                'organization_id' => null,
+                'organization_name' => 'Комиссия',
+                'amount' => -$komissiyaServiceAmount,
+                'amount_without_nds' => -$komissiyaServiceAmount,
+                'total_amount' => -$komissiyaServiceAmount,
+            ];
+            $info['total']['amount'] += -$komissiyaServiceAmount;
+            $info['total']['amount_without_nds'] += -$komissiyaServiceAmount;
+            $info['total']['total_amount'] += -$komissiyaServiceAmount;
         }
 
         if ($komissiyaBGServiceAmount != 0) {
-            $result['null::Комиссия за БГ'] = -$komissiyaBGServiceAmount;
+            $info['organizations']['Комиссия за БГ'] = [
+                'organization_id' => null,
+                'organization_name' => 'Комиссия за БГ',
+                'amount' => -$komissiyaBGServiceAmount,
+                'amount_without_nds' => -$komissiyaBGServiceAmount,
+                'total_amount' => -$komissiyaBGServiceAmount,
+            ];
+            $info['total']['amount'] += -$komissiyaBGServiceAmount;
+            $info['total']['amount_without_nds'] += -$komissiyaBGServiceAmount;
+            $info['total']['total_amount'] += -$komissiyaBGServiceAmount;
         }
 
         if ($komissiyaBG_GU_ServiceAmount != 0) {
-            $result['null::Комиссия за БГ (г/у)'] = -$komissiyaBG_GU_ServiceAmount;
+            $info['organizations']['Комиссия за БГ (г/у)'] = [
+                'organization_id' => null,
+                'organization_name' => 'Комиссия за БГ (г/у)',
+                'amount' => -$komissiyaBG_GU_ServiceAmount,
+                'amount_without_nds' => -$komissiyaBG_GU_ServiceAmount,
+                'total_amount' => -$komissiyaBG_GU_ServiceAmount,
+            ];
+            $info['total']['amount'] += -$komissiyaBG_GU_ServiceAmount;
+            $info['total']['amount_without_nds'] += -$komissiyaBG_GU_ServiceAmount;
+            $info['total']['total_amount'] += -$komissiyaBG_GU_ServiceAmount;
         }
 
         if ($konsaltingServiceAmount != 0) {
-            $result['null::Консалтинг'] = -$konsaltingServiceAmount;
+            $info['organizations']['Консалтинг'] = [
+                'organization_id' => null,
+                'organization_name' => 'Консалтинг',
+                'amount' => -$konsaltingServiceAmount,
+                'amount_without_nds' => -$konsaltingServiceAmount,
+                'total_amount' => -$konsaltingServiceAmount,
+            ];
+            $info['total']['amount'] += -$konsaltingServiceAmount;
+            $info['total']['amount_without_nds'] += -$konsaltingServiceAmount;
+            $info['total']['total_amount'] += -$konsaltingServiceAmount;
         }
-
-        asort($result);
-
-        return [
-            'debts' => $result,
-            'amount_without_nds' => $debts->sum('amount_without_nds')
-        ];
     }
 
-    private function sortByAmount($pivotInfo, $objectId)
+    private function getSortedDetails(array $details): array
     {
-        if ($objectId === 5) {
-            return $pivotInfo;
-        }
+        $result = $details;
 
-        $sortedDebts = [];
-        $debts = $pivotInfo->debts;
-        foreach ($debts as $organization => $amount) {
-            if (is_numeric($organization)) {
-                $organizationName = $amount->name;
-            } else {
-                $organizationName = substr($organization, strpos($organization, '::') + 2);
+        $totalAmounts = array_column($result, 'total_amount');
+        array_multisort($totalAmounts, SORT_ASC, $result);
+
+        return $result;
+    }
+
+    private function getClearedDetails(array $details): array
+    {
+        $result = [];
+
+        foreach ($details as $organizationId => $organizationData) {
+            $valid = false;
+
+            foreach ($organizationData as $value) {
+                if (in_array($value, ['organization_id', 'organization_name'])) {
+                    continue;
+                }
+
+                if (is_valid_amount_in_range($value)) {
+                    $valid = true;
+                    break;
+                }
             }
 
-            $sortedDebts[$amount . "::" . $organizationName] = [
-                'key' => $organization,
-                'amount' => $amount
-            ];
+            if ($valid) {
+                $result[$organizationId] = $organizationData;
+            }
         }
 
-        ksort($sortedDebts, SORT_NUMERIC);
-
-        $resultDebts = (object) [];
-        foreach ($sortedDebts as $debt) {
-            $resultDebts->{$debt['key']} = $debt['amount'];
-        }
-
-        $pivotInfo->debts = $resultDebts;
-
-        return $pivotInfo;
+        return $result;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\DebtImport;
 
 use App\Helpers\Sanitizer;
 use App\Imports\DebtImport\Import;
@@ -9,6 +9,11 @@ use App\Models\Debt\Debt;
 use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
 use App\Models\Status;
+use App\Services\DebtService;
+use App\Services\ObjectService;
+use App\Services\OrganizationService;
+use App\Services\PivotObjectDebtService;
+use App\Services\UploadService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -108,6 +113,11 @@ class DebtImportService
         $this->organizationService = $organizationService;
         $this->sanitizer = $sanitizer;
         $this->pivotObjectDebtService = $pivotObjectDebtService;
+    }
+
+    public function importDebts($import)
+    {
+        return $import->import();
     }
 
     public function createImport(array $requestData, string|null $type = null): null|string

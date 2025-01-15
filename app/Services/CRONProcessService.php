@@ -90,6 +90,6 @@ class CRONProcessService
 
     private function isOverLimit($date): bool
     {
-        return now()->diff(Carbon::parse($date))->i >= self::FREEZE_TIME_LIMIT_MINUTES;
+        return now()->diffInMinutes(Carbon::parse($date)) >= self::FREEZE_TIME_LIMIT_MINUTES;
     }
 }

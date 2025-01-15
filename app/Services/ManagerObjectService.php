@@ -30,12 +30,14 @@ class ManagerObjectService
                     $managers[] = $currentManager;
                 }
 
+                $object = BObject::where('code', $objectCode)->first();
+
                 $manager = [
                     'object_code' => $data[0],
                     'object_name' => $data[1],
-                    'object_boss' => BObject::where('code', $objectCode)->first()?->responsible_name ?? '',
-                    'object_boss_email' => BObject::where('code', $objectCode)->first()?->responsible_email ?? '',
-                    'object_boss_phone' => BObject::where('code', $objectCode)->first()?->responsible_phone ?? '',
+                    'object_boss' => $object?->responsible_name ?? '',
+                    'object_boss_email' => $object?->responsible_email ?? '',
+                    'object_boss_phone' => $object?->responsible_phone ?? '',
                     'names' => [],
                     'emails' => [],
                     'phones' => [],

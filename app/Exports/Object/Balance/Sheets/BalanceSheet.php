@@ -2,10 +2,9 @@
 
 namespace App\Exports\Object\Balance\Sheets;
 
-use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
 use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
+use App\Models\PivotObjectDebt;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -61,8 +60,6 @@ class BalanceSheet implements
                 }
             }
         }
-
-        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($this->object->id);
 
         $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, 24, 29);
         $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
@@ -358,43 +355,27 @@ class BalanceSheet implements
         $sheet->getStyle('W17:X29')->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('T28:X29')->getFont()->setBold(true);
 
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-        $ds = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
 
-        $totalSum = 0;
         $otherSum = 0;
         $count = 0;
         $row = 18;
 
-        $sorted = [];
-        foreach ($debts['contractor']->debts as $organization => $amount) {
-            $organizationId = substr($organization, 0, strpos($organization, '::'));
-            $resultAmount = $amount;
-            if ($objectExistInObjectImport) {
-                $resultAmount += $ds->where('organization_id', $organizationId)->sum('avans');
-                $totalSum += $resultAmount;
-            }
+        $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR, ['with_sorted_details' => true]);
+        $providerDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER, ['with_sorted_details' => true]);
+        $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_SERVICE, ['with_sorted_details' => true]);
 
-            $sorted[$organization] = $resultAmount;
-        }
-
-        asort($sorted);
-
-        foreach ($sorted as $organization => $amount) {
-            $organizationName = substr($organization, strpos($organization, '::') + 2);
-
-            if ($amount < 1 && $amount > -1) {
+        foreach ($contractorDebts['organizations'] as $organizationData) {
+            if (! is_valid_amount_in_range($organizationData['total_amount'])) {
                 continue;
             }
 
             if ($count === 10) {
-                $otherSum += $amount;
+                $otherSum += $organizationData['total_amount'];
                 continue;
             }
 
-            $sheet->setCellValue('B' . $row, $organizationName);
-            $this->setValueEndColor($sheet, 'E' . $row, $amount);
+            $sheet->setCellValue('B' . $row, $organizationData['organization_name']);
+            $this->setValueEndColor($sheet, 'E' . $row, $organizationData['total_amount']);
             $sheet->mergeCells('B' . $row . ':D' . $row);
             $sheet->mergeCells('E' . $row . ':F' . $row);
 
@@ -403,36 +384,26 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'E28', $otherSum);
-        $this->setValueEndColor($sheet, 'E29', $totalSum);
+        $this->setValueEndColor($sheet, 'E29', $contractorDebts['total']['total_amount']);
         $sheet->getStyle('B17:F28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('B17:F17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('B29:F29')->applyFromArray($titleStyleArray);
         $sheet->getStyle('B29:F29')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('E18:F29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        $totalSum = 0;
         $otherSum = 0;
         $count = 0;
         $row = 18;
 
         $sorted = [];
-        foreach ($debts['contractor']->debts as $organization => $amount) {
-            $organizationId = substr($organization, 0, strpos($organization, '::'));
-            $resultAmount = 0;
-            if ($objectExistInObjectImport) {
-                $resultAmount += $ds->where('organization_id', $organizationId)->sum('guarantee');
-                $totalSum += $resultAmount;
-            }
-
-            $sorted[$organization] = $resultAmount;
+        foreach ($contractorDebts['organizations'] as $organizationData) {
+            $sorted[$organizationData['organization_name']] = $organizationData['guarantee'];
         }
 
         asort($sorted);
 
-        foreach ($sorted as $organization => $amount) {
-            $organizationName = substr($organization, strpos($organization, '::') + 2);
-
-            if ($amount < 1 && $amount > -1) {
+        foreach ($sorted as $organizationName => $amount) {
+            if (! is_valid_amount_in_range($amount)) {
                 continue;
             }
 
@@ -451,61 +422,27 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'K28', $otherSum);
-        $this->setValueEndColor($sheet, 'K29', $totalSum);
+        $this->setValueEndColor($sheet, 'K29', $contractorDebts['total']['guarantee']);
         $sheet->getStyle('H17:L28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('H17:L17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('H29:L29')->applyFromArray($titleStyleArray);
         $sheet->getStyle('H29:L29')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('K18:L29')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-
-        $providerDebts = [];
-        foreach ($debts['provider']->debts_fix as $debt) {
-            $organizationName = $debt->organization->name;
-            if (!isset($providerDebts[$organizationName])) {
-                $providerDebts[$organizationName] = [
-                    'fix' => 0,
-                    'float' => 0,
-                    'total' => 0,
-                    'organization_id' => $debt->organization_id,
-                ];
-            }
-
-            $providerDebts[$organizationName]['fix'] += $debt->amount;
-            $providerDebts[$organizationName]['total'] += $debt->amount;
-        }
-        foreach ($debts['provider']->debts_float as $debt) {
-            $organizationName = $debt->organization->name;
-            if (!isset($providerDebts[$organizationName])) {
-                $providerDebts[$organizationName] = [
-                    'fix' => 0,
-                    'float' => 0,
-                    'total' => 0,
-                    'organization_id' => $debt->organization_id,
-                ];
-            }
-
-            $providerDebts[$organizationName]['float'] += $debt->amount;
-            $providerDebts[$organizationName]['total'] += $debt->amount;
-        }
-
-        $providerTotalAmounts = array_column($providerDebts, 'total');
-        array_multisort($providerTotalAmounts, SORT_ASC, $providerDebts);
-
         $otherFixSum = 0;
         $otherFloatSum = 0;
         $count = 0;
         $row = 18;
-        foreach ($providerDebts as $organizationName => $debtAmount) {
+        foreach ($providerDebts['organizations'] as $organizationData) {
             if ($count === 10) {
-                $otherFixSum += $debtAmount['fix'];
-                $otherFloatSum += $debtAmount['float'];
+                $otherFixSum += $organizationData['amount_fix'];
+                $otherFloatSum += $organizationData['amount_float'];
                 continue;
             }
 
-            $sheet->setCellValue('N' . $row, $organizationName);
-            $this->setValueEndColor($sheet, 'O' . $row, $debtAmount['fix']);
-            $this->setValueEndColor($sheet, 'Q' . $row, $debtAmount['float']);
+            $sheet->setCellValue('N' . $row, $organizationData['organization_name']);
+            $this->setValueEndColor($sheet, 'O' . $row, $organizationData['amount_fix']);
+            $this->setValueEndColor($sheet, 'Q' . $row, $organizationData['amount_float']);
             $sheet->mergeCells('O' . $row . ':P' . $row);
             $sheet->mergeCells('Q' . $row . ':R' . $row);
 
@@ -515,8 +452,8 @@ class BalanceSheet implements
 
         $this->setValueEndColor($sheet, 'O28', $otherFixSum);
         $this->setValueEndColor($sheet, 'Q28', $otherFloatSum);
-        $this->setValueEndColor($sheet, 'O29', $debts['provider']->fix_amount);
-        $this->setValueEndColor($sheet, 'Q29', $debts['provider']->float_amount);
+        $this->setValueEndColor($sheet, 'O29', $providerDebts['total']['amount_fix']);
+        $this->setValueEndColor($sheet, 'Q29', $providerDebts['total']['amount_float']);
         $sheet->getStyle('N17:R28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('N17:R17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('N29:R29')->applyFromArray($titleStyleArray);
@@ -527,16 +464,14 @@ class BalanceSheet implements
         $otherSum = 0;
         $count = 0;
         $row = 18;
-        foreach ($debts['service']->debts as $organization => $amount) {
+        foreach ($serviceDebts['organizations'] as $organizationData) {
             if ($count === 10) {
-                $otherSum += $amount;
+                $otherSum += $organizationData['amount'];
                 continue;
             }
 
-            $organizationName = substr($organization, strpos($organization, '::') + 2);
-
-            $sheet->setCellValue('T' . $row, $organizationName);
-            $this->setValueEndColor($sheet, 'W' . $row, $amount);
+            $sheet->setCellValue('T' . $row, $organizationData['organization_name']);
+            $this->setValueEndColor($sheet, 'W' . $row, $organizationData['amount']);
             $sheet->mergeCells('T' . $row . ':V' . $row);
             $sheet->mergeCells('W' . $row . ':X' . $row);
 
@@ -545,7 +480,7 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'W28', $otherSum);
-        $this->setValueEndColor($sheet, 'W29', $info['service_debt']);
+        $this->setValueEndColor($sheet, 'W29', $serviceDebts['total']['amount']);
         $sheet->getStyle('T17:X28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('T17:X17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('T29:X29')->applyFromArray($titleStyleArray);

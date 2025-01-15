@@ -29,7 +29,8 @@ class TaxSplitController extends Controller
         $splitError = $this->splitTaxPaymentsService->splitPayments(
             $request->get('payment_ids'),
             $request->get('split_date'),
-            $this->splitTaxPaymentsService->prepareSplitInfo($splitInfo['Лист_1'])
+            $this->splitTaxPaymentsService->prepareSplitInfo($splitInfo['Лист_1']),
+            $request->file('file')->getClientOriginalName()
         );
 
         if (! is_null($splitError)) {

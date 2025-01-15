@@ -27,8 +27,9 @@ class SchedulerExecuted extends Notification
     {
         $title = "<strong>{$this->status} Планировщик задач</strong>\n\n";
         $commandName = "<strong>{$this->commandName}</strong>\n\n";
+        $message = mb_substr($this->message, 0, 500);
 
-        $content = "{$title}{$commandName}{$this->message}";
+        $content = "{$title}{$commandName}{$message}";
 
         return TelegramMessage::create($content)
             ->options(['parse_mode' => 'html'])

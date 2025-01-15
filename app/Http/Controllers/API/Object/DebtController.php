@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\API\Object;
 
 use App\Http\Controllers\Controller;
-use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
+use App\Models\PivotObjectDebt;
 use App\Services\PivotObjectDebtService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,65 +42,73 @@ class DebtController extends Controller
             return response()->json([], 404);
         }
 
-        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
-
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-        $ds = Debt::where('import_id', $debtObjectImport->id)->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
+        $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR);
+        $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER);
+        $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE);
 
         $contractors = [];
         $contractorsGU = [];
-        foreach ($debts['contractor']->debts as $organization => $amount) {
-            $organizationId = substr($organization, 0, strpos($organization, '::'));
-            $guAmount = 0;
-            $resultAmount = $amount;
-
-            if ($objectExistInObjectImport) {
-                $guAmount += $ds->where('organization_id', $organizationId)->sum('guarantee');
-                $resultAmount += $ds->where('organization_id', $organizationId)->sum('avans');
+        foreach ($contractorDebts['organizations'] as $organizationData) {
+            if (is_valid_amount_in_range($organizationData['guarantee'])) {
+                $contractorsGU[$organizationData['organization_name']] = $organizationData['guarantee'];
             }
 
-            if ($guAmount > 1 || $guAmount < -1) {
-                $contractorsGU[$organization] = $guAmount;
-            }
-            if ($resultAmount > 1 || $resultAmount < -1) {
-                $contractors[$organization] = $resultAmount;
+            if (is_valid_amount_in_range($organizationData['total_amount'])) {
+                $contractors[$organizationData['organization_name']] = $organizationData['total_amount'];
             }
         }
 
+        $providers = [];
         $fixProviders = [];
-        foreach ($debts['provider']->debts_fix as $debt) {
-            $id = $debt->organization_id . '::' . $debt->organization->name;
-
-            if (! isset($fixProviders[$id])) {
-                $fixProviders[$id] = 0;
-            }
-
-            $fixProviders[$id] += $debt->amount;
-        }
-
         $floatProviders = [];
-        foreach ($debts['provider']->debts_float as $debt) {
-            $id = $debt->organization_id . '::' . $debt->organization->name;
+        foreach ($providerDebts['organizations'] as $organizationData) {
+            if (is_valid_amount_in_range($organizationData['amount'])) {
+                if (! isset($providers[$organizationData['organization_name']])) {
+                    $providers[$organizationData['organization_name']] = 0;
+                }
 
-            if (! isset($floatProviders[$id])) {
-                $floatProviders[$id] = 0;
+                $providers[$organizationData['organization_name']] += $organizationData['amount'];
             }
 
-            $floatProviders[$id] += $debt->amount;
+            if (is_valid_amount_in_range($organizationData['amount_fix'])) {
+                if (! isset($fixProviders[$organizationData['organization_name']])) {
+                    $fixProviders[$organizationData['organization_name']] = 0;
+                }
+
+                $fixProviders[$organizationData['organization_name']] += $organizationData['amount_fix'];
+            }
+
+            if (is_valid_amount_in_range($organizationData['amount_float'])) {
+                if (! isset($floatProviders[$organizationData['organization_name']])) {
+                    $floatProviders[$organizationData['organization_name']] = 0;
+                }
+
+                $floatProviders[$organizationData['organization_name']] += $organizationData['amount_float'];
+            }
         }
 
+        $services = [];
+        foreach ($serviceDebts['organizations'] as $organizationData) {
+            if (is_valid_amount_in_range($organizationData['amount'])) {
+                $services[$organizationData['organization_name']] = $organizationData['amount'];
+            }
+        }
+
+        asort($contractors);
+        asort($contractorsGU);
+        asort($providers);
         asort($fixProviders);
         asort($floatProviders);
+        asort($services);
 
         $info = [
             'object' => $object->__toString(),
             'contractors' => $contractors,
             'contractors_gu' => $contractorsGU,
-            'providers' => $debts['provider']->debts,
+            'providers' => $providers,
             'providers_fix' => $fixProviders,
             'providers_float' => $floatProviders,
-            'service' => $debts['service']->debts,
+            'service' => $services,
         ];
 
         return response()->json(compact('info'));

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\API\Debt;
 
 use App\Http\Controllers\Controller;
-use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Services\DebtService;
@@ -33,25 +31,25 @@ class OrganizationController extends Controller
             return response()->json([], 403);
         }
 
-        if (isset($request->organization_id)) {
-            $organization = Organization::find($request->organization_id);
+        $debtService = $this->debtService;
+
+        $pivot = Cache::get('object_debts_pivot', function() use ($debtService) {
+            return $debtService->getPivot();
+        });
+
+        if (isset($request->organization_name)) {
+            $organization = Organization::where('name', $request->organization_name)->first();
 
             if (! $organization) {
                 abort(404);
                 return response()->json([], 404);
             }
 
-            $debtService = $this->debtService;
-
-            $pivot = Cache::get('object_debts_pivot', function() use ($debtService) {
-                return $debtService->getPivot();
-            });
-
             $result = 0;
             $objects = [];
 
-            foreach ($pivot['entries'] as $organizationId => $orgEntries) {
-                if ($organizationId == $request->organization_id) {
+            foreach ($pivot['entries'] as $organizationName => $orgEntries) {
+                if ($organizationName == $request->organization_name) {
                     foreach ($orgEntries as $objectId => $amount) {
                         if (isset($request->object_id)) {
                             if ($request->object_id === $objectId) {
@@ -81,16 +79,8 @@ class OrganizationController extends Controller
             return response()->json(compact('info'));
         }
 
-        $debtImport = DebtImport::where('type_id', DebtImport::TYPE_SUPPLY)->latest('date')->first();
-        $debt1CImport = DebtImport::where('type_id', DebtImport::TYPE_1C)->latest('date')->first();
-        $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-        $debt1CServiceImport = DebtImport::where('type_id', DebtImport::TYPE_SERVICE_1C)->latest('date')->first();
+        $organization_names = $pivot['organizations'];
 
-        $organization_ids = Debt::whereIn('import_id', [$debtImport?->id, $debt1CImport?->id, $debtObjectImport?->id, $debt1CServiceImport?->id])
-            ->groupBy('organization_id')
-            ->pluck('organization_id')
-            ->toArray();
-
-        return response()->json(compact('organization_ids'));
+        return response()->json(compact('organization_names'));
     }
 }

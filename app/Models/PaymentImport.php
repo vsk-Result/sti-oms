@@ -144,4 +144,18 @@ class PaymentImport extends Model
 
         return $authors;
     }
+
+    public function hasInvalidBalance(): bool
+    {
+        if (! $this->isStatement() || $this->company->short_name === 'ПТИ') {
+            return false;
+        }
+
+        return is_valid_amount_in_range($this->getBalanceOffset());
+    }
+
+    public function getBalanceOffset()
+    {
+        return $this->outgoing_balance - ($this->incoming_balance + $this->amount_pay + $this->amount_receive);
+    }
 }

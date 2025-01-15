@@ -2,11 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
-use App\Models\Debt\DebtManual;
 use App\Models\Object\BObject;
-use App\Models\Organization;
+use App\Models\PivotObjectDebt;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class DebtService
@@ -28,107 +25,79 @@ class DebtService
         $objects = $id !== null ? BObject::where('id', $id)->get() : BObject::orderByDesc('code')->get();
 
         $objectIds = [];
-        $organizationIds = [];
+        $organizations = [];
         foreach ($objects as $object) {
             if ($object->code === '288') continue;
-            $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
 
-            $contractorDebts = $debts['contractor'];
-            $providerDebts = $debts['provider'];
-            $serviceDebts = $debts['service'];
+            $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR);
+            $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER);
+            $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE);
 
-            $contractorDebtsAmount = $contractorDebts->total_amount;
+            $contractorDebtsAmount = $contractorDebts['total']['total_amount'];
+            $providerDebtsAmount = $providerDebts['total']['amount'];
+            $serviceDebtsAmount = $serviceDebts['total']['amount'];
 
-            $debtObjectImport = DebtImport::where('type_id', DebtImport::TYPE_OBJECT)->latest('date')->first();
-            $objectExistInObjectImport = $debtObjectImport->debts()->where('object_id', $object->id)->count() > 0;
-            $contractorDebtsImport = $debtObjectImport->debts()->where('type_id', Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
-
-            if ($objectExistInObjectImport) {
-                $contractorDebtsAvans = $contractorDebtsImport->sum('avans');
-                $contractorDebtsGU = $contractorDebtsImport->sum('guarantee');
-                $contractorDebtsAmount = $contractorDebtsAmount + $contractorDebtsAvans + $contractorDebtsGU;
-            }
-
-            if (($contractorDebtsAmount + $providerDebts->total_amount + $serviceDebts->total_amount) === 0) {
+            if (($contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount) == 0) {
                 continue;
             }
 
-            if ($contractorDebtsAmount !== 0) {
-                $objectIds[] = $object->id;
+            $objectIds[] = $object->id;
+            $pivot['total'][$object->id] = 0;
 
-                if (!isset($pivot['total'][$object->id])) {
-                    $pivot['total'][$object->id] = 0;
+            foreach ($contractorDebts['organizations'] as $organizationInfo) {
+                if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
+                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = 0;
                 }
 
-                foreach ($contractorDebts->debts as $organization => $amount) {
-                    $organizationId = substr($organization, 0, strpos($organization, '::'));
-                    $organizationIds[] = $organizationId;
-
-                    if (!isset($pivot['entries'][$organizationId][$object->id])) {
-                        $pivot['entries'][$organizationId][$object->id] = 0;
-                    }
-
-                    $newAmount = $amount;
-
-                    if ($objectExistInObjectImport) {
-                        $newAmount += $contractorDebtsImport->where('organization_id', $organizationId)->sum('avans');
-                        $newAmount += $contractorDebtsImport->where('organization_id', $organizationId)->sum('guarantee');
-                    }
-
-                    $pivot['entries'][$organizationId][$object->id] += $newAmount;
-
-                    $pivot['total'][$object->id] += $newAmount;
+                if (!array_key_exists($organizationInfo['organization_name'], $organizations)) {
+                    $organizations[$organizationInfo['organization_name']] = 0;
                 }
+
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id] += $organizationInfo['total_amount'];
+                $pivot['total'][$object->id] += $organizationInfo['total_amount'];
+                $organizations[$organizationInfo['organization_name']] += $organizationInfo['total_amount'];
             }
 
-            if ($providerDebts->total_amount !== 0) {
-                $objectIds[] = $object->id;
-
-                if (!isset($pivot['total'][$object->id])) {
-                    $pivot['total'][$object->id] = 0;
+            foreach ($providerDebts['organizations'] as $organizationInfo) {
+                if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
+                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = 0;
                 }
 
-                foreach ($providerDebts->debts as $organization => $amount) {
-                    $organizationId = substr($organization, 0, strpos($organization, '::'));
-                    $organizationIds[] = $organizationId;
-
-                    if (!isset($pivot['entries'][$organizationId][$object->id])) {
-                        $pivot['entries'][$organizationId][$object->id] = 0;
-                    }
-
-                    $pivot['entries'][$organizationId][$object->id] += $amount;
-
-                    $pivot['total'][$object->id] += $amount;
+                if (!array_key_exists($organizationInfo['organization_name'], $organizations)) {
+                    $organizations[$organizationInfo['organization_name']] = 0;
                 }
+
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id] += $organizationInfo['amount'];
+                $pivot['total'][$object->id] += $organizationInfo['amount'];
+                $organizations[$organizationInfo['organization_name']] += $organizationInfo['amount'];
             }
 
-            if ($serviceDebts->total_amount !== 0) {
-                $objectIds[] = $object->id;
-
-                if (!isset($pivot['total'][$object->id])) {
-                    $pivot['total'][$object->id] = 0;
+            foreach ($serviceDebts['organizations'] as $organizationInfo) {
+                if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
+                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = 0;
                 }
 
-                foreach ($serviceDebts->debts as $organization => $amount) {
-                    $organizationId = substr($organization, 0, strpos($organization, '::'));
-                    $organizationIds[] = $organizationId;
-
-                    if (!isset($pivot['entries'][$organizationId][$object->id])) {
-                        $pivot['entries'][$organizationId][$object->id] = 0;
-                    }
-
-                    $pivot['entries'][$organizationId][$object->id] += $amount;
-
-                    $pivot['total'][$object->id] += $amount;
+                if (!array_key_exists($organizationInfo['organization_name'], $organizations)) {
+                    $organizations[$organizationInfo['organization_name']] = 0;
                 }
+
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id] += $organizationInfo['amount'];
+                $pivot['total'][$object->id] += $organizationInfo['amount'];
+                $organizations[$organizationInfo['organization_name']] += $organizationInfo['amount'];
             }
         }
 
         $objectIds = array_unique($objectIds);
-        $organizationIds = array_unique($organizationIds);
+
+        asort($organizations);
+
+        foreach ($organizations as $organizationName => $amount) {
+            if (is_valid_amount_in_range($amount)) {
+                $pivot['organizations'][$organizationName] = $amount;
+            }
+        }
 
         $pivot['objects'] = BObject::whereIn('id', $objectIds)->orderByDesc('code')->get();
-        $pivot['organizations'] = Organization::whereIn('id', $organizationIds)->orderBy('name')->get();
 
         return $pivot;
     }

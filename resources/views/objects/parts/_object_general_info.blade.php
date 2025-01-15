@@ -107,7 +107,8 @@
             @php
                 $workSalaryDebtDetails = $object->getWorkSalaryDebtDetails();
 
-                $financeReportHistory = \App\Models\FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
+                $lastDate = \App\Models\FinanceReportHistory::select('date')->latest('date')->first()->date ?? now()->format('Y-m-d');
+                $financeReportHistory = \App\Models\FinanceReportHistory::where('date', $lastDate)->first();
 
                 $objectsInfo = json_decode($financeReportHistory->objects_new);
                 $years = collect($objectsInfo->years)->toArray();

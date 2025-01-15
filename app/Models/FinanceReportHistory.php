@@ -18,7 +18,8 @@ class FinanceReportHistory extends Model
 
     public static function getCurrentFinanceReportForObject(BObject $object): array
     {
-        $financeReportHistory = self::where('date', now()->format('Y-m-d'))->first();
+        $lastDate = self::select('date')->latest('date')->first()->date ?? now()->format('Y-m-d');
+        $financeReportHistory = self::where('date', $lastDate)->first();
         $objectsInfo = json_decode($financeReportHistory->objects_new);
         $years = collect($objectsInfo->years)->toArray();
         $total = $objectsInfo->total;

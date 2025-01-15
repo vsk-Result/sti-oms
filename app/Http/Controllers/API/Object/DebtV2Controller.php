@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\API\Object;
 
 use App\Http\Controllers\Controller;
-use App\Models\CurrencyExchangeRate;
-use App\Models\Debt\Debt;
-use App\Models\Debt\DebtImport;
 use App\Models\Object\BObject;
+use App\Models\PivotObjectDebt;
 use App\Services\PivotObjectDebtService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -44,15 +42,17 @@ class DebtV2Controller extends Controller
             return response()->json([], 404);
         }
 
-        $debts = $this->pivotObjectDebtService->getPivotDebtForObject($object->id);
+        $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR);
+        $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER);
+        $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE);
 
         $salaryAmount = $object->getWorkSalaryDebt();
 
         $info = [
             'object' => $object->__toString(),
-            'contractors_amount' => $debts['contractor']->total_amount,
-            'providers_amount' => $debts['provider']->total_amount,
-            'service_amount' => $debts['service']->total_amount,
+            'contractors_amount' => $contractorDebts['total']['total_amount'],
+            'providers_amount' => $providerDebts['total']['amount'],
+            'service_amount' => $serviceDebts['total']['amount'],
             'salary_amount' => $salaryAmount
         ];
 

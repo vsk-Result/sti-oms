@@ -130,7 +130,13 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/requests/requests.log'),
             'level' => 'debug'
-        ]
+        ],
+
+        'payments_split_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/split/payments_split.log'),
+            'level' => 'debug'
+        ],
     ],
 
 ];

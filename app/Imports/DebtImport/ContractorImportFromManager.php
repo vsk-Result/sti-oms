@@ -6,7 +6,7 @@ use App\Imports\Sheets\SheetForArray;
 use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class ObjectImport implements WithMultipleSheets, SkipsUnknownSheets
+class ContractorImportFromManager implements WithMultipleSheets, SkipsUnknownSheets
 {
     public function sheets(): array
     {

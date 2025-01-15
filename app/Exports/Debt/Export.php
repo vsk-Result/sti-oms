@@ -2,7 +2,6 @@
 
 namespace App\Exports\Debt;
 
-use App\Exports\Debt\Sheets\DebtsSheet;
 use App\Exports\Debt\Sheets\PivotSheet;
 use App\Models\Object\BObject;
 use App\Services\PivotObjectDebtService;
@@ -23,7 +22,6 @@ class Export implements WithMultipleSheets
     {
         return [
             new PivotSheet($this->object, $this->pivotObjectDebtService),
-            new DebtsSheet($this->object),
         ];
     }
 }

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\DebtImport;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DebtImport\StoreDebtImportRequest;
 use App\Models\Company;
 use App\Models\Debt\DebtImport;
-use App\Services\DebtImportService;
+use App\Services\DebtImport\DebtImportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Requests\DebtImport\StoreDebtImportRequest;
 
 class ImportController extends Controller
 {
@@ -16,10 +16,7 @@ class ImportController extends Controller
 
     public function index(): View
     {
-        $imports = DebtImport::with('company', 'debts', 'createdBy')
-            ->orderByDesc('date')
-            ->orderByDesc('id')
-            ->paginate(15);
+        $imports = DebtImport::orderByDesc('date')->orderByDesc('id')->paginate(15);
 
         return view('debt-imports.index', compact('imports'));
     }

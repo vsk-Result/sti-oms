@@ -3,19 +3,13 @@
 @section('object-tab-title', 'Долги')
 
 @section('object-tab-content')
-    @include('objects.modals.debt_manual_create')
-    @include('objects.modals.debt_manual_edit')
     @include('objects.modals.debt_upload_manual')
-    @inject('pivotObjectDebtService', 'App\Services\PivotObjectDebtService')
-
-    @php
-        $debts = $pivotObjectDebtService->getPivotDebtForObject($object->id);
-    @endphp
+    @include('objects.modals.debt_import_details')
 
     <div class="card border-0">
         <div class="card-header border-0 justify-content-end align-items-center p-0">
             <div class="card-toolbar">
-                <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                <div class="d-flex justify-content-end align-items-center" data-kt-user-table-toolbar="base">
                     <form action="{{ route('objects.debts.exports.store', $object) }}" method="POST" class="hidden me-3">
                         @csrf
                         <a
@@ -27,12 +21,13 @@
                         </a>
                     </form>
 
-                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtCreateManualModal" class="btn btn-light-primary me-3">
-                        Новый долг
-                    </a>
-
-                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtsImportDetailsModal" class="btn btn-light-info">
-                        Источники долгов
+                    <a
+                        class="btn btn-light-info"
+                        href="javascript:void(0);"
+                        data-bs-toggle="modal"
+                        data-bs-target="#debtsImportDetailsModal"
+                    >
+                        Источники
                     </a>
                 </div>
             </div>
@@ -41,466 +36,93 @@
 
     <div class="row g-6 g-xl-9">
         <div class="col-lg-12">
-            @if ($object->code === '288')
-
-                @php
-                    $contractorDebts = $debts['contractor']->debts;
-                    $oneAmount = 0;
-                    $twoFourAmount = 0;
-                    foreach($contractorDebts as $organizationId => $organization) {
-                        $one = $organization->worktype->{1} ?? 0;
-                        $two = $organization->worktype->{2} ?? 0;
-                        $four = $organization->worktype->{4} ?? 0;
-                        $seven = $organization->worktype->{7} ?? 0;
-                        $total = $one + $two + $four;
-                        $oneTotal = 0;
-                        $twoFourTotal = 0;
-                        if ($total !== 0) {
-                            $oneTotal = $one / $total;
-                            $twoFourTotal = ($two + $four) / $total;
-                        } elseif ($total === 0 && $seven !== 0) {
-                            $twoFourTotal = 1;
-                        }
-
-                        $oneAmount += $oneTotal * $seven + $one;
-                        $twoFourAmount += $twoFourTotal * $seven + $two + $four;
-                    }
-                @endphp
-
-                <div class="card card-flush mb-3">
-                    <div class="card-header mt-6">
-                        <div class="card-title flex-column">
-                            <h3 class="fw-bolder mb-1">Долг подрядчикам .1</h3>
-                        </div>
-
-                        <div class="card-toolbar">
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="fs-4 fw-bolder text-danger">
-                                        <a
-                                            class="text-danger"
-                                            href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}&object_worktype_id%5B%5D=1"
-                                        >
-                                            {{ number_format($oneAmount, 2, ',', ' ') }}
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого</div>
-                            </div>
+            <div class="card card-flush h-lg-100">
+                <div class="card-header mt-6 align-items-baseline">
+                    <div class="card-title">
+                        <div class="d-flex flex-column">
+                            <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
+                            <a class="btn btn-sm btn-light-primary mt-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal">
+                                Обновить
+                            </a>
                         </div>
                     </div>
 
-                    <div class="card-body p-9 pt-0">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
+                    <div class="card-toolbar">
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-4 fw-bolder text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['total_amount']) }}
+                                </div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-9 pt-0">
+                    <table class="table table-hover align-middle table-row-dashed fs-6">
+                        <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Контрагент</th>
-                                <th>Сумма</th>
+                                <th class="ps-2">Контрагент</th>
+                                <th class="w-150px text-end">Неотр. аванс</th>
+                                <th class="w-150px text-end">ГУ</th>
+                                <th class="w-150px text-end">в т.ч. ГУ срок наступил</th>
+                                <th class="w-150px text-end pe-2">Авансы к оплате</th>
+                                <th class="w-175px text-end">Долг за СМР</th>
+                                <th></th>
                             </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                                @php
-                                    $sortedDebts = [];
-                                @endphp
-
-                                @foreach($contractorDebts as $organizationId => $organization)
-                                    @php
-                                        $one = $organization->worktype->{1} ?? 0;
-                                        $two = $organization->worktype->{2} ?? 0;
-                                        $four = $organization->worktype->{4} ?? 0;
-                                        $seven = $organization->worktype->{7} ?? 0;
-                                        $total = $one + $two + $four;
-                                        $oneTotal = 0;
-                                        $twoFourTotal = 0;
-                                        if ($total !== 0) {
-                                            $oneTotal = $one / $total;
-                                            $twoFourTotal = ($two + $four) / $total;
-                                        } elseif ($total === 0 && $seven !== 0) {
-                                            $twoFourTotal = 1;
-                                        }
-
-                                        if (($oneTotal * $seven + $one) < 0) {
-                                            $sortedDebts[$oneTotal * $seven + $one] = ['name' => $organization->name, 'id' => $organizationId];
-                                        }
-                                    @endphp
-                                @endforeach
-
-                                @php
-                                    ksort($sortedDebts, SORT_NUMERIC);
-                                @endphp
-
-                                @forelse($sortedDebts as $amount => $info)
-                                    <tr>
-                                        <td>{{ $info['name'] }}</td>
-                                        <td class="text-danger">
-                                            <a  class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=1">
-                                                {{ number_format($amount, 2, ',', ' ') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="2">
-                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                                Долги отсутствуют
-                                            </p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card card-flush">
-                    <div class="card-header mt-6">
-                        <div class="card-title flex-column">
-                            <h3 class="fw-bolder mb-1">Долг подрядчикам .2 + .4</h3>
-                        </div>
-
-                        <div class="card-toolbar">
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="fs-4 fw-bolder text-danger">
-                                        <a
-                                            class="text-danger"
-                                            href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4"
-                                        >
-                                            {{ number_format($twoFourAmount, 2, ',', ' ') }}
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-9 pt-0">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Контрагент</th>
-                                <th>Сумма</th>
+                                <th class="ps-2 hl">ИТОГО</th>
+                                <th class="w-150px text-end hl text-success">
+                                    {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['unwork_avans']) }}
+                                </th>
+                                <th class="w-150px text-end hl text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['guarantee']) }}
+                                </th>
+                                <th class="w-150px text-end hl text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['guarantee_deadline']) }}
+                                </th>
+                                <th class="w-150px text-end pe-2 hl text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['avans']) }}
+                                </th>
+                                <th class="w-175px text-end hl text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['amount']) }}
+                                </th>
                             </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                                @php
-                                    $sortedDebts = [];
-                                @endphp
-
-                                @foreach($contractorDebts as $organizationId => $organization)
-                                    @php
-                                        $one = $organization->worktype->{1} ?? 0;
-                                        $two = $organization->worktype->{2} ?? 0;
-                                        $four = $organization->worktype->{4} ?? 0;
-                                        $seven = $organization->worktype->{7} ?? 0;
-                                        $total = $one + $two + $four;
-                                        $oneTotal = 0;
-                                        $twoFourTotal = 0;
-                                        if ($total !== 0) {
-                                            $oneTotal = $one / $total;
-                                            $twoFourTotal = ($two + $four) / $total;
-                                        } elseif ($total === 0 && $seven !== 0) {
-                                            $twoFourTotal = 1;
-                                        }
-
-                                        if (($twoFourTotal * $seven + $two + $four) < 0) {
-                                            $sortedDebts[$twoFourTotal * $seven + $two + $four] = ['name' => $organization->name, 'id' => $organizationId];
-                                        }
-                                    @endphp
-                                @endforeach
-
-                                @php
-                                    ksort($sortedDebts, SORT_NUMERIC);
-                                @endphp
-
-                                @forelse($sortedDebts as $amount => $info)
-                                    <tr>
-                                        <td>{{ $info['name'] }}</td>
-                                        <td class="text-danger">
-                                            <a  class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $info['id'] }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
-                                                {{ number_format($amount, 2, ',', ' ') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="2">
-                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                                Долги отсутствуют
-                                            </p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @else
-                <div class="card card-flush mb-4">
-                    <div class="card-header mt-6">
-                        <div class="card-title justify-content-between w-100">
-                            <div class="d-flex flex-column">
-                                <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
-                            </div>
-
-                            @if (in_array($object->code, App\Models\Object\BObject::getCodesForContractorImportDebts()))
-                                <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-                                    </svg>
-                                </a>
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-250px py-4" data-kt-menu="true">
-                                    <div class="menu-item px-3">
-                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal" class="menu-link px-3">Загрузить долги вручную</a>
-                                    </div>
-                                    @if ($hasObjectImportLink)
-                                        <div class="menu-item px-3">
-                                            <a href="{{ route('files.download', ['file' => base64_encode($hasObjectImportLink)]) }}" class="menu-link px-3 text-primary">Скачать детализацию долгов</a>
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="card-toolbar justify-content-end" style="width: 100%">
-                            @if ($hasObjectImport)
-                                @php
-                                    $ds = \App\Models\Debt\Debt::where('import_id', $hasObjectImportId)->where('type_id', \App\Models\Debt\Debt::TYPE_CONTRACTOR)->where('object_id', $object->id)->get();
-                                @endphp
-
-                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="fs-4 fw-bolder text-danger">
-                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($debts['contractor']->total_amount + $ds->sum('avans'), 2, ',', ' ') }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
-                                </div>
-                            @else
-                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="fs-4 fw-bolder text-danger">
-                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="card-body p-9 pt-0">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2">Контрагент</th>
-                                    @if ($hasObjectImport)
-                                        <th class="w-150px text-end">Неотр. аванс</th>
-                                        <th class="w-150px text-end">ГУ</th>
-                                        <th class="w-150px text-end">в т.ч. ГУ срок наступил</th>
-                                        <th class="w-150px text-end pe-2">Авансы к оплате</th>
-                                        <th class="w-175px text-end">Долг за СМР</th>
-                                    @else
-                                        <th class="w-175px text-end pe-2">Сумма</th>
-                                    @endif
-                                    <th></th>
+                        </thead>
+                        <tbody class="text-gray-600 fw-bold">
+                            @forelse($contractorDebts['organizations'] as $organizationInfo)
+                                <tr>
+                                    <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
+                                    <td class="text-success text-end pe-2">
+                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['unwork_avans']) }}
+                                    </td>
+                                    <td class="text-danger text-end pe-2">
+                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['guarantee']) }}
+                                    </td>
+                                    <td class="text-danger text-end pe-2">
+                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['guarantee_deadline']) }}
+                                    </td>
+                                    <td class="text-danger text-end pe-2">
+                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['avans']) }}
+                                    </td>
+                                    <td class="text-danger text-end pe-2">
+                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
+                                    </td>
                                 </tr>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2 hl">ИТОГО</th>
-                                    @if ($hasObjectImport)
-                                        <th class="w-150px text-end hl">
-                                            <a class="text-success" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($ds->sum('unwork_avans'), 2, ',', ' ') }}
-                                            </a>
-                                        </th>
-                                        <th class="w-150px text-end hl">
-                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($ds->sum('guarantee'), 2, ',', ' ') }}
-                                            </a>
-                                        </th>
-                                        <th class="w-150px text-end hl">
-                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($ds->sum('guarantee_deadline'), 2, ',', ' ') }}
-                                            </a>
-                                        </th>
-                                        <th class="w-150px text-end pe-2 hl">
-                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($ds->sum('avans'), 2, ',', ' ') }}
-                                            </a>
-                                        </th>
-                                        <th class="w-175px text-end hl">
-                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
-                                            </a>
-                                        </th>
-                                    @else
-                                        <th class="w-175px text-end pe-2 hl">
-                                            <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                {{ number_format($debts['contractor']->total_amount, 2, ',', ' ') }}
-                                            </a>
-                                        </th>
-                                    @endif
-                                    <th class="hl"></th>
+                            @empty
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                            Долги отсутствуют
+                                        </p>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                                @php
-                                    $contractorDebts = [];
-                                    foreach ($debts['contractor']->debts as $organization => $amount) {
-                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
-                                        $type = \App\Models\Debt\DebtManual::TYPE_CONTRACTOR;
-                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
-
-                                        if (!isset($contractorDebts[$organization])) {
-                                            $contractorDebts[$organization] = [
-                                                'amount' => 0,
-                                                'total' => 0,
-                                            ];
-                                        }
-
-                                        $avans = 0;
-                                        if ($hasObjectImport) {
-                                            $avans = $ds->where('organization_id', $organizationId)->sum('avans');
-                                        }
-
-                                        if ($debtManual & $hasObjectImport) {
-                                            $avans = $debtManual->avans;
-                                        }
-
-                                        $contractorDebts[$organization]['amount'] += $amount;
-                                        $contractorDebts[$organization]['total'] += $amount + $avans;
-                                    }
-
-                                    $contractorTotalAmounts = array_column($contractorDebts, 'total');
-                                    array_multisort($contractorTotalAmounts, SORT_ASC, $contractorDebts);
-                                @endphp
-
-                                @forelse($contractorDebts as $organization => $amountInfo)
-                                    @php
-                                        $amount = $amountInfo['amount'];
-                                        $type = \App\Models\Debt\DebtManual::TYPE_CONTRACTOR;
-                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
-                                        $organizationName = substr($organization, strpos($organization, '::') + 2);
-                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();
-
-                                        $avans = 0;
-                                        $guarantee = 0;
-                                        $guaranteeDeadline = 0;
-                                        $unworkAvans = 0;
-                                        if ($hasObjectImport) {
-                                            $avans = $ds->where('organization_id', $organizationId)->sum('avans');
-                                            $guarantee = $ds->where('organization_id', $organizationId)->sum('guarantee');
-                                            $guaranteeDeadline = $ds->where('organization_id', $organizationId)->sum('guarantee_deadline');
-                                            $unworkAvans = $ds->where('organization_id', $organizationId)->sum('unwork_avans');
-                                        }
-
-                                        $comment = '';
-                                        if ($debtManual) {
-                                            if ($debtManual->updatedBy) {
-                                                $comment = 'Изменил(а) ' . $debtManual->updatedBy->name . ', ' . $debtManual->updated_at->format('d.m.Y H:i');
-                                            } else {
-                                                $comment = 'Создал(а) ' . $debtManual->createdBy->name . ', ' . $debtManual->created_at->format('d.m.Y H:i');
-                                            }
-
-                                            if ($hasObjectImport) {
-                                                $avans = $debtManual->avans;
-                                                $guarantee = $debtManual->guarantee;
-                                            }
-                                        }
-
-                                        if (! is_valid_amount_in_range($avans + $guarantee + $unworkAvans + $amount)) {
-                                            continue;
-                                        }
-                                    @endphp
-
-                                    <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">
-                                        <td class="ps-2">{{ $organizationName }}</td>
-                                        @if ($hasObjectImport)
-                                            @if ($debtManual)
-                                                <td class="text-success text-end pe-2">
-                                                    <span class="fw-boldest text-end">{{ number_format($unworkAvans, 2, ',', ' ') }}</span>
-                                                </td>
-                                                <td class="text-danger text-end pe-2">
-                                                    <span class="fw-boldest text-end">{{ number_format($guarantee, 2, ',', ' ') }}</span>
-                                                </td>
-                                                <td class="text-danger text-end pe-2">
-                                                    <span class="fw-boldest text-end">{{ number_format($guaranteeDeadline, 2, ',', ' ') }}</span>
-                                                </td>
-                                                <td class="text-danger text-end pe-2">
-                                                    <span class="fw-boldest text-end">{{ number_format($avans, 2, ',', ' ') }}</span>
-                                                </td>
-                                            @else
-                                                <td class="text-success text-end pe-2">
-                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                        {{ number_format($unworkAvans, 2, ',', ' ') }}
-                                                    </a>
-                                                </td>
-                                                <td class="text-danger text-end pe-2">
-                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                        {{ number_format($guarantee, 2, ',', ' ') }}
-                                                    </a>
-                                                </td>
-                                                <td class="text-danger text-end pe-2">
-                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                        {{ number_format($guaranteeDeadline, 2, ',', ' ') }}
-                                                    </a>
-                                                </td>
-                                                <td class="text-danger text-end pe-2">
-                                                    <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                        {{ number_format($avans, 2, ',', ' ') }}
-                                                    </a>
-                                                </td>
-                                            @endif
-                                        @endif
-                                        <td class="text-danger text-end pe-2">
-                                            @if ($debtManual)
-                                                <div class="text-end">
-                                                    <span class="fw-boldest text-end">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>
-                                                    <span class="text-muted fs-8">(изменено вручную)</span>
-                                                </div>
-                                            @else
-                                                <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_CONTRACTOR }}">
-                                                    {{ number_format($amount, 2, ',', ' ') }}
-                                                </a>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <a
-                                                class="edit-debt-manual d-none text-hover-gray-900"
-                                                href="javascript:void(0)"
-                                                data-organization-name="{{ $organizationName }}"
-                                                data-organization-id="{{ $organizationId }}"
-                                                data-object-id="{{ $object->id }}"
-                                                data-type-id="{{ $type }}"
-                                                data-id="{{ $debtManual->id ?? '' }}"
-                                                data-amount="{{ $debtManual->amount ?? $amount }}"
-                                                data-avans="{{ $debtManual->avans ?? $avans }}"
-                                                data-guarantee="{{ $debtManual->guarantee ?? $guarantee }}"
-                                                data-comment="{{ $comment }}"
-                                            >
-                                                <i class="fa fa-pen text-primary"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4">
-                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                                Долги отсутствуют
-                                            </p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-            @endif
+            </div>
         </div>
     </div>
 
@@ -518,9 +140,7 @@
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
-                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
-                                            {{ number_format($debts['service']->total_amount, 2, ',', ' ') }}
-                                        </a>
+                                        {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
                                     </div>
                                 </div>
                                 <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
@@ -537,26 +157,17 @@
                                 </tr>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2 hl">ИТОГО</th>
-                                    <th class="w-175px text-end pe-2 hl">
-                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
-                                            {{ number_format($debts['service']->total_amount, 2, ',', ' ') }}
-                                        </a>
+                                    <th class="w-175px text-end pe-2 hl text-danger">
+                                        {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($debts['service']->debts as $organization => $amount)
-                                    @php
-                                        $organizationId = substr($organization, 0, strpos($organization, '::'));
-                                        $organizationName = substr($organization, strpos($organization, '::') + 2);
-                                    @endphp
-
+                                @forelse($serviceDebts['organizations'] as $organizationInfo)
                                     <tr>
-                                        <td class="ps-2">{{ $organizationName }}</td>
+                                        <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
                                         <td class="text-danger text-end pe-2">
-                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_SERVICE }}">
-                                                {{ number_format($amount, 2, ',', ' ') }}
-                                            </a>
+                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
                                         </td>
                                     </tr>
                                 @empty
@@ -575,338 +186,72 @@
         </div>
 
         <div class="col-lg-6">
-            @if ($object->code === '288')
-
-                @php
-                    $providerDebts = $debts['provider']->debts;
-
-                    $oneAmount = 0;
-                    $twoFourAmount = 0;
-                    foreach($providerDebts as $organizationId => $organization) {
-                        $one = $organization->worktype->{1} ?? 0;
-                        $two = $organization->worktype->{2} ?? 0;
-                        $four = $organization->worktype->{4} ?? 0;
-                        $seven = $organization->worktype->{7} ?? 0;
-                        $total = $one + $two + $four;
-                        $oneTotal = 0;
-                        $twoFourTotal = 0;
-                        if ($total !== 0) {
-                            $oneTotal = $one / $total;
-                            $twoFourTotal = ($two + $four) / $total;
-                        } elseif ($total === 0 && $seven !== 0) {
-                            $twoFourTotal = 1;
-                        }
-
-                        $oneAmount += $oneTotal * $seven + $one;
-                        $twoFourAmount += $twoFourTotal * $seven + $two + $four;
-                    }
-                @endphp
-
-                <div class="card card-flush mb-3">
-                    <div class="card-header mt-6">
-                        <div class="card-title flex-column">
-                            <h3 class="fw-bolder mb-1">Долг поставщикам .1</h3>
-                        </div>
-
-                        <div class="card-toolbar">
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="fs-4 fw-bolder text-danger">
-                                        <a
-                                            class="text-danger"
-                                            href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}&object_worktype_id%5B%5D=1"
-                                        >
-                                            {{ number_format($oneAmount, 2, ',', ' ') }}
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого</div>
-                            </div>
-                        </div>
+            <div class="card card-flush h-lg-100">
+                <div class="card-header mt-6">
+                    <div class="card-title flex-column">
+                        <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
                     </div>
 
-                    <div class="card-body p-9 pt-0">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Контрагент</th>
-                                <th>Сумма</th>
-                            </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                            @forelse($providerDebts as $organizationId => $organization)
-                                @php
-                                    $one = $organization->worktype->{1} ?? 0;
-                                    $two = $organization->worktype->{2} ?? 0;
-                                    $four = $organization->worktype->{4} ?? 0;
-                                    $seven = $organization->worktype->{7} ?? 0;
-                                    $total = $one + $two + $four;
-                                    $oneTotal = 0;
-                                    $twoFourTotal = 0;
-                                    if ($total !== 0) {
-                                        $oneTotal = $one / $total;
-                                        $twoFourTotal = ($two + $four) / $total;
-                                    } elseif ($total === 0 && $seven !== 0) {
-                                        $twoFourTotal = 1;
-                                    }
-                                @endphp
+                    <div class="card-toolbar">
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-4 fw-bolder text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount']) }}
+                                </div>
+                            </div>
+                            <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                        </div>
+                    </div>
+                </div>
 
-                                @if (($oneTotal * $seven + $one) < 0)
-                                    <tr>
-                                        <td>{{ $organization->name }}</td>
-                                        <td class="text-danger">
-                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=1">
-                                                {{ number_format($oneTotal * $seven + $one, 2, ',', ' ') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endif
+                <div class="card-body p-9 pt-0">
+                    <table class="table table-hover align-middle table-row-dashed fs-6">
+                        <thead>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="ps-2">Контрагент</th>
+                                <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
+                                <th class="w-175px pe-2 text-end">Сумма (изм)</th>
+                            </tr>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="ps-2 hl">ИТОГО</th>
+                                <th class="w-175px pe-2 text-end hl text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_fix']) }}
+                                </th>
+                                <th class="w-175px pe-2 text-end hl text-danger">
+                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_float']) }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 fw-bold">
+                            @forelse($providerDebts['organizations'] as $organizationInfo)
+                                <tr class="row-edit-debt-manual">
+                                    <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
+                                    <td class="text-danger text-end">
+                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_fix']) }}
+                                    </td>
+                                    <td class="text-danger text-end">
+                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_float']) }}
+                                    </td>
+                                </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2">
+                                    <td colspan="3">
                                         <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                             Долги отсутствуют
                                         </p>
                                     </td>
                                 </tr>
                             @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="card card-flush">
-                    <div class="card-header mt-6">
-                        <div class="card-title flex-column">
-                            <h3 class="fw-bolder mb-1">Долг поставщикам .2 + .4</h3>
-                        </div>
-
-                        <div class="card-toolbar">
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="fs-4 fw-bolder text-danger">
-                                        <a
-                                            class="text-danger"
-                                            href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4"
-                                        >
-                                            {{ number_format($twoFourAmount, 2, ',', ' ') }}
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-9 pt-0">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Контрагент</th>
-                                <th>Сумма</th>
-                            </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                            @forelse($providerDebts as $organizationId => $organization)
-                                @php
-                                    $one = $organization->worktype->{1} ?? 0;
-                                    $two = $organization->worktype->{2} ?? 0;
-                                    $four = $organization->worktype->{4} ?? 0;
-                                    $seven = $organization->worktype->{7} ?? 0;
-                                    $total = $one + $two + $four;
-                                    $oneTotal = 0;
-                                    $twoFourTotal = 0;
-                                    if ($total !== 0) {
-                                        $oneTotal = $one / $total;
-                                        $twoFourTotal = ($two + $four) / $total;
-                                    } elseif ($total === 0 && $seven !== 0) {
-                                        $twoFourTotal = 1;
-                                    }
-                                @endphp
-
-                                @if (($twoFourTotal * $seven + $two + $four) < 0)
-                                    <tr>
-                                        <td>{{ $organization->name }}</td>
-                                        <td class="text-danger">
-                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $organizationId }}&object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4">
-                                                {{ number_format($twoFourTotal * $seven + $two + $four, 2, ',', ' ') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @empty
-                                <tr>
-                                    <td colspan="2">
-                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                            Долги отсутствуют
-                                        </p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @else
-                <div class="card card-flush h-lg-100">
-                    <div class="card-header mt-6">
-                        <div class="card-title flex-column">
-                            <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
-                        </div>
-
-                        <div class="card-toolbar">
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="fs-4 fw-bolder">
-                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                            {{ number_format($debts['provider']->total_amount, 2, ',', ' ') }}
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-9 pt-0">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2">Контрагент</th>
-                                    <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
-                                    <th class="w-175px pe-2 text-end">Сумма (изм)</th>
-                                </tr>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2 hl">ИТОГО</th>
-                                    <th class="w-175px pe-2 text-end hl">
-                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                            {{ number_format($debts['provider']->fix_amount, 2, ',', ' ') }}
-                                        </a>
-                                    </th>
-                                    <th class="w-175px pe-2 text-end hl">
-                                        <a class="text-danger" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                            {{ number_format($debts['provider']->float_amount, 2, ',', ' ') }}
-                                        </a>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                                @php
-                                    $providerDebts = [];
-                                    foreach ($debts['provider']->debts_fix as $debt) {
-                                        $organizationName = $debt->organization->name;
-                                        if (!isset($providerDebts[$organizationName])) {
-                                            $providerDebts[$organizationName] = [
-                                                'fix' => 0,
-                                                'float' => 0,
-                                                'total' => 0,
-                                                'organization_id' => $debt->organization_id,
-                                            ];
-                                        }
-
-                                        $providerDebts[$organizationName]['fix'] += $debt->amount;
-                                        $providerDebts[$organizationName]['total'] += $debt->amount;
-                                    }
-                                    foreach ($debts['provider']->debts_float as $debt) {
-                                        $organizationName = $debt->organization->name;
-                                        if (!isset($providerDebts[$organizationName])) {
-                                            $providerDebts[$organizationName] = [
-                                                'fix' => 0,
-                                                'float' => 0,
-                                                'total' => 0,
-                                                'organization_id' => $debt->organization_id,
-                                            ];
-                                        }
-
-                                        $providerDebts[$organizationName]['float'] += $debt->amount;
-                                        $providerDebts[$organizationName]['total'] += $debt->amount;
-                                    }
-
-                                    $providerTotalAmounts = array_column($providerDebts, 'total');
-                                    array_multisort($providerTotalAmounts, SORT_ASC, $providerDebts);
-                                @endphp
-                                @forelse($providerDebts as $organizationName => $debtAmount)
-{{--                                    @php--}}
-{{--                                        $type = \App\Models\Debt\DebtManual::TYPE_PROVIDER;--}}
-{{--                                        $organizationId = substr($organization, 0, strpos($organization, '::'));--}}
-{{--                                        $organizationName = substr($organization, strpos($organization, '::') + 2);--}}
-{{--                                        $debtManual = $debtManuals->where('type_id', $type)->where('organization_id', $organizationId)->first();--}}
-
-{{--                                        $comment = '';--}}
-{{--                                        if ($debtManual) {--}}
-{{--                                            if ($debtManual->updatedBy) {--}}
-{{--                                                $comment = 'Изменил(а) ' . $debtManual->updatedBy->name . ', ' . $debtManual->updated_at->format('d.m.Y H:i');--}}
-{{--                                            } else {--}}
-{{--                                                $comment = 'Создал(а) ' . $debtManual->createdBy->name . ', ' . $debtManual->created_at->format('d.m.Y H:i');--}}
-{{--                                            }--}}
-{{--                                        }--}}
-{{--                                    @endphp--}}
-
-{{--                                    <tr class="row-edit-debt-manual {{ $debtManual ? 'manual' : '' }}">--}}
-                                    <tr class="row-edit-debt-manual">
-                                        <td class="ps-2">{{ $organizationName }}</td>
-{{--                                        <td class="text-danger d-flex justify-content-between gap-2 pe-2">--}}
-                                        <td class="text-danger text-end">
-{{--                                            @if ($debtManual)--}}
-{{--                                                <div>--}}
-{{--                                                    <span class="fw-boldest">{{ number_format($debtManual->amount, 2, ',', ' ') }}</span><br>--}}
-{{--                                                    <span class="text-muted fs-8">(изменено вручную)</span>--}}
-{{--                                                </div>--}}
-{{--                                            @else--}}
-                                                <a  class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                                    {{ number_format($debtAmount['fix'], 2, ',', ' ') }}
-                                                </a>
-{{--                                            @endif--}}
-
-{{--                                            <a--}}
-{{--                                                    class="edit-debt-manual d-none text-hover-gray-900"--}}
-{{--                                                    href="javascript:void(0)"--}}
-{{--                                                    data-organization-name="{{ $organizationName }}"--}}
-{{--                                                    data-organization-id="{{ $organizationId }}"--}}
-{{--                                                    data-object-id="{{ $object->id }}"--}}
-{{--                                                    data-type-id="{{ $type }}"--}}
-{{--                                                    data-id="{{ $debtManual->id ?? '' }}"--}}
-{{--                                                    data-amount="{{ $debtManual->amount ?? $amount }}"--}}
-{{--                                                    data-avans="{{ $debtManual->avans ?? 0 }}"--}}
-{{--                                                    data-guarantee="{{ $debtManual->guarantee ?? 0 }}"--}}
-{{--                                                    data-comment="{{ $comment }}"--}}
-{{--                                            >--}}
-{{--                                                <i class="fa fa-pen text-primary"></i>--}}
-{{--                                            </a>--}}
-                                        </td>
-                                        <td class="text-danger text-end">
-                                            <a class="show-link" href="{{ route('debts.index') }}?object_id%5B%5D={{ $object->id }}&organization_id%5B%5D={{ $debtAmount['organization_id'] }}&type_id%5B%5D={{ \App\Models\Debt\Debt::TYPE_PROVIDER }}">
-                                                {{ number_format($debtAmount['float'], 2, ',', ' ') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3">
-                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                                Долги отсутствуют
-                                            </p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @endif
+            </div>
         </div>
     </div>
 @endsection
 
 @push('styles')
     <style>
-        .row-edit-debt-manual:hover a.edit-debt-manual {
-            display: block !important;
-        }
-        .row-edit-debt-manual.manual {
-            background-color: cornsilk;
-        }
-
         th.hl {
             background-color: #f7f7f7 !important;
             font-weight: bold !important;
@@ -915,53 +260,4 @@
             font-size: 13px;
         }
     </style>
-@endpush
-
-
-@push('scripts')
-    <script>
-        $(function() {
-            $('#organization-select').select2({
-                sorter: function(data) {
-                    return data.sort(function(a, b) {
-                        return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
-                    });
-                },
-                ajax: {
-                    url: '/organizations?type=select',
-                    dataType: 'json',
-                    data: function (params) {
-                        return {
-                            search: params.term,
-                            objects: ''
-                        };
-                    },
-                    processResults: function (data) {
-                        const results = [];
-                        $.each(data.organizations, function(id, text) {
-                            results.push({id, text})
-                        });
-                        return {results};
-                    }
-                }
-            });
-        });
-
-        $('.edit-debt-manual').on('click', function() {
-            $('#debtManualModal').modal('show');
-            $('#debtManualModal .modal-title').text(`Укажите сумму долга вручную для ${$(this).data('organization-name')}`);
-            $('#debt-manual-amount').val($(this).data('amount') || '');
-            $('#debt-manual-avans').val($(this).data('avans') || '');
-            $('#debt-manual-guarantee').val($(this).data('guarantee') || '');
-            $('#debt-manual-id').val($(this).data('id') || '');
-            $('#debt-manual-type-id').val($(this).data('type-id') || '');
-            $('#debt-manual-object-id').val($(this).data('object-id') || '');
-            $('#debt-manual-object-worktype-id').val($(this).data('object-worktype-id') || '');
-            $('#debt-manual-organization-id').val($(this).data('organization-id') || '');
-            $('#debt-manual-comment').text($(this).data('comment') || '');
-
-            KTApp.init();
-            mainApp.init();
-        });
-    </script>
 @endpush
