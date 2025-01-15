@@ -15,7 +15,7 @@ class ImportContractorDebtsFromManagerExcel extends HandledCommand
 
     protected $description = 'Загружает долги по подрядчикам из Excel (из таблицы фин. менеджера)';
 
-    protected string $period = 'Вручную';
+    protected string $period = 'Вручную и в 19:00';
 
     public function __construct(
         private DebtImportService $debtImportService,
