@@ -32,12 +32,12 @@ class Export implements WithMultipleSheets
             $object = BObject::find($objectIds[0]);
             $objectName = $object ? $object->getName() : '';
         }
-
-        if (auth()->id() === 1) {
-            return [
-                new BackupSheet('История'),
-            ];
-        }
+//
+//        if (auth()->id() === 1) {
+//            return [
+//                new BackupSheet('История'),
+//            ];
+//        }
 
         return [
             new PivotSheet('Сводная', (clone $this->payments), $objectName),
