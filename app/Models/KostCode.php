@@ -335,8 +335,8 @@ class KostCode
                     'children' => []
                 ],
                 [
-                    'code' => '4.7',
-                    'title' => 'Дизайн освещение',
+                    'code' => '4.100',
+                    'title' => 'Архив (Дизайн освещение)',
                     'description' => '',
                     'children' => []
                 ],

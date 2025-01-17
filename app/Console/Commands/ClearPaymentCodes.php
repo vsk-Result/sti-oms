@@ -29,9 +29,9 @@ class ClearPaymentCodes extends HandledCommand
 
         $this->sendInfoMessage('Очищение лишних статей затрат');
 
-        $this->sendInfoMessage('Найдено ' . Payment::whereNotIn('code', array_merge(['7.3', '7.11', '7.8', '7.9'], KostCode::getCodesForPayment()))->count() . ' оплат');
+        $this->sendInfoMessage('Найдено ' . Payment::whereNotIn('code', array_keys(KostCode::getCodesWithId()))->count() . ' оплат');
 
-        Payment::whereNotIn('code', array_merge(['7.3', '7.11', '7.8', '7.9'], KostCode::getCodesForPayment()))->update([
+        Payment::whereNotIn('code', array_keys(KostCode::getCodesWithId()))->update([
             'code' => '0'
         ]);
 
