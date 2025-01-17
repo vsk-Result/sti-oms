@@ -36,11 +36,7 @@ class UpdatePaymentController extends Controller
                 continue;
             }
 
-            Payment::find($row[0])->update([
-                'code' => $row[1]
-            ]);
-
-            continue;
+            $payment = Payment::find($row[0]);
 
             if (! $payment) {
                 continue;
