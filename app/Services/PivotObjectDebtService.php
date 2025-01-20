@@ -98,7 +98,7 @@ class PivotObjectDebtService
             $this->addAdditionalServiceDebts($objectId, $info);
         }
 
-        $info['organizations'] = $this->getClearedDetails($info['organizations']);
+        $info['organizations'] = $this->getClearedDetails($info['organizations'], $withSortedDetails);
 
         if ($withSortedDetails) {
             $info['organizations'] = $this->getSortedDetails($info['organizations']);
@@ -235,19 +235,24 @@ class PivotObjectDebtService
         return $result;
     }
 
-    private function getClearedDetails(array $details): array
+    private function getClearedDetails(array $details, bool $forView = false): array
     {
         $result = [];
+        $exceptKeys = ['organization_id', 'organization_name'];
+
+        if ($forView) {
+            $exceptKeys[] = 'balance_contract';
+        }
 
         foreach ($details as $organizationId => $organizationData) {
             $valid = false;
 
-            foreach ($organizationData as $value) {
-                if (in_array($value, ['organization_id', 'organization_name'])) {
+            foreach ($organizationData as $key => $amount) {
+                if (in_array($key, $exceptKeys)) {
                     continue;
                 }
 
-                if (is_valid_amount_in_range($value)) {
+                if (is_valid_amount_in_range($amount)) {
                     $valid = true;
                     break;
                 }

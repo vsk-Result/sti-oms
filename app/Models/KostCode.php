@@ -942,7 +942,7 @@ class KostCode
 
     public static function checkValid(string $code): string
     {
-        return in_array($code, self::getCodesForPayment());
+        return in_array($code, array_keys(KostCode::getCodesWithId()));
     }
 
     public static function getCodesWithId(): array

@@ -294,7 +294,7 @@ class PaymentService
             'type_id' => $requestData['type_id'],
             'payment_type_id' => $requestData['payment_type_id'],
             'category' => $requestData['category'],
-            'code' => $this->sanitizer->set($requestData['code'])->toCode()->get(),
+            'code' => $this->sanitizer->set($requestData['code'] ?? '')->toCode()->get(),
             'description' => $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get(),
             'date' => $requestData['date'],
             'amount' => $paymentCurrencyRate * $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
