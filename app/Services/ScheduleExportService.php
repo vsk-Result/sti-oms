@@ -46,7 +46,7 @@ class ScheduleExportService
         return ScheduleExport::ready()->orderBy('id')->first();
     }
 
-    public function createTask(string $name, string $model, string $filepath, string $filename, array $data): void
+    public function createTask(string $name, string $model, string $filepath, string $filename, array $data, string $email): void
     {
         ScheduleExport::create([
             'name' => $name,
@@ -54,6 +54,7 @@ class ScheduleExportService
             'filepath' => $filepath,
             'filename' => $filename,
             'data' => json_encode($data),
+            'send_to_email' => $email,
             'data_hash' => md5(json_encode($data)),
             'status_id' => ScheduleExport::STATUS_READY
         ]);

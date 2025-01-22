@@ -1,24 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Pivot\MoneyMovement;
+namespace App\Http\Controllers\API\Pivot\MoneyMovement;
 
 use App\Exports\Pivot\MoneyMovement\Export;
 use App\Http\Controllers\Controller;
 use App\Services\ScheduleExportService;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExportController extends Controller
 {
-    private ScheduleExportService $scheduleExportService;
+    public function __construct(private ScheduleExportService $scheduleExportService) {}
 
-    public function __construct(ScheduleExportService $scheduleExportService)
+    public function store(Request $request): JsonResponse
     {
-        $this->scheduleExportService = $scheduleExportService;
-    }
+        if (! $request->has('verify_hash')) {
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+        }
 
-    public function store(Request $request): RedirectResponse
-    {
+        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+        }
+
         $exportName = 'Отчет о движении денежных средств';
         $requestData = [
             'period' => $request->get('period', ''),
@@ -40,9 +43,7 @@ class ExportController extends Controller
         );
 
         if ($isTaskInReady || $isTaskInProgress) {
-            session()->flash('task_in_progress');
-
-            return redirect()->back();
+            return response()->json(['status' => 'Отчет с данными параметрами находится на стадии формирования. После завершения на почту придет файл с отчетом.']);
         }
 
         $this->scheduleExportService->createTask(
@@ -51,11 +52,9 @@ class ExportController extends Controller
             'pivot-money-movement',
             $exportName . '.xlsx',
             $requestData,
-            auth()->user()->email
+            $request->get('send_to_email', '')
         );
 
-        session()->flash('task_created');
-
-        return redirect()->back()->withInput();
+        return response()->json(['status' => 'Система начала формировать отчет. По завершению вам на почту придет файл с отчетом. Можете продолжить пользоваться сайтом.']);
     }
 }

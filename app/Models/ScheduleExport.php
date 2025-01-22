@@ -13,7 +13,7 @@ class ScheduleExport extends Model
 
     protected $fillable = [
         'created_by_user_id', 'updated_by_user_id', 'status_id', 'data',
-        'data_hash', 'model', 'filepath', 'filename', 'name'
+        'data_hash', 'model', 'filepath', 'filename', 'name', 'send_to_email'
     ];
 
     const STATUS_READY = 0;

@@ -66,14 +66,13 @@ class ScheduleExportTasksRunner extends HandledCommand
         $this->sendInfoMessage('Отчет "' . $taskToRun->name . '" успешно сформирован');
 
         try {
-            $userName = $taskToRun->createdBy->name;
             $exportName = $taskToRun->name;
-            $email = $taskToRun->createdBy->email;
+            $email = $taskToRun->send_to_email;
             $filepath = storage_path('') . '/app/public/' . $filename;
 
             $this->sendInfoMessage('Отправка отчета "' . $taskToRun->name . '" на email "' . $email . '"');
 
-            Mail::send('emails.schedule-exports', compact('exportName', 'userName'), function ($m) use ($exportName, $filepath, $email) {
+            Mail::send('emails.schedule-exports', compact('exportName', ), function ($m) use ($exportName, $filepath, $email) {
                 $m->from('support@st-ing.com', 'OMS Отчет сформирован');
                 $m->subject($exportName);
                 $m->attach($filepath);

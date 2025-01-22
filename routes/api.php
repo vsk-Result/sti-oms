@@ -8,6 +8,8 @@ use App\Http\Controllers\API\Pivot\Act\ActController;
 use App\Http\Controllers\API\Pivot\Act\ExportController;
 use App\Http\Controllers\API\Pivot\Debt\DebtController;
 use App\Http\Controllers\API\Pivot\Debt\ExportController as DExportController;
+use App\Http\Controllers\API\Pivot\MoneyMovement\InfoController;
+use App\Http\Controllers\API\Pivot\MoneyMovement\ExportController as MMExportController;
 use App\Http\Controllers\API\Pivot\Object\ObjectInfoController;
 use App\Http\Controllers\API\Pivot\Object\PivotController;
 use App\Http\Controllers\API\Pivot\Payment\PaymentController;
@@ -71,4 +73,8 @@ Route::get('finance/general-report', [GeneralReportController::class, 'index']);
 Route::post('v1/gromisoft/employees', [EmployeeController::class, 'index']);
 
 Route::get('/crm-cash-check/create', [CashCheckController::class, 'store'])->name('crm_cash_check.store');
+
+Route::get('pivots/money-movement/info', [InfoController::class, 'index']);
+Route::get('pivots/money-movement/export', [MMExportController::class, 'store']);
+
 
