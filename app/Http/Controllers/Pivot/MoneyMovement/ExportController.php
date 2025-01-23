@@ -29,14 +29,18 @@ class ExportController extends Controller
             'need_group_by_objects' => $request->has('need_group_by_objects')
         ];
 
+        $email = auth()->user()->email;
+
         $isTaskInReady = $this->scheduleExportService->isTaskReady(
             $exportName,
-            $requestData
+            $requestData,
+            $email
         );
 
         $isTaskInProgress = $this->scheduleExportService->isTaskInProgress(
             $exportName,
-            $requestData
+            $requestData,
+            $email
         );
 
         if ($isTaskInReady || $isTaskInProgress) {
@@ -51,7 +55,7 @@ class ExportController extends Controller
             'pivot-money-movement',
             $exportName . '.xlsx',
             $requestData,
-            auth()->user()->email
+            $email
         );
 
         session()->flash('task_created');

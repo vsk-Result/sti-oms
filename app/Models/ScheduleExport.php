@@ -2,18 +2,14 @@
 
 namespace App\Models;
 
-use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Model;
 
 class ScheduleExport extends Model
 {
-    use HasUser;
-
     protected $table = 'schedule_exports';
 
     protected $fillable = [
-        'created_by_user_id', 'updated_by_user_id', 'status_id', 'data',
-        'data_hash', 'model', 'filepath', 'filename', 'name', 'send_to_email'
+        'status_id', 'data', 'data_hash', 'model', 'filepath', 'filename', 'name', 'send_to_email'
     ];
 
     const STATUS_READY = 0;

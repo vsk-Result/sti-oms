@@ -6,12 +6,12 @@ use App\Models\ScheduleExport;
 
 class ScheduleExportService
 {
-    public function isTaskInProgress(string $name, array $data): bool
+    public function isTaskInProgress(string $name, array $data, string $email): bool
     {
         $dataHash = md5(json_encode($data));
         $task = ScheduleExport::where('data_hash', $dataHash)
             ->where('name', $name)
-            ->where('created_by_user_id', auth()->id())
+            ->where('send_to_email', $email)
             ->first();
 
         if (! $task) {
@@ -21,12 +21,12 @@ class ScheduleExportService
         return $task->isInProgress();
     }
 
-    public function isTaskReady(string $name, array $data): bool
+    public function isTaskReady(string $name, array $data, string $email): bool
     {
         $dataHash = md5(json_encode($data));
         $task = ScheduleExport::where('data_hash', $dataHash)
             ->where('name', $name)
-            ->where('created_by_user_id', auth()->id())
+            ->where('send_to_email', $email)
             ->first();
 
         if (! $task) {
@@ -56,7 +56,7 @@ class ScheduleExportService
             'data' => json_encode($data),
             'send_to_email' => $email,
             'data_hash' => md5(json_encode($data)),
-            'status_id' => ScheduleExport::STATUS_READY
+            'status_id' => ScheduleExport::STATUS_READY,
         ]);
     }
 }

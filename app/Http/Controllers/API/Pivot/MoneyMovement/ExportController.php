@@ -32,14 +32,18 @@ class ExportController extends Controller
             'need_group_by_objects' => $request->has('need_group_by_objects')
         ];
 
+        $email = $request->get('send_to_email', '');
+
         $isTaskInReady = $this->scheduleExportService->isTaskReady(
             $exportName,
-            $requestData
+            $requestData,
+            $email
         );
 
         $isTaskInProgress = $this->scheduleExportService->isTaskInProgress(
             $exportName,
-            $requestData
+            $requestData,
+            $email
         );
 
         if ($isTaskInReady || $isTaskInProgress) {
@@ -52,7 +56,7 @@ class ExportController extends Controller
             'pivot-money-movement',
             $exportName . '.xlsx',
             $requestData,
-            $request->get('send_to_email', '')
+            $email
         );
 
         return response()->json(['status' => 'Система начала формировать отчет. По завершению вам на почту придет файл с отчетом. Можете продолжить пользоваться сайтом.']);
