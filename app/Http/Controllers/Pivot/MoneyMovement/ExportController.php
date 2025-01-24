@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pivot\MoneyMovement;
 
 use App\Exports\Pivot\MoneyMovement\Export;
 use App\Http\Controllers\Controller;
+use App\Models\Object\BObject;
 use App\Services\ScheduleExportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,13 @@ class ExportController extends Controller
             'organization_id' => $request->get('organization_id', []),
             'need_group_by_objects' => $request->has('need_group_by_objects')
         ];
+
+
+        if (count($requestData['object_id']) === 0) {
+            if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+                $requestData['object_id'] = auth()->user()->objects->pluck('id')->toArray();
+            }
+        }
 
         $email = auth()->user()->email;
 

@@ -16,6 +16,10 @@ class MoneyMovementController extends Controller
         $banks = Bank::getBanks();
         $paymentTypes = Payment::getPaymentTypes();
 
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
         return view(
             'pivots.money-movement.index',
             compact('objects', 'banks', 'paymentTypes' )
