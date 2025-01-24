@@ -98,9 +98,6 @@
                                         data-control="select2"
                                         multiple
                                     >
-                                        <option value="Общее">Общее</option>
-                                        <option value="Трансфер">Трансфер</option>
-
                                         @foreach($objects as $object)
                                             <option value="{{ $object->id }}" >{{ $object->getName() }}</option>
                                         @endforeach
