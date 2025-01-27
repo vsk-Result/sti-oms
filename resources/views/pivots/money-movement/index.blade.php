@@ -37,6 +37,7 @@
                                         class="form-control form-control-solid date-range-picker"
                                         value=""
                                         autocomplete="off"
+                                        required
                                     />
 
                                     <div class="mt-3">

@@ -22,6 +22,10 @@ class ExportController extends Controller
             return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
         }
 
+        if (mb_strlen(trim($request->get('period', ''))) === 0) {
+            return response()->json(['error' => 'Период не должен быть пустым'], 404);
+        }
+
         $exportName = 'Отчет о движении денежных средств';
         $requestData = [
             'period' => $request->get('period', ''),
