@@ -27,7 +27,9 @@ class SplitTaxPaymentsService
         $totalsDiff = $totalSplitInfoAmount - abs($payments->sum('amount'));
 
         if ($totalsDiff > 0) {
-            return 'Сумма налогов в файле превышает сумму выбранных оплат на ' . CurrencyExchangeRate::format($totalsDiff, 'RUB');
+            if (is_valid_amount_in_range($totalsDiff)) {
+                return 'Сумма налогов в файле превышает сумму выбранных оплат на ' . CurrencyExchangeRate::format($totalsDiff);
+            }
         }
 
         $resultSplitInfo = [];
