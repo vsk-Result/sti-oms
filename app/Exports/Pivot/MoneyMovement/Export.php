@@ -27,18 +27,24 @@ class Export implements WithMultipleSheets
     public function __construct(array $filterData)
     {
         $this->needGroupByObjects = $filterData['need_group_by_objects'] ?? false;
+        $needTransfers = $filterData['need_transfers'] ?? false;
         $paymentService = new PaymentService(new Sanitizer(), new OrganizationService(new Sanitizer()), new CurrencyExchangeRateService());
 
         $payments = $paymentService->filterPayments($filterData);
 
         $exceptOrganizations = Organization::whereIn('name', ['Общество с ограниченной ответственностью "БИЗНЕС АКТИВ"'])->pluck('id')->toArray();
-        $exceptPaymentIds = Payment::where('type_id', Payment::TYPE_TRANSFER)->where(function($q) use($exceptOrganizations) {
-            $q->where('description', 'LIKE', '%перевод собственных денежных средств%');
-            $q->orWhere('description', 'LIKE', '%перевод собственных средств%');
-            $q->orWhere('description', 'LIKE', '%депозит%');
+        $exceptPaymentIds = Payment::where('type_id', Payment::TYPE_TRANSFER)->where(function($q) use($exceptOrganizations, $needTransfers) {
+
+            $q->where('description', 'LIKE', '%депозит%');
             $q->orWhere('description', 'LIKE', '%для зачисления заработной платы%');
             $q->orWhere('description', 'LIKE', '%на выплату зарплаты%');
             $q->orWhere('description', 'LIKE', '%на выплату аванса%');
+
+            if (! $needTransfers) {
+                $q->orWhere('description', 'LIKE', '%перевод собственных денежных средств%');
+                $q->orWhere('description', 'LIKE', '%перевод собственных средств%');
+            }
+
             $q->orWhereIn('organization_receiver_id', $exceptOrganizations);
             $q->orWhereIn('organization_sender_id', $exceptOrganizations);
         })->pluck('id')->toArray();

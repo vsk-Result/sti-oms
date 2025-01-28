@@ -111,6 +111,11 @@
                                     <label class="form-check-label" for="flexCheckChecked">Добавить разбивку по объектам в контрагентах</label>
                                 </div>
 
+                                <div class="form-check form-check-custom form-check-solid mb-3 fw-bold fs-6 mt-4">
+                                    <input name="need_transfers" class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                                    <label class="form-check-label" for="flexCheckChecked1">Добавить учет перебросок (переводы средств)</label>
+                                </div>
+
                                 <div class="d-flex py-3">
                                     <button type="submit" class="btn btn-primary me-3">
                                         <span class="indicator-label">Экспорт в Excel</span>
