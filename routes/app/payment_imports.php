@@ -7,6 +7,7 @@ use App\Http\Controllers\PaymentImport\Type\StatementImportController;
 use App\Http\Controllers\PaymentImport\Type\CRMCostClosureImportController;
 use App\Http\Controllers\PaymentImport\Type\HistoryImportController;
 use App\Http\Controllers\PaymentImport\Type\PaymentImportController;
+use App\Http\Controllers\PaymentImport\InvalidBalanceExport;
 
 // Загрузка оплат
 
@@ -41,3 +42,7 @@ Route::post('payment-imports/types/history', [HistoryImportController::class, 's
 
 Route::get('payment-imports/types/payments/create', [PaymentImportController::class, 'create'])->name('payment_imports.types.payments.create')->middleware('can:create payment-imports');
 Route::post('payment-imports/types/payments', [PaymentImportController::class, 'store'])->name('payment_imports.types.payments.store')->middleware('can:create payment-imports');
+
+// Анализ несоответствия баланса
+
+Route::get('payment-imports/{import}/invalid-balance/export', [InvalidBalanceExport::class, 'store'])->name('payment_imports.invalid_balance.export.store');

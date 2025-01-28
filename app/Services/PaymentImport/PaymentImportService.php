@@ -48,6 +48,10 @@ class PaymentImportService
             $query->whereIn('status_id', $requestData['status_id']);
         }
 
+        if (! empty($requestData['import_id'])) {
+            $query->where('id', $requestData['import_id']);
+        }
+
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
@@ -68,5 +72,16 @@ class PaymentImportService
         $import->delete();
 
         return $import;
+    }
+
+    public function getInvalidBalanceStatement(): PaymentImport | null
+    {
+        foreach (PaymentImport::where('type_id', PaymentImport::TYPE_STATEMENT)->latest('date')->get() as $import) {
+            if ($import->hasInvalidBalance()) {
+                return $import;
+            }
+        }
+
+        return null;
     }
 }

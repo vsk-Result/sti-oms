@@ -61,6 +61,10 @@ class SplitTaxPaymentsService
         foreach ($payments as $payment) {
             $logs[] = 'Рассматриваем оплату с ID "' . $payment->id . '", описанием "' . $payment->description . '", датой "' . $payment->date . '", суммой "' . $payment->amount . '"';
             foreach ($resultSplitInfo as $code => $amount) {
+                if (! is_valid_amount_in_range($amount)) {
+                    continue;
+                }
+
                 $logs[] = 'Рассматриваем объект с кодом "' . $code . '", суммой "' . -$amount . '"';
 
                 $diff = $payment->amount + $amount;
@@ -134,7 +138,7 @@ class SplitTaxPaymentsService
             }
 
             $objectCode = empty($info[1]) ? '27.1' : $info[1];
-            $amount = $info[9] + $info[11] + $info[13] + $info[14];
+            $amount = $info[9] + $info[10] + $info[11] + $info[12] + $info[13] + $info[14];
 
             if (! isset($result[$objectCode])) {
                 $result[$objectCode] = 0;

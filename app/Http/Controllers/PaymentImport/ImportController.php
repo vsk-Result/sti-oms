@@ -34,7 +34,9 @@ class ImportController extends Controller
         $importsPaginated = $this->importService->filterImport($request->toArray());
         $importsGroupedByDate = collect($importsPaginated->items())->groupBy('date');
 
-        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate', 'companies', 'types', 'banks', 'statuses', 'currencies'));
+        $invalidBalanceStatement = $this->importService->getInvalidBalanceStatement();
+
+        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate', 'companies', 'types', 'banks', 'statuses', 'currencies', 'invalidBalanceStatement'));
     }
 
     public function show(PaymentImport $import): View

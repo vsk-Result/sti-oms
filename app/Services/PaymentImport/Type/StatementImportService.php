@@ -228,7 +228,7 @@ class StatementImportService
         return null;
     }
 
-    private function processInfoFromStatementData(array $statementData): array
+    public function processInfoFromStatementData(array $statementData): array
     {
         $returnData = [];
         $importData = $statementData[0];
@@ -245,6 +245,7 @@ class StatementImportService
 
                 $description = $this->cleanValue($rowData[0]);
                 $description = str_replace(' ', '', $description);
+                $description = mb_substr($description, 0, 80);
                 $comment = $this->cleanValue($rowData[1]);
                 $comment = str_replace(' ', '', $comment);
 
@@ -289,6 +290,7 @@ class StatementImportService
 
             if ($isNotEmptyAdditionInfo) {
                 $cleanDescription = str_replace(' ', '', $description);
+                $cleanDescription = mb_substr($cleanDescription, 0, 80);
                 if (array_key_exists($cleanDescription, $additionInfo)) {
                     $category = $additionInfo[$cleanDescription]['category'] ?? '';
 
@@ -329,7 +331,7 @@ class StatementImportService
         return str_replace("\n", '', (string) $value);
     }
 
-    private function getStatementDataFromExcel(UploadedFile $file): array
+    public function getStatementDataFromExcel(UploadedFile $file): array
     {
         return Excel::toArray(new PImport(), $file);
     }
