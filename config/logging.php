@@ -117,25 +117,29 @@ return [
         'custom_imports_log' => [
             'driver' => 'daily',
             'path' => storage_path('logs/imports/imports.log'),
-            'level' => 'debug'
+            'level' => 'debug',
+            'permission' => 0777,
         ],
 
         'custom_events_log' => [
             'driver' => 'single',
             'path' => storage_path('logs/events.log'),
-            'level' => 'debug'
+            'level' => 'debug',
+            'permission' => 0777,
         ],
 
         'custom_requests_log' => [
             'driver' => 'daily',
             'path' => storage_path('logs/requests/requests.log'),
-            'level' => 'debug'
+            'level' => 'debug',
+            'permission' => 0777,
         ],
 
         'payments_split_log' => [
             'driver' => 'daily',
             'path' => storage_path('logs/split/payments_split.log'),
-            'level' => 'debug'
+            'level' => 'debug',
+            'permission' => 0777,
         ],
     ],
 
