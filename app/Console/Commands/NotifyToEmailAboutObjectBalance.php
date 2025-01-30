@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Console\HandledCommand;
 use App\Models\Object\BObject;
+use App\Models\Object\ResponsiblePersonPosition;
 use App\Services\ObjectBalanceExportService;
 use Carbon\Carbon;
 use Exception;
@@ -35,20 +36,35 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
         $this->startProcess();
 
         $alwaysInCopy = ['oksana.dashenko@st-ing.com', 'enes@st-ing.com', 'result007@yandex.ru'];
-        $notificationConfig = [
-            '346' => ['kseniya.boltisheva@st-ing.com'], // Октафарма
-            '353' => ['natalya.vorotnikova@st-ing.com'], // Сухаревская (ЖК "Лайон Гейт")
-            '358' => ['galina.strutinskaya@st-ing.com'], // Завидово
-            '360' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Тинькоф
-            '361' => ['kseniya.boltisheva@st-ing.com'], // Кемерово
-            '363' => ['natalya.vorotnikova@st-ing.com', 'ekaterina.dulesova@st-ing.com'], // Камчатка
-            '364' => ['galina.strutinskaya@st-ing.com'], // Гольф-клуб Завидово
-            '365' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Аэрофлот
-            '366' => ['kseniya.boltisheva@st-ing.com'], // Валента
-            '367' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Офис Веспер
-            '369' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com'], // Mono Space
-            '373' => ['natalya.vorotnikova@st-ing.com'], // Детский центр Магнитогорск
-        ];
+//        $notificationConfig = [
+//            '346' => ['kseniya.boltisheva@st-ing.com'], // Октафарма
+//            '353' => ['natalya.vorotnikova@st-ing.com'], // Сухаревская (ЖК "Лайон Гейт")
+//            '358' => ['galina.strutinskaya@st-ing.com'], // Завидово
+//            '360' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Тинькоф
+//            '361' => ['kseniya.boltisheva@st-ing.com'], // Кемерово
+//            '363' => ['natalya.vorotnikova@st-ing.com', 'ekaterina.dulesova@st-ing.com'], // Камчатка
+//            '364' => ['galina.strutinskaya@st-ing.com'], // Гольф-клуб Завидово
+//            '365' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Аэрофлот
+//            '366' => ['kseniya.boltisheva@st-ing.com'], // Валента
+//            '367' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com', 'mariya.serebryakova@st-ing.com'], // Офис Веспер
+//            '369' => ['stefan.stamenkovich@st-ing.com', 'elena.pushkina@st-ing.com'], // Mono Space
+//            '373' => ['natalya.vorotnikova@st-ing.com'], // Детский центр Магнитогорск
+//        ];
+
+        $notificationConfig = [];
+        foreach(BObject::active()->orderByDesc('code')->get() as $object) {
+            $managers = $object->responsiblePersons()->whereIn('position_id', ResponsiblePersonPosition::getFinanceManagerPositions())->orderBy('fullname')->get();
+
+            foreach ($managers as $manager) {
+                if (! empty($manager->email)) {
+                    $notificationConfig[$object->code][] = $manager->email;
+                }
+            }
+
+            if (isset($notificationConfig[$object->code])) {
+                $notificationConfig[$object->code] = array_unique($notificationConfig[$object->code]);
+            }
+        }
 
         $now = Carbon::now()->format('d.m.Y');
 

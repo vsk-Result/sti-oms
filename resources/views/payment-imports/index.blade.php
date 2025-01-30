@@ -8,6 +8,20 @@
     @include('payment-imports.modals.filter')
 
     <div class="post" id="kt_post">
+        @if ($invalidBalanceStatement)
+            <div class="alert border border-danger border-dashed bg-light-danger d-flex flex-column flex-sm-row p-5 mb-4">
+                <i class="ki-duotone ki-notification-bing fs-2hx text-primary me-4 mb-5 mb-sm-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+
+                <div class="d-flex flex-column pe-0 pe-sm-10">
+                    <h4 class="fw-semibold">Обнаружена выписка с измененным балансом</h4>
+                    <span>Перейдите в выписку, скачайте файл с несоответвиями и исправьте оплаты.</span>
+                </div>
+                <a href="{{ route('payment_imports.index') }}?import_id={{ $invalidBalanceStatement->id }}" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-danger ms-sm-auto">
+                    Показать выписку
+                </a>
+            </div>
+        @endif
+
         <div class="card mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -175,6 +189,11 @@
                                             </a>
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                                                 @can('show payment-imports')
+                                                    @if ($import->hasInvalidBalance())
+                                                        <div class="menu-item px-3">
+                                                            <a href="{{ route('payment_imports.invalid_balance.export.store', $import) }}" class="menu-link px-3 text-danger fw-bold">Анализ</a>
+                                                        </div>
+                                                    @endif
                                                     <div class="menu-item px-3">
                                                         <a href="{{ route('payment_imports.show', $import) }}" class="menu-link px-3">Посмотреть</a>
                                                     </div>

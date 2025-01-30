@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Console\HandledCommand;
 use App\Models\Object\BObject;
+use App\Models\Object\ResponsiblePersonPosition;
 use App\Services\ObjectBalanceExportService;
 use Carbon\Carbon;
 use Exception;
@@ -30,19 +31,34 @@ class NotifyToBossesEmailAboutObjectBalance extends HandledCommand
 
         $this->startProcess();
 
-        $notificationConfig = [
-            '353' => ['oleg.kalin@st-ing.com'], // Сухаревская (ЖК "Лайон Гейт")
-            '358' => ['maxim.generalov@st-ing.com'], // Завидово
-            '360' => ['aleksandar.lazarevic@st-ing.com'], // Тинькоф
-            '361' => ['petar.evtich@st-ing.com', 'pavel.kroviakov@st-ing.com'], // Кемерово
-            '363' => ['andrei.sokalskii@st-ing.com'], // Камчатка
-            '364' => ['maxim.generalov@st-ing.com'], // Гольф-клуб Завидово
-            '365' => ['oleg.kalin@st-ing.com'], // Аэрофлот
-            '366' => ['vladimir.vilotievich@st-ing.com'], // Валента
-            '367' => ['oleg.kalin@st-ing.com'], // Офис Веспер
-            '369' => ['oleg.kalin@st-ing.com'], // Mono Space
-            '373' => ['sergei.borisov@st-ing.com'], // Детский центр Магнитогорск
-        ];
+//        $notificationConfig = [
+//            '353' => ['oleg.kalin@st-ing.com'], // Сухаревская (ЖК "Лайон Гейт")
+//            '358' => ['maxim.generalov@st-ing.com'], // Завидово
+//            '360' => ['aleksandar.lazarevic@st-ing.com'], // Тинькоф
+//            '361' => ['petar.evtich@st-ing.com', 'pavel.kroviakov@st-ing.com'], // Кемерово
+//            '363' => ['andrei.sokalskii@st-ing.com'], // Камчатка
+//            '364' => ['maxim.generalov@st-ing.com'], // Гольф-клуб Завидово
+//            '365' => ['oleg.kalin@st-ing.com'], // Аэрофлот
+//            '366' => ['vladimir.vilotievich@st-ing.com'], // Валента
+//            '367' => ['oleg.kalin@st-ing.com'], // Офис Веспер
+//            '369' => ['oleg.kalin@st-ing.com'], // Mono Space
+//            '373' => ['sergei.borisov@st-ing.com'], // Детский центр Магнитогорск
+//        ];
+
+        $notificationConfig = [];
+        foreach(BObject::active()->orderByDesc('code')->get() as $object) {
+            $bosses = $object->responsiblePersons()->whereIn('position_id', ResponsiblePersonPosition::getMainPositions())->orderBy('fullname')->get();
+
+            foreach ($bosses as $boss) {
+                if (! empty($boss->email)) {
+                    $notificationConfig[$object->code][] = $boss->email;
+                }
+            }
+
+            if (isset($notificationConfig[$object->code])) {
+                $notificationConfig[$object->code] = array_unique($notificationConfig[$object->code]);
+            }
+        }
 
         $now = Carbon::now()->format('d.m.Y');
 

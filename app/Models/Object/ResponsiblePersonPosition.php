@@ -23,4 +23,23 @@ class ResponsiblePersonPosition
     {
         return self::$positions;
     }
+
+    public static function getMainPositions(): array
+    {
+        return [1, 2];
+//        return self::filterPositions([1, 2]);
+    }
+
+    public static function getFinanceManagerPositions(): array
+    {
+        return [3];
+//        return self::filterPositions([3]);
+    }
+
+    private static function filterPositions(array $positionIds): array
+    {
+        return array_column(array_filter(self::getPositions(), function($p) use($positionIds) {
+            return in_array($p, $positionIds);
+        }), 'name');
+    }
 }
