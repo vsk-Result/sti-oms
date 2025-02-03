@@ -8,6 +8,8 @@ use Carbon\Carbon;
 
 class PivotObjectDebtService
 {
+    const EXPIRED_UPLOAD_DEBTS_DAYS = 3;
+
     public function getPivotDebts(int $objectId, int $debtType, ?array $options = []): array
     {
         $withSortedDetails = $options['with_sorted_details'] ?? false;
@@ -46,6 +48,11 @@ class PivotObjectDebtService
                 'uploaded_date' => Carbon::parse($pivot->date)->format('d.m.Y H:i'),
                 'filepath' => $pivot->filepath,
             ];
+
+            if (now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
+                continue;
+            }
+
             $info['total']['amount'] += $pivot->amount;
             $info['total']['amount_without_nds'] += $pivot->amount_without_nds;
             $info['total']['amount_fix'] += $pivot->amount_fix;
