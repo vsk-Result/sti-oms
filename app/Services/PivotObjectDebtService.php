@@ -43,15 +43,15 @@ class PivotObjectDebtService
                 continue;
             }
 
+            if (now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
+                continue;
+            }
+
             $info['sources'][] = [
                 'source_name' => PivotObjectDebt::getSourceName($source),
                 'uploaded_date' => Carbon::parse($pivot->date)->format('d.m.Y H:i'),
                 'filepath' => $pivot->filepath,
             ];
-
-            if (now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
-                continue;
-            }
 
             $info['total']['amount'] += $pivot->amount;
             $info['total']['amount_without_nds'] += $pivot->amount_without_nds;
