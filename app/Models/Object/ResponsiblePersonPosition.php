@@ -17,6 +17,10 @@ class ResponsiblePersonPosition
             'id' => 3,
             'name' => 'Финансовый менеджер',
         ],
+        [
+            'id' => 4,
+            'name' => 'Куратор проекта',
+        ],
     ];
 
     public static function getPositions(): array
