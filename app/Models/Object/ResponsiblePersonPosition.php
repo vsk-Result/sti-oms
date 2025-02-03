@@ -30,7 +30,7 @@ class ResponsiblePersonPosition
 
     public static function getMainPositions(): array
     {
-        return [1, 2];
+        return [1, 2, 4];
 //        return self::filterPositions([1, 2]);
     }
 
