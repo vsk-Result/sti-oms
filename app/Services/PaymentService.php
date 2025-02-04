@@ -183,6 +183,10 @@ class PaymentService
 
         if (! empty($requestData['payment_type_id'])) {
             $paymentQuery->whereIn('payment_type_id', $requestData['payment_type_id']);
+        } else {
+            if (auth()->user() && auth()->user()->hasRole(['finance-object-user-mini'])) {
+                $paymentQuery->whereIn('payment_type_id', [Payment::PAYMENT_TYPE_NON_CASH]);
+            }
         }
 
         if (! empty($requestData['code'])) {

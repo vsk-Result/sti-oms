@@ -47,6 +47,12 @@ class PaymentController extends Controller
             $activeOrganizations = Organization::whereIn('id', $request->get('organization_id'))->orderBy('name')->get();
         }
 
+        if (auth()->user()->hasRole(['finance-object-user-mini'])) {
+            $paymentTypes = [
+                Payment::PAYMENT_TYPE_NON_CASH => 'Безналичный'
+            ];
+        }
+
         return view(
             'objects.tabs.payments',
             compact(

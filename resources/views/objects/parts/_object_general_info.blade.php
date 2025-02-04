@@ -1,7 +1,7 @@
 <div class="d-flex flex-wrap flex-sm-nowrap mb-6">
     <div class="me-7 mb-4">
-        <a class="d-block overlay w-150px" data-fslightbox="object-{{ $object->id }}" href="{{ $object->getPhoto() }}">
-            <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-175px"
+        <a class="d-block overlay {{ auth()->user()->hasRole('finance-object-user-mini') ? 'w-50px' : 'w-150px' }}" data-fslightbox="object-{{ $object->id }}" href="{{ $object->getPhoto() }}">
+            <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded {{ auth()->user()->hasRole('finance-object-user-mini') ? 'min-h-50px' : 'min-h-175px' }}"
                  style="background-image:url({{ $object->getPhoto() }})">
             </div>
             <div class="overlay-layer card-rounded bg-dark bg-opacity-25 shadow">
@@ -129,66 +129,7 @@
                 }
             @endphp
 
-            @if (auth()->user()->hasRole('finance-object-user-mini'))
-                <div class="me-11">
-                    <div class="d-flex flex-stack">
-                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                            <div class="text-gray-700 fw-semibold fs-7 me-2">
-                                <div
-                                        class="cursor-pointer pop-click"
-                                        data-bs-custom-class="plan-payments-detailing-popover"
-                                        data-bs-toggle="popover"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        title="Детализация приходов"
-                                        data-title="Детализация приходов"
-                                        data-bs-content='@include('objects.parts.debts-details.receive')'
-                                >
-                                    Приходы
-                                </div>
-                            </div>
-                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['receive'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive_without_nds'], 'RUB') }}">
-                                {{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="separator separator-dashed my-3"></div>
-
-                    <div class="d-flex flex-stack">
-                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                            <div class="text-gray-700 fw-semibold fs-7 me-2">
-                                <div
-                                        class="cursor-pointer pop-click"
-                                        data-bs-custom-class="plan-payments-detailing-popover"
-                                        data-bs-toggle="popover"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        title="Детализация расходов"
-                                        data-title="Детализация расходов"
-                                        data-bs-content='@include('objects.parts.debts-details.payments')'
-                                >
-                                    Расходы
-                                </div>
-                            </div>
-                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['pay'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay_without_nds'], 'RUB') }}">
-                                {{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="separator separator-dashed my-3"></div>
-
-                    <div class="d-flex flex-stack">
-                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
-                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам</div>
-                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_without_nds'], 'RUB') }}">
-                                {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            @else
+            @if (! auth()->user()->hasRole('finance-object-user-mini'))
                 <div class="me-11">
                     <div class="d-flex flex-stack">
                         <div class="pivot-box position-relative w-100 d-flex flex-stack">

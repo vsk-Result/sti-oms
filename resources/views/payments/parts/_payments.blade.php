@@ -1,5 +1,6 @@
 <div class="card mb-5 mb-xl-8">
     <div class="card-header border-0 pt-6">
+        @if (! auth()->user()->hasRole('finance-object-user-mini'))
         <div class="card-title">
 
             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
@@ -41,6 +42,7 @@
                 <div class="fw-bold fs-6 text-gray-400">Оплат</div>
             </div>
         </div>
+        @endif
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                 <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterPaymentModal">
