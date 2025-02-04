@@ -37,40 +37,46 @@ class PivotSheet implements
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Долг подрядчикам');
-        $sheet->setCellValue('A3', 'Контрагент');
-        $sheet->setCellValue('B3', 'Сумма');
-
-        $sheet->setCellValue('E1', 'Долг поставщикам');
-        $sheet->setCellValue('E3', 'Контрагент');
-        $sheet->setCellValue('F3', 'Сумма');
-
-        $sheet->setCellValue('I1', 'Долг за услуги');
-        $sheet->setCellValue('I3', 'Контрагент');
-        $sheet->setCellValue('J3', 'Сумма');
-
-        $sheet->getRowDimension(1)->setRowHeight(35);
-        $sheet->getRowDimension(3)->setRowHeight(40);
-
-        $sheet->getColumnDimension('A')->setWidth(40);
-        $sheet->getColumnDimension('E')->setWidth(40);
-        $sheet->getColumnDimension('I')->setWidth(40);
-
-        $sheet->getColumnDimension('B')->setWidth(20);
-        $sheet->getColumnDimension('F')->setWidth(20);
-        $sheet->getColumnDimension('J')->setWidth(20);
-
-        $sheet->getStyle('A1:B3')->getFont()->setBold(true);
-        $sheet->getStyle('E1:F3')->getFont()->setBold(true);
-        $sheet->getStyle('I1:J3')->getFont()->setBold(true);
-
         $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR, ['with_sorted_details' => true]);
         $providerDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER, ['with_sorted_details' => true]);
         $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($this->object->id, PivotObjectDebt::DEBT_TYPE_SERVICE, ['with_sorted_details' => true]);
 
+        $sheet->setCellValue('A1', 'Долг подрядчикам');
+        $sheet->setCellValue('A3', 'Контрагент');
+        $sheet->setCellValue('B3', 'Сумма');
+
+        $sheet->getColumnDimension('A')->setWidth(40);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getStyle('A1:B3')->getFont()->setBold(true);
+
         $sheet->setCellValue('B1', $contractorDebts['total']['total_amount']);
-        $sheet->setCellValue('F1', $providerDebts['total']['amount']);
-        $sheet->setCellValue('J1', $serviceDebts['total']['amount']);
+
+
+        if(! auth()->user()->hasRole('finance-object-user-mini')) {
+            $sheet->setCellValue('E1', 'Долг поставщикам');
+            $sheet->setCellValue('E3', 'Контрагент');
+            $sheet->setCellValue('F3', 'Сумма');
+
+            $sheet->setCellValue('I1', 'Долг за услуги');
+            $sheet->setCellValue('I3', 'Контрагент');
+            $sheet->setCellValue('J3', 'Сумма');
+
+            $sheet->getColumnDimension('E')->setWidth(40);
+            $sheet->getColumnDimension('I')->setWidth(40);
+
+            $sheet->getColumnDimension('F')->setWidth(20);
+            $sheet->getColumnDimension('J')->setWidth(20);
+
+            $sheet->getStyle('E1:F3')->getFont()->setBold(true);
+            $sheet->getStyle('I1:J3')->getFont()->setBold(true);
+
+            $sheet->setCellValue('F1', $providerDebts['total']['amount']);
+            $sheet->setCellValue('J1', $serviceDebts['total']['amount']);
+        }
+
+        $sheet->getRowDimension(1)->setRowHeight(35);
+        $sheet->getRowDimension(3)->setRowHeight(40);
+
 
         // Подрядчики
         $row = 4;
@@ -94,48 +100,51 @@ class PivotSheet implements
         $sheet->getStyle('B4:B' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
         $sheet->getStyle('B1:B' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
 
-        // Поставщики
-        $row = 4;
-        foreach ($providerDebts['organizations'] as $organizationData) {
-            if (! is_valid_amount_in_range($organizationData['amount'])) {
-                continue;
+        if(! auth()->user()->hasRole('finance-object-user-mini')) {
+
+            // Поставщики
+            $row = 4;
+            foreach ($providerDebts['organizations'] as $organizationData) {
+                if (!is_valid_amount_in_range($organizationData['amount'])) {
+                    continue;
+                }
+
+                $sheet->setCellValue('E' . $row, $organizationData['organization_name']);
+                $sheet->setCellValue('F' . $row, $organizationData['amount']);
+
+                $sheet->getRowDimension($row)->setRowHeight(25);
+                $row++;
             }
+            $row--;
 
-            $sheet->setCellValue('E' . $row, $organizationData['organization_name']);
-            $sheet->setCellValue('F' . $row, $organizationData['amount']);
+            $sheet->getStyle('E1:F' . $row)->applyFromArray($THINStyleArray);
+            $sheet->getStyle('E1:E' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+            $sheet->getStyle('F1:F' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+            $sheet->getStyle('F1:F1')->getFont()->setColor(new Color(Color::COLOR_RED));
+            $sheet->getStyle('F4:F' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+            $sheet->getStyle('F1:F' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
 
-            $sheet->getRowDimension($row)->setRowHeight(25);
-            $row++;
-        }
-        $row--;
+            // Услуги
+            $row = 4;
+            foreach ($serviceDebts['organizations'] as $organizationData) {
+                if (!is_valid_amount_in_range($organizationData['amount'])) {
+                    continue;
+                }
 
-        $sheet->getStyle('E1:F' . $row)->applyFromArray($THINStyleArray);
-        $sheet->getStyle('E1:E' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('F1:F' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
-        $sheet->getStyle('F1:F1')->getFont()->setColor(new Color(Color::COLOR_RED));
-        $sheet->getStyle('F4:F' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
-        $sheet->getStyle('F1:F' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+                $sheet->setCellValue('I' . $row, $organizationData['organization_name']);
+                $sheet->setCellValue('J' . $row, $organizationData['amount']);
 
-        // Услуги
-        $row = 4;
-        foreach ($serviceDebts['organizations'] as $organizationData) {
-            if (! is_valid_amount_in_range($organizationData['amount'])) {
-                continue;
+                $sheet->getRowDimension($row)->setRowHeight(25);
+                $row++;
             }
+            $row--;
 
-            $sheet->setCellValue('I' . $row, $organizationData['organization_name']);
-            $sheet->setCellValue('J' . $row, $organizationData['amount']);
-
-            $sheet->getRowDimension($row)->setRowHeight(25);
-            $row++;
+            $sheet->getStyle('I1:J' . $row)->applyFromArray($THINStyleArray);
+            $sheet->getStyle('I1:I' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+            $sheet->getStyle('J1:J' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+            $sheet->getStyle('J1:J1')->getFont()->setColor(new Color(Color::COLOR_RED));
+            $sheet->getStyle('J4:J' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+            $sheet->getStyle('J1:J' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
         }
-        $row--;
-
-        $sheet->getStyle('I1:J' . $row)->applyFromArray($THINStyleArray);
-        $sheet->getStyle('I1:I' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('J1:J' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
-        $sheet->getStyle('J1:J1')->getFont()->setColor(new Color(Color::COLOR_RED));
-        $sheet->getStyle('J4:J' . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
-        $sheet->getStyle('J1:J' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }

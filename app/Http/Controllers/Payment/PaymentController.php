@@ -65,7 +65,7 @@ class PaymentController extends Controller
 
         $objects = BObject::orderBy('code')->get();
 
-        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
             $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
@@ -176,7 +176,7 @@ class PaymentController extends Controller
             ]);
         }
 
-        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
             if (! in_array($payment->object_id, auth()->user()->objects->pluck('id')->toArray())) {
                 abort(403);
                 return redirect()->back();

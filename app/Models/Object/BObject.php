@@ -137,7 +137,7 @@ class BObject extends Model implements Audit
         $objects = static::orderBy('code')->get();
 
         if (! $needAllObjects) {
-            if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            if (auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
                 $objects = static::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
             }
         }

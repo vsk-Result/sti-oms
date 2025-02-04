@@ -18,6 +18,7 @@
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/payments') || request()->is('*/reports/payments-receive') ? 'active' : '' }}" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">Оплаты</a>
                             </li>
+                        @if(! auth()->user()->hasRole('finance-object-user-mini'))
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/writeoffs') ? 'active' : '' }}" href="{{ route('objects.writeoffs.index', $object) }}?object_id%5B%5D={{ $object->id }}">Списания</a>
                             </li>
@@ -33,9 +34,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>
                             </li>
+                        @endif
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/debts') ? 'active' : '' }}" href="{{ route('objects.debts.index', $object) }}">Долги</a>
                             </li>
+                        @if(! auth()->user()->hasRole('finance-object-user-mini'))
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/bank-guarantees') ? 'active' : '' }}" href="{{ route('objects.bank_guarantees.index', $object) }}?object_id%5B%5D={{ $object->id }}">Банковские гарантии и депозиты</a>
                             </li>
@@ -54,6 +57,7 @@
 {{--                        <li class="nav-item">--}}
 {{--                            <a class="nav-link text-active-primary me-6 {{ request()->is('*/activity') ? 'active' : '' }}" href="{{ route('objects.activity.index', $object) }}">Активность</a>--}}
 {{--                        </li>--}}
+                        @endif
                     </ul>
                 </div>
             </div>

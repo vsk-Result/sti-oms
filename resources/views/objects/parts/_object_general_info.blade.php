@@ -129,514 +129,575 @@
                 }
             @endphp
 
-            <div class="me-11">
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            <div
-                                    class="cursor-pointer pop-click"
-                                    data-bs-custom-class="plan-payments-detailing-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="Детализация приходов"
-                                    data-title="Детализация приходов"
-                                    data-bs-content='@include('objects.parts.debts-details.receive')'
-                            >
-                                Приходы
+            @if (auth()->user()->hasRole('finance-object-user-mini'))
+                <div class="me-11">
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Детализация приходов"
+                                        data-title="Детализация приходов"
+                                        data-bs-content='@include('objects.parts.debts-details.receive')'
+                                >
+                                    Приходы
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['receive'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}
                             </div>
                         </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['receive'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}
-                        </div>
                     </div>
-                </div>
 
-                <div class="separator separator-dashed my-3"></div>
+                    <div class="separator separator-dashed my-3"></div>
 
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            <div
-                                    class="cursor-pointer pop-click"
-                                    data-bs-custom-class="plan-payments-detailing-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="Детализация расходов"
-                                    data-title="Детализация расходов"
-                                    data-bs-content='@include('objects.parts.debts-details.payments')'
-                            >
-                                Расходы
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Детализация расходов"
+                                        data-title="Детализация расходов"
+                                        data-bs-content='@include('objects.parts.debts-details.payments')'
+                                >
+                                    Расходы
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['pay'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}
                             </div>
                         </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['pay'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}
-                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}
+                            </div>
+                        </a>
                     </div>
                 </div>
+            @else
+                <div class="me-11">
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Детализация приходов"
+                                        data-title="Детализация приходов"
+                                        data-bs-content='@include('objects.parts.debts-details.receive')'
+                                >
+                                    Приходы
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['receive'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['receive_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['receive'], 'RUB') }}
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="separator separator-dashed my-3"></div>
+                    <div class="separator separator-dashed my-3"></div>
 
-                <div class="d-flex flex-stack">
-                    @if ($object->code === '288')
-                        @php
-                            $general = $object->payments->where('object_worktype_id', 7)->sum('amount');
-                            $one =  $object->payments->where('object_worktype_id', 1)->sum('amount');
-                            $twoFour = $object->payments->whereIn('object_worktype_id', [2, 4])->sum('amount');
-                            $oneBalance = ($one / ($one + $twoFour) * $general) + $one;
-                            $twoFourBalance = ($twoFour / ($one + $twoFour) * $general) + $twoFour;
-                        @endphp
-                        <div class="d-flex flex-column w-100">
-                            <a class="pivot-box mb-2 w-100 d-flex flex-stack position-relative" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Детализация расходов"
+                                        data-title="Детализация расходов"
+                                        data-bs-content='@include('objects.parts.debts-details.payments')'
+                                >
+                                    Расходы
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['pay'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['pay_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['pay'], 'RUB') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        @if ($object->code === '288')
+                            @php
+                                $general = $object->payments->where('object_worktype_id', 7)->sum('amount');
+                                $one =  $object->payments->where('object_worktype_id', 1)->sum('amount');
+                                $twoFour = $object->payments->whereIn('object_worktype_id', [2, 4])->sum('amount');
+                                $oneBalance = ($one / ($one + $twoFour) * $general) + $one;
+                                $twoFourBalance = ($twoFour / ($one + $twoFour) * $general) + $twoFour;
+                            @endphp
+                            <div class="d-flex flex-column w-100">
+                                <a class="pivot-box mb-2 w-100 d-flex flex-stack position-relative" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">
+                                    <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов</div>
+                                    <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}">
+                                        {{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}
+                                    </div>
+                                    {{--                                <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $object->total_balance }}">--}}
+                                    {{--                                    <span class="svg-icon svg-icon-2">--}}
+                                    {{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                                    {{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                                    {{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                                    {{--                                        </svg>--}}
+                                    {{--                                    </span>--}}
+                                    {{--                                </button>--}}
+                                </a>
+                                <a class="pivot-box position-relative mb-2 w-100 d-flex flex-stack" href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=1&object_id%5B%5D={{ $object->id }}">
+                                    <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов (1)</div>
+                                    <div class="ms-3 d-flex align-items-senter fw-bold {{ $oneBalance < 0 ? 'text-danger' : 'text-success' }}">
+                                        {{ \App\Models\CurrencyExchangeRate::format($oneBalance, 'RUB') }}
+                                    </div>
+                                    {{--                                <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $oneBalance }}">--}}
+                                    {{--                                    <span class="svg-icon svg-icon-2">--}}
+                                    {{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                                    {{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                                    {{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                                    {{--                                        </svg>--}}
+                                    {{--                                    </span>--}}
+                                    {{--                                </button>--}}
+                                </a>
+                                <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4&object_id%5B%5D={{ $object->id }}">
+                                    <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов (2,4)</div>
+                                    <div class="ms-3 d-flex align-items-senter fw-bold {{ $twoFourBalance < 0 ? 'text-danger' : 'text-success' }}">
+                                        {{ \App\Models\CurrencyExchangeRate::format($twoFourBalance, 'RUB') }}
+                                    </div>
+                                    {{--                                <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $twoFourBalance }}">--}}
+                                    {{--                                    <span class="svg-icon svg-icon-2">--}}
+                                    {{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                                    {{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                                    {{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                                    {{--                                        </svg>--}}
+                                    {{--                                    </span>--}}
+                                    {{--                                </button>--}}
+                                </a>
+                            </div>
+                        @else
+                            <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">
                                 <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов</div>
-                                <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}">
+                                <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_without_nds'], 'RUB') }}">
                                     {{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}
                                 </div>
-{{--                                <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $object->total_balance }}">--}}
-{{--                                    <span class="svg-icon svg-icon-2">--}}
-{{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                        </svg>--}}
-{{--                                    </span>--}}
-{{--                                </button>--}}
+                                {{--                            <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $object->total_balance }}">--}}
+                                {{--                                    <span class="svg-icon svg-icon-2">--}}
+                                {{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                                {{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                                {{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                                {{--                                        </svg>--}}
+                                {{--                                    </span>--}}
+                                {{--                            </button>--}}
                             </a>
-                            <a class="pivot-box position-relative mb-2 w-100 d-flex flex-stack" href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=1&object_id%5B%5D={{ $object->id }}">
-                                <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов (1)</div>
-                                <div class="ms-3 d-flex align-items-senter fw-bold {{ $oneBalance < 0 ? 'text-danger' : 'text-success' }}">
-                                    {{ \App\Models\CurrencyExchangeRate::format($oneBalance, 'RUB') }}
+                        @endif
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Детализация общих расходов"
+                                        data-title="Детализация общих расходов"
+                                        data-bs-content='@include('objects.parts.debts-details.general_costs')'
+                                >
+                                    Общие расходы
                                 </div>
-{{--                                <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $oneBalance }}">--}}
-{{--                                    <span class="svg-icon svg-icon-2">--}}
-{{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                        </svg>--}}
-{{--                                    </span>--}}
-{{--                                </button>--}}
-                            </a>
-                            <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.payments.index', $object) }}?object_worktype_id%5B%5D=2&object_worktype_id%5B%5D=4&object_id%5B%5D={{ $object->id }}">
-                                <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов (2,4)</div>
-                                <div class="ms-3 d-flex align-items-senter fw-bold {{ $twoFourBalance < 0 ? 'text-danger' : 'text-success' }}">
-                                    {{ \App\Models\CurrencyExchangeRate::format($twoFourBalance, 'RUB') }}
-                                </div>
-{{--                                <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $twoFourBalance }}">--}}
-{{--                                    <span class="svg-icon svg-icon-2">--}}
-{{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                        </svg>--}}
-{{--                                    </span>--}}
-{{--                                </button>--}}
-                            </a>
-                        </div>
-                    @else
-                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.payments.index', $object) }}?object_id%5B%5D={{ $object->id }}">
-                            <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо без общ. расходов</div>
-                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_without_nds'], 'RUB') }}">
-                                {{ \App\Models\CurrencyExchangeRate::format($info['balance'], 'RUB') }}
                             </div>
-{{--                            <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $object->total_balance }}">--}}
-{{--                                    <span class="svg-icon svg-icon-2">--}}
-{{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                        </svg>--}}
-{{--                                    </span>--}}
-{{--                            </button>--}}
-                        </a>
-                    @endif
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            <div
-                                    class="cursor-pointer pop-click"
-                                    data-bs-custom-class="plan-payments-detailing-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="Детализация общих расходов"
-                                    data-title="Детализация общих расходов"
-                                    data-bs-content='@include('objects.parts.debts-details.general_costs')'
-                            >
-                                Общие расходы
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}
                             </div>
                         </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['general_balance_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['general_balance'], 'RUB') }}
-                        </div>
-                    </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ ($object->total_with_general_balance - $object->total_balance) }}">--}}
-{{--                                    <span class="svg-icon svg-icon-2">--}}
-{{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                        </svg>--}}
-{{--                                    </span>--}}
-{{--                        </button>--}}
-                    </a>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо c общ. расходами</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance_with_general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $info['balance_with_general_balance'] }}">--}}
-{{--                                    <span class="svg-icon svg-icon-2">--}}
-{{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                        </svg>--}}
-{{--                                    </span>--}}
-{{--                        </button>--}}
-                    </div>
-                </div>
-            </div>
-
-            <div class="me-11">
-                <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ ($contractorDebtsAmount - $contractorGuaranteeDebtsAmount) }}">--}}
-{{--                                        <span class="svg-icon svg-icon-2">--}}
-{{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                            </svg>--}}
-{{--                                        </span>--}}
-{{--                        </button>--}}
-                    </a>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам за ГУ</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt_gu'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $contractorGuaranteeDebtsAmount }}">--}}
-{{--                                        <span class="svg-icon svg-icon-2">--}}
-{{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                            </svg>--}}
-{{--                                        </span>--}}
-{{--                        </button>--}}
-                    </a>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            <div
-                                    class="cursor-pointer pop-click"
-                                    data-bs-custom-class="plan-payments-detailing-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="Долг поставщикам"
-                                    data-title="Долг поставщикам"
-                                    data-bs-content='@include('objects.parts.debts-details.provider')'
-                            >
-                                Долг поставщикам
-                            </div>
-                        </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['provider_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $providerDebtsAmount }}">--}}
-{{--                                        <span class="svg-icon svg-icon-2">--}}
-{{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                            </svg>--}}
-{{--                                        </span>--}}
-{{--                        </button>--}}
-                    </div>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг за услуги</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['service_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['service_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['service_debt_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['service_debt'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $serviceDebtsAmount }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
-                    </a>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг на зарплаты ИТР</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ ($info['itr_salary_debt'] ?? 0) < 0 ? 'text-danger' : 'text-success' }}">
-                            {{ \App\Models\CurrencyExchangeRate::format(($info['itr_salary_debt'] ?? 0), 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $ITRSalaryDebt }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
-                    </div>
-                </div>
-            </div>
-
-            <div class="me-11">
-{{--                <div class="separator separator-dashed my-3"></div>--}}
-
-{{--                <div class="d-flex flex-stack">--}}
-{{--                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">--}}
-{{--                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг заказчиков</div>--}}
-{{--                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $customerDebt < 0 ? 'text-danger' : 'text-success' }}">--}}
-{{--                            {{ \App\Models\CurrencyExchangeRate::format($customerDebt, 'RUB') }}--}}
-{{--                        </div>--}}
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $customerDebt }}">--}}
-{{--                                        <span class="svg-icon svg-icon-2">--}}
-{{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                            </svg>--}}
-{{--                                        </span>--}}
-{{--                        </button>--}}
-{{--                    </a>--}}
-{{--                </div>--}}
-
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            <div
-                                    class="cursor-pointer pop-click"
-                                    data-bs-custom-class="workers-salary-detailing-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="Детализация по долгу на зарплаты рабочим"
-                                    data-title="Детализация по долгу на зарплаты рабочим"
-                                    data-bs-content='@include('objects.parts.debts-details.workers_salary')'
-                            >
-                                Долг на зарплаты рабочим
-                            </div>
-                        </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['workers_salary_debt'] < 0 ? 'text-danger' : 'text-success' }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['workers_salary_debt'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $workSalaryDebt }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
-                    </div>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг Заказчика за выпол.работы</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgZakazchikovZaVipolnenieRaboti'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $dolgZakazchikovZaVipolnenieRaboti }}">--}}
-{{--                                <span class="svg-icon svg-icon-2">--}}
-{{--                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                        <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                    </svg>--}}
-{{--                                </span>--}}
-{{--                        </button>--}}
-                    </a>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг Заказчика за ГУ (фактич.удерж.)</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgFactUderjannogoGU'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $dolgFactUderjannogoGU }}">--}}
-{{--                                <span class="svg-icon svg-icon-2">--}}
-{{--                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                        <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                    </svg>--}}
-{{--                                </span>--}}
-{{--                        </button>--}}
-                    </a>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Текущий Баланс объекта</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['objectBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $objectBalance }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
-                    </div>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            <div
-                                    class="cursor-pointer pop-click"
-                                    data-bs-custom-class="plan-payments-detailing-popover"
-                                    data-bs-toggle="popover"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="Прогнозируемые затраты"
-                                    data-title="Прогнозируемые затраты"
-                                    data-bs-content='@include('objects.parts.debts-details.plan_payments')'
-                            >
-                                Прогнозируемые затраты
-                            </div>
-                        </div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['prognoz_total'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognoz_total'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognoz_total'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['prognoz_total'], 'RUB') }}
-                        </div>
-                        {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $objectBalance }}">--}}
-                        {{--                            <span class="svg-icon svg-icon-2">--}}
-                        {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-                        {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-                        {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-                        {{--                                </svg>--}}
-                        {{--                            </span>--}}
+                        {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ ($object->total_with_general_balance - $object->total_balance) }}">--}}
+                        {{--                                    <span class="svg-icon svg-icon-2">--}}
+                        {{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                        {{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                        {{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                        {{--                                        </svg>--}}
+                        {{--                                    </span>--}}
                         {{--                        </button>--}}
+                        </a>
                     </div>
-                </div>
-            </div>
 
-            <div class="">
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Сумма договоров с Заказчиком</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractsTotalAmount'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Сальдо c общ. расходами</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['balance_with_general_balance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['balance_with_general_balance'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $info['balance_with_general_balance'] }}">--}}
+                            {{--                                    <span class="svg-icon svg-icon-2">--}}
+                            {{--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                            <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                        </svg>--}}
+                            {{--                                    </span>--}}
+                            {{--                        </button>--}}
                         </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $contractsTotalAmount }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
-                    </div>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex flex-stack">
-                    <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">
-                            Остаток неотработанного аванса
-                            @if ($object->free_limit_amount != 0)
-                                <br>
-                                <span class="fst-italic fs-8 fw-bolder">Сумма свободного лимита АВ к получению</span>
-                            @endif
-                        </div>
-                        <div class="ms-3 d-flex flex-column align-items-senter fw-bold {{ $info['ostatokNeotrabotannogoAvansa'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}
-
-                            @if ($object->free_limit_amount != 0)
-                                <br>
-                                <span class="text-end fst-italic fs-8 fw-bolder {{ $object->free_limit_amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($object->free_limit_amount, 'RUB') }}</span>
-                            @endif
-                        </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $ostatokNeotrabotannogoAvansa }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
                     </div>
                 </div>
 
-                <div class="separator separator-dashed my-3"></div>
+                <div class="me-11">
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ ($contractorDebtsAmount - $contractorGuaranteeDebtsAmount) }}">--}}
+                            {{--                                        <span class="svg-icon svg-icon-2">--}}
+                            {{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                            </svg>--}}
+                            {{--                                        </span>--}}
+                            {{--                        </button>--}}
+                        </a>
+                    </div>
 
-                <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Остаток к получ. от заказчика (в т.ч. ГУ)</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['ostatokPoDogovoruSZakazchikom'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг подрядчикам за ГУ</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractor_debt_gu'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['contractor_debt_gu'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $contractorGuaranteeDebtsAmount }}">--}}
+                            {{--                                        <span class="svg-icon svg-icon-2">--}}
+                            {{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                            </svg>--}}
+                            {{--                                        </span>--}}
+                            {{--                        </button>--}}
+                        </a>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Долг поставщикам"
+                                        data-title="Долг поставщикам"
+                                        data-bs-content='@include('objects.parts.debts-details.provider')'
+                                >
+                                    Долг поставщикам
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['provider_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['provider_debt_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['provider_debt'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $providerDebtsAmount }}">--}}
+                            {{--                                        <span class="svg-icon svg-icon-2">--}}
+                            {{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                            </svg>--}}
+                            {{--                                        </span>--}}
+                            {{--                        </button>--}}
                         </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $ostatokPoDogovoruSZakazchikom }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
-                    </a>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.debts.index', $object) }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг за услуги</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['service_debt'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}"  data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['service_debt'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['service_debt_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['service_debt'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $serviceDebtsAmount }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </a>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг на зарплаты ИТР</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ ($info['itr_salary_debt'] ?? 0) < 0 ? 'text-danger' : 'text-success' }}">
+                                {{ \App\Models\CurrencyExchangeRate::format(($info['itr_salary_debt'] ?? 0), 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $ITRSalaryDebt }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </div>
+                    </div>
                 </div>
 
-                <div class="separator separator-dashed my-3"></div>
+                <div class="me-11">
+                    {{--                <div class="separator separator-dashed my-3"></div>--}}
 
-                <div class="d-flex flex-stack">
-                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
-                        <div class="text-gray-700 fw-semibold fs-7 me-2">Прогнозируемый Баланс объекта</div>
-                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['prognozBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance_without_nds'], 'RUB') }}">
-                            {{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}
+                    {{--                <div class="d-flex flex-stack">--}}
+                    {{--                    <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">--}}
+                    {{--                        <div class="text-gray-700 fw-semibold fs-7 me-2">Долг заказчиков</div>--}}
+                    {{--                        <div class="ms-3 d-flex align-items-senter fw-bold {{ $customerDebt < 0 ? 'text-danger' : 'text-success' }}">--}}
+                    {{--                            {{ \App\Models\CurrencyExchangeRate::format($customerDebt, 'RUB') }}--}}
+                    {{--                        </div>--}}
+                    {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $customerDebt }}">--}}
+                    {{--                                        <span class="svg-icon svg-icon-2">--}}
+                    {{--                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                    {{--                                                <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                    {{--                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                    {{--                                            </svg>--}}
+                    {{--                                        </span>--}}
+                    {{--                        </button>--}}
+                    {{--                    </a>--}}
+                    {{--                </div>--}}
+
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="workers-salary-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Детализация по долгу на зарплаты рабочим"
+                                        data-title="Детализация по долгу на зарплаты рабочим"
+                                        data-bs-content='@include('objects.parts.debts-details.workers_salary')'
+                                >
+                                    Долг на зарплаты рабочим
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['workers_salary_debt'] < 0 ? 'text-danger' : 'text-success' }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['workers_salary_debt'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $workSalaryDebt }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
                         </div>
-{{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $prognozBalance }}">--}}
-{{--                            <span class="svg-icon svg-icon-2">--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
-{{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
-{{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
-{{--                                </svg>--}}
-{{--                            </span>--}}
-{{--                        </button>--}}
-                    </a>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг Заказчика за выпол.работы</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgZakazchikovZaVipolnenieRaboti'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['dolgZakazchikovZaVipolnenieRaboti'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $dolgZakazchikovZaVipolnenieRaboti }}">--}}
+                            {{--                                <span class="svg-icon svg-icon-2">--}}
+                            {{--                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                        <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                    </svg>--}}
+                            {{--                                </span>--}}
+                            {{--                        </button>--}}
+                        </a>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Долг Заказчика за ГУ (фактич.удерж.)</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['dolgFactUderjannogoGU'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['dolgFactUderjannogoGU'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $dolgFactUderjannogoGU }}">--}}
+                            {{--                                <span class="svg-icon svg-icon-2">--}}
+                            {{--                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                        <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                    </svg>--}}
+                            {{--                                </span>--}}
+                            {{--                        </button>--}}
+                        </a>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Текущий Баланс объекта</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['objectBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $objectBalance }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Прогнозируемые затраты"
+                                        data-title="Прогнозируемые затраты"
+                                        data-bs-content='@include('objects.parts.debts-details.plan_payments')'
+                                >
+                                    Прогнозируемые затраты
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['prognoz_total'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognoz_total'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognoz_total'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['prognoz_total'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $objectBalance }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <div class="">
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Сумма договоров с Заказчиком</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['contractsTotalAmount'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['contractsTotalAmount'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $contractsTotalAmount }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                Остаток неотработанного аванса
+                                @if ($object->free_limit_amount != 0)
+                                    <br>
+                                    <span class="fst-italic fs-8 fw-bolder">Сумма свободного лимита АВ к получению</span>
+                                @endif
+                            </div>
+                            <div class="ms-3 d-flex flex-column align-items-senter fw-bold {{ $info['ostatokNeotrabotannogoAvansa'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}
+
+                                @if ($object->free_limit_amount != 0)
+                                    <br>
+                                    <span class="text-end fst-italic fs-8 fw-bolder {{ $object->free_limit_amount < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($object->free_limit_amount, 'RUB') }}</span>
+                                @endif
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $ostatokNeotrabotannogoAvansa }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Остаток к получ. от заказчика (в т.ч. ГУ)</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['ostatokPoDogovoruSZakazchikom'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['ostatokPoDogovoruSZakazchikom'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $ostatokPoDogovoruSZakazchikom }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </a>
+                    </div>
+
+                    <div class="separator separator-dashed my-3"></div>
+
+                    <div class="d-flex flex-stack">
+                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">Прогнозируемый Баланс объекта</div>
+                            <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['prognozBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance_without_nds'], 'RUB') }}">
+                                {{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}
+                            </div>
+                            {{--                        <button class="btn btn-icon btn-sm btn-light btn-copy" data-clipboard-value="{{ $prognozBalance }}">--}}
+                            {{--                            <span class="svg-icon svg-icon-2">--}}
+                            {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">--}}
+                            {{--                                    <path opacity="0.5" d="M18 2H9C7.34315 2 6 3.34315 6 5H8C8 4.44772 8.44772 4 9 4H18C18.5523 4 19 4.44772 19 5V16C19 16.5523 18.5523 17 18 17V19C19.6569 19 21 17.6569 21 16V5C21 3.34315 19.6569 2 18 2Z" fill="black"></path>--}}
+                            {{--                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7857 7.125H6.21429C5.62255 7.125 5.14286 7.6007 5.14286 8.1875V18.8125C5.14286 19.3993 5.62255 19.875 6.21429 19.875H14.7857C15.3774 19.875 15.8571 19.3993 15.8571 18.8125V8.1875C15.8571 7.6007 15.3774 7.125 14.7857 7.125ZM6.21429 5C4.43908 5 3 6.42709 3 8.1875V18.8125C3 20.5729 4.43909 22 6.21429 22H14.7857C16.5609 22 18 20.5729 18 18.8125V8.1875C18 6.42709 16.5609 5 14.7857 5H6.21429Z" fill="black"></path>--}}
+                            {{--                                </svg>--}}
+                            {{--                            </span>--}}
+                            {{--                        </button>--}}
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>

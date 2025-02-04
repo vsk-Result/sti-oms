@@ -48,7 +48,7 @@ class ObjectController extends Controller
             $query->where('status_id', $request->input('status'));
         }
 
-        if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
             $query->whereIn('id', auth()->user()->objects->pluck('id'));
         }
 

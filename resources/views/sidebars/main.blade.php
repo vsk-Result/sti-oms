@@ -185,7 +185,7 @@
                                 </a>
                             </div>
 
-                            @if (! auth()->user()->hasRole(['object-leader', 'finance-object-user']))
+                            @if (! auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini']))
                                 <div class="menu-item">
                                     <a class="menu-link py-2 {{ request()->is('payments/history*') ? 'active' : '' }}" href="{{ route('payments.history.index') }}">
                                         <span class="menu-bullet">

@@ -152,7 +152,7 @@ class PaymentService
 //                });
 //            }
         } else {
-            if (auth()->user() && auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
+            if (auth()->user() && auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
                 $paymentQuery->whereIn('object_id', auth()->user()->objects->pluck('id'));
             }
         }

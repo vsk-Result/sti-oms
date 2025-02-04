@@ -21,14 +21,16 @@
                         </a>
                     </form>
 
-                    <a
-                        class="btn btn-light-info"
-                        href="javascript:void(0);"
-                        data-bs-toggle="modal"
-                        data-bs-target="#debtsImportDetailsModal"
-                    >
-                        Источники
-                    </a>
+                    @if(! auth()->user()->hasRole('finance-object-user-mini'))
+                        <a
+                            class="btn btn-light-info"
+                            href="javascript:void(0);"
+                            data-bs-toggle="modal"
+                            data-bs-target="#debtsImportDetailsModal"
+                        >
+                            Источники
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -41,9 +43,11 @@
                     <div class="card-title">
                         <div class="d-flex flex-column">
                             <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
-                            <a class="btn btn-sm btn-light-primary mt-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal">
-                                Обновить
-                            </a>
+                            @if(! auth()->user()->hasRole('finance-object-user-mini'))
+                                <a class="btn btn-sm btn-light-primary mt-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal">
+                                    Обновить
+                                </a>
+                            @endif
                         </div>
                     </div>
 
@@ -126,21 +130,79 @@
         </div>
     </div>
 
-    <div class="row g-6 g-xl-9">
-        <div class="col-lg-6">
-                <div class="card card-flush h-lg-100">
-                    <div class="card-header mt-6 align-items-baseline">
-                        <div class="card-title">
-                            <div class="d-flex flex-column">
-                                <h3 class="fw-bolder mb-1">Долг за услуги</h3>
+    @if(! auth()->user()->hasRole('finance-object-user-mini'))
+
+        <div class="row g-6 g-xl-9">
+            <div class="col-lg-6">
+                    <div class="card card-flush h-lg-100">
+                        <div class="card-header mt-6 align-items-baseline">
+                            <div class="card-title">
+                                <div class="d-flex flex-column">
+                                    <h3 class="fw-bolder mb-1">Долг за услуги</h3>
+                                </div>
                             </div>
+
+                            <div class="card-toolbar">
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="fs-4 fw-bolder text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-9 pt-0">
+                            <table class="table table-hover align-middle table-row-dashed fs-6">
+                                <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2">Контрагент</th>
+                                        <th class="w-175px text-end pe-2">Сумма</th>
+                                    </tr>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2 hl">ИТОГО</th>
+                                        <th class="w-175px text-end pe-2 hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-600 fw-bold">
+                                    @forelse($serviceDebts['organizations'] as $organizationInfo)
+                                        <tr>
+                                            <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
+                                            <td class="text-danger text-end pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                    Долги отсутствуют
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header mt-6">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
                         </div>
 
                         <div class="card-toolbar">
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                                 <div class="d-flex align-items-center">
                                     <div class="fs-4 fw-bolder text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
+                                        {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount']) }}
                                     </div>
                                 </div>
                                 <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
@@ -153,26 +215,33 @@
                             <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2">Контрагент</th>
-                                    <th class="w-175px text-end pe-2">Сумма</th>
+                                    <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
+                                    <th class="w-175px pe-2 text-end">Сумма (изм)</th>
                                 </tr>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2 hl">ИТОГО</th>
-                                    <th class="w-175px text-end pe-2 hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
+                                    <th class="w-175px pe-2 text-end hl text-danger">
+                                        {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_fix']) }}
+                                    </th>
+                                    <th class="w-175px pe-2 text-end hl text-danger">
+                                        {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_float']) }}
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
-                                @forelse($serviceDebts['organizations'] as $organizationInfo)
-                                    <tr>
+                                @forelse($providerDebts['organizations'] as $organizationInfo)
+                                    <tr class="row-edit-debt-manual">
                                         <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
-                                        <td class="text-danger text-end pe-2">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
+                                        <td class="text-danger text-end">
+                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_fix']) }}
+                                        </td>
+                                        <td class="text-danger text-end">
+                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_float']) }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2">
+                                        <td colspan="3">
                                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                                 Долги отсутствуют
                                             </p>
@@ -183,71 +252,9 @@
                         </table>
                     </div>
                 </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="card card-flush h-lg-100">
-                <div class="card-header mt-6">
-                    <div class="card-title flex-column">
-                        <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
-                    </div>
-
-                    <div class="card-toolbar">
-                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount']) }}
-                                </div>
-                            </div>
-                            <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-body p-9 pt-0">
-                    <table class="table table-hover align-middle table-row-dashed fs-6">
-                        <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="ps-2">Контрагент</th>
-                                <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
-                                <th class="w-175px pe-2 text-end">Сумма (изм)</th>
-                            </tr>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="ps-2 hl">ИТОГО</th>
-                                <th class="w-175px pe-2 text-end hl text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_fix']) }}
-                                </th>
-                                <th class="w-175px pe-2 text-end hl text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_float']) }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 fw-bold">
-                            @forelse($providerDebts['organizations'] as $organizationInfo)
-                                <tr class="row-edit-debt-manual">
-                                    <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
-                                    <td class="text-danger text-end">
-                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_fix']) }}
-                                    </td>
-                                    <td class="text-danger text-end">
-                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_float']) }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3">
-                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                            Долги отсутствуют
-                                        </p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
-    </div>
+    @endif
 @endsection
 
 @push('styles')
