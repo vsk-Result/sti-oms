@@ -245,7 +245,6 @@ class StatementImportService
 
                 $description = $this->cleanValue($rowData[0]);
                 $description = str_replace(' ', '', $description);
-                $description = mb_substr($description, 0, 80);
                 $comment = $this->cleanValue($rowData[1]);
                 $comment = str_replace(' ', '', $comment);
 
@@ -291,14 +290,19 @@ class StatementImportService
             if ($isNotEmptyAdditionInfo) {
                 $cleanDescription = str_replace(' ', '', $description);
                 $cleanDescription = mb_substr($cleanDescription, 0, 80);
-                if (array_key_exists($cleanDescription, $additionInfo)) {
-                    $category = $additionInfo[$cleanDescription]['category'] ?? '';
 
-                    if (empty($object)) {
-                        $object = $additionInfo[$cleanDescription]['object'];
-                    }
-                    if (empty($code)) {
-                        $code = $additionInfo[$cleanDescription]['code'];
+                foreach ($additionInfo as $key => $value) {
+                    if (str_contains($key, $cleanDescription)) {
+                        $category = $additionInfo[$cleanDescription]['category'] ?? '';
+
+                        if (empty($object)) {
+                            $object = $additionInfo[$cleanDescription]['object'];
+                        }
+                        if (empty($code)) {
+                            $code = $additionInfo[$cleanDescription]['code'];
+                        }
+
+                        break;
                     }
                 }
             }
