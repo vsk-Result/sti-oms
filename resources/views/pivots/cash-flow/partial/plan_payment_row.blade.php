@@ -51,7 +51,7 @@
                     ->first();
         @endphp
 
-        <td class="text-right cf-comment"
+        <td class="text-right {{ auth()->user()->can('index cash-flow-plan-payments') ? '' : 'cf-comment' }}"
             data-comment="{{ $comment->text ?? '' }}"
             data-comment-id="{{ $comment->id ?? null }}"
             data-type-id="{{ \App\Models\CashFlow\Comment::TYPE_PAYMENT }}"
