@@ -293,13 +293,13 @@ class StatementImportService
 
                 foreach ($additionInfo as $key => $value) {
                     if (str_contains($key, $cleanDescription)) {
-                        $category = $additionInfo[$cleanDescription]['category'] ?? '';
+                        $category = $value['category'] ?? '';
 
                         if (empty($object)) {
-                            $object = $additionInfo[$cleanDescription]['object'];
+                            $object = $value['object'];
                         }
                         if (empty($code)) {
-                            $code = $additionInfo[$cleanDescription]['code'];
+                            $code = $value['code'];
                         }
 
                         break;
