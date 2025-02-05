@@ -83,6 +83,22 @@ class BaseImport
         return $this->getAutoPath(false);
     }
 
+    protected function prepareAmount($amount)
+    {
+        $result = $amount;
+
+        if (empty($result)) {
+            $result = 0;
+        }
+
+        if (is_string($result)) {
+            $result = str_replace(',', '.', $result);
+            $result = (float) str_replace(' ', '', $result);
+        }
+
+        return $result;
+    }
+
     public function import(): array
     {
         return [

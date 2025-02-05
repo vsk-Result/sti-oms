@@ -9,6 +9,11 @@ use Carbon\Carbon;
 class PivotObjectDebtService
 {
     const EXPIRED_UPLOAD_DEBTS_DAYS = 3;
+    const SOURCES_TO_CHECK_EXPIRED = [
+        PivotObjectDebt::DEBT_SOURCE_CONTRACTOR_1C,
+        PivotObjectDebt::DEBT_SOURCE_PROVIDER_1C,
+        PivotObjectDebt::DEBT_SOURCE_SERVICE_1C,
+    ];
 
     public function getPivotDebts(int $objectId, int $debtType, ?array $options = []): array
     {
@@ -43,7 +48,7 @@ class PivotObjectDebtService
                 continue;
             }
 
-            if (now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
+            if (in_array($source, self::SOURCES_TO_CHECK_EXPIRED) && now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
                 continue;
             }
 
@@ -52,6 +57,25 @@ class PivotObjectDebtService
                 'uploaded_date' => Carbon::parse($pivot->date)->format('d.m.Y H:i'),
                 'filepath' => $pivot->filepath,
             ];
+
+            $details = json_decode($pivot->details, true) ?? [];
+
+            if (count($details) > 0 && in_array($source, PivotObjectDebt::getManualSources())) {
+                $info['total'] = [
+                    'amount' => 0,
+                    'amount_without_nds' => 0,
+                    'amount_fix' => 0,
+                    'amount_float' => 0,
+                    'unwork_avans' => 0,
+                    'guarantee' => 0,
+                    'guarantee_deadline' => 0,
+                    'avans' => 0,
+                    'balance_contract' => 0,
+                    'total_amount' => 0,
+                    'total_amount_without_nds' => 0,
+                ];
+                $info['organizations'] = [];
+            }
 
             $info['total']['amount'] += $pivot->amount;
             $info['total']['amount_without_nds'] += $pivot->amount_without_nds;
@@ -62,8 +86,6 @@ class PivotObjectDebtService
             $info['total']['guarantee'] += $pivot->guarantee;
             $info['total']['guarantee_deadline'] += $pivot->guarantee_deadline;
             $info['total']['balance_contract'] += $pivot->balance_contract;
-
-            $details = json_decode($pivot->details, true) ?? [];
 
             foreach ($details as $organizationData) {
                 if (! isset($info['organizations'][$organizationData['organization_name']])) {

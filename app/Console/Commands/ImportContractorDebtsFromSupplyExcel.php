@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Console\HandledCommand;
+use App\Models\PivotObjectDebt;
+use App\Services\DebtImport\DebtImportService;
+use App\Services\DebtImport\Imports\ContractorImportFromSupply;
+use App\Services\PivotObjectDebtService;
+
+class ImportContractorDebtsFromSupplyExcel extends HandledCommand
+{
+    protected $signature = 'oms:import-contractor-debts-from-supply-excel';
+
+    protected $description = 'Загружает долги по подрядчикам из Excel (из таблицы Богаевой)';
+
+    protected string $period = 'Вручную';
+
+    public function __construct(
+        private DebtImportService $debtImportService,
+        private PivotObjectDebtService $pivotObjectDebtService
+    ) {
+        parent::__construct();
+    }
+
+    public function handle()
+    {
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
+
+        $import = new ContractorImportFromSupply();
+
+        $this->sendInfoMessage('Попытка загрузить файл ' . $import->getFilename());
+
+        try {
+            $data = $this->debtImportService->importDebts($import);
+        } catch (\Exception $e) {
+            $this->sendErrorMessage('Не удалось загрузить файл для импорта долгов по подрядчикам "' . $import->getFilename() . '"');
+            $this->sendErrorMessage($e->getMessage());
+            $this->endProcess();
+            return 0;
+        }
+
+        if (! empty($data['errors'])) {
+            $this->sendErrorMessage('Не удалось загрузить файл для импорта долгов по подрядчикам "' . $import->getFilename() . '"');
+            foreach ($data['errors'] as $error) {
+                $this->sendErrorMessage($error);
+            }
+            $this->endProcess();
+            return 0;
+        }
+
+        $this->sendInfoMessage('Файл "' . $import->getFilename() . '" успешно загружен');
+
+        $this->sendInfoMessage('Обновление сводных данных по долгам подрядчикам');
+
+        try {
+            $this->pivotObjectDebtService->updatePivotDebtInfo(
+                $data['data'],
+                PivotObjectDebt::DEBT_TYPE_CONTRACTOR,
+                PivotObjectDebt::DEBT_SOURCE_CONTRACTOR_SUPPLY,
+                $import->getSource(),
+            );
+        } catch (\Exception $e) {
+            $this->sendErrorMessage('Не удалось обновить сводные данные долгов по подрядчикам');
+            $this->sendErrorMessage($e->getMessage());
+            $this->endProcess();
+            return 0;
+        }
+
+        $this->sendInfoMessage('Сводные данные успешно обновлены');
+
+        $this->endProcess();
+
+        return 0;
+    }
+}

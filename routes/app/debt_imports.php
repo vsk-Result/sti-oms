@@ -2,9 +2,13 @@
 
 use App\Http\Controllers\DebtImport\ImportController;
 use App\Http\Controllers\DebtImport\ImportManualController;
+use App\Http\Controllers\DebtImport\ImportManualReplaceController;
 
 // Загрузка подрядчиков из долгов объекта
 Route::post('debt-imports/manual', [ImportManualController::class, 'store'])->name('debt_imports.manual.store');
+
+// Загрузка долгов вручную
+Route::post('debt-imports/manual-replace', [ImportManualReplaceController::class, 'store'])->name('debt_imports.manual_replace.store');
 
 // Загрузка долгов
 

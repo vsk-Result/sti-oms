@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Imports\DebtImport;
+
+use App\Imports\Sheets\SheetForArray;
+use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+
+class ManualReplaceImport implements WithMultipleSheets, SkipsUnknownSheets
+{
+    public function sheets(): array
+    {
+        return [
+            'Поставщикам' => new SheetForArray(),
+            'Подрядчикам' => new SheetForArray(),
+            'За услуги' => new SheetForArray(),
+        ];
+    }
+
+    public function onUnknownSheet($sheetName) {}
+}

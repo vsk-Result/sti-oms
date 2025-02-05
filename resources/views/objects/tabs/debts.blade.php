@@ -4,12 +4,22 @@
 
 @section('object-tab-content')
     @include('objects.modals.debt_upload_manual')
+    @include('objects.modals.debt_upload_replace_manual')
     @include('objects.modals.debt_import_details')
 
     <div class="card border-0">
         <div class="card-header border-0 justify-content-end align-items-center p-0">
             <div class="card-toolbar">
                 <div class="d-flex justify-content-end align-items-center" data-kt-user-table-toolbar="base">
+                    <a
+                            class="btn btn-light-primary me-3"
+                            href="javascript:void(0);"
+                            data-bs-toggle="modal"
+                            data-bs-target="#debtsManualReplaceModal"
+                    >
+                        Обновить вручную
+                    </a>
+
                     <form action="{{ route('objects.debts.exports.store', $object) }}" method="POST" class="hidden me-3">
                         @csrf
                         <a
