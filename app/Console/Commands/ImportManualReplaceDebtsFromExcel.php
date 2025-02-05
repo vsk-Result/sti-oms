@@ -27,11 +27,11 @@ class ImportManualReplaceDebtsFromExcel extends HandledCommand
 
     public function handle()
     {
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $files = Storage::files('public/objects-debts-manuals');
 
