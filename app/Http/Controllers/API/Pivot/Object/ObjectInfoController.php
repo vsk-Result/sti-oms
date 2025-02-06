@@ -145,6 +145,7 @@ class ObjectInfoController extends Controller
         $info['total']['tax_debts_prib'] = -$taxPlans->whereIn('name', ['Налог на прибыль аванс', 'Налог на прибыль'])->sum('amount');
         $info['total']['tax_debts_ndfl'] = -$taxPlans->where('name', 'НДФЛ')->sum('amount');
         $info['total']['tax_debts_transport'] = -$taxPlans->where('name', 'Транспортный налог')->sum('amount');
+        $info['total']['tax_debts_penis'] = -$taxPlans->where('name', 'Пени')->sum('amount');
 
         $info['total']['total_debts'] += $info['total']['tax_debts'];
 
