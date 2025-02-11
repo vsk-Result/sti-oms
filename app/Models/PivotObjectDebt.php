@@ -24,6 +24,7 @@ class PivotObjectDebt extends Model
     const DEBT_SOURCE_CONTRACTOR_MANAGER = 1;
     const DEBT_SOURCE_CONTRACTOR_SUPPLY = 4;
     const DEBT_SOURCE_CONTRACTOR_MANUAL = 6;
+    const DEBT_SOURCE_CONTRACTOR_CLOSED_OBJECT = 9;
     const DEBT_SOURCE_PROVIDER_1C = 2;
     const DEBT_SOURCE_PROVIDER_SUPPLY = 5;
     const DEBT_SOURCE_PROVIDER_MANUAL = 7;
@@ -38,6 +39,7 @@ class PivotObjectDebt extends Model
                 self::DEBT_SOURCE_CONTRACTOR_MANAGER,
                 self::DEBT_SOURCE_CONTRACTOR_SUPPLY,
                 self::DEBT_SOURCE_CONTRACTOR_MANUAL,
+                self::DEBT_SOURCE_CONTRACTOR_CLOSED_OBJECT,
             ],
             self::DEBT_TYPE_PROVIDER => [
                 self::DEBT_SOURCE_PROVIDER_1C,
@@ -58,6 +60,7 @@ class PivotObjectDebt extends Model
             self::DEBT_SOURCE_CONTRACTOR_MANAGER => 'Из таблицы финансового менеджера',
             self::DEBT_SOURCE_CONTRACTOR_SUPPLY => 'Из Excel таблицы Богаевой',
             self::DEBT_SOURCE_CONTRACTOR_MANUAL => 'Из Excel таблицы ручного обновления',
+            self::DEBT_SOURCE_CONTRACTOR_CLOSED_OBJECT => 'Из Excel таблицы закрытых объектов',
             self::DEBT_SOURCE_PROVIDER_1C => 'Из Excel таблицы 1С',
             self::DEBT_SOURCE_PROVIDER_SUPPLY => 'Из Excel таблицы Богаевой',
             self::DEBT_SOURCE_PROVIDER_MANUAL => 'Из Excel таблицы ручного обновления',

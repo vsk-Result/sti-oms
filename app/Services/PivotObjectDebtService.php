@@ -163,8 +163,8 @@ class PivotObjectDebtService
         $pivot->update([
             'date' => now(),
             'filepath' => $filepath,
-            'amount' => $data['total_amount'],
-            'amount_without_nds' => $data['total_amount_without_nds'],
+            'amount' => $data['total_amount'] ?? 0,
+            'amount_without_nds' => $data['total_amount_without_nds'] ?? 0,
             'amount_fix' => $data['total_amount_fix'] ?? 0,
             'amount_float' => $data['total_amount_float'] ?? 0,
             'avans' => $data['total_avans'] ?? 0,
