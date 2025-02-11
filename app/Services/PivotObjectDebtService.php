@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class PivotObjectDebtService
 {
-    const EXPIRED_UPLOAD_DEBTS_DAYS = 3;
+    const EXPIRED_UPLOAD_DEBTS_DAYS = 2;
     const SOURCES_TO_CHECK_EXPIRED = [
         PivotObjectDebt::DEBT_SOURCE_CONTRACTOR_1C,
         PivotObjectDebt::DEBT_SOURCE_PROVIDER_1C,

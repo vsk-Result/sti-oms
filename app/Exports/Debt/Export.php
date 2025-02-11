@@ -2,7 +2,9 @@
 
 namespace App\Exports\Debt;
 
-use App\Exports\Debt\Sheets\PivotSheet;
+use App\Exports\Debt\Sheets\ContractorSheet;
+use App\Exports\Debt\Sheets\ProviderSheet;
+use App\Exports\Debt\Sheets\ServiceSheet;
 use App\Models\Object\BObject;
 use App\Services\PivotObjectDebtService;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
@@ -21,7 +23,9 @@ class Export implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            new PivotSheet($this->object, $this->pivotObjectDebtService),
+            new ContractorSheet($this->object, $this->pivotObjectDebtService),
+            new ProviderSheet($this->object, $this->pivotObjectDebtService),
+            new ServiceSheet($this->object, $this->pivotObjectDebtService),
         ];
     }
 }
