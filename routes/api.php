@@ -23,6 +23,8 @@ use App\Http\Controllers\API\Finance\FinanceReportExportController;
 use App\Http\Controllers\API\Pivot\TaxPlan\TaxPlanExportController;
 use App\Http\Controllers\API\Gromisoft\Employees\EmployeeController;
 use App\Http\Controllers\API\Finance\GeneralReportController;
+use App\Http\Controllers\API\Pivot\CashFlow\CashFlowController;
+use App\Http\Controllers\API\Pivot\CashFlow\CashFlowExportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CashCheck\CashCheckController;
 
@@ -50,6 +52,9 @@ Route::get('pivots/banks', [BankController::class, 'index']);
 Route::get('pivots/objects/info', [ObjectInfoController::class, 'index']);
 
 Route::get('pivots/objects/pivot', [PivotController::class, 'index']);
+
+Route::get('pivots/cash-flow', [CashFlowController::class, 'index']);
+Route::get('pivots/cash-flow/export', [CashFlowExportController::class, 'index']);
 
 Route::get('pivots/workers-salary', [WorkerSalaryController::class, 'index']);
 

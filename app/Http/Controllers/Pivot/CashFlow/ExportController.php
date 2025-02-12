@@ -4,10 +4,6 @@ namespace App\Http\Controllers\Pivot\CashFlow;
 
 use App\Exports\Pivot\CashFlow\Export;
 use App\Http\Controllers\Controller;
-use App\Models\CashFlow\PlanPayment;
-use App\Models\CashFlow\PlanPaymentEntry;
-use App\Models\Status;
-use App\Models\TaxPlanItem;
 use App\Services\ReceivePlanService;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -55,7 +51,6 @@ class ExportController extends Controller
 //                }
 //            }
 //        }
-
         return Excel::download(new Export($this->receivePlanService, $request->all()), 'Отчет CASH FLOW.xlsx');
     }
 }

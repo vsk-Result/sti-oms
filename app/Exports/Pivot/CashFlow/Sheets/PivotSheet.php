@@ -398,7 +398,7 @@ class PivotSheet implements
         }
 
         $row++;
-        $sheet->setCellValue('A' . $row, 'Сальдо (без учета целевых авансов) по неделям:');
+        $sheet->setCellValue('A' . $row, 'Накопительное Сальдо (без учета целевых авансов) по неделям:');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
         $prev = 0;
