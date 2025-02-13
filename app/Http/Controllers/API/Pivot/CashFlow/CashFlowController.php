@@ -69,9 +69,9 @@ class CashFlowController extends Controller
             $receiveTotal['receives'][0]['total_amount'] += $targetAvansTotal;
             $receiveTotal['receives'][1]['total_amount'] += $otherTotal;
 
-            $receiveTotal['periods'][] += array_merge($period, ['amount' => $amount]);
-            $receiveTotal['receives'][0]['periods'][] += array_merge($period, ['amount' => $targetAvansTotal]);
-            $receiveTotal['receives'][1]['periods'][] += array_merge($period, ['amount' => $otherTotal]);
+            $receiveTotal['periods'][] = array_merge($period, ['amount' => $amount]);
+            $receiveTotal['receives'][0]['periods'][] = array_merge($period, ['amount' => $targetAvansTotal]);
+            $receiveTotal['receives'][1]['periods'][] = array_merge($period, ['amount' => $otherTotal]);
         }
 
         $objectsInfo = [];
