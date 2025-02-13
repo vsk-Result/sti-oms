@@ -43,16 +43,35 @@ class CashFlowController extends Controller
 
         $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
 
-        $total = [
-            'total' => 0,
-            'target_avans_total' => 0,
-            'other_total' => 0,
+        $receiveTotal = [
+            'total_amount' => 0,
+            'periods' => [],
+            'receives' => [
+                [
+                    'name' => 'Целевые авансы',
+                    'total_amount' => 0,
+                    'periods' => []
+                ],
+                [
+                    'name' => 'Прочие поступления',
+                    'total_amount' => 0,
+                    'periods' => []
+                ]
+            ]
         ];
 
         foreach($periods as $period) {
-            $total['total'] += $plans->where('date', $period['start'])->sum('amount');
-            $total['target_avans_total'] += $plans->where('date', $period['start'])->where('reason_id', ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
-            $total['other_total'] += $plans->where('date', $period['start'])->where('reason_id', '!=', ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
+            $amount = $plans->where('date', $period['start'])->sum('amount');
+            $targetAvansTotal = $plans->where('date', $period['start'])->where('reason_id', ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
+            $otherTotal = $plans->where('date', $period['start'])->where('reason_id', '!=', ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
+
+            $receiveTotal['total_amount'] += $amount;
+            $receiveTotal['receives'][0]['total_amount'] += $targetAvansTotal;
+            $receiveTotal['receives'][1]['total_amount'] += $otherTotal;
+
+            $receiveTotal['periods'][] += array_merge($period, ['amount' => $amount]);
+            $receiveTotal['receives'][0]['periods'][] += array_merge($period, ['amount' => $targetAvansTotal]);
+            $receiveTotal['receives'][1]['periods'][] += array_merge($period, ['amount' => $otherTotal]);
         }
 
         $objectsInfo = [];
@@ -337,8 +356,9 @@ class CashFlowController extends Controller
         }
 
         $pivot = [
+            'receive_total' => $receiveTotal,
             'receive' => $objectsInfo,
-            'payment' => $paymentsInfo
+            'payment' => $paymentsInfo,
         ];
 
         return response()->json(['pivot' => $pivot]);
