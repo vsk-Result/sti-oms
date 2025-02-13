@@ -69,9 +69,9 @@ class CashFlowController extends Controller
             $receiveTotal['receives'][0]['total_amount'] += $targetAvansTotal;
             $receiveTotal['receives'][1]['total_amount'] += $otherTotal;
 
-            $receiveTotal['periods'][] = array_merge($period, ['amount' => $amount]);
-            $receiveTotal['receives'][0]['periods'][] = array_merge($period, ['amount' => $targetAvansTotal]);
-            $receiveTotal['receives'][1]['periods'][] = array_merge($period, ['amount' => $otherTotal]);
+            $receiveTotal['periods'][] = array_merge($period, ['amount' => (float) $amount]);
+            $receiveTotal['receives'][0]['periods'][] = array_merge($period, ['amount' => (float) $targetAvansTotal]);
+            $receiveTotal['receives'][1]['periods'][] = array_merge($period, ['amount' => (float) $otherTotal]);
         }
 
         $objectsInfo = [];
@@ -97,7 +97,7 @@ class CashFlowController extends Controller
 
             foreach($periods as $period) {
                 $amount = $plans->where('object_id', $object->id)->where('date', $period['start'])->sum('amount');
-                $objectInfo['periods'][] = array_merge($period, ['amount' => $amount]);
+                $objectInfo['periods'][] = array_merge($period, ['amount' => (float) $amount]);
             }
 
             foreach($reasons as $reasonId => $reason) {
@@ -124,7 +124,7 @@ class CashFlowController extends Controller
 
                     $totalAmount += $amount;
 
-                    $reasonInfo['periods'][] = array_merge($period, ['amount' => $amount]);
+                    $reasonInfo['periods'][] = array_merge($period, ['amount' => (float) $amount]);
                 }
 
                 $reasonInfo['total_amount'] = $totalAmount;
@@ -151,7 +151,7 @@ class CashFlowController extends Controller
 
             $totalAmount += $amount;
 
-            $paymentsTotalInfo['periods'][] = array_merge($period, ['amount' => $amount]);
+            $paymentsTotalInfo['periods'][] = array_merge($period, ['amount' => (float) $amount]);
         }
 
         $paymentsTotalInfo['total_amount'] = $totalAmount;
@@ -174,7 +174,7 @@ class CashFlowController extends Controller
                     if (! isset($planGroupedPaymentAmount[$group->name][$period['id']])) {
                         $planGroupedPaymentAmount[$group->name][$period['id']] = 0;
                     }
-                    $planGroupedPaymentAmount[$group->name][$period['id']] += $amount;
+                    $planGroupedPaymentAmount[$group->name][$period['id']] += (float) $amount;
                 }
             }
         }
@@ -199,7 +199,7 @@ class CashFlowController extends Controller
                 $amount = $planGroupedPaymentAmount[$group->name][$period['id']];
                 $groupTotal += $amount;
 
-                $groupInfo['periods'][] = array_merge($period, ['amount' => $amount]);
+                $groupInfo['periods'][] = array_merge($period, ['amount' => (float) $amount]);
             }
 
             $groupInfo['total_amount'] = $groupTotal;
@@ -214,7 +214,7 @@ class CashFlowController extends Controller
                 $paymentInfo = [
                     'name' => $payment->name,
                     'object_code' => $payment->object->code ?? '',
-                    'total_amount' => $totalAmount,
+                    'total_amount' => (float) $totalAmount,
                     'periods' => []
                 ];
 
@@ -225,7 +225,7 @@ class CashFlowController extends Controller
                         $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                     }
 
-                    $paymentInfo['periods'][] = array_merge($period, ['amount' => $amount]);
+                    $paymentInfo['periods'][] = array_merge($period, ['amount' => (float) $amount]);
                 }
 
                 $groupInfo['payments'][] = $paymentInfo;
@@ -250,7 +250,7 @@ class CashFlowController extends Controller
             $paymentInfo = [
                 'name' => $payment->name,
                 'object_code' => $payment->object->code ?? '',
-                'total_amount' => $totalAmount,
+                'total_amount' => (float) $totalAmount,
                 'periods' => []
             ];
 
@@ -261,7 +261,7 @@ class CashFlowController extends Controller
                     $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
                 }
 
-                $paymentInfo['periods'][] = array_merge($period, ['amount' => $amount]);
+                $paymentInfo['periods'][] = array_merge($period, ['amount' => (float) $amount]);
             }
 
             $paymentsInfo['cf_payments'][] = $paymentInfo;
@@ -287,7 +287,7 @@ class CashFlowController extends Controller
 
                 $totalAmount += $amount;
 
-                $paymentInfo['periods'][] = array_merge($period, ['amount' => $amount]);
+                $paymentInfo['periods'][] = array_merge($period, ['amount' => (float) $amount]);
             }
 
             $paymentInfo['total_amount'] = $totalAmount;
@@ -310,7 +310,7 @@ class CashFlowController extends Controller
 
             $totalAmount += $amount;
 
-            $paymentsInfo['total_weeks']['periods'][] = array_merge($period, ['amount' => $amount]);
+            $paymentsInfo['total_weeks']['periods'][] = array_merge($period, ['amount' => (float) $amount]);
         }
 
         $paymentsInfo['total_weeks']['total_amount'] = $totalAmount;
@@ -331,7 +331,7 @@ class CashFlowController extends Controller
 
             $diff = $otherAmount - $amount;
 
-            $paymentsInfo['balance_weeks']['periods'][] = array_merge($period, ['amount' => $diff]);
+            $paymentsInfo['balance_weeks']['periods'][] = array_merge($period, ['amount' => (float) $diff]);
         }
 
 
@@ -352,7 +352,7 @@ class CashFlowController extends Controller
             $diff = $otherAmount - $amount + $prev;
             $prev = $diff;
 
-            $paymentsInfo['cum_balance_weeks']['periods'][] = array_merge($period, ['amount' => $diff]);
+            $paymentsInfo['cum_balance_weeks']['periods'][] = array_merge($period, ['amount' => (float) $diff]);
         }
 
         $pivot = [
