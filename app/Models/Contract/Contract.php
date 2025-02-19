@@ -136,7 +136,7 @@ class Contract extends Model implements HasMedia, Audit
                     }
                 }
             } else {
-                foreach ($this->children->where('currency', $currency) as $subContract) {
+                foreach ($this->children->where('currency', $currency)->sortByDesc('amount_type_id')->sortBy('name') as $subContract) {
                     $amount = $subContract->isMainAmount()
                         ? $subContract->getSumAmount()
                         : $amount + $subContract->getSumAmount();
@@ -170,7 +170,7 @@ class Contract extends Model implements HasMedia, Audit
                     }
                 }
             } else {
-                foreach ($this->children->where('currency', $currency) as $subContract) {
+                foreach ($this->children->where('currency', $currency)->sortByDesc('amount_type_id')->sortBy('name') as $subContract) {
                     $amount = $subContract->isMainAmount()
                         ? $subContract->amount
                         : $amount + $subContract->amount;
@@ -204,7 +204,7 @@ class Contract extends Model implements HasMedia, Audit
                     }
                 }
             } else {
-                foreach ($this->children->where('currency', $currency) as $subContract) {
+                foreach ($this->children->where('currency', $currency)->sortByDesc('amount_type_id')->sortBy('name') as $subContract) {
                     $amount = $subContract->isMainAmount()
                         ? $subContract->rad_amount
                         : $amount + $subContract->rad_amount;
@@ -238,7 +238,7 @@ class Contract extends Model implements HasMedia, Audit
                     }
                 }
             } else {
-                foreach ($this->children->where('currency', $currency) as $subContract) {
+                foreach ($this->children->where('currency', $currency)->sortByDesc('amount_type_id')->sortBy('name') as $subContract) {
                     $amount = $subContract->isMainAmount()
                         ? $subContract->opste_amount
                         : $amount + $subContract->opste_amount;
