@@ -33,26 +33,23 @@ class ContractorImportFromClosedObject extends BaseImport
 
         $importData = $importData['ГУ закрытые объекты'];
 
-        $object = BObject::where('code', '000')->first();
-
-        $importInfo['data'][$object->id] = [
-            'object_id' => $object->id,
-            'object_name' => $object->name,
-            'total_guarantee' => 0,
-            'organizations' => []
-        ];
-
         unset($importData[0]);
 
+        $notExistObjects = [];
         $objectOrganizationExist = [];
         foreach ($importData as $row) {
             if (empty($row[1])) {
                 continue;
             }
 
+
+            $objectCode = trim($row[0] ?? '');
             $organizationName = trim($row[1] ?? '');
-//            $objectCode = trim($row[0] ?? '');
             $guarantee = 0;
+
+            if (in_array($objectCode, $notExistObjects)) {
+                continue;
+            }
 
             $organization = $this->organizationService->getOrCreateOrganization([
                 'inn' => null,
@@ -60,6 +57,26 @@ class ContractorImportFromClosedObject extends BaseImport
                 'company_id' => null,
                 'kpp' => null
             ]);
+
+            $object = BObject::where('code', $objectCode)->first();
+
+            if (! $object) {
+                $importInfo['errors'][] = 'Объекта "' . $objectCode . '" нет в системе ОМС.';
+                $notExistObjects[] = $objectCode;
+
+                continue;
+            }
+
+            if (! isset($objectOrganizationExist[$object->id])) {
+                $importInfo['data'][$object->id] = [
+                    'object_id' => $object->id,
+                    'object_name' => $object->name,
+                    'total_guarantee' => 0,
+                    'organizations' => []
+                ];
+
+                $objectOrganizationExist[$object->id] = [];
+            }
 
             if (! isset($objectOrganizationExist[$object->id][$organization->id])) {
                 $importInfo['data'][$object->id]['organizations'][$organization->id] = [
