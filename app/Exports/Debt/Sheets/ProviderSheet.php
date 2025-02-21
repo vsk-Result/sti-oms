@@ -61,10 +61,6 @@ class ProviderSheet implements
 
         $row = 2;
         foreach ($providerDebts['organizations'] as $organizationData) {
-            if (! is_valid_amount_in_range($organizationData['total_amount'])) {
-                continue;
-            }
-
             $sheet->setCellValue('A' . $row, $organizationData['organization_name']);
             $sheet->setCellValue('B' . $row, '');
             $sheet->setCellValue('C' . $row, $organizationData['amount_fix']);
