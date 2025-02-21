@@ -66,18 +66,18 @@ class ManualReplaceImport extends BaseImport
 
             $organizationName = $row[0];
             $inn = $row[1];
-            $amountDebt = $this->prepareAmount($row[2] ?? 0);
-            $avans = $this->prepareAmount($row[3] ?? 0);
-            $neotrabotAvans =  $this->prepareAmount($row[4] ?? 0);
-            $guarantee = $this->prepareAmount($row[5] ?? 0);
-            $guaranteeDeadline = $this->prepareAmount($row[6] ?? 0);
+            $amountDebt = -abs($this->prepareAmount($row[2] ?? 0));
+            $avans = -abs($this->prepareAmount($row[3] ?? 0));
+            $neotrabotAvans = -abs($this->prepareAmount($row[4] ?? 0));
+            $guarantee = -abs($this->prepareAmount($row[5] ?? 0));
+            $guaranteeDeadline = -abs($this->prepareAmount($row[6] ?? 0));
             $balanceContract = $this->prepareAmount($row[7] ?? 0);
             $nds = $row[8] ?? '';
 
-            $amountDebtWithoutDNS = -$amountDebt;
+            $amountDebtWithoutDNS = $amountDebt;
             if (! empty($nds)) {
                 if ($nds === 'ндс' || $nds === 'с ндс') {
-                    $amountDebtWithoutDNS = -($amountDebt - ($amountDebt / 6));
+                    $amountDebtWithoutDNS = -(abs($amountDebt) - (abs($amountDebt) / 6));
                 }
             }
 
@@ -104,21 +104,21 @@ class ManualReplaceImport extends BaseImport
                 $objectOrganizationExist[$object->id][$organization->id] = true;
             }
 
-            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['amount'] += -$amountDebt;
+            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['amount'] += $amountDebt;
             $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['amount_without_nds'] += $amountDebtWithoutDNS;
-            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['guarantee'] += -$guarantee;
-            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['guarantee_deadline'] += -$guaranteeDeadline;
-            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['avans'] += -$avans;
+            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['guarantee'] += $guarantee;
+            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['guarantee_deadline'] += $guaranteeDeadline;
+            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['avans'] += $avans;
             $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['unwork_avans'] += $neotrabotAvans;
-            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['balance_contract'] += -$balanceContract;
+            $importInfo['contractor']['data'][$object->id]['organizations'][$organization->id]['balance_contract'] += $balanceContract;
 
-            $importInfo['contractor']['data'][$object->id]['total_amount'] += -$amountDebt;
-            $importInfo['contractor']['data'][$object->id]['total_amount_without_nds'] += -$amountDebtWithoutDNS;
-            $importInfo['contractor']['data'][$object->id]['total_guarantee'] += -$guarantee;
-            $importInfo['contractor']['data'][$object->id]['total_guarantee_deadline'] += -$guaranteeDeadline;
-            $importInfo['contractor']['data'][$object->id]['total_avans'] += -$avans;
+            $importInfo['contractor']['data'][$object->id]['total_amount'] += $amountDebt;
+            $importInfo['contractor']['data'][$object->id]['total_amount_without_nds'] += $amountDebtWithoutDNS;
+            $importInfo['contractor']['data'][$object->id]['total_guarantee'] += $guarantee;
+            $importInfo['contractor']['data'][$object->id]['total_guarantee_deadline'] += $guaranteeDeadline;
+            $importInfo['contractor']['data'][$object->id]['total_avans'] += $avans;
             $importInfo['contractor']['data'][$object->id]['total_unwork_avans'] += $neotrabotAvans;
-            $importInfo['contractor']['data'][$object->id]['total_balance_contract'] += -$balanceContract;
+            $importInfo['contractor']['data'][$object->id]['total_balance_contract'] += $balanceContract;
         }
 
         $providerImportData = $importData['Поставщикам'];
@@ -143,14 +143,14 @@ class ManualReplaceImport extends BaseImport
 
             $organizationName = $row[0];
             $inn = $row[1];
-            $amountDebt = $this->prepareAmount($row[2] ?? 0);
+            $amountDebt = -abs($this->prepareAmount($row[2] ?? 0));
             $nds = $row[3] ?? '';
             $amountType = $row[4] ?? '';
 
-            $amountDebtWithoutDNS = -$amountDebt;
+            $amountDebtWithoutDNS = $amountDebt;
             if (! empty($nds)) {
                 if ($nds === 'ндс' || $nds === 'с ндс') {
-                    $amountDebtWithoutDNS = -($amountDebt - ($amountDebt / 6));
+                    $amountDebtWithoutDNS = -(abs($amountDebt) - (abs($amountDebt) / 6));
                 }
             }
 
@@ -174,19 +174,19 @@ class ManualReplaceImport extends BaseImport
                 $objectOrganizationExist[$object->id][$organization->id] = true;
             }
 
-            $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount'] += -$amountDebt;
-            $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount_without_nds'] += -$amountDebtWithoutDNS;
+            $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount'] += $amountDebt;
+            $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount_without_nds'] += $amountDebtWithoutDNS;
 
             if (str_contains(mb_strtolower($amountType), 'фикс')) {
-                $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount_fix'] += -$amountDebt;
-                $importInfo['provider']['data'][$object->id]['total_amount_fix'] += -$amountDebt;
+                $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount_fix'] += $amountDebt;
+                $importInfo['provider']['data'][$object->id]['total_amount_fix'] += $amountDebt;
             } else {
-                $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount_float'] += -$amountDebt;
-                $importInfo['provider']['data'][$object->id]['total_amount_float'] += -$amountDebt;
+                $importInfo['provider']['data'][$object->id]['organizations'][$organization->id]['amount_float'] += $amountDebt;
+                $importInfo['provider']['data'][$object->id]['total_amount_float'] += $amountDebt;
             }
 
-            $importInfo['provider']['data'][$object->id]['total_amount'] += -$amountDebt;
-            $importInfo['provider']['data'][$object->id]['total_amount_without_nds'] += -$amountDebtWithoutDNS;
+            $importInfo['provider']['data'][$object->id]['total_amount'] += $amountDebt;
+            $importInfo['provider']['data'][$object->id]['total_amount_without_nds'] += $amountDebtWithoutDNS;
         }
 
         $serviceImportData = $importData['За услуги'];
@@ -209,13 +209,13 @@ class ManualReplaceImport extends BaseImport
 
             $organizationName = $row[0];
             $inn = $row[1];
-            $amountDebt = $this->prepareAmount($row[2] ?? 0);
+            $amountDebt = -abs($this->prepareAmount($row[2] ?? 0));
             $nds = $row[3] ?? '';
 
-            $amountDebtWithoutDNS = -$amountDebt;
+            $amountDebtWithoutDNS = $amountDebt;
             if (! empty($nds)) {
                 if ($nds === 'ндс' || $nds === 'с ндс') {
-                    $amountDebtWithoutDNS = -($amountDebt - ($amountDebt / 6));
+                    $amountDebtWithoutDNS = -(abs($amountDebt) - (abs($amountDebt) / 6));
                 }
             }
 
@@ -237,11 +237,11 @@ class ManualReplaceImport extends BaseImport
                 $objectOrganizationExist[$object->id][$organization->id] = true;
             }
 
-            $importInfo['service']['data'][$object->id]['organizations'][$organization->id]['amount'] += -$amountDebt;
-            $importInfo['service']['data'][$object->id]['organizations'][$organization->id]['amount_without_nds'] += -$amountDebtWithoutDNS;
+            $importInfo['service']['data'][$object->id]['organizations'][$organization->id]['amount'] += $amountDebt;
+            $importInfo['service']['data'][$object->id]['organizations'][$organization->id]['amount_without_nds'] += $amountDebtWithoutDNS;
 
-            $importInfo['service']['data'][$object->id]['total_amount'] += -$amountDebt;
-            $importInfo['service']['data'][$object->id]['total_amount_without_nds'] += -$amountDebtWithoutDNS;
+            $importInfo['service']['data'][$object->id]['total_amount'] += $amountDebt;
+            $importInfo['service']['data'][$object->id]['total_amount_without_nds'] += $amountDebtWithoutDNS;
         }
 
         return $importInfo;
