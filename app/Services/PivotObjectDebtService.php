@@ -47,7 +47,14 @@ class PivotObjectDebtService
             $objectIds = BObject::where('status_id', Status::STATUS_BLOCKED)->pluck('id')->toArray();
         }
 
+        $needSkip = false;
+
         foreach (PivotObjectDebt::getSourcesByType($debtType) as $source) {
+
+            if ($needSkip) {
+                continue;
+            }
+
             foreach ($objectIds as $objId) {
                 $pivot = PivotObjectDebt::where('debt_type_id', $debtType)
                     ->where('object_id', $objId)
@@ -72,6 +79,8 @@ class PivotObjectDebtService
                 $details = json_decode($pivot->details, true) ?? [];
 
                 if (count($details) > 0 && in_array($source, PivotObjectDebt::getManualSources())) {
+                    $needSkip = true;
+
                     $info['total'] = [
                         'amount' => 0,
                         'amount_without_nds' => 0,
