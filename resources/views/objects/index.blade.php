@@ -54,6 +54,7 @@
 
 @push('scripts')
     <script>
+        let xhr;
         const $filterSearch = $('#object-search');
         const $filterStatus = $('#object-status');
         const $objectsContainer = $('#objects-container');
@@ -83,6 +84,10 @@
         });
 
         function filterObjects() {
+            if (xhr) {
+                xhr.abort();
+            }
+
             loadObjects();
         }
 
@@ -90,7 +95,7 @@
             $objectsContainer.html('');
             page = page || '';
             objectsContainerblockUI.block();
-            mainApp.sendAJAX(
+            xhr = mainApp.sendAJAX(
                 $objectsContainer.data('objects-index-url') + '?q=' + $filterSearch.val() + '&status=' + $filterStatus.val() + '&page=' + page,
                 'GET',
                 {},

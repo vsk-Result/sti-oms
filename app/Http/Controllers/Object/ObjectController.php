@@ -56,7 +56,6 @@ class ObjectController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Объекты успешно получены',
             'objects_view' => view('objects.parts._objects', compact('objects'))->render()
         ]);
     }

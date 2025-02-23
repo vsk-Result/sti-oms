@@ -185,7 +185,7 @@ const mainApp = function() {
         errorCallback = errorCallback || null;
         alwaysCallback = alwaysCallback || null;
 
-        $.ajax({
+        return $.ajax({
             url: url,
             type: type,
             data: data,
@@ -206,12 +206,17 @@ const mainApp = function() {
             }
         })
         .fail(function(xhr) {
+            if (statusText === 'abort') {
+                return;
+            }
+
             if (xhr.status === 419) {
                 toastr.error('Ошибка сессии. Автоматическая перезагрузка страницы через 1 сек.');
                 setTimeout(() => {
                     window.location.reload(false);
                 }, 1000);
             } else {
+                console.log('xhr', xhr);
                 toastr.error('Неизвестная ошибка. Обновите страницу и попробуйте снова.');
             }
         })
@@ -519,7 +524,7 @@ const mainApp = function() {
             }
         },
         sendAJAX: function (url, type, data, successCallback, errorCallback, alwaysCallback) {
-            initSendAJAX(url, type, data, successCallback, errorCallback, alwaysCallback);
+            return initSendAJAX(url, type, data, successCallback, errorCallback, alwaysCallback);
         },
         initFreezeTable: function(columnNum, freezeHead, freezeColumn) {
             initFreezeTable(columnNum, freezeHead, freezeColumn);
