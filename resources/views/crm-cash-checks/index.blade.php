@@ -59,8 +59,12 @@
                                                                             @if ($manager->isChecked())
                                                                                 <a href="{{ route('crm_cash_check.manager.uncheck', $manager) }}" class="fw-boldest text-danger text-decoration-underline">Отменить проверку</a>
                                                                             @else
-                                                                                <a href="{{ route('crm_cash_check.manager.revision', $manager) }}" class="fw-boldest text-warning text-decoration-underline mb-2">Отправлена на доработку</a>
-                                                                                <a href="{{ route('crm_cash_check.manager.check', $manager) }}" class="fw-boldest text-success text-decoration-underline">Подтвердить проверку</a>
+                                                                                @if ($manager->isRevision())
+                                                                                    <a href="{{ route('crm_cash_check.manager.check', $manager) }}" class="fw-boldest text-success text-decoration-underline">Подтвердить проверку</a>
+                                                                                @else
+                                                                                    <a href="{{ route('crm_cash_check.manager.revision', $manager) }}" class="fw-boldest text-warning text-decoration-underline mb-2">Отправлена на доработку</a>
+                                                                                    <a href="{{ route('crm_cash_check.manager.check', $manager) }}" class="fw-boldest text-success text-decoration-underline">Подтвердить проверку</a>
+                                                                                @endif
                                                                             @endif
                                                                         @endif
                                                                     @else
