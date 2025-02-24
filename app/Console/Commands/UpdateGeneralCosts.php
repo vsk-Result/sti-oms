@@ -138,6 +138,7 @@ class UpdateGeneralCosts extends HandledCommand
                     $generalInfo[$year][$index] = [
                         'start_date' => $period['start_date'],
                         'end_date' => $period['end_date'],
+                        'cuming_amount' => 0,
                         'general_amount' => $generalAmount,
                         'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
                     ];
