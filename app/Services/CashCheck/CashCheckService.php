@@ -80,6 +80,15 @@ class CashCheckService
         $this->updateCashCheckStatus($manager->check);
     }
 
+    public function managerRevision(Manager $manager): void
+    {
+        $manager->update([
+            'status_id' => Manager::STATUS_REVISION
+        ]);
+
+        $this->updateCashCheckStatus($manager->check);
+    }
+
     public function updateCashCheckStatus(CashCheck $check): void
     {
         $checkCount = 0;

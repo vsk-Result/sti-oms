@@ -20,6 +20,7 @@ class Manager extends Model implements Audit
 
     const STATUS_UNCKECKED = 0;
     const STATUS_CHECKED = 1;
+    const STATUS_REVISION = 2;
 
     public function check(): BelongsTo
     {
@@ -35,13 +36,19 @@ class Manager extends Model implements Audit
     {
         return [
             self::STATUS_UNCKECKED => 'Не проверен',
-            self::STATUS_CHECKED => 'Проверен'
+            self::STATUS_CHECKED => 'Проверен',
+            self::STATUS_REVISION => 'На доработке',
         ];
     }
 
     public function isChecked(): bool
     {
         return $this->status_id === self::STATUS_CHECKED;
+    }
+
+    public function isRevision(): bool
+    {
+        return $this->status_id === self::STATUS_REVISION;
     }
 
     public function isUser(): bool

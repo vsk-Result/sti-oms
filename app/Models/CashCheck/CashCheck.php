@@ -69,7 +69,7 @@ class CashCheck extends Model implements Audit
         return [
             self::STATUS_UNCKECKED => 'Не проверен',
             self::STATUS_CHECKING => 'Проверяется',
-            self::STATUS_CHECKED => 'Проверен'
+            self::STATUS_CHECKED => 'Проверен',
         ];
     }
 
@@ -87,7 +87,7 @@ class CashCheck extends Model implements Audit
         return [
             self::STATUS_UNCKECKED => 'danger',
             self::STATUS_CHECKING => 'warning',
-            self::STATUS_CHECKED => 'success'
+            self::STATUS_CHECKED => 'success',
         ];
     }
 
