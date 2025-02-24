@@ -124,6 +124,7 @@
                         $generalInfo[$year][$index] = [
                             'start_date' => $period['start_date'],
                             'end_date' => $period['end_date'],
+                            'cuming_amount' => 0,
                             'general_amount' => $generalAmount,
                             'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
                         ];
@@ -140,6 +141,8 @@
 
                             $groupedByYearsInfo[$year][$objectId]['cuming_amount'] += $i['cuming_amount'];
                             $groupedByYearsInfo[$year][$objectId]['general_amount'] += $i['general_amount'];
+
+                            $generalInfo[$year][$index]['cuming_amount'] += $i['cuming_amount'];
                         }
 
                         foreach ($generalInfo[$year][$index]['info'] as $i) {
@@ -222,6 +225,8 @@
                                 @foreach($infoArray as $info)
                                     <th style="display: none;" class="min-w-125px bt grouped-by-year" data-year="{{ $year }}">
                                         с {{ \Carbon\Carbon::parse($info['start_date'])->format('d.m.Y') }} по {{ \Carbon\Carbon::parse($info['end_date'])->format('d.m.Y') }}
+                                        <br>
+                                        <span class="text-success fs-8">{{ \App\Models\CurrencyExchangeRate::format($info['cuming_amount'], 'RUB') }}</span>
                                     </th>
                                     <th style="display: none;" class="bt percent grouped-by-year" data-year="{{ $year }}"></th>
                                     <th style="display: none;" class="min-w-125px text-danger bt br text-right grouped-by-year" data-year="{{ $year }}">{{ \App\Models\CurrencyExchangeRate::format($info['general_amount'], 'RUB') }}</th>
