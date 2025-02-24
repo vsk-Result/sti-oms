@@ -71,6 +71,10 @@ class ContractorPivotSheet implements
         foreach ($closedObjects as $object) {
             $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR, ['with_sorted_details' => true]);
 
+            if (count($contractorDebts['organizations']) === 0) {
+                continue;
+            }
+
             $totalRow = $row;
             $total = [
                 'amount' => 0,

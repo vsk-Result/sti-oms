@@ -61,6 +61,10 @@ class ServicePivotSheet implements
         foreach ($closedObjects as $object) {
             $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE, ['with_sorted_details' => true]);
 
+            if (count($serviceDebts['organizations']) === 0) {
+                continue;
+            }
+
             $totalRow = $row;
             $total = [
                 'amount' => 0,

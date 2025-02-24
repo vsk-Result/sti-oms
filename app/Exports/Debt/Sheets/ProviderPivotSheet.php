@@ -65,6 +65,10 @@ class ProviderPivotSheet implements
         foreach ($closedObjects as $object) {
             $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER, ['with_sorted_details' => true]);
 
+            if (count($providerDebts['organizations']) === 0) {
+                continue;
+            }
+
             $totalRow = $row;
             $total = [
                 'amount_fix' => 0,

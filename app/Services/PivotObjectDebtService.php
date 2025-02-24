@@ -20,9 +20,142 @@ class PivotObjectDebtService
 
     public function getPivotDebts(int $objectId, int $debtType, ?array $options = []): array
     {
+        $info = [];
+
         $withSortedDetails = $options['with_sorted_details'] ?? false;
 
-        $info = [
+        $closedObjectsId = BObject::where('code', '000')->first()->id;
+        $isClosedObject = $objectId === $closedObjectsId;
+
+        $objectIds = [$objectId];
+        if ($isClosedObject) {
+            $objectIds = BObject::where('status_id', Status::STATUS_BLOCKED)->pluck('id')->toArray();
+        }
+
+        foreach ($objectIds as $objId) {
+            $info[$objId] = [
+                'sources' => [],
+                'total' => [
+                    'amount' => 0,
+                    'amount_without_nds' => 0,
+                    'amount_fix' => 0,
+                    'amount_float' => 0,
+                    'unwork_avans' => 0,
+                    'guarantee' => 0,
+                    'guarantee_deadline' => 0,
+                    'avans' => 0,
+                    'balance_contract' => 0,
+                    'total_amount' => 0,
+                    'total_amount_without_nds' => 0,
+                ],
+                'organizations' => [],
+            ];
+
+            $needSkip = false;
+
+            foreach (PivotObjectDebt::getSourcesByType($debtType) as $source) {
+
+                if ($needSkip) {
+                    continue;
+                }
+
+                $pivot = PivotObjectDebt::where('debt_type_id', $debtType)
+                    ->where('object_id', $objId)
+                    ->where('debt_source_id', $source)
+                    ->latest('date')
+                    ->first();
+
+                if (! $pivot) {
+                    continue;
+                }
+
+                if (in_array($source, self::SOURCES_TO_CHECK_EXPIRED) && now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
+                    continue;
+                }
+
+                if (! $isClosedObject) {
+                    $info[$objId]['sources'][] = [
+                        'source_name' => PivotObjectDebt::getSourceName($source),
+                        'uploaded_date' => Carbon::parse($pivot->date)->format('d.m.Y H:i'),
+                        'filepath' => $pivot->filepath,
+                    ];
+                }
+
+                $details = json_decode($pivot->details, true) ?? [];
+
+                if (count($details) > 0 && in_array($source, PivotObjectDebt::getManualSources())) {
+                    $needSkip = true;
+
+                    $info[$objId]['total'] = [
+                        'amount' => 0,
+                        'amount_without_nds' => 0,
+                        'amount_fix' => 0,
+                        'amount_float' => 0,
+                        'unwork_avans' => 0,
+                        'guarantee' => 0,
+                        'guarantee_deadline' => 0,
+                        'avans' => 0,
+                        'balance_contract' => 0,
+                        'total_amount' => 0,
+                        'total_amount_without_nds' => 0,
+                    ];
+                    $info[$objId]['organizations'] = [];
+                }
+
+                $info[$objId]['total']['amount'] += $pivot->amount;
+                $info[$objId]['total']['amount_without_nds'] += $pivot->amount_without_nds;
+                $info[$objId]['total']['amount_fix'] += $pivot->amount_fix;
+                $info[$objId]['total']['amount_float'] += $pivot->amount_float;
+                $info[$objId]['total']['unwork_avans'] += $pivot->unwork_avans;
+                $info[$objId]['total']['avans'] += $pivot->avans;
+                $info[$objId]['total']['guarantee'] += $pivot->guarantee;
+                $info[$objId]['total']['guarantee_deadline'] += $pivot->guarantee_deadline;
+                $info[$objId]['total']['balance_contract'] += $pivot->balance_contract;
+
+                foreach ($details as $organizationData) {
+                    if (! isset($info[$objId]['organizations'][$organizationData['organization_name']])) {
+                        $info[$objId]['organizations'][$organizationData['organization_name']] = [
+                            'organization_id' => $organizationData['organization_id'],
+                            'organization_name' => $organizationData['organization_name'],
+                            'unwork_avans' => 0,
+                            'balance_contract' => 0,
+                            'guarantee' => 0,
+                            'guarantee_deadline' => 0,
+                            'avans' => 0,
+                            'amount' => 0,
+                            'amount_fix' => 0,
+                            'amount_float' => 0,
+                            'amount_without_nds' => 0,
+                            'total_amount' => 0,
+                            'total_amount_without_nds' => 0,
+                        ];
+                    }
+
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['amount'] += $organizationData['amount'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['amount_fix'] += $organizationData['amount_fix'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['amount_float'] += $organizationData['amount_float'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['amount_without_nds'] += $organizationData['amount_without_nds'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['unwork_avans'] += $organizationData['unwork_avans'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['guarantee'] += $organizationData['guarantee'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['guarantee_deadline'] += $organizationData['guarantee_deadline'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['avans'] += $organizationData['avans'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['balance_contract'] += $organizationData['balance_contract'] ?? 0;
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['total_amount'] += ($organizationData['amount'] ?? 0) + ($organizationData['avans'] ?? 0);
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['total_amount_without_nds'] += ($organizationData['amount_without_nds'] ?? 0) + ($organizationData['avans'] ?? 0);
+                }
+            }
+
+            $info[$objId]['total']['total_amount'] = $info[$objId]['total']['amount'] + $info[$objId]['total']['avans'];
+            $info[$objId]['total']['total_amount_without_nds'] = $info[$objId]['total']['amount_without_nds'] + $info[$objId]['total']['avans'];
+
+            if ($debtType === PivotObjectDebt::DEBT_TYPE_SERVICE) {
+                $this->addAdditionalServiceDebts($objId, $info);
+            }
+
+            $info[$objId]['organizations'] = $this->getClearedDetails($info[$objId]['organizations'], $withSortedDetails);
+        }
+
+        $total = [
             'sources' => [],
             'total' => [
                 'amount' => 0,
@@ -40,121 +173,51 @@ class PivotObjectDebtService
             'organizations' => [],
         ];
 
-        $closedObjectsId = BObject::where('code', '000')->first()->id;
-
-        $objectIds = [$objectId];
-        if ($objectId === $closedObjectsId) {
-            $objectIds = BObject::where('status_id', Status::STATUS_BLOCKED)->pluck('id')->toArray();
-        }
-
-        $needSkip = false;
-
-        foreach (PivotObjectDebt::getSourcesByType($debtType) as $source) {
-
-            if ($needSkip) {
-                continue;
+        foreach ($info as $totalInfo) {
+            foreach ($totalInfo['total'] as $name => $value) {
+                $total['total'][$name] += $value;
             }
 
-            foreach ($objectIds as $objId) {
-                $pivot = PivotObjectDebt::where('debt_type_id', $debtType)
-                    ->where('object_id', $objId)
-                    ->where('debt_source_id', $source)
-                    ->latest('date')
-                    ->first();
+            $total['sources'] = array_merge($total['sources'], $totalInfo['sources']);
 
-                if (! $pivot) {
-                    continue;
-                }
-
-                if (in_array($source, self::SOURCES_TO_CHECK_EXPIRED) && now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
-                    continue;
-                }
-
-                $info['sources'][] = [
-                    'source_name' => PivotObjectDebt::getSourceName($source),
-                    'uploaded_date' => Carbon::parse($pivot->date)->format('d.m.Y H:i'),
-                    'filepath' => $pivot->filepath,
-                ];
-
-                $details = json_decode($pivot->details, true) ?? [];
-
-                if (count($details) > 0 && in_array($source, PivotObjectDebt::getManualSources())) {
-                    $needSkip = true;
-
-                    $info['total'] = [
-                        'amount' => 0,
-                        'amount_without_nds' => 0,
-                        'amount_fix' => 0,
-                        'amount_float' => 0,
+            foreach ($totalInfo['organizations'] as $organizationName => $organizationInfo) {
+                if (! isset($total['organizations'][$organizationName])) {
+                    $total['organizations'][$organizationName] = [
+                        'organization_id' => $organizationInfo['organization_id'],
+                        'organization_name' => $organizationInfo['organization_name'],
                         'unwork_avans' => 0,
+                        'balance_contract' => 0,
                         'guarantee' => 0,
                         'guarantee_deadline' => 0,
                         'avans' => 0,
-                        'balance_contract' => 0,
+                        'amount' => 0,
+                        'amount_fix' => 0,
+                        'amount_float' => 0,
+                        'amount_without_nds' => 0,
                         'total_amount' => 0,
                         'total_amount_without_nds' => 0,
                     ];
-                    $info['organizations'] = [];
                 }
 
-                $info['total']['amount'] += $pivot->amount;
-                $info['total']['amount_without_nds'] += $pivot->amount_without_nds;
-                $info['total']['amount_fix'] += $pivot->amount_fix;
-                $info['total']['amount_float'] += $pivot->amount_float;
-                $info['total']['unwork_avans'] += $pivot->unwork_avans;
-                $info['total']['avans'] += $pivot->avans;
-                $info['total']['guarantee'] += $pivot->guarantee;
-                $info['total']['guarantee_deadline'] += $pivot->guarantee_deadline;
-                $info['total']['balance_contract'] += $pivot->balance_contract;
-
-                foreach ($details as $organizationData) {
-                    if (! isset($info['organizations'][$organizationData['organization_name']])) {
-                        $info['organizations'][$organizationData['organization_name']] = [
-                            'organization_id' => $organizationData['organization_id'],
-                            'organization_name' => $organizationData['organization_name'],
-                            'unwork_avans' => 0,
-                            'balance_contract' => 0,
-                            'guarantee' => 0,
-                            'guarantee_deadline' => 0,
-                            'avans' => 0,
-                            'amount' => 0,
-                            'amount_fix' => 0,
-                            'amount_float' => 0,
-                            'amount_without_nds' => 0,
-                            'total_amount' => 0,
-                            'total_amount_without_nds' => 0,
-                        ];
-                    }
-
-                    $info['organizations'][$organizationData['organization_name']]['amount'] += $organizationData['amount'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['amount_fix'] += $organizationData['amount_fix'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['amount_float'] += $organizationData['amount_float'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['amount_without_nds'] += $organizationData['amount_without_nds'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['unwork_avans'] += $organizationData['unwork_avans'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['guarantee'] += $organizationData['guarantee'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['guarantee_deadline'] += $organizationData['guarantee_deadline'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['avans'] += $organizationData['avans'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['balance_contract'] += $organizationData['balance_contract'] ?? 0;
-                    $info['organizations'][$organizationData['organization_name']]['total_amount'] += ($organizationData['amount'] ?? 0) + ($organizationData['avans'] ?? 0);
-                    $info['organizations'][$organizationData['organization_name']]['total_amount_without_nds'] += ($organizationData['amount_without_nds'] ?? 0) + ($organizationData['avans'] ?? 0);
-                }
+                $total['organizations'][$organizationName]['amount'] += $organizationInfo['amount'] ?? 0;
+                $total['organizations'][$organizationName]['amount_fix'] += $organizationInfo['amount_fix'] ?? 0;
+                $total['organizations'][$organizationName]['amount_float'] += $organizationInfo['amount_float'] ?? 0;
+                $total['organizations'][$organizationName]['amount_without_nds'] += $organizationInfo['amount_without_nds'] ?? 0;
+                $total['organizations'][$organizationName]['unwork_avans'] += $organizationInfo['unwork_avans'] ?? 0;
+                $total['organizations'][$organizationName]['guarantee'] += $organizationInfo['guarantee'] ?? 0;
+                $total['organizations'][$organizationName]['guarantee_deadline'] += $organizationInfo['guarantee_deadline'] ?? 0;
+                $total['organizations'][$organizationName]['avans'] += $organizationInfo['avans'] ?? 0;
+                $total['organizations'][$organizationName]['balance_contract'] += $organizationInfo['balance_contract'] ?? 0;
+                $total['organizations'][$organizationName]['total_amount'] += ($organizationInfo['amount'] ?? 0) + ($organizationInfo['avans'] ?? 0);
+                $total['organizations'][$organizationName]['total_amount_without_nds'] += ($organizationInfo['amount_without_nds'] ?? 0) + ($organizationInfo['avans'] ?? 0);
             }
         }
 
-        $info['total']['total_amount'] = $info['total']['amount'] + $info['total']['avans'];
-        $info['total']['total_amount_without_nds'] = $info['total']['amount_without_nds'] + $info['total']['avans'];
-
-        if ($debtType === PivotObjectDebt::DEBT_TYPE_SERVICE) {
-            $this->addAdditionalServiceDebts($objectId, $info);
-        }
-
-        $info['organizations'] = $this->getClearedDetails($info['organizations'], $withSortedDetails);
-
         if ($withSortedDetails) {
-            $info['organizations'] = $this->getSortedDetails($info['organizations']);
+            $total['organizations'] = $this->getSortedDetails($total['organizations']);
         }
 
-        return $info;
+        return $total;
     }
 
     public function updatePivotDebtInfo(array $data, int $debtType, int $debtSource, string $filepath): void
@@ -223,55 +286,55 @@ class PivotObjectDebtService
         $konsaltingServiceAmount = TaxPlanItem::where('object_id', $objectId)->where('paid', 0)->where('name', 'LIKE', '%консалтинг%')->sum('amount');
 
         if ($komissiyaServiceAmount != 0) {
-            $info['organizations']['Комиссия'] = [
+            $info[$objectId]['organizations']['Комиссия'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия',
                 'amount' => -$komissiyaServiceAmount,
                 'amount_without_nds' => -$komissiyaServiceAmount,
                 'total_amount' => -$komissiyaServiceAmount,
             ];
-            $info['total']['amount'] += -$komissiyaServiceAmount;
-            $info['total']['amount_without_nds'] += -$komissiyaServiceAmount;
-            $info['total']['total_amount'] += -$komissiyaServiceAmount;
+            $info[$objectId]['total']['amount'] += -$komissiyaServiceAmount;
+            $info[$objectId]['total']['amount_without_nds'] += -$komissiyaServiceAmount;
+            $info[$objectId]['total']['total_amount'] += -$komissiyaServiceAmount;
         }
 
         if ($komissiyaBGServiceAmount != 0) {
-            $info['organizations']['Комиссия за БГ'] = [
+            $info[$objectId]['organizations']['Комиссия за БГ'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия за БГ',
                 'amount' => -$komissiyaBGServiceAmount,
                 'amount_without_nds' => -$komissiyaBGServiceAmount,
                 'total_amount' => -$komissiyaBGServiceAmount,
             ];
-            $info['total']['amount'] += -$komissiyaBGServiceAmount;
-            $info['total']['amount_without_nds'] += -$komissiyaBGServiceAmount;
-            $info['total']['total_amount'] += -$komissiyaBGServiceAmount;
+            $info[$objectId]['total']['amount'] += -$komissiyaBGServiceAmount;
+            $info[$objectId]['total']['amount_without_nds'] += -$komissiyaBGServiceAmount;
+            $info[$objectId]['total']['total_amount'] += -$komissiyaBGServiceAmount;
         }
 
         if ($komissiyaBG_GU_ServiceAmount != 0) {
-            $info['organizations']['Комиссия за БГ (г/у)'] = [
+            $info[$objectId]['organizations']['Комиссия за БГ (г/у)'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия за БГ (г/у)',
                 'amount' => -$komissiyaBG_GU_ServiceAmount,
                 'amount_without_nds' => -$komissiyaBG_GU_ServiceAmount,
                 'total_amount' => -$komissiyaBG_GU_ServiceAmount,
             ];
-            $info['total']['amount'] += -$komissiyaBG_GU_ServiceAmount;
-            $info['total']['amount_without_nds'] += -$komissiyaBG_GU_ServiceAmount;
-            $info['total']['total_amount'] += -$komissiyaBG_GU_ServiceAmount;
+            $info[$objectId]['total']['amount'] += -$komissiyaBG_GU_ServiceAmount;
+            $info[$objectId]['total']['amount_without_nds'] += -$komissiyaBG_GU_ServiceAmount;
+            $info[$objectId]['total']['total_amount'] += -$komissiyaBG_GU_ServiceAmount;
         }
 
         if ($konsaltingServiceAmount != 0) {
-            $info['organizations']['Консалтинг'] = [
+            $info[$objectId]['organizations']['Консалтинг'] = [
                 'organization_id' => null,
                 'organization_name' => 'Консалтинг',
                 'amount' => -$konsaltingServiceAmount,
                 'amount_without_nds' => -$konsaltingServiceAmount,
                 'total_amount' => -$konsaltingServiceAmount,
             ];
-            $info['total']['amount'] += -$konsaltingServiceAmount;
-            $info['total']['amount_without_nds'] += -$konsaltingServiceAmount;
-            $info['total']['total_amount'] += -$konsaltingServiceAmount;
+            $info[$objectId]['total']['amount'] += -$konsaltingServiceAmount;
+            $info[$objectId]['total']['amount_without_nds'] += -$konsaltingServiceAmount;
+            $info[$objectId]['total']['total_amount'] += -$konsaltingServiceAmount;
         }
     }
 
