@@ -154,6 +154,8 @@ class UpdateGeneralCosts extends HandledCommand
 
                         $groupedByYearsInfo[$year][$objectId]['cuming_amount'] += $i['cuming_amount'];
                         $groupedByYearsInfo[$year][$objectId]['general_amount'] += $i['general_amount'];
+
+                        $generalInfo[$year][$index]['cuming_amount'] += $i['cuming_amount'];
                     }
 
                     foreach ($generalInfo[$year][$index]['info'] as $i) {
