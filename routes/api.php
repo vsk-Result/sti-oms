@@ -11,6 +11,7 @@ use App\Http\Controllers\API\Pivot\Debt\ExportController as DExportController;
 use App\Http\Controllers\API\Pivot\MoneyMovement\InfoController;
 use App\Http\Controllers\API\Pivot\MoneyMovement\ExportController as MMExportController;
 use App\Http\Controllers\API\Pivot\Object\ObjectInfoController;
+use App\Http\Controllers\API\Pivot\Object\CloseObjectDebtsController;
 use App\Http\Controllers\API\Pivot\Object\PivotController;
 use App\Http\Controllers\API\Pivot\Payment\PaymentController;
 use App\Http\Controllers\API\Pivot\Bank\BankController;
@@ -50,6 +51,7 @@ Route::get('pivots/payments', [PaymentController::class, 'index']);
 Route::get('pivots/banks', [BankController::class, 'index']);
 
 Route::get('pivots/objects/info', [ObjectInfoController::class, 'index']);
+Route::get('pivots/objects/debts-for-close-objects', [CloseObjectDebtsController::class, 'index']);
 
 Route::get('pivots/objects/pivot', [PivotController::class, 'index']);
 
