@@ -24,7 +24,6 @@ class CloseObjectDebtsController extends Controller
         }
 
         $object = BObject::where('code', '000')->first();
-        dd($object);
         if (! $object) {
             abort(404);
             return response()->json([], 404);
