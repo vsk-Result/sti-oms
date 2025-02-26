@@ -28,7 +28,7 @@ class ServiceSheet implements
 
     public function title(): string
     {
-        return 'За услугиs';
+        return 'За услуги';
     }
 
     public function styles(Worksheet $sheet): void
