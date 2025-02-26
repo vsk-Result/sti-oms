@@ -12,6 +12,11 @@ class PivotObjectDebtService
 {
     const EXPIRED_UPLOAD_DEBTS_DAYS = 2;
 
+    const SOURCES_TO_EXCEPT = [
+        PivotObjectDebt::DEBT_SOURCE_PROVIDER_SUPPLY,
+        PivotObjectDebt::DEBT_SOURCE_CONTRACTOR_SUPPLY,
+    ];
+
     const SOURCES_TO_CHECK_EXPIRED = [
         PivotObjectDebt::DEBT_SOURCE_CONTRACTOR_1C,
         PivotObjectDebt::DEBT_SOURCE_PROVIDER_1C,
@@ -54,6 +59,10 @@ class PivotObjectDebtService
             $needSkip = false;
 
             foreach (PivotObjectDebt::getSourcesByType($debtType) as $source) {
+
+                if (in_array($source, self::SOURCES_TO_EXCEPT)) {
+                    continue;
+                }
 
                 if ($needSkip) {
                     continue;
