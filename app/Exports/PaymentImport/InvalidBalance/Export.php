@@ -2,7 +2,7 @@
 
 namespace App\Exports\PaymentImport\InvalidBalance;
 
-use App\Exports\PaymentImport\Sheets\AnalysisSheet;
+use App\Exports\PaymentImport\InvalidBalance\Sheets\AnalysisSheet;
 use App\Models\PaymentImport;
 use App\Services\PaymentImport\Type\StatementImportService;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
