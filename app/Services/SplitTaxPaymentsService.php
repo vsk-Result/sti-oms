@@ -140,7 +140,7 @@ class SplitTaxPaymentsService
             }
 
             $objectCode = empty($info[1]) ? '27.1' : $info[1];
-            $amount = ($info[9] ?? 0) + ($info[10] ?? 0) + ($info[11] ?? 0) + ($info[12] ?? 0) + ($info[13] ?? 0) + ($info[14] ?? 0);
+            $amount = ($info[9] ?? 0) + ($info[10] ?? 0) + ($info[11] ?? 0) + ($info[12] ?? 0) + ($info[13] ?? 0) + ($info[15] ?? 0) + ($info[16] ?? 0) + ($info[17] ?? 0) + ($info[18] ?? 0) + ($info[19] ?? 0) + ($info[20] ?? 0);
 
             if (! isset($result[$objectCode])) {
                 $result[$objectCode] = 0;
