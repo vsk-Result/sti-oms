@@ -227,7 +227,6 @@ class BObject extends Model implements Audit
     public function getWorkSalaryDebt(): float
     {
         $amount = 0;
-        return $amount;
         $details = $this->getWorkSalaryDebtDetails();
 
         foreach ($details as $detail) {
@@ -239,7 +238,6 @@ class BObject extends Model implements Audit
 
     public function getWorkSalaryDebtDetails(): array
     {
-        return [];
         if (isset(self::getCodesWithoutWorktype()[$this->code])) {
             return [];
         }
