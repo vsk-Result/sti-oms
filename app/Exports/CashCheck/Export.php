@@ -62,7 +62,7 @@ class Export implements
         foreach ($this->details as $detail) {
             $sheet->setCellValue('A' . $row, Date::dateTimeToExcel(Carbon::parse($detail['date'])));
             $sheet->setCellValue('B' . $row, $detail['object_code'] . ' - ' . $detail['object_name']);
-            $sheet->setCellValue('C' . $row, $detail['code']);
+            $sheet->setCellValue('C' . $row, $detail['code'] . ' ');
             $sheet->setCellValue('D' . $row, $detail['category']);
             $sheet->setCellValue('E' . $row, $detail['amount']);
             $sheet->setCellValue('F' . $row, $detail['organization']);
