@@ -33,7 +33,7 @@ class OrganizationController extends Controller
 
         $debtService = $this->debtService;
 
-        $pivot = Cache::get('object_debts_pivot', function() use ($debtService) {
+        $pivot = Cache::get('object_debts_pivot_1', function() use ($debtService) {
             return $debtService->getPivot();
         });
 
