@@ -29,7 +29,7 @@ class UpdateObjectOrganizationDebtPivot extends HandledCommand
 
         $debtService = $this->debtService;
 
-        Cache::put('object_debts_pivot', $debtService->getPivot());
+        Cache::put('object_debts_pivot_1', $debtService->getPivot());
 
         $this->sendInfoMessage('Обновление сводной завершено');
 
