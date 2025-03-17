@@ -45,16 +45,20 @@ class OrganizationController extends Controller
                 return response()->json([], 404);
             }
 
-            $result = 0;
+            $result = [
+                'amount' => 0,
+                'guarantee' => 0,
+            ];
             $objects = [];
 
             foreach ($pivot['entries'] as $organizationName => $orgEntries) {
                 if ($organizationName == $request->organization_name) {
-                    foreach ($orgEntries as $objectId => $amount) {
+                    foreach ($orgEntries as $objectId => $amountInfo) {
                         if (isset($request->object_id)) {
                             if ($request->object_id === $objectId) {
-                                $objects[BObject::find($objectId)->name] = $amount;
-                                $result += $amount;
+                                $objects[BObject::find($objectId)->name] = $amountInfo['amount'];
+                                $result['amount'] += $amountInfo['amount'];
+                                $result['guarantee'] += $amountInfo['guarantee'];
 
                                 break;
                             }
@@ -62,8 +66,9 @@ class OrganizationController extends Controller
                             continue;
                         }
 
-                        $objects[BObject::find($objectId)->name] = $amount;
-                        $result += $amount;
+                        $objects[BObject::find($objectId)->name] = $amountInfo['amount'];
+                        $result['amount'] += $amountInfo['amount'];
+                        $result['guarantee'] += $amountInfo['guarantee'];
                     }
 
                     break;
@@ -73,7 +78,7 @@ class OrganizationController extends Controller
             $info = [
                 'name' => $organization->name,
                 'objects' => $objects,
-                'result' => $result
+                'result' => $result,
             ];
 
             return response()->json(compact('info'));

@@ -19,7 +19,7 @@ class DebtService
     {
         $pivot = [
             'entries' => [],
-            'total' => []
+            'total' => [],
         ];
 
         $objects = $id !== null ? BObject::where('id', $id)->get() : BObject::orderByDesc('code')->get();
@@ -46,42 +46,50 @@ class DebtService
 
             foreach ($contractorDebts['organizations'] as $organizationInfo) {
                 if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
-                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = 0;
+                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = [
+                        'amount' => 0,
+                        'guarantee' => 0,
+                    ];
                 }
 
                 if (!array_key_exists($organizationInfo['organization_name'], $organizations)) {
                     $organizations[$organizationInfo['organization_name']] = 0;
                 }
 
-                $pivot['entries'][$organizationInfo['organization_name']][$object->id] += $organizationInfo['total_amount'];
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount'] += $organizationInfo['total_amount'];
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id]['guarantee'] += $organizationInfo['guarantee'];
                 $pivot['total'][$object->id] += $organizationInfo['total_amount'];
                 $organizations[$organizationInfo['organization_name']] += $organizationInfo['total_amount'];
             }
 
             foreach ($providerDebts['organizations'] as $organizationInfo) {
                 if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
-                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = 0;
+                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = [
+                        'amount' => 0,
+                    ];
                 }
 
                 if (!array_key_exists($organizationInfo['organization_name'], $organizations)) {
                     $organizations[$organizationInfo['organization_name']] = 0;
                 }
 
-                $pivot['entries'][$organizationInfo['organization_name']][$object->id] += $organizationInfo['amount'];
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount'] += $organizationInfo['amount'];
                 $pivot['total'][$object->id] += $organizationInfo['amount'];
                 $organizations[$organizationInfo['organization_name']] += $organizationInfo['amount'];
             }
 
             foreach ($serviceDebts['organizations'] as $organizationInfo) {
                 if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
-                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = 0;
+                    $pivot['entries'][$organizationInfo['organization_name']][$object->id] = [
+                        'amount' => 0,
+                    ];
                 }
 
                 if (!array_key_exists($organizationInfo['organization_name'], $organizations)) {
                     $organizations[$organizationInfo['organization_name']] = 0;
                 }
 
-                $pivot['entries'][$organizationInfo['organization_name']][$object->id] += $organizationInfo['amount'];
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount'] += $organizationInfo['amount'];
                 $pivot['total'][$object->id] += $organizationInfo['amount'];
                 $organizations[$organizationInfo['organization_name']] += $organizationInfo['amount'];
             }

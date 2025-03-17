@@ -72,7 +72,7 @@
                                                 <a href="{{ route('objects.debts.index', $object) }}" class="text-danger bb cursor-pointer">{{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organizationName][$object->id] ?? 0, 'RUB', 0, true) }}</a>
                                             @endif
                                         @else
-                                            {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organizationName][$object->id] ?? 0, 'RUB', 0, true) }}
+                                            {{ \App\Models\CurrencyExchangeRate::format($pivot['entries'][$organizationName][$object->id]['amount'] ?? 0, 'RUB', 0, true) }}
                                         @endif
                                     </td>
                                 @endforeach
