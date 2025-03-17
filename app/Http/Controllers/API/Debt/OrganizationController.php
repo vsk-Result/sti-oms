@@ -54,9 +54,11 @@ class OrganizationController extends Controller
             foreach ($pivot['entries'] as $organizationName => $orgEntries) {
                 if ($organizationName == $request->organization_name) {
                     foreach ($orgEntries as $objectId => $amountInfo) {
+                         $objName = BObject::find($objectId)->name;
                         if (isset($request->object_id)) {
                             if ($request->object_id === $objectId) {
-                                $objects[BObject::find($objectId)->name] = $amountInfo['amount'];
+                                $objects[$objName]['amount'] = $amountInfo['amount'] - $amountInfo['guarantee'];
+                                $objects[$objName]['guarantee'] = $amountInfo['guarantee'];
                                 $result['amount'] += $amountInfo['amount'];
                                 $result['guarantee'] += $amountInfo['guarantee'];
 
@@ -66,7 +68,8 @@ class OrganizationController extends Controller
                             continue;
                         }
 
-                        $objects[BObject::find($objectId)->name] = $amountInfo['amount'];
+                        $objects[$objName]['amount'] = $amountInfo['amount'] - $amountInfo['guarantee'];
+                        $objects[$objName]['guarantee'] = $amountInfo['guarantee'];
                         $result['amount'] += $amountInfo['amount'];
                         $result['guarantee'] += $amountInfo['guarantee'];
                     }
