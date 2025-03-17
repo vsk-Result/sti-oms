@@ -75,6 +75,8 @@ class OrganizationController extends Controller
                 }
             }
 
+            $result['amount'] = $result['amount'] - $result['guarantee'];
+
             $info = [
                 'name' => $organization->name,
                 'objects' => $objects,
