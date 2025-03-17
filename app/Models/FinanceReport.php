@@ -16,14 +16,14 @@ class FinanceReport
     public static function getPrognozFields(): array
     {
         return [
-            'Зарплата и налоги для рабочих (11,8%)' => 'prognoz_zp_worker',
-            'Зарплата и налоги для ИТР (6,6%)' => 'prognoz_zp_itr',
+            'Зарплата и налоги для рабочих (12%)' => 'prognoz_zp_worker',
+            'Зарплата и налоги для ИТР (7%)' => 'prognoz_zp_itr',
             'Покупка материала' => 'prognoz_material',
             'Покупка материала (Фиксированная часть контракта)' => 'prognoz_material_fix',
             'Покупка материала (Изменяемая часть контракта)' => 'prognoz_material_float',
             'Оплата подрядчиков' => 'prognoz_podryad',
             'Общие расходы (8,20%)' => 'prognoz_general',
-            'Услуги (5%)' => 'prognoz_service',
+            'Услуги (6%)' => 'prognoz_service',
             'Консалтинг' => 'prognoz_consalting',
             'Консалтинг по завершении работ' => 'prognoz_consalting_after_work',
         ];
@@ -32,14 +32,14 @@ class FinanceReport
     public static function getPercentForField(string $field): float
     {
         return [
-            'prognoz_zp_worker' => 0.118,
-            'prognoz_zp_itr' => 0.066,
+            'prognoz_zp_worker' => 0.12,
+            'prognoz_zp_itr' => 0.07,
             'prognoz_material' => 0,
             'prognoz_material_fix' => 0,
             'prognoz_material_float' => 0,
             'prognoz_podryad' => 0,
             'prognoz_general' => 0.082,
-            'prognoz_service' => 0.05,
+            'prognoz_service' => 0.06,
             'prognoz_consalting' => 0,
             'prognoz_consalting_after_work' => 0,
         ][$field];
