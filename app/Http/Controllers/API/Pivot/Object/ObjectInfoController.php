@@ -133,8 +133,7 @@ class ObjectInfoController extends Controller
             $info['total']['total_debts'] += $totalDebts;
         }
 
-        $taxPlans = TaxPlanItem::where('object_id', 0)
-            ->where('paid', false)
+        $taxPlans = TaxPlanItem::where('paid', false)
             ->where('due_date', '<', Carbon::now())
             ->get();
 
