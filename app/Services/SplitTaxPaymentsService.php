@@ -153,4 +153,28 @@ class SplitTaxPaymentsService
 
         return $result;
     }
+
+    public function prepareSplitInfoNDFL(array $splitInfo): array
+    {
+        $result = [];
+
+        foreach ($splitInfo as $index => $info) {
+            if ($index < 5 || $info[1] === 'Итого:') {
+                continue;
+            }
+
+            $objectCode = $info[1] === '27' ? '27.1' : $info[1];
+            $amount = $info[2];
+
+            if (! isset($result[$objectCode])) {
+                $result[$objectCode] = 0;
+            }
+
+            $result[$objectCode] += $amount;
+        }
+
+        ksort($result);
+
+        return $result;
+    }
 }

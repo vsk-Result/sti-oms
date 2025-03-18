@@ -26,10 +26,16 @@ class TaxSplitController extends Controller
     {
         $splitInfo = Excel::toArray(new TaxSplitImport(), $request->file('file'));
 
+        if ($request->type_id === 'НДФЛ') {
+            $preparedInfo = $this->splitTaxPaymentsService->prepareSplitInfoNDFL($splitInfo['Лист_1']);
+        } else {
+            $preparedInfo = $this->splitTaxPaymentsService->prepareSplitInfo($splitInfo['Лист_1']);
+        }
+
         $splitError = $this->splitTaxPaymentsService->splitPayments(
             $request->get('payment_ids'),
             $request->get('split_date'),
-            $this->splitTaxPaymentsService->prepareSplitInfo($splitInfo['Лист_1']),
+            $preparedInfo,
             $request->file('file')->getClientOriginalName()
         );
 
