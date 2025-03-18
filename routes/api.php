@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Loan\LoanController;
 use App\Http\Controllers\API\Object\AccessController;
 use App\Http\Controllers\API\Object\WorkerSalaryController;
 use App\Http\Controllers\API\Pivot\Act\ActController;
+use App\Http\Controllers\API\Pivot\Act\ActNotPaidController;
 use App\Http\Controllers\API\Pivot\Act\ExportController;
 use App\Http\Controllers\API\Pivot\Debt\DebtController;
 use App\Http\Controllers\API\Pivot\Debt\ExportController as DExportController;
@@ -42,6 +43,7 @@ use App\Http\Controllers\CashCheck\CashCheckController;
 */
 
 Route::get('pivots/acts', [ActController::class, 'index']);
+Route::get('pivots/acts-not-paid', [ActNotPaidController::class, 'index']);
 Route::get('pivots/acts/export', [ExportController::class, 'store']);
 
 Route::get('pivots/debts', [DebtController::class, 'index']);
