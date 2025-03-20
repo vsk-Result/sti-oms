@@ -11,13 +11,13 @@
         <div class="card">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <div class="me-8">
-                        <a href="{{ route('tax_plan.index', ['filter' => 'current']) }}" class="cash-year btn btn-light {{ request()->get('filter') === 'current' ? 'active': '' }}">Текущие за 2024</a>
-                        <a href="{{ route('tax_plan.index', ['filter' => '2025']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2025' ? 'active': '' }}" >Все за 2025</a>
-                        <a href="{{ route('tax_plan.index', ['filter' => '2024']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2024' ? 'active': '' }}" >Все за 2024</a>
-                        <a href="{{ route('tax_plan.index', ['filter' => '2023']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2023' ? 'active': '' }}">2023</a>
-                        <a href="{{ route('tax_plan.index', ['filter' => 'all']) }}" class="cash-year btn btn-light {{ request()->get('filter') === 'all' ? 'active': '' }}">Все</a>
-                    </div>
+{{--                    <div class="me-8">--}}
+{{--                        <a href="{{ route('tax_plan.index', ['filter' => 'current']) }}" class="cash-year btn btn-light {{ request()->get('filter') === 'current' ? 'active': '' }}">Текущие за 2024</a>--}}
+{{--                        <a href="{{ route('tax_plan.index', ['filter' => '2025']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2025' ? 'active': '' }}" >Все за 2025</a>--}}
+{{--                        <a href="{{ route('tax_plan.index', ['filter' => '2024']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2024' ? 'active': '' }}" >Все за 2024</a>--}}
+{{--                        <a href="{{ route('tax_plan.index', ['filter' => '2023']) }}" class="cash-year btn btn-light {{ request()->get('filter') === '2023' ? 'active': '' }}">2023</a>--}}
+{{--                        <a href="{{ route('tax_plan.index', ['filter' => 'all']) }}" class="cash-year btn btn-light {{ request()->get('filter') === 'all' ? 'active': '' }}">Все</a>--}}
+{{--                    </div>--}}
 
                     <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                         <a href="javascript::void(0);" class="cursor-default">

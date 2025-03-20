@@ -52,32 +52,34 @@ class TaxPlanItemService
 
         if (! empty($requestData['paid'])) {
             $query->whereIn('paid', $requestData['paid']);
+        } else {
+            $query->where('paid', false);
         }
 
-        if (! empty($requestData['filter'])) {
-            if ($requestData['filter'] !== 'all') {
-                if ($requestData['filter'] === 'current') {
-                    $period = [Carbon::now()->subMonthNoOverflow(), Carbon::now()->addMonthNoOverflow()];
-                    $query->where(function($q) use ($period) {
-                        $q->whereBetween('due_date', $period);
-                        $q->orWhere(function($qq) {
-                            $qq->where('due_date', '<=', Carbon::now()->subMonthNoOverflow());
-                            $qq->where('paid', false);
-                        });
-                    });
-                    $query->where('paid', false);
-                } else if ($requestData['filter'] == '2025') {
-                    $period = ['2025-01-01', '2025-12-31'];
-                    $query->whereBetween('due_date', $period);
-                } else if ($requestData['filter'] == '2024') {
-                    $period = ['2024-01-01', '2024-12-31'];
-                    $query->whereBetween('due_date', $period);
-                } else if ($requestData['filter'] == '2023') {
-                    $period = ['2023-01-01', '2023-12-31'];
-                    $query->whereBetween('due_date', $period);
-                }
-            }
-        }
+//        if (! empty($requestData['filter'])) {
+//            if ($requestData['filter'] !== 'all') {
+//                if ($requestData['filter'] === 'current') {
+//                    $period = [Carbon::now()->subMonthNoOverflow(), Carbon::now()->addMonthNoOverflow()];
+//                    $query->where(function($q) use ($period) {
+//                        $q->whereBetween('due_date', $period);
+//                        $q->orWhere(function($qq) {
+//                            $qq->where('due_date', '<=', Carbon::now()->subMonthNoOverflow());
+//                            $qq->where('paid', false);
+//                        });
+//                    });
+//                    $query->where('paid', false);
+//                } else if ($requestData['filter'] == '2025') {
+//                    $period = ['2025-01-01', '2025-12-31'];
+//                    $query->whereBetween('due_date', $period);
+//                } else if ($requestData['filter'] == '2024') {
+//                    $period = ['2024-01-01', '2024-12-31'];
+//                    $query->whereBetween('due_date', $period);
+//                } else if ($requestData['filter'] == '2023') {
+//                    $period = ['2023-01-01', '2023-12-31'];
+//                    $query->whereBetween('due_date', $period);
+//                }
+//            }
+//        }
 
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
