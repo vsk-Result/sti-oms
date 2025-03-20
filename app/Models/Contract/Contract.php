@@ -700,6 +700,15 @@ class Contract extends Model implements HasMedia, Audit
         return $prefix . $this->name;
     }
 
+    public function getFullName(): string
+    {
+        if ($this->parent) {
+            return $this->parent->name  . ' | ' . $this->name;
+        }
+
+        return $this->name;
+    }
+
     public function getType(): string
     {
         return self::getTypes()[$this->type_id];

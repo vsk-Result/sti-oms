@@ -118,9 +118,9 @@
                         </td>
                         <td class="px-3">
                             @if(auth()->user()->can('index contracts'))
-                                <a href="{{ route('contracts.index') }}?name={{ urlencode($act->contract->parent ? $act->contract->parent->name : $act->contract->name) }}" class="show-link">{{ $act->contract->getName() }}</a>
+                                <a href="{{ route('contracts.index') }}?name={{ urlencode($act->contract->parent ? $act->contract->parent->name : $act->contract->name) }}" class="show-link">{{ $act->contract->getFullName() }}</a>
                             @else
-                                {{ $act->contract->getName() }}
+                                {{ $act->contract->getFullName() }}
                             @endif
                         </td>
                         <td class="text-center">{{ $act->number }}</td>
