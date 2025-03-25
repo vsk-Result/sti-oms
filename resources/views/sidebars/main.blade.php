@@ -222,6 +222,23 @@
                 </div>
             @endcan
 
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->is('cash-accounts*') ? 'hover show' : '' }}">
+                <span class="menu-link py-2">
+                    <span class="menu-title {{ request()->is('cash-accounts*') ? 'fw-boldest' : '' }}">Кассы</span>
+                    <span class="menu-arrow"></span>
+                </span>
+                <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
+                        <div class="menu-item">
+                        <a class="menu-link py-2 {{ request()->is('cash-accounts*') ? 'active' : '' }}" href="{{ route('cash_accounts.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                            <span class="menu-title">Кассы</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             @canAny(['index debts', 'index loans'])
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('pivots/debts*')|| request()->is('pivots/acts*') || request()->is('loans*') || request()->is('pivots/dt-sti*')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
