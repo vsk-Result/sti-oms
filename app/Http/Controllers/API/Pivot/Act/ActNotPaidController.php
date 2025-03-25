@@ -51,7 +51,7 @@ class ActNotPaidController extends Controller
                         'number' => $act->number,
                         'date' => $act->getDateFormatted(),
                         'planned_payment_date' => $act->getPlannedPaymentDateFormatted(),
-                        'amount_need_paid' => (float) $act->amount_need_paid,
+                        'amount_need_paid' => (float) $needPaid,
                     ];
                 }
             }
