@@ -175,7 +175,7 @@
                                     $amount = $contract->getAmount($currency);
                                 @endphp
 
-                                @if ($childrenCount > 0 && $amount != 0)
+                                @if ($childrenCount > 0)
                                     <a
                                         href="#"
                                         class="btn btn-outline btn-outline-dashed btn-outline-default me-2 mb-2 show-subcontracts"
