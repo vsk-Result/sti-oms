@@ -31,7 +31,10 @@ class ActNotPaidController extends Controller
         }
 
         $acts = Act::orderBy('date')->get();
-        $objects = BObject::whereIn('id', array_unique($acts->pluck('object_id')->toArray()))->orderBy('code', 'desc')->get();
+        $objects = BObject::where(function($q) {
+            $q->active();
+            $q->orWhere('code', '000');
+        })->orderBy('code', 'desc')->get();
 
         $info = [];
         foreach ($objects as $object) {
