@@ -30,7 +30,7 @@ class ActNotPaidController extends Controller
             return response()->json([], 403);
         }
 
-        $acts = Act::where('amount_need_paid', '!=', 0)->orderBy('date')->get();
+        $acts = Act::orderBy('date')->get();
         $objects = BObject::whereIn('id', array_unique($acts->pluck('object_id')->toArray()))->orderBy('code', 'desc')->get();
 
         $info = [];
@@ -42,16 +42,23 @@ class ActNotPaidController extends Controller
             ];
 
             foreach ($acts->where('object_id', $object->id) as $act) {
-                $item['acts'][] = [
-                    'contract_name' => $act->contract->name,
-                    'number' => $act->number,
-                    'date' => $act->getDateFormatted(),
-                    'planned_payment_date' => $act->getPlannedPaymentDateFormatted(),
-                    'amount_need_paid' => (float) $act->amount_need_paid,
-                ];
+
+                $needPaid = $act->getLeftPaidAmount();
+
+                if (is_valid_amount_in_range($needPaid)) {
+                    $item['acts'][] = [
+                        'contract_name' => $act->contract->name,
+                        'number' => $act->number,
+                        'date' => $act->getDateFormatted(),
+                        'planned_payment_date' => $act->getPlannedPaymentDateFormatted(),
+                        'amount_need_paid' => (float) $act->amount_need_paid,
+                    ];
+                }
             }
 
-            $info[] = $item;
+            if (count($item['acts']) > 0) {
+                $info[] = $item;
+            }
         }
 
         return response()->json(compact('info'));
