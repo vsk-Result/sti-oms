@@ -38,6 +38,11 @@ class ActNotPaidController extends Controller
 
         $info = [];
         foreach ($objects as $object) {
+
+            if ($object->code === '288') {
+                continue;
+            }
+
             $item = [
                 'object_code' => $object->code,
                 'object_name' => $object->name,
