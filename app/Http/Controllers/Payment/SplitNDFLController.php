@@ -30,10 +30,11 @@ class SplitNDFLController extends Controller
             ->where('company_id', 1)
             ->where(function($q) {
                 $q->where('description', 'LIKE', '%Налог на доходы физ. лиц%');
+                $q->orWhere('description', 'LIKE', '%ндфл%');
                 $q->orWhere('description', 'LIKE', '%Налог на доходы физических лиц%');
             })
             ->where('description', 'NOT LIKE', '%аренд%')
-            ->where('description', 'LIKE', '%за ' . mb_strtolower($month, 'UTF-8') . '%')
+            ->where('description', 'LIKE', '%' . mb_strtolower($month, 'UTF-8') . '%')
             ->orderBy('amount')
             ->get();
 
