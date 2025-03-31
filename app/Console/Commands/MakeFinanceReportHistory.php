@@ -532,7 +532,7 @@ class MakeFinanceReportHistory extends HandledCommand
                                     }
 
                                     $fixMatPlan->update([
-                                        'amount' => $amnt
+                                        'amount' => -$amnt
                                     ]);
                                 }
                             }
