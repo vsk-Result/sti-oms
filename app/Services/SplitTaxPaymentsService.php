@@ -26,11 +26,11 @@ class SplitTaxPaymentsService
 
         $totalsDiff = $totalSplitInfoAmount - abs($payments->sum('amount'));
 
-//        if ($totalsDiff > 0) {
-//            if (is_valid_amount_in_range($totalsDiff)) {
-//                return 'Сумма налогов в файле превышает сумму выбранных оплат на ' . CurrencyExchangeRate::format($totalsDiff);
-//            }
-//        }
+        if ($totalsDiff > 0) {
+            if (is_valid_amount_in_range($totalsDiff)) {
+                return 'Сумма налогов в файле превышает сумму выбранных оплат на ' . CurrencyExchangeRate::format($totalsDiff);
+            }
+        }
 
         $resultSplitInfo = [];
         $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
@@ -66,19 +66,6 @@ class SplitTaxPaymentsService
                 if (! is_valid_amount_in_range($amount)) {
                     continue;
                 }
-
-                $newPayment = $this->paymentService->createPayment(['base_payment_id' => $payment->id]);
-                $newPayment->update([
-                    'object_id' => $objectIds[$code],
-                    'object_worktype_id' => null,
-                    'type_id' => Payment::TYPE_OBJECT,
-                    'amount' => -$amount,
-                    'amount_without_nds' => -$amount,
-                    'was_split' => true
-                ]);
-
-                continue;
-
 
                 $logs[] = 'Рассматриваем объект с кодом "' . $code . '", суммой "' . -$amount . '"';
 
