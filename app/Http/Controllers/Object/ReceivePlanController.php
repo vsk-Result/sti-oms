@@ -24,11 +24,12 @@ class ReceivePlanController extends Controller
         $reasons = ReceivePlan::getReasons();
         $periods = $this->receivePlanService->getPeriods($object->id);
         $plans = $this->receivePlanService->getPlans($object->id, $periods[0]['start'], end($periods)['start']);
+        $cfPayments = $this->receivePlanService->getCFPayments($object->id, $periods);
 
         return view(
             'objects.tabs.receive_plan',
             compact(
-                'object', 'reasons', 'periods', 'plans'
+                'object', 'reasons', 'periods', 'plans', 'cfPayments'
             )
         );
     }

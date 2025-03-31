@@ -12,6 +12,7 @@ use App\Models\Status;
 use App\Services\CashFlow\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ReceivePlanService
 {
@@ -234,5 +235,101 @@ class ReceivePlanService
                 'Пени',
             ],
         ];
+    }
+
+    public function getCFPayments(int $objectId, array $periods): array
+    {
+        $payments = [
+            'total' => [],
+            'contractors' => [],
+            'providers_fix' => [],
+            'providers_float' => [],
+            'service' => [],
+        ];
+
+        $info = Cache::get('cash_flow_1c_data', []);
+
+        if (! isset($info[$objectId])) {
+            return $payments;
+        }
+
+        $contractors = $info[$objectId]['contractors'];
+        $providersFix = $info[$objectId]['providers_fix'];
+        $providersFloat = $info[$objectId]['providers_float'];
+        $service = $info[$objectId]['service'];
+
+        foreach ($periods as $index => $period) {
+            $payments['total'][$period['start']] = 0;
+            $payments['contractors'][$period['start']] = 0;
+            $payments['providers_fix'][$period['start']] = 0;
+            $payments['providers_float'][$period['start']] = 0;
+            $payments['service'][$period['start']] = 0;
+
+            foreach ($contractors as $contractor) {
+                $date = Carbon::parse($contractor['date'])->format('Y-m-d');
+
+                if ($index === 0) {
+                    if ($date <= $period['end']) {
+                        $payments['contractors'][$period['start']] += $contractor['amount'];
+                        $payments['total'][$period['start']] += $contractor['amount'];
+                    }
+                } else {
+                    if ($date >= $period['start'] && $date <= $period['end']) {
+                        $payments['contractors'][$period['start']] += $contractor['amount'];
+                        $payments['total'][$period['start']] += $contractor['amount'];
+                    }
+                }
+            }
+
+            foreach ($providersFix as $fix) {
+                $date = Carbon::parse($fix['date'])->format('Y-m-d');
+
+                if ($index === 0) {
+                    if ($date <= $period['end']) {
+                        $payments['providers_fix'][$period['start']] += $fix['amount'];
+                        $payments['total'][$period['start']] += $fix['amount'];
+                    }
+                } else {
+                    if ($date >= $period['start'] && $date <= $period['end']) {
+                        $payments['providers_fix'][$period['start']] += $fix['amount'];
+                        $payments['total'][$period['start']] += $fix['amount'];
+                    }
+                }
+            }
+
+            foreach ($providersFloat as $float) {
+                $date = Carbon::parse($float['date'])->format('Y-m-d');
+
+                if ($index === 0) {
+                    if ($date <= $period['end']) {
+                        $payments['providers_float'][$period['start']] += $float['amount'];
+                        $payments['total'][$period['start']] += $float['amount'];
+                    }
+                } else {
+                    if ($date >= $period['start'] && $date <= $period['end']) {
+                        $payments['providers_float'][$period['start']] += $float['amount'];
+                        $payments['total'][$period['start']] += $float['amount'];
+                    }
+                }
+            }
+
+            foreach ($service as $ser) {
+                $date = Carbon::parse($ser['date'])->format('Y-m-d');
+
+                if ($index === 0) {
+                    if ($date <= $period['end']) {
+                        $payments['service'][$period['start']] += $ser['amount'];
+                        $payments['total'][$period['start']] += $ser['amount'];
+                    }
+                } else {
+                    if ($date >= $period['start'] && $date <= $period['end']) {
+                        $payments['service'][$period['start']] += $ser['amount'];
+                        $payments['total'][$period['start']] += $ser['amount'];
+                    }
+                }
+            }
+        }
+
+        return $payments;
     }
 }

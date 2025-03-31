@@ -57,6 +57,7 @@ class GetDebtsFilesFromOneC extends HandledCommand
         Artisan::call('oms:import-contractor-debts-from-1c-excel');
         Artisan::call('oms:import-provider-debts-from-1c-excel');
         Artisan::call('oms:import-service-debts-from-1c-excel');
+        Artisan::call('oms:import-cf-data-from-1c-excel');
 
         return 0;
     }

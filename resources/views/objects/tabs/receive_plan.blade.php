@@ -1,13 +1,13 @@
 @extends('objects.layouts.show')
 
-@section('object-tab-title', 'План поступлений')
+@section('object-tab-title', 'Cash Flow')
 
 @section('object-tab-content')
     <div class="row">
         <div class="col-lg-12">
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-6">
-                    <div class="card-title">План поступлений</div>
+                    <div class="card-title">Cash Flow</div>
 
                     <div class="card-toolbar">
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
@@ -34,7 +34,7 @@
 
                 <div class="card-body py-3">
                     <div class="table-responsive freeze-table">
-                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5" data-update-url="{{ route('objects.receive_plan.store', $object) }}">
+                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-3" data-update-url="{{ route('objects.receive_plan.store', $object) }}">
                             <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                                     <th class="min-w-400px ps-2">Основание</th>
@@ -45,9 +45,16 @@
                             </thead>
 
                             <tbody class="text-gray-600 fw-bold fs-7">
+                                <tr class="total-row">
+                                    <td class="ps-2 fw-bolder">Поступления ИТОГО</td>
+
+                                    @foreach($periods as $period)
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($plans->where('date', $period['start'])->sum('amount'), 'RUB') }}</td>
+                                    @endforeach
+                                </tr>
                                 @foreach($reasons as $reasonId => $reason)
                                     <tr>
-                                        <td class="ps-2">{{ $reason }}</td>
+                                        <td class="ps-5">{{ $reason }}</td>
 
                                         @foreach($periods as $period)
                                             @php
@@ -72,10 +79,50 @@
                                 @endforeach
 
                                 <tr class="total-row">
-                                    <td class="ps-2 fw-bolder">Итого</td>
+                                    <td class="ps-2 fw-bolder">Расходы ИТОГО</td>
 
                                     @foreach($periods as $period)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($plans->where('date', $period['start'])->sum('amount'), 'RUB') }}</td>
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['total'][$period['start']] ?? 0) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-5">Работы</td>
+
+                                    @foreach($periods as $period)
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['contractors'][$period['start']] ?? 0) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-5 fw-bold">Материалы</td>
+
+                                    @foreach($periods as $period)
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(($cfPayments['providers_fix'][$period['start']] ?? 0) + ($cfPayments['providers_float'][$period['start']] ?? 0)) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-9">Фиксированная часть</td>
+
+                                    @foreach($periods as $period)
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_fix'][$period['start']] ?? 0) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-9">Изменяемая часть</td>
+
+                                    @foreach($periods as $period)
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_float'][$period['start']] ?? 0) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-5">Накладные/Услуги</td>
+
+                                    @foreach($periods as $period)
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['service'][$period['start']] ?? 0) }}</td>
                                     @endforeach
                                 </tr>
                             </tbody>
