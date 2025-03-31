@@ -35,6 +35,7 @@ class SplitNDFLController extends Controller
             })
             ->where('description', 'NOT LIKE', '%аренд%')
             ->where('description', 'LIKE', '%' . mb_strtolower($month, 'UTF-8') . '%')
+            ->where('code', '7.3.1')
             ->orderBy('amount')
             ->get();
 
