@@ -49,7 +49,7 @@ class PaymentController extends Controller
             } else if ($request->get('type') === 'Страховые взносы') {
                 $paymentQuery->where('type_id', Payment::TYPE_GENERAL)
                     ->where('company_id', 1)
-                    ->where('description', 'LIKE', '%Страховые взносы%')
+                    ->where('description', 'LIKE', '%взносы%')
                     ->where('description', 'LIKE', '%' . $request->get('search') . '%');
             }
 
