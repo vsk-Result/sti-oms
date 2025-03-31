@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Console\HandledCommand;
 use App\Exports\Finance\FinanceReport\Export;
 use App\Models\Company;
+use App\Models\Contract\Contract;
 use App\Models\FinanceReport;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
@@ -71,11 +72,13 @@ class MakeFinanceReportHistory extends HandledCommand
             '358' => 'Гостиница Меркурий Завидово',
             '360' => 'Тинькофф',
             '376' => 'Сбербанк',
-            '372' => 'Офис продаж VESPER',
+            '372' => '372. Офис Продаж Vesper',
             '369' => 'МОНОСПЕЙС',
             '373' => 'ДЕТСКИЙ ЦЕНТР МАГНИТОГОРСК',
             '374' => '374. Офис компании GRAND LINE - Обнинск',
-            '365' => '365. AEROFLOT OFFICE - Tverskaya',
+            '365' => '365. Флагманский офис продаж AEROFLOT',
+            '380' => 'ЛЕВЕНСОН',
+            '378' => '378. Офис компании Velesstroy',
         ];
 
         $hash = md5(date('dmY'));
@@ -511,6 +514,29 @@ class MakeFinanceReportHistory extends HandledCommand
                         }
 
                         if ($field === 'prognoz_material') {
+                            $fixMatPlan = $object->planPayments->where('field', 'prognoz_material_fix')->first();
+                            $floatMatPlan = $object->planPayments->where('field', 'prognoz_material_float')->first();
+
+                            if ($fixMatPlan) {
+                                if ($fixMatPlan->isAutoCalculation()) {
+                                    $amnt = 0;
+                                    $cncts = $object->contracts->where('type_id', Contract::TYPE_MAIN);
+                                    foreach ($cncts as $cnct) {
+                                        $amnt += $cnct->getMaterialAmount();
+                                    }
+
+                                    $amnt = $amnt + $object->payments()->where('amount', '<', 0)->where('category', Payment::CATEGORY_MATERIAL)->sum('amount') + $providerDebtsAmount;
+
+                                    if ($object->code === '363' && $floatMatPlan) {
+                                        $amnt = $amnt + $floatMatPlan->amount;
+                                    }
+
+                                    $fixMatPlan->update([
+                                        'amount' => $amnt
+                                    ]);
+                                }
+                            }
+
                             $prognozAmount = $object->planPayments->whereIn('field', ['prognoz_material_fix', 'prognoz_material_float'])->sum('amount');
                             $p = $object->planPayments->where('field', 'prognoz_material')->first();
                             if ($p) {
@@ -851,6 +877,7 @@ class MakeFinanceReportHistory extends HandledCommand
                 $summary[$year]['general_balance_service'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] * $summary[$year]['general_balance'];
             }
         } catch (\Exception $e) {
+            dd($e);
             $this->sendErrorMessage('Ошибка в расчете: ' . $e->getMessage());
             $this->endProcess();
             return 0;
