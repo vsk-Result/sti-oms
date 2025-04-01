@@ -9,6 +9,7 @@ use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
 use App\Services\CashFlow\NotificationService;
+use App\Services\PlanPaymentService;
 use App\Services\ReceivePlanService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -19,10 +20,12 @@ class CashFlowController extends Controller
     private ReceivePlanService $receivePlanService;
     private NotificationService $notificationService;
 
-    public function __construct(ReceivePlanService $receivePlanService, NotificationService $notificationService)
+    public function __construct(ReceivePlanService $receivePlanService, NotificationService $notificationService, PlanPaymentService $planPaymentService)
     {
         $this->receivePlanService = $receivePlanService;
         $this->notificationService = $notificationService;
+        $this->planPaymentService = $planPaymentService;
+
     }
 
     public function index(Request $request): View
@@ -48,12 +51,21 @@ class CashFlowController extends Controller
 
         $period = Carbon::parse($periods[0]['start'])->format('d.m.Y') . ' - ' . Carbon::parse(end($periods)['end'])->format('d.m.Y');
 
+        $cfPayments = $this->receivePlanService->getCFPaymentsForAll($periods);
+
+        $aho = PlanPayment::where('name', 'АХО')->first();
+
+        if ($aho) {
+            $this->planPaymentService->destroyPlanPayment(['payment_id' => $aho->id]);
+        }
+
         return view(
             'pivots.cash-flow.index',
             compact(
                 'periods', 'objects', 'plans', 'period',
                'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
-                'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments'
+                'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments',
+                'cfPayments'
             )
         );
     }

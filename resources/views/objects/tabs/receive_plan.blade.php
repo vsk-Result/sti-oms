@@ -82,7 +82,7 @@
                                     <td class="ps-2 fw-bolder">Расходы ИТОГО</td>
 
                                     @foreach($periods as $period)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['total'][$period['start']] ?? 0) }}</td>
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['total'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
 
@@ -90,7 +90,7 @@
                                     <td class="ps-5">Работы</td>
 
                                     @foreach($periods as $period)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['contractors'][$period['start']] ?? 0) }}</td>
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['contractors'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
 
@@ -98,7 +98,7 @@
                                     <td class="ps-5 fw-bold">Материалы</td>
 
                                     @foreach($periods as $period)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(($cfPayments['providers_fix'][$period['start']] ?? 0) + ($cfPayments['providers_float'][$period['start']] ?? 0)) }}</td>
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(($cfPayments['providers_fix'][$period['start']] ?? 0) + ($cfPayments['providers_float'][$period['start']] ?? 0), 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
 
@@ -106,7 +106,7 @@
                                     <td class="ps-9">Фиксированная часть</td>
 
                                     @foreach($periods as $period)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_fix'][$period['start']] ?? 0) }}</td>
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_fix'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
 
@@ -114,7 +114,7 @@
                                     <td class="ps-9">Изменяемая часть</td>
 
                                     @foreach($periods as $period)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_float'][$period['start']] ?? 0) }}</td>
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_float'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
 
@@ -122,7 +122,15 @@
                                     <td class="ps-5">Накладные/Услуги</td>
 
                                     @foreach($periods as $period)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['service'][$period['start']] ?? 0) }}</td>
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['service'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                    @endforeach
+                                </tr>
+
+                                <tr class="total-row">
+                                    <td class="ps-2 fw-bolder">Сальдо ИТОГО</td>
+
+                                    @foreach($periods as $period)
+                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($plans->where('date', $period['start'])->sum('amount') + ($cfPayments['total'][$period['start']] ?? 0), 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
                             </tbody>
