@@ -518,23 +518,21 @@ class MakeFinanceReportHistory extends HandledCommand
                             $floatMatPlan = $object->planPayments->where('field', 'prognoz_material_float')->first();
 
                             if ($fixMatPlan) {
-                                if ($fixMatPlan->isAutoCalculation()) {
-                                    $amnt = 0;
-                                    $cncts = $object->contracts->where('type_id', Contract::TYPE_MAIN);
-                                    foreach ($cncts as $cnct) {
-                                        $amnt += $cnct->getMaterialAmount();
-                                    }
-
-                                    $amnt = $amnt + $object->payments()->where('amount', '<', 0)->where('category', Payment::CATEGORY_MATERIAL)->sum('amount') + $providerDebtsAmount;
-
-                                    if ($object->code === '363' && $floatMatPlan) {
-                                        $amnt = $amnt + $floatMatPlan->amount;
-                                    }
-
-                                    $fixMatPlan->update([
-                                        'amount' => -$amnt
-                                    ]);
+                                $amnt = 0;
+                                $cncts = $object->contracts->where('type_id', Contract::TYPE_MAIN);
+                                foreach ($cncts as $cnct) {
+                                    $amnt += $cnct->getMaterialAmount();
                                 }
+
+                                $amnt = $amnt + $object->payments()->where('amount', '<', 0)->where('category', Payment::CATEGORY_MATERIAL)->sum('amount') + $providerDebtsAmount;
+
+                                if ($object->code === '363' && $floatMatPlan) {
+                                    $amnt = $amnt + $floatMatPlan->amount;
+                                }
+
+                                $fixMatPlan->update([
+                                    'amount' => -$amnt
+                                ]);
                             }
 
                             $prognozAmount = $object->planPayments->whereIn('field', ['prognoz_material_fix', 'prognoz_material_float'])->sum('amount');
