@@ -25,7 +25,6 @@ class CashFlowController extends Controller
         $this->receivePlanService = $receivePlanService;
         $this->notificationService = $notificationService;
         $this->planPaymentService = $planPaymentService;
-
     }
 
     public function index(Request $request): View
@@ -59,13 +58,20 @@ class CashFlowController extends Controller
             $this->planPaymentService->destroyPlanPayment(['payment_id' => $aho->id]);
         }
 
+        $viewName = $request->get('view_name');
+        $view = 'pivots.cash-flow.index';
+
+        if ($viewName === 'view_two') {
+            $view = 'pivots.cash-flow.index_two';
+        }
+
         return view(
-            'pivots.cash-flow.index',
+            $view,
             compact(
                 'periods', 'objects', 'plans', 'period',
                'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
                 'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments',
-                'cfPayments'
+                'cfPayments', 'viewName'
             )
         );
     }

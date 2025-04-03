@@ -8,7 +8,7 @@
             <form action="{{ request()->url() }}" method="GET">
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-12 mb-4">
                             <div class="form-group mb-3">
                                 <label class="form-label">Период</label>
                                 <input
@@ -16,6 +16,22 @@
                                     class="form-control form-control-solid date-range-picker"
                                     value="{{ request()->input('period', $period) }}"
                                     autocomplete="off" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Вид отчета</label>
+                                <select
+                                    name="view_name"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterCashFlowModal"
+                                    data-allow-clear="true"
+                                >
+                                    <option value="view_one" {{ $viewName !== 'view_two' ? 'selected' : '' }}>Расходы в объектах</option>
+                                    <option value="view_two" {{ $viewName === 'view_two' ? 'selected' : '' }}>Расходы под общими затратами</option>
+                                </select>
                             </div>
                         </div>
                     </div>

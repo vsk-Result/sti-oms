@@ -483,7 +483,7 @@
                                         </td>
                                     </tr>
 
-                                    @if ($object->code === '361')
+                                    @if ($object->code === '363')
 
                                         <tr>
                                             <td class="ps-10 fs-8 fst-italic">- фиксированная часть</td>
