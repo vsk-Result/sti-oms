@@ -24,7 +24,8 @@ class ReceivePlanExportController extends Controller
         $reasons = ReceivePlan::getReasons();
         $periods = $this->receivePlanService->getPeriods($object->id);
         $plans = $this->receivePlanService->getPlans($object->id, $periods[0]['start'], end($periods)['start']);
+        $cfPayments = $this->receivePlanService->getCFPayments($object->id, $periods);
 
-        return Excel::download(new Export($reasons, $periods, $plans), 'План поступлений.xlsx');
+        return Excel::download(new Export($reasons, $periods, $plans, $cfPayments), $object->code . '_Cash_flow.xlsx');
     }
 }
