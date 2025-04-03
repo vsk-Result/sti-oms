@@ -614,41 +614,28 @@ class Contract extends Model implements HasMedia, Audit
             return 0;
         }
 
-        $paid = 0;
-        foreach ($this->acts as $act) {
-            $paid += $act->payments->sum('amount');
-        }
-
-        if ($this->isMain()) {
-            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[17])) {
-                return json_decode($this->params)[17] ?? 0;
-            }
-
-            foreach ($this->children->where('currency', $currency) as $subContract) {
-                foreach ($subContract->acts as $act) {
-                    $paid += $act->payments->sum('amount');
-                }
-            }
-        }
-
         $amount = 0;
         foreach ($this->acts as $act) {
-            $amount += $act->getNeedPaidAmount();
+            $amount += $act->getLeftPaidAmount();
         }
 
         if ($this->isMain()) {
+//            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[17])) {
+//                return json_decode($this->params)[17] ?? 0;
+//            }
+
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 foreach ($subContract->acts as $act) {
-                    $amount += $act->getNeedPaidAmount();
+                    $amount += $act->getLeftPaidAmount();
                 }
             }
         }
 
-        if ($this->object_id === 5 && $currency === 'RUB' && ($amount - $paid) < 0) {
-            return 0;
-        }
+//        if ($this->object_id === 5 && $currency === 'RUB' && ($amount - $paid) < 0) {
+//            return 0;
+//        }
 
-        return $amount - $paid;
+        return $amount;
     }
 
     public function getNotworkLeftAmount(string $currency = null): string|array
