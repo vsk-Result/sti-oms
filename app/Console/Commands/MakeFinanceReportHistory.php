@@ -513,7 +513,7 @@ class MakeFinanceReportHistory extends HandledCommand
                             }
                         }
 
-                        if ($field === 'prognoz_material') {
+                        if ($field === 'prognoz_material' && $object->status_id === Status::STATUS_ACTIVE) {
                             $fixMatPlan = $object->planPayments->where('field', 'prognoz_material_fix')->first();
                             $floatMatPlan = $object->planPayments->where('field', 'prognoz_material_float')->first();
 
