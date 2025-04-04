@@ -12,7 +12,7 @@ class ResidenceService
         $dormitories = [];
 
         try {
-            $response = Http::withBasicAuth('WebService', 'Vi7je7da')->post('https://1c.st-ing.com/prod_STI_usp/hs/USPServices/Universal', [
+            $response = Http::withBasicAuth('WebService', 'Vi7je7da')->post('https://1c.st-ing.com/prod_STI_ushr/hs/Telebot/Universal', [
                 'Method' => 'GetDormitories',
             ]);
 
@@ -21,7 +21,7 @@ class ResidenceService
             $dormitories = $data['Result'];
         } catch (\Exception $e) {}
 
-        if (empty($dormitories)) {
+        if (is_string($dormitories) && empty($dormitories)) {
             $dormitories = [];
         }
 
@@ -33,7 +33,7 @@ class ResidenceService
         $info = [];
 
         try {
-            $response = Http::withBasicAuth('WebService', 'Vi7je7da')->post('https://1c.st-ing.com/prod_STI_usp/hs/USPServices/Universal', [
+            $response = Http::withBasicAuth('WebService', 'Vi7je7da')->post('https://1c.st-ing.com/prod_STI_ushr/hs/Telebot/Universal', [
                 'Method' => 'GetAccommodation',
                 'Period' => $date,
                 'DormitoryId' => $dormitoryId
