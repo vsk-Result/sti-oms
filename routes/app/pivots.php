@@ -19,6 +19,8 @@ use App\Http\Controllers\Pivot\ActCategory\ActCategoryController;
 use App\Http\Controllers\Pivot\ActCategory\ExportController as ActCategoryExportController;
 use App\Http\Controllers\Pivot\MoneyMovement\MoneyMovementController;
 use App\Http\Controllers\Pivot\MoneyMovement\ExportController as MoneyMovementExportController;
+use App\Http\Controllers\Pivot\Residence\ResidenceController;
+use App\Http\Controllers\Pivot\Residence\ResidenceExportController;
 
 // Сводная по долгам от СТИ
 Route::get('pivots/debts', [DebtController::class, 'index'])->name('pivots.debts.index');
@@ -65,3 +67,8 @@ Route::post('pivots/acts-category/export', [ActCategoryExportController::class, 
 Route::get('pivots/money-movement', [MoneyMovementController::class, 'index'])->name('pivots.money_movement.index');
 // Экспорт отчета о движении денежных средств
 Route::post('pivots/money-movement/export', [MoneyMovementExportController::class, 'store'])->name('pivots.money_movement.exports.store');
+
+// Отчет по проживанию
+Route::get('pivots/residence', [ResidenceController::class, 'index'])->name('pivots.residence.index');
+// Экспорт отчета по проживанию
+Route::post('pivots/residence/export', [ResidenceExportController::class, 'store'])->name('pivots.residence.exports.store');

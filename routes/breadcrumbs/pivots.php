@@ -38,3 +38,8 @@ Breadcrumbs::for('pivots.money_movement.index', function (BreadcrumbTrail $trail
     $trail->push('Отчет о движении денежных средств');
 });
 
+Breadcrumbs::for('pivots.residence.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Отчет о проживании');
+});
+

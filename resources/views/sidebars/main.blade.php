@@ -136,6 +136,15 @@
                                 </a>
                             </div>
                         @endcan
+
+                        <div class="menu-item">
+                            <a href="{{ route('pivots.residence.index') }}" class="menu-link py-2 {{ request()->is('pivots/residence*') ? 'active' : '' }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Отчет о проживании</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             @endcan
