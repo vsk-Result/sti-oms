@@ -3,12 +3,16 @@
 use App\Http\Controllers\DebtImport\ImportController;
 use App\Http\Controllers\DebtImport\ImportManualController;
 use App\Http\Controllers\DebtImport\ImportManualReplaceController;
+use App\Http\Controllers\DebtImport\ManualReplaceResetController;
 
 // Загрузка подрядчиков из долгов объекта
 Route::post('debt-imports/manual', [ImportManualController::class, 'store'])->name('debt_imports.manual.store');
 
 // Загрузка долгов вручную
 Route::post('debt-imports/manual-replace', [ImportManualReplaceController::class, 'store'])->name('debt_imports.manual_replace.store');
+
+// СБрос долгов вручную
+Route::get('debt-imports/{object}/manual-replace/reset', [ManualReplaceResetController::class, 'store'])->name('debt_imports.manual_replace.reset.store');
 
 // Загрузка долгов
 

@@ -269,6 +269,25 @@ class PivotObjectDebtService
         ]);
     }
 
+    public function hasExpiredManualPivots(int $objectId): bool
+    {
+        $pivots = PivotObjectDebt::where('object_id', $objectId)
+            ->whereIn('debt_source_id', [
+                PivotObjectDebt::DEBT_SOURCE_CONTRACTOR_MANUAL,
+                PivotObjectDebt::DEBT_SOURCE_PROVIDER_MANUAL,
+                PivotObjectDebt::DEBT_SOURCE_SERVICE_MANUAL
+            ])
+            ->get();
+
+        foreach ($pivots as $pivot) {
+            if (Carbon::now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     private function addAdditionalServiceDebts(int $objectId, array &$info): void
     {

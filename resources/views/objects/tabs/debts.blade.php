@@ -8,9 +8,18 @@
     @include('objects.modals.debt_import_details')
 
     <div class="card border-0">
-        <div class="card-header border-0 justify-content-end align-items-center p-0">
+        <div class="card-header border-0 p-0">
+            <div>
+                @if ($hasExpiredManualUpload)
+                    <div class="alert alert-dismissible bg-light-warning d-flex flex-column flex-sm-row p-5">
+                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                            <span>Обратите внимание, вы обновляли долги вручную более 2 дней назад</span>
+                        </div>
+                    </div>
+                @endif
+            </div>
             <div class="card-toolbar">
-                <div class="d-flex justify-content-end align-items-center" data-kt-user-table-toolbar="base">
+                <div class="d-flex justify-content-end align-items-center">
                     <a
                             class="btn btn-light-primary me-3"
                             href="javascript:void(0);"
@@ -23,9 +32,9 @@
                     <form action="{{ route('objects.debts.exports.store', $object) }}" method="POST" class="hidden me-3">
                         @csrf
                         <a
-                            href="javascript:void(0);"
-                            class="btn btn-light-success"
-                            onclick="event.preventDefault(); this.closest('form').submit();"
+                                href="javascript:void(0);"
+                                class="btn btn-light-success"
+                                onclick="event.preventDefault(); this.closest('form').submit();"
                         >
                             Экспорт в Excel
                         </a>
@@ -33,10 +42,10 @@
 
                     @if(! auth()->user()->hasRole('finance-object-user-mini'))
                         <a
-                            class="btn btn-light-info"
-                            href="javascript:void(0);"
-                            data-bs-toggle="modal"
-                            data-bs-target="#debtsImportDetailsModal"
+                                class="btn btn-light-info"
+                                href="javascript:void(0);"
+                                data-bs-toggle="modal"
+                                data-bs-target="#debtsImportDetailsModal"
                         >
                             Источники
                         </a>

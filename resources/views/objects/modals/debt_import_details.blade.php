@@ -18,6 +18,7 @@
                     </thead>
                     <tbody>
                         @php
+                            $hasManualUpload = false;
                             $sourceInfo = [
                                 'Долг подрядчикам' => $contractorDebts['sources'],
                                 'Долг поставщикам' => $providerDebts['sources'],
@@ -34,6 +35,11 @@
                                 </tr>
 
                                 @foreach($sources as $sourceInfo)
+                                    @php
+                                        if ($sourceInfo['source_name'] === 'Из Excel таблицы ручного обновления') {
+                                            $hasManualUpload = true;
+                                        }
+                                    @endphp
                                     <tr>
                                         <td class="ps-8">{{ $sourceInfo['source_name'] }}</td>
                                         <td>{{ $sourceInfo['uploaded_date'] }}</td>
@@ -48,7 +54,15 @@
                 </table>
             </div>
 
-            <div class="modal-footer">
+            <div class="modal-footer justify-content-between">
+                @if ($hasManualUpload)
+                    <a
+                            class="btn btn-light-primary me-3"
+                            href="{{ route('debt_imports.manual_replace.reset.store', $object) }}"
+                    >
+                        Сбросить изменения долгов, обновленных вручную
+                    </a>
+                @endif
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Закрыть</button>
             </div>
         </div>

@@ -57,6 +57,10 @@ class ImportContractorDebtsFromClosedObjectExcel extends HandledCommand
         $this->sendInfoMessage('Обновление сводных данных по долгам подрядчикам');
 
         try {
+            PivotObjectDebt::where('debt_type_id', PivotObjectDebt::DEBT_TYPE_CONTRACTOR)
+                ->where('debt_source_id', PivotObjectDebt::DEBT_SOURCE_CONTRACTOR_CLOSED_OBJECT)
+                ->delete();
+
             $this->pivotObjectDebtService->updatePivotDebtInfo(
                 $data['data'],
                 PivotObjectDebt::DEBT_TYPE_CONTRACTOR,

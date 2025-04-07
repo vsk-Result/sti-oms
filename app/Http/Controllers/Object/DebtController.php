@@ -18,8 +18,11 @@ class DebtController extends Controller
         $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER, ['with_sorted_details' => true]);
         $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE, ['with_sorted_details' => true]);
 
+        $hasExpiredManualUpload = $this->pivotObjectDebtService->hasExpiredManualPivots($object->id);
+
         return view('objects.tabs.debts', compact(
                 'object', 'contractorDebts', 'providerDebts', 'serviceDebts',
+                'hasExpiredManualUpload'
             )
         );
     }
