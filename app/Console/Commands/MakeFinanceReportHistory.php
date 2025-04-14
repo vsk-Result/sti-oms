@@ -498,6 +498,11 @@ class MakeFinanceReportHistory extends HandledCommand
                             $prognozAmountWithoutNDS = 0;
                         }
 
+                        if (in_array($object->code, ['369', '360'])) {
+                            $prognozAmount = 0;
+                            $prognozAmountWithoutNDS = 0;
+                        }
+
                         foreach ($object->planPayments as $planPayment) {
                             if ($field === $planPayment->field) {
                                 if ($planPayment->isAutoCalculation()) {
