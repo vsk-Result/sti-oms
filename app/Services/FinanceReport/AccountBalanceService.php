@@ -46,4 +46,19 @@ class AccountBalanceService
 
         return $balances;
     }
+
+    public function getCurrentAccounts(): array
+    {
+        $accounts = [];
+        $balances = $this->getBalances(Carbon::now(), Company::getSTI());
+        foreach ($balances['banks'] as $balanceName => $balance) {
+            if ((float) $balance['RUB'] >= 500000) {
+                $accounts[$balanceName] = (float) $balance['RUB'];
+            }
+        }
+
+        arsort($accounts);
+
+        return $accounts;
+    }
 }

@@ -71,8 +71,8 @@
                 >
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
-                            <th class="min-w-400px ps-2"></th>
-                            <th class="min-w-50px">Код объекта</th>
+                            <th class="min-w-400px ps-2 text-start">Остаток денежных средств на начало дня на счетах: <span class="fw-boldest">{{ \Carbon\Carbon::now()->format('d.m.Y') }}</span></th>
+                            <th class="min-w-50px">Сумма</th>
                             @foreach($periods as $period)
                                 <th class="min-w-250px">{{ $period['format'] }}</th>
                             @endforeach
@@ -82,9 +82,26 @@
                     </thead>
 
                     <tbody class="text-gray-600 fw-bold fs-7">
+                    @foreach($accounts as $accountName => $amount)
+                        <tr class="text-start text-muted fs-8 gs-0">
+                            <td class="min-w-400px ps-8 fw-bolder">{{ $accountName }}</td>
+                            <td class="min-w-50px text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
+
+                            @foreach($periods as $period)
+                                <td class="min-w-250px text-right fst-italic">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                            @endforeach
+
+                            <td class="min-w-250px text-right pe-2 fst-italic">
+                                {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                            </td>
+                        </tr>
+                    @endforeach
+
                     <tr class="text-start text-muted fw-bolder fs-7 gs-0 total-row">
                         <td class="min-w-400px ps-2">САЛЬДО ИТОГО, в том числе:</td>
-                        <td class="min-w-50px"></td>
+                        <td class="min-w-50px text-center">Код объекта</td>
 
                         @php
                             $total = 0;
@@ -567,6 +584,32 @@
                         </tr>
 
                         @php
+                            $officeObjectId = \App\Models\Object\BObject::where('code', '27.1')->first()->id;
+                        @endphp
+
+                        <tr>
+                            <td class="ps-2">27.1</td>
+                            <td></td>
+
+                            @php
+                                $totalOfficeObject = 0;
+                            @endphp
+                            @foreach($periods as $period)
+                                @php
+                                    $amount = $cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0;
+                                    $totalOfficeObject += $amount;
+                                @endphp
+                                <td class="text-right fw-bolder">
+                                    {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                                </td>
+                            @endforeach
+
+                            <td class="text-right fw-bolder pe-2">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalOfficeObject, 'RUB', 0, true) }}
+                            </td>
+                        </tr>
+
+                        @php
                             $planGroupedPaymentAmount = [];
                             foreach ($planPaymentGroups as $group) {
                                 if ($group->payments->count() === 0) {
@@ -749,7 +792,7 @@
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
                                     if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']];
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
                                     } else {
                                         $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
                                     }
@@ -776,7 +819,7 @@
                                     $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
                                     if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']];
+                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
                                     } else {
                                         $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
                                     }

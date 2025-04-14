@@ -9,6 +9,7 @@ use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
 use App\Services\CashFlow\NotificationService;
+use App\Services\FinanceReport\AccountBalanceService;
 use App\Services\PlanPaymentService;
 use App\Services\ReceivePlanService;
 use Carbon\Carbon;
@@ -17,15 +18,12 @@ use Illuminate\Http\Request;
 
 class CashFlowController extends Controller
 {
-    private ReceivePlanService $receivePlanService;
-    private NotificationService $notificationService;
-
-    public function __construct(ReceivePlanService $receivePlanService, NotificationService $notificationService, PlanPaymentService $planPaymentService)
-    {
-        $this->receivePlanService = $receivePlanService;
-        $this->notificationService = $notificationService;
-        $this->planPaymentService = $planPaymentService;
-    }
+    public function __construct(
+        private ReceivePlanService $receivePlanService,
+        private NotificationService $notificationService,
+        private PlanPaymentService $planPaymentService,
+        private AccountBalanceService $accountBalanceService
+    ) {}
 
     public function index(Request $request): View
     {
@@ -58,6 +56,8 @@ class CashFlowController extends Controller
             $this->planPaymentService->destroyPlanPayment(['payment_id' => $aho->id]);
         }
 
+        $accounts = $this->accountBalanceService->getCurrentAccounts();
+
         $viewName = $request->get('view_name');
         $view = 'pivots.cash-flow.index';
 
@@ -71,7 +71,7 @@ class CashFlowController extends Controller
                 'periods', 'objects', 'plans', 'period',
                'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
                 'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments',
-                'cfPayments', 'viewName'
+                'cfPayments', 'viewName', 'accounts'
             )
         );
     }
