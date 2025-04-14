@@ -18,7 +18,9 @@ class Export implements WithMultipleSheets
 
     public function sheets(): array
     {
-        if ($this->requestData['view_name'] === 'view_two') {
+        $viewName = $this->requestData['view_name'] ?? '';
+
+        if ($viewName === 'view_two') {
             return [
                 new PivotSheetTwo(
                     $this->receivePlanService,
