@@ -19,7 +19,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-12 mb-4">
                             <div class="form-group mb-3">
                                 <label class="form-label">Вид отчета</label>
                                 <select
@@ -31,6 +31,24 @@
                                 >
                                     <option value="view_one" {{ $viewName !== 'view_two' ? 'selected' : '' }}>Расходы в объектах</option>
                                     <option value="view_two" {{ $viewName === 'view_two' ? 'selected' : '' }}>Расходы под общими затратами</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Объект</label>
+                                <select
+                                    id="filter-object"
+                                    name="object_id[]"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterCashFlowModal"
+                                    multiple
+                                >
+                                    @foreach($objects as $obj)
+                                        <option value="{{ $obj->id }}" {{ in_array($obj->id, request()->input('object_id', [])) ? 'selected' : '' }}>{{ $obj->code . ' ' . $obj->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
