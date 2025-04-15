@@ -84,6 +84,8 @@ class PivotSheet implements
 
         $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
 
+        $filteredObjects = $this->requestData['object_id'] ?? [];
+
         $row = count($accounts) + 2;
         $sheet->setCellValue('A' . $row, 'САЛЬДО ИТОГО, в том числе:');
         $sheet->setCellValue('B' . $row, 'Код объекта');
@@ -209,6 +211,10 @@ class PivotSheet implements
 
         $row = $row + 4;
         foreach($objects as $object) {
+
+            if (count($filteredObjects) > 0 && ! in_array($object->id, $filteredObjects)) {
+                continue;
+            }
 
             $totalReceive = 0;
             $totalPayment = 0;

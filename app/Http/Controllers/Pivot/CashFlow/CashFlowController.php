@@ -41,6 +41,8 @@ class CashFlowController extends Controller
         $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
         $objectList = BObject::active()->get();
 
+        $filteredObjects = $request->get('object_id', []);
+
         $isNotificationsAvailable = in_array(auth()->id(), $this->notificationService->getTargetUserIds());
         $newNotifications = $this->notificationService->getNewNotifications();
         $historyNotifications = $this->notificationService->getHistoryNotifications();
@@ -71,7 +73,7 @@ class CashFlowController extends Controller
                 'periods', 'objects', 'plans', 'period',
                'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
                 'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments',
-                'cfPayments', 'viewName', 'accounts'
+                'cfPayments', 'viewName', 'accounts', 'filteredObjects'
             )
         );
     }

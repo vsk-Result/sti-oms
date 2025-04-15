@@ -308,6 +308,10 @@
 
                         @foreach($objects as $object)
                             @php
+                                if (count($filteredObjects) > 0 && ! in_array($object->id, $filteredObjects)) {
+                                    continue;
+                                }
+
                                 $totalReceive = 0;
                                 $totalPayment = 0;
                                 $totalSaldo = 0;
@@ -453,7 +457,11 @@
 
                                 @if (is_valid_amount_in_range($totalContractors))
                                     <tr>
-                                        <td class="ps-8 fs-8 fst-italic">Работы</td>
+                                        <td class="ps-8 fs-8 fst-italic">
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="contractors-cf">+</span>
+
+                                            Работы
+                                        </td>
                                         <td></td>
 
                                         @php
@@ -474,11 +482,40 @@
                                             {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
                                         </td>
                                     </tr>
+
+                                    @foreach($cfPayments['objects_details'][$object->id]['contractors'] as $contractorName => $info)
+                                        <tr class="collapse-row" data-trigger="contractors-cf" style="display: none;">
+                                            <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
+                                            <td></td>
+
+                                            @php
+                                                $total = 0;
+                                            @endphp
+                                            @foreach($periods as $period)
+                                                @php
+                                                    $amount = $info[$period['start']] ?? 0;
+                                                    $total += $amount;
+                                                @endphp
+
+                                                <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                            @endforeach
+
+                                            <td class="text-right fs-8 fst-italic pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 @endif
 
                                 @if (is_valid_amount_in_range($totalProviders))
                                     <tr>
-                                        <td class="ps-8 fs-8 fst-italic">Материалы</td>
+                                        <td class="ps-8 fs-8 fst-italic">
+                                            @if ($object->code !== '363')
+                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-cf">+</span>
+                                            @endif
+
+                                            Материалы
+                                        </td>
                                         <td></td>
 
                                         @php
@@ -500,10 +537,39 @@
                                         </td>
                                     </tr>
 
+                                    @if ($object->code !== '363')
+                                        @foreach($cfPayments['objects_details'][$object->id]['providers'] as $contractorName => $info)
+                                            <tr class="collapse-row" data-trigger="providers-cf" style="display: none;">
+                                                <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
+                                                <td></td>
+
+                                                @php
+                                                    $total = 0;
+                                                @endphp
+                                                @foreach($periods as $period)
+                                                    @php
+                                                        $amount = $info[$period['start']] ?? 0;
+                                                        $total += $amount;
+                                                    @endphp
+
+                                                    <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                                @endforeach
+
+                                                <td class="text-right fs-8 fst-italic pe-2">
+                                                    {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+
                                     @if ($object->code === '363')
 
                                         <tr>
-                                            <td class="ps-10 fs-8 fst-italic">- фиксированная часть</td>
+                                            <td class="ps-10 fs-8 fst-italic">
+                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-fix-cf">+</span>
+
+                                                - фиксированная часть
+                                            </td>
                                             <td></td>
 
                                             @php
@@ -525,8 +591,35 @@
                                             </td>
                                         </tr>
 
+                                        @foreach($cfPayments['objects_details'][$object->id]['providers_fix'] as $contractorName => $info)
+                                            <tr class="collapse-row" data-trigger="providers-fix-cf" style="display: none;">
+                                                <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
+                                                <td></td>
+
+                                                @php
+                                                    $total = 0;
+                                                @endphp
+                                                @foreach($periods as $period)
+                                                    @php
+                                                        $amount = $info[$period['start']] ?? 0;
+                                                        $total += $amount;
+                                                    @endphp
+
+                                                    <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                                @endforeach
+
+                                                <td class="text-right fs-8 fst-italic pe-2">
+                                                    {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+
                                         <tr>
-                                            <td class="ps-10 fs-8 fst-italic">- изменяемая часть</td>
+                                            <td class="ps-10 fs-8 fst-italic">
+                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-float-cf">+</span>
+
+                                                - изменяемая часть
+                                            </td>
                                             <td></td>
 
                                             @php
@@ -548,12 +641,39 @@
                                             </td>
                                         </tr>
 
+                                        @foreach($cfPayments['objects_details'][$object->id]['providers_float'] as $contractorName => $info)
+                                            <tr class="collapse-row" data-trigger="providers-float-cf" style="display: none;">
+                                                <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
+                                                <td></td>
+
+                                                @php
+                                                    $total = 0;
+                                                @endphp
+                                                @foreach($periods as $period)
+                                                    @php
+                                                        $amount = $info[$period['start']] ?? 0;
+                                                        $total += $amount;
+                                                    @endphp
+
+                                                    <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                                @endforeach
+
+                                                <td class="text-right fs-8 fst-italic pe-2">
+                                                    {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+
                                     @endif
                                 @endif
 
                                 @if (is_valid_amount_in_range($totalService))
                                     <tr>
-                                        <td class="ps-8 fs-8 fst-italic">Накладные/Услуги</td>
+                                        <td class="ps-8 fs-8 fst-italic">
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-cf">+</span>
+
+                                            Накладные/Услуги
+                                        </td>
                                         <td></td>
 
                                         @php
@@ -574,6 +694,29 @@
                                             {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
                                         </td>
                                     </tr>
+
+                                    @foreach($cfPayments['objects_details'][$object->id]['service'] as $contractorName => $info)
+                                        <tr class="collapse-row" data-trigger="service-cf" style="display: none;">
+                                            <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
+                                            <td></td>
+
+                                            @php
+                                                $total = 0;
+                                            @endphp
+                                            @foreach($periods as $period)
+                                                @php
+                                                    $amount = $info[$period['start']] ?? 0;
+                                                    $total += $amount;
+                                                @endphp
+
+                                                <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                            @endforeach
+
+                                            <td class="text-right fs-8 fst-italic pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 @endif
                             @endif
 
@@ -1053,6 +1196,7 @@
                 );
             });
         });
+
     </script>
 @endpush
 
