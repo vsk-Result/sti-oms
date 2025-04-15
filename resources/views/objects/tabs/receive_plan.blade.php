@@ -87,12 +87,28 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="ps-5">Работы</td>
+                                    <td class="ps-5">
+                                        @if (count($cfPayments['details']['contractors']) > 0)
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="contractors-cf">+</span>
+                                        @endif
+
+                                        Работы
+                                    </td>
 
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['contractors'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
+
+                                @foreach($cfPayments['details']['contractors'] as $contractorName => $info)
+                                    <tr class="collapse-row" data-trigger="contractors-cf" style="display: none;">
+                                        <td class="ps-10 fs-8 fst-italic">{{ $contractorName }}</td>
+
+                                        @foreach($periods as $period)
+                                            <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
 
                                 <tr>
                                     <td class="ps-5 fw-bold">Материалы</td>
@@ -103,28 +119,76 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="ps-9">Фиксированная часть</td>
+                                    <td class="ps-9">
+                                        @if (count($cfPayments['details']['providers_fix']) > 0)
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-fix-cf">+</span>
+                                        @endif
+
+                                        Фиксированная часть
+                                    </td>
 
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_fix'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
 
+                                @foreach($cfPayments['details']['providers_fix'] as $contractorName => $info)
+                                    <tr class="collapse-row" data-trigger="providers-fix-cf" style="display: none;">
+                                        <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
+
+                                        @foreach($periods as $period)
+                                            <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+
                                 <tr>
-                                    <td class="ps-9">Изменяемая часть</td>
+                                    <td class="ps-9">
+                                        @if (count($cfPayments['details']['providers_float']) > 0)
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-float-cf">+</span>
+                                        @endif
+
+                                        Изменяемая часть
+                                    </td>
 
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_float'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
 
+                                @foreach($cfPayments['details']['providers_float'] as $contractorName => $info)
+                                    <tr class="collapse-row" data-trigger="providers-float-cf" style="display: none;">
+                                        <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
+
+                                        @foreach($periods as $period)
+                                            <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+
                                 <tr>
-                                    <td class="ps-5">Накладные/Услуги</td>
+                                    <td class="ps-5">
+                                        @if (count($cfPayments['details']['service']) > 0)
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-cf">+</span>
+                                        @endif
+
+                                        Накладные/Услуги
+                                    </td>
 
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['service'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
+
+                                @foreach($cfPayments['details']['service'] as $contractorName => $info)
+                                    <tr class="collapse-row" data-trigger="service-cf" style="display: none;">
+                                        <td class="ps-10 fs-8 fst-italic">{{ $contractorName }}</td>
+
+                                        @foreach($periods as $period)
+                                            <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
 
                                 <tr class="total-row">
                                     <td class="ps-2 fw-bolder">Сальдо ИТОГО</td>
@@ -194,5 +258,21 @@
                 );
             }
         });
+
+        $('.collapse-trigger').on('click', function() {
+            const $tr = $(this);
+            const trigger = $tr.data('trigger');
+            const isCollapsed = $tr.hasClass('collapsed');
+
+            if (isCollapsed) {
+                $tr.text('+');
+                $tr.removeClass('collapsed');
+                $(`.collapse-row[data-trigger="${trigger}"]`).hide();
+            } else {
+                $tr.text('-');
+                $tr.addClass('collapsed');
+                $(`.collapse-row[data-trigger="${trigger}"]`).show();
+            }
+        })
     </script>
 @endpush

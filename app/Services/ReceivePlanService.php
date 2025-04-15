@@ -244,6 +244,12 @@ class ReceivePlanService
             'providers_fix' => [],
             'providers_float' => [],
             'service' => [],
+            'details' => [
+                'contractors' => [],
+                'providers_fix' => [],
+                'providers_float' => [],
+                'service' => [],
+            ]
         ];
 
         $info = Cache::get('cash_flow_1c_data', []);
@@ -267,15 +273,23 @@ class ReceivePlanService
             foreach ($contractors as $contractor) {
                 $date = Carbon::parse($contractor['date'])->format('Y-m-d');
 
+                if (! isset($payments['details']['contractors'][$contractor['organization']][$period['start']])) {
+                    $payments['details']['contractors'][$contractor['organization']][$period['start']] = 0;
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
                         $payments['contractors'][$period['start']] += $contractor['amount'];
                         $payments['total'][$period['start']] += $contractor['amount'];
+
+                        $payments['details']['contractors'][$contractor['organization']][$period['start']] += $contractor['amount'];
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
                         $payments['contractors'][$period['start']] += $contractor['amount'];
                         $payments['total'][$period['start']] += $contractor['amount'];
+
+                        $payments['details']['contractors'][$contractor['organization']][$period['start']] += $contractor['amount'];
                     }
                 }
             }
@@ -283,15 +297,23 @@ class ReceivePlanService
             foreach ($providersFix as $fix) {
                 $date = Carbon::parse($fix['date'])->format('Y-m-d');
 
+                if (! isset($payments['details']['providers_fix'][$fix['organization']][$period['start']])) {
+                    $payments['details']['providers_fix'][$fix['organization']][$period['start']] = 0;
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
                         $payments['providers_fix'][$period['start']] += $fix['amount'];
                         $payments['total'][$period['start']] += $fix['amount'];
+
+                        $payments['details']['providers_fix'][$fix['organization']][$period['start']] += $fix['amount'];
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
                         $payments['providers_fix'][$period['start']] += $fix['amount'];
                         $payments['total'][$period['start']] += $fix['amount'];
+
+                        $payments['details']['providers_fix'][$fix['organization']][$period['start']] += $fix['amount'];
                     }
                 }
             }
@@ -299,15 +321,23 @@ class ReceivePlanService
             foreach ($providersFloat as $float) {
                 $date = Carbon::parse($float['date'])->format('Y-m-d');
 
+                if (! isset($payments['details']['providers_float'][$float['organization']][$period['start']])) {
+                    $payments['details']['providers_float'][$float['organization']][$period['start']] = 0;
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
                         $payments['providers_float'][$period['start']] += $float['amount'];
                         $payments['total'][$period['start']] += $float['amount'];
+
+                        $payments['details']['providers_float'][$float['organization']][$period['start']] += $float['amount'];
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
                         $payments['providers_float'][$period['start']] += $float['amount'];
                         $payments['total'][$period['start']] += $float['amount'];
+
+                        $payments['details']['providers_float'][$float['organization']][$period['start']] += $float['amount'];
                     }
                 }
             }
@@ -315,15 +345,23 @@ class ReceivePlanService
             foreach ($service as $ser) {
                 $date = Carbon::parse($ser['date'])->format('Y-m-d');
 
+                if (! isset($payments['details']['service'][$ser['organization']][$period['start']])) {
+                    $payments['details']['service'][$ser['organization']][$period['start']] = 0;
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
                         $payments['service'][$period['start']] += $ser['amount'];
                         $payments['total'][$period['start']] += $ser['amount'];
+
+                        $payments['details']['service'][$ser['organization']][$period['start']] += $ser['amount'];
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
                         $payments['service'][$period['start']] += $ser['amount'];
                         $payments['total'][$period['start']] += $ser['amount'];
+
+                        $payments['details']['service'][$ser['organization']][$period['start']] += $ser['amount'];
                     }
                 }
             }

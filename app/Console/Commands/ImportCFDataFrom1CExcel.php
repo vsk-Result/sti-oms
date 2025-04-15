@@ -40,11 +40,12 @@ class ImportCFDataFrom1CExcel extends HandledCommand
                     continue;
                 }
 
+                $organization = trim($row[3] ?? '');
                 $group = trim($row[4] ?? '');
                 $date = trim($row[14] ?? '');
                 $amount = $row[9] ?? 0;
                 $objectCode = trim($row[10] ?? '');
-                $materialType = trim($row[19] ?? '');
+                $materialType = trim($row[23] ?? '');
 
                 if (empty($amount) || empty($objectCode) || ! is_valid_amount_in_range($amount)) {
                     continue;
@@ -69,6 +70,7 @@ class ImportCFDataFrom1CExcel extends HandledCommand
                     $info[$object->id]['contractors'][] = [
                         'date' => $date,
                         'amount' => -$amount,
+                        'organization' => $organization,
                     ];
                 }
 
@@ -77,11 +79,13 @@ class ImportCFDataFrom1CExcel extends HandledCommand
                         $info[$object->id]['providers_float'][] = [
                             'date' => $date,
                             'amount' => -$amount,
+                            'organization' => $organization,
                         ];
                     } else {
                         $info[$object->id]['providers_fix'][] = [
                             'date' => $date,
                             'amount' => -$amount,
+                            'organization' => $organization,
                         ];
                     }
                 }
@@ -90,6 +94,7 @@ class ImportCFDataFrom1CExcel extends HandledCommand
                     $info[$object->id]['service'][] = [
                         'date' => $date,
                         'amount' => -$amount,
+                        'organization' => $organization,
                     ];
                 }
             }
