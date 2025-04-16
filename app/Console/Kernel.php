@@ -39,6 +39,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:update-crm-salary')->twiceDaily(12, 19);
         $schedule->command('oms:notify-to-bosses-email-about-object-balance')->mondays()->at('16:00');
         $schedule->command('oms:get-debts-files-from-one-c')->hourly();
+        $schedule->command('oms:import-itr-salary-debts-from-1c-excel')->hourly();
         $schedule->command('oms:schedule-export-tasks-runner')->everyMinute();
         $schedule->command('oms:notify-to-email-about-crm-cash-check')->everyTenMinutes();
     }

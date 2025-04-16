@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
 
@@ -218,12 +219,6 @@ class BObject extends Model implements Audit
             ->sum('amount');
     }
 
-    public function getITRSalaryDebt(): float
-    {
-        $ITRSalaryObject = ItrSalary::where('kod', 'LIKE', '%' . $this->code. '%')->get();
-        return $ITRSalaryObject->sum('paid') - $ITRSalaryObject->sum('total');
-    }
-
     public function getWorkSalaryDebt(): float
     {
         $amount = 0;
@@ -234,6 +229,17 @@ class BObject extends Model implements Audit
         }
 
         return min($amount, 0);
+    }
+
+    public function getITRSalaryDebt(): float
+    {
+        $debts = Cache::get('itr_salary_1c_data', []);
+
+        if (! isset($debts[$this->code])) {
+            return 0;
+        }
+
+        return $debts[$this->code]['total_amount'];
     }
 
     public function getWorkSalaryDebtDetails(): array
@@ -285,6 +291,17 @@ class BObject extends Model implements Audit
         }
 
         return $details;
+    }
+
+    public function getITRSalaryDebtDetails(): array
+    {
+        $debts = Cache::get('itr_salary_1c_data', []);
+
+        if (! isset($debts[$this->code])) {
+            return [];
+        }
+
+        return $debts[$this->code]['details'];
     }
 
     public function scopeActive($query, $withCodes = null)

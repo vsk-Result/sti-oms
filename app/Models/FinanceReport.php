@@ -91,7 +91,7 @@ class FinanceReport
             'Долг поставщикам (Фиксированная часть контракта)' => 'provider_debt_fix',
             'Долг поставщикам (Изменяемая часть контракта)' => 'provider_debt_float',
             'Долг за услуги' => 'service_debt',
-            // 'Долг на зарплаты ИТР' => 'itr_salary_debt',
+             'Долг на зарплаты ИТР' => 'itr_salary_debt',
             'Долг на зарплаты рабочим' => 'workers_salary_debt',
             'Долг по налогам' => 'tax_debt',
             'Долги ИТОГО' => 'total_debts',

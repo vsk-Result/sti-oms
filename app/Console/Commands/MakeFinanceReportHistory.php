@@ -793,7 +793,7 @@ class MakeFinanceReportHistory extends HandledCommand
                     $total[$year][$object->code]['tax_debt'] = $taxDebtAmount;
                     $total[$year][$object->code]['tax_debt_without_nds'] = $taxDebtAmount;
 
-//                    $total[$year][$object->code]['itr_salary_debt'] = $ITRSalaryDebt;
+                    $total[$year][$object->code]['itr_salary_debt'] = $ITRSalaryDebt;
 
                     $total[$year][$object->code]['workers_salary_debt'] = $workSalaryDebt;
                     $total[$year][$object->code]['workers_salary_debt_without_nds'] = $workSalaryDebt;
@@ -880,7 +880,6 @@ class MakeFinanceReportHistory extends HandledCommand
                 $summary[$year]['general_balance_service'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] * $summary[$year]['general_balance'];
             }
         } catch (\Exception $e) {
-            dd($e);
             $this->sendErrorMessage('Ошибка в расчете: ' . $e->getMessage());
             $this->endProcess();
             return 0;
