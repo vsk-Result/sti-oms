@@ -63,9 +63,7 @@ class AccountBalanceService
                 continue;
             }
 
-            if ((float) $balance['RUB'] >= 500000) {
-                $accounts[$balanceName] = (float) $balance['RUB'];
-            }
+            $accounts[$balanceName] = (float) $balance['RUB'];
         }
 
         arsort($accounts);
