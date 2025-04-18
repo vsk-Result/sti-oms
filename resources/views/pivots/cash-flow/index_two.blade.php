@@ -72,7 +72,7 @@
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                             <th class="min-w-400px ps-2 text-start">Остаток денежных средств на начало дня на счетах: <span class="fw-boldest">{{ \Carbon\Carbon::now()->format('d.m.Y') }}</span></th>
-                            <th class="min-w-50px">Сумма</th>
+                            <th class="min-w-125px">{{ \App\Models\CurrencyExchangeRate::format(array_sum($accounts), 'RUB', 0, true) }}</th>
                             @foreach($periods as $period)
                                 <th class="min-w-250px">{{ $period['format'] }}</th>
                             @endforeach

@@ -49,9 +49,20 @@ class AccountBalanceService
 
     public function getCurrentAccounts(): array
     {
+        $accountToShow = [
+            'ПАО "ВТБ"',
+            'ПАО "Сбербанк"',
+            'ПАО "Промсвязьбанк"',
+            'АО "КУБ"',
+        ];
+
         $accounts = [];
         $balances = $this->getBalances(Carbon::now(), Company::getSTI());
         foreach ($balances['banks'] as $balanceName => $balance) {
+            if (! in_array($balanceName, $accountToShow)) {
+                continue;
+            }
+
             if ((float) $balance['RUB'] >= 500000) {
                 $accounts[$balanceName] = (float) $balance['RUB'];
             }
