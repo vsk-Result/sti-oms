@@ -109,7 +109,7 @@
                         @foreach($periods as $period)
                             @php
                                 $receive = $plans->where('date', $period['start'])->sum('amount');
-                                $payments = $cfPayments['total']['all'][$period['start']];
+                                $payments = $cfPayments['total']['all'][$period['start']] ?? 0;
                                 $total += $receive + $payments;
                             @endphp
                             <td class="min-w-250px text-right">
