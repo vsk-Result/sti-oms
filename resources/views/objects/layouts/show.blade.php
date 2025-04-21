@@ -45,9 +45,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary me-6 {{ request()->is('*/receive-plan') ? 'active' : '' }}" href="{{ route('objects.receive_plan.index', $object) }}?object_id%5B%5D={{ $object->id }}">Cash Flow</a>
                             </li>
-                            <li class="nav-item d-flex flex-row align-items-center">
-                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/check') ? 'active' : '' }}" href="{{ route('objects.check.index', $object) }}?object_id%5B%5D={{ $object->id }}">Проверка</a>
-                            </li>
+{{--                            <li class="nav-item d-flex flex-row align-items-center">--}}
+{{--                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/check') ? 'active' : '' }}" href="{{ route('objects.check.index', $object) }}?object_id%5B%5D={{ $object->id }}">Проверка</a>--}}
+{{--                            </li>--}}
 {{--                            <li class="nav-item">--}}
 {{--                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/deposits') ? 'active' : '' }}" href="{{ route('objects.deposits.index', $object) }}?object_id%5B%5D={{ $object->id }}">Депозиты без БГ</a>--}}
 {{--                            </li>--}}
