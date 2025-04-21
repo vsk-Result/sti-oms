@@ -19,11 +19,11 @@ class ImportCFDataFrom1CExcel extends HandledCommand
 
     public function handle()
     {
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         try {
 
@@ -42,10 +42,10 @@ class ImportCFDataFrom1CExcel extends HandledCommand
 
                 $organization = trim($row[3] ?? '');
                 $group = trim($row[4] ?? '');
-                $date = trim($row[14] ?? '');
+                $date = trim($row[8] ?? '');
                 $amount = $row[9] ?? 0;
-                $objectCode = trim($row[10] ?? '');
-                $materialType = trim($row[23] ?? '');
+                $objectCode = trim($row[12] ?? '');
+                $materialType = trim($row[25] ?? '');
 
                 if (empty($amount) || empty($objectCode) || ! is_valid_amount_in_range($amount)) {
                     continue;
