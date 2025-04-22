@@ -410,13 +410,13 @@ class PaymentService
 
         $amountGroupedByObjectCode = [];
         foreach ($avansImport->items as $item) {
-            if (! isset($amountGroupedByObjectCode[$item->avans->code])) {
-                $amountGroupedByObjectCode[$item->avans->code] = 0;
-            }
-            $amountGroupedByObjectCode[$item->avans->code] += $item->avans->value;
-        }
+            $type = $item->avans->is_engeneer == true ? 'itr' : 'work';
 
-        $costCode = $avansImport->type === 'Зарплата' ? '7.9' : '7.8';
+            if (! isset($amountGroupedByObjectCode[$item->avans->code][$type])) {
+                $amountGroupedByObjectCode[$item->avans->code][$type] = 0;
+            }
+            $amountGroupedByObjectCode[$item->avans->code][$type] += $item->avans->value;
+        }
 
         $company = Company::find(1);
         $organizationSenderId = $company->organizations()->first()->id;
@@ -429,41 +429,47 @@ class PaymentService
 
         $payments = [];
         $codesWithoutWorktype = BObject::getCodesWithoutWorktype();
-        foreach ($amountGroupedByObjectCode as $oCode => $amount) {
+        foreach ($amountGroupedByObjectCode as $oCode => $info) {
 
-            $worktypeCode = null;
+            foreach ($info as $type => $amount) {
 
-            if (isset($codesWithoutWorktype[$oCode])) {
-                $code = $codesWithoutWorktype[$oCode];
-            } else {
-                $code = $oCode;
-                $code = substr($code, 0, strpos($code, '.'));
+                $costCode = $avansImport->type === 'Зарплата' ? '7.9' : '7.8';
+                $costCode = $type === 'itr' ? ($costCode . '.1') : ($costCode . '.2');
 
-                if (str_contains($oCode, '.')) {
-                    $worktypeCode = (int) substr($oCode, strpos($oCode, '.') + 1);
+                $worktypeCode = null;
+
+                if (isset($codesWithoutWorktype[$oCode])) {
+                    $code = $codesWithoutWorktype[$oCode];
+                } else {
+                    $code = $oCode;
+                    $code = substr($code, 0, strpos($code, '.'));
+
+                    if (str_contains($oCode, '.')) {
+                        $worktypeCode = (int)substr($oCode, strpos($oCode, '.') + 1);
+                    }
                 }
-            }
 
-            $payments[] = $this->createPayment([
-                'company_id' => $company->id,
-                'bank_id' => 1,
-                'import_id' => $payment->import_id,
-                'object_id' => BObject::where('code', $code)->first()->id ?? null,
-                'object_worktype_id' => $worktypeCode,
-                'organization_sender_id' => $organizationSenderId,
-                'organization_receiver_id' => $organizationReceiverId,
-                'type_id' => Payment::TYPE_OBJECT,
-                'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
-                'code' => $costCode,
-                'category' => Payment::CATEGORY_SALARY,
-                'description' => $payment->description,
-                'date' => $import->date,
-                'amount' => (float) -$amount,
-                'amount_without_nds' => (float) -$amount,
-                'is_need_split' => false,
-                'was_split' => true,
-                'status_id' => Status::STATUS_ACTIVE
-            ]);
+                $payments[] = $this->createPayment([
+                    'company_id' => $company->id,
+                    'bank_id' => 1,
+                    'import_id' => $payment->import_id,
+                    'object_id' => BObject::where('code', $code)->first()->id ?? null,
+                    'object_worktype_id' => $worktypeCode,
+                    'organization_sender_id' => $organizationSenderId,
+                    'organization_receiver_id' => $organizationReceiverId,
+                    'type_id' => Payment::TYPE_OBJECT,
+                    'payment_type_id' => Payment::PAYMENT_TYPE_NON_CASH,
+                    'code' => $costCode,
+                    'category' => Payment::CATEGORY_SALARY,
+                    'description' => $payment->description,
+                    'date' => $import->date,
+                    'amount' => (float)-$amount,
+                    'amount_without_nds' => (float)-$amount,
+                    'is_need_split' => false,
+                    'was_split' => true,
+                    'status_id' => Status::STATUS_ACTIVE
+                ]);
+            }
         }
 
         $this->destroyPayment($payment);

@@ -90,6 +90,7 @@ class MoneyRegistryService
             $avans->value = $employeeInfo['amount'];
             $avans->is_read = false;
             $avans->finance_flag = false;
+            $avans->is_engeneer = $employeeInfo['type'] !== 'Рабочий';
             $avans->save();
 
             $item = new AvansImportItem();
