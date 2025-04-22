@@ -289,9 +289,9 @@
                             @foreach($periods as $index => $period)
                                 @php
                                     if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']];
+                                        $amount = -abs($CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
                                     } else {
-                                        $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
+                                        $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
                                     }
                                 @endphp
                                 <td class="min-w-250px text-right">
@@ -324,7 +324,7 @@
                                     $amount = $cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0;
                                     $totalOfficeObject += $amount;
                                 @endphp
-                                <td class="text-right fw-bolder">
+                                <td class="text-right">
                                     {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
                                 </td>
                             @endforeach
@@ -534,7 +534,7 @@
                                 @endphp
                                 @foreach($periods as $index => $period)
                                     @php
-                                        $amount = $planGroupedPaymentAmount[$group->name][$period['id']];
+                                        $amount = -abs($planGroupedPaymentAmount[$group->name][$period['id']]);
                                         $groupTotal += $amount;
                                     @endphp
 
@@ -570,7 +570,7 @@
                                 @foreach($periods as $index => $period)
                                     @php
                                         if ($index === 0) {
-                                            $amount = $paymentAmount;
+                                            $amount = -abs($paymentAmount);
                                         } else {
                                             $amount = 0;
                                         }

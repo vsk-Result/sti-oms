@@ -70,12 +70,12 @@
                         data-date="{{ $period['start'] }}"
                 />
             @else
-                {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                {{ \App\Models\CurrencyExchangeRate::format(-abs($amount), 'RUB', 0, true) }}
             @endif
         </td>
     @endforeach
 
     <td class="text-right pe-2">
-        {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+        {{ \App\Models\CurrencyExchangeRate::format(-abs($total), 'RUB', 0, true) }}
     </td>
 </tr>
