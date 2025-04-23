@@ -568,7 +568,7 @@
                                             <td class="ps-10 fs-8 fst-italic">
                                                 <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-fix-cf">+</span>
 
-                                                - фиксированная часть
+                                                фиксированная часть
                                             </td>
                                             <td></td>
 
@@ -618,7 +618,7 @@
                                             <td class="ps-10 fs-8 fst-italic">
                                                 <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-float-cf">+</span>
 
-                                                - изменяемая часть
+                                                изменяемая часть
                                             </td>
                                             <td></td>
 
@@ -791,7 +791,7 @@
                         @endphp
 
                         @if (is_valid_amount_in_range($totalContractors))
-                            <tr class="collapse-row object-row fw-bolder" data-trigger="office-object" style="display: none;">
+                            <tr class="collapse-row object-row fw-bolder" data-trigger="office-object-{{$object->id}}" style="display: none;">
                                 <td class="ps-8 fs-8 fst-italic">
                                     Работы
                                 </td>
@@ -817,7 +817,7 @@
                             </tr>
 
                             @foreach($cfPayments['objects_details'][$officeObjectId]['contractors'] as $contractorName => $info)
-                                <tr class="collapse-row" data-trigger="office-object" style="display: none;">
+                                <tr class="collapse-row" data-trigger="office-object-{{$object->id}}" style="display: none;">
                                     <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                     <td></td>
 
