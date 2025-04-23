@@ -458,7 +458,7 @@
                                 @if (is_valid_amount_in_range($totalContractors))
                                     <tr>
                                         <td class="ps-8 fs-8 fst-italic">
-                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="contractors-cf">+</span>
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="contractors-cf-{{$object->code}}">+</span>
 
                                             Работы
                                         </td>
@@ -484,7 +484,7 @@
                                     </tr>
 
                                     @foreach($cfPayments['objects_details'][$object->id]['contractors'] as $contractorName => $info)
-                                        <tr class="collapse-row" data-trigger="contractors-cf" style="display: none;">
+                                        <tr class="collapse-row" data-trigger="contractors-cf-{{$object->code}}" style="display: none;">
                                             <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                             <td></td>
 
@@ -511,7 +511,7 @@
                                     <tr>
                                         <td class="ps-8 fs-8 fst-italic">
                                             @if ($object->code !== '363')
-                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-cf">+</span>
+                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-cf-{{$object->code}}">+</span>
                                             @endif
 
                                             Материалы
@@ -539,7 +539,7 @@
 
                                     @if ($object->code !== '363')
                                         @foreach($cfPayments['objects_details'][$object->id]['providers'] as $contractorName => $info)
-                                            <tr class="collapse-row" data-trigger="providers-cf" style="display: none;">
+                                            <tr class="collapse-row" data-trigger="providers-cf-{{$object->code}}" style="display: none;">
                                                 <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                                 <td></td>
 
@@ -566,7 +566,7 @@
 
                                         <tr>
                                             <td class="ps-10 fs-8 fst-italic">
-                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-fix-cf">+</span>
+                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-fix-cf-{{$object->code}}">+</span>
 
                                                 фиксированная часть
                                             </td>
@@ -592,7 +592,7 @@
                                         </tr>
 
                                         @foreach($cfPayments['objects_details'][$object->id]['providers_fix'] as $contractorName => $info)
-                                            <tr class="collapse-row" data-trigger="providers-fix-cf" style="display: none;">
+                                            <tr class="collapse-row" data-trigger="providers-fix-cf-{{$object->code}}" style="display: none;">
                                                 <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                                 <td></td>
 
@@ -616,7 +616,7 @@
 
                                         <tr>
                                             <td class="ps-10 fs-8 fst-italic">
-                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-float-cf">+</span>
+                                                <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="providers-float-cf-{{$object->code}}">+</span>
 
                                                 изменяемая часть
                                             </td>
@@ -642,7 +642,7 @@
                                         </tr>
 
                                         @foreach($cfPayments['objects_details'][$object->id]['providers_float'] as $contractorName => $info)
-                                            <tr class="collapse-row" data-trigger="providers-float-cf" style="display: none;">
+                                            <tr class="collapse-row" data-trigger="providers-float-cf-{{$object->code}}" style="display: none;">
                                                 <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                                 <td></td>
 
@@ -670,7 +670,7 @@
                                 @if (is_valid_amount_in_range($totalService))
                                     <tr>
                                         <td class="ps-8 fs-8 fst-italic">
-                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-cf">+</span>
+                                            <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-cf-{{$object->code}}">+</span>
 
                                             Накладные/Услуги
                                         </td>
@@ -696,7 +696,7 @@
                                     </tr>
 
                                     @foreach($cfPayments['objects_details'][$object->id]['service'] as $contractorName => $info)
-                                        <tr class="collapse-row" data-trigger="service-cf" style="display: none;">
+                                        <tr class="collapse-row" data-trigger="service-cf-{{$object->code}}" style="display: none;">
                                             <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                             <td></td>
 
@@ -791,7 +791,7 @@
                         @endphp
 
                         @if (is_valid_amount_in_range($totalContractors))
-                            <tr class="collapse-row object-row fw-bolder" data-trigger="office-object-{{$object->id}}" style="display: none;">
+                            <tr class="collapse-row object-row fw-bolder" data-trigger="office-object" style="display: none;">
                                 <td class="ps-8 fs-8 fst-italic">
                                     Работы
                                 </td>
@@ -817,7 +817,7 @@
                             </tr>
 
                             @foreach($cfPayments['objects_details'][$officeObjectId]['contractors'] as $contractorName => $info)
-                                <tr class="collapse-row" data-trigger="office-object-{{$object->id}}" style="display: none;">
+                                <tr class="collapse-row" data-trigger="office-object" style="display: none;">
                                     <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                     <td></td>
 
