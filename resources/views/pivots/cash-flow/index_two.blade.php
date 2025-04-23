@@ -10,6 +10,10 @@
     @include('pivots.cash-flow.modals.notifications')
     @include('pivots.cash-flow.modals.filter')
 
+    @php
+        $officeObjectId = \App\Models\Object\BObject::where('code', '27.1')->first()->id;
+    @endphp
+
     <div class="card mb-5 mb-xl-8 border-0">
         <div class="card-header border-0">
             <div class="card-title"></div>
@@ -304,9 +308,7 @@
                             </td>
                         </tr>
 
-                        @php
-                            $officeObjectId = \App\Models\Object\BObject::where('code', '27.1')->first()->id;
-                        @endphp
+
 
                         <tr>
                             <td class="ps-2">
