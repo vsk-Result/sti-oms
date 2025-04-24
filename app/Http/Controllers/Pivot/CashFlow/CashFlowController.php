@@ -52,6 +52,7 @@ class CashFlowController extends Controller
 
         $cfPayments = $this->receivePlanService->getCFPaymentsForAll($periods);
 
+
         $aho = PlanPayment::where('name', 'АХО')->first();
 
         if ($aho) {

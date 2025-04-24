@@ -212,7 +212,7 @@
                             @endphp
                             <tr class="object-row">
                                 <td class="ps-2 fw-bolder">{{ $object->name }}</td>
-                                <td>{{ $object->code }}</td>
+                                <td class="text-center">{{ $object->code }}</td>
 
                                 @foreach($periods as $period)
                                     @php
@@ -316,7 +316,7 @@
 
                                 Расходы офиса
                             </td>
-                            <td>27.1</td>
+                            <td class="text-center">27.1</td>
 
                             @php
                                 $totalOfficeObject = 0;
@@ -529,7 +529,7 @@
                                     <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $group->name }}">+</span>
                                     {{ $group->name }}
                                 </td>
-                                <td>{{ $group->object->code ?? '' }}</td>
+                                <td class="text-center">{{ $group->object->code ?? '' }}</td>
 
                                 @php
                                     $groupTotal = 0;
@@ -628,7 +628,7 @@
                         @endcan
 
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 total-row">
-                            <th class="min-w-400px ps-2">РАСХОДЫ ИТОГО, в том числе:</th>
+                            <th class="min-w-400px ps-2">РАСХОДЫ ОБЪЕКТОВ, в том числе:</th>
                             <th class="min-w-50px"></th>
 
                             @php
@@ -723,7 +723,7 @@
 
                             <tr class="object-row">
                                 <td class="ps-2 fw-bolder">{{ $object->name }}</td>
-                                <td>{{ $object->code }}</td>
+                                <td class="text-center">{{ $object->code }}</td>
 
                                 @foreach($periods as $period)
                                     @php

@@ -46,7 +46,7 @@ class PlanPaymentEntryService
         return PlanPaymentEntry::create([
             'payment_id' => $requestData['payment_id'],
             'date' => $requestData['date'],
-            'amount' => $amount,
+            'amount' => -abs($amount),
             'status_id' => Status::STATUS_ACTIVE,
         ]);
     }
@@ -63,7 +63,7 @@ class PlanPaymentEntryService
         );
 
         $entry->update([
-            'amount' => $newAmount
+            'amount' => -abs($newAmount)
         ]);
 
         return $entry;

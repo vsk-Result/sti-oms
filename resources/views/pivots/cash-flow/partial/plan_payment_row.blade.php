@@ -18,7 +18,7 @@
             />
         @endcan
     </td>
-    <td>
+    <td class="text-center">
         @if (auth()->user()->can('index cash-flow-plan-payments'))
             <select
                     name="object_id"

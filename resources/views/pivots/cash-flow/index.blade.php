@@ -112,7 +112,7 @@
                                 $payments = $cfPayments['total']['all'][$period['start']] ?? 0;
                                 $total += $receive + $payments;
                             @endphp
-                            <td class="min-w-250px text-right">
+                            <td class="min-w-250px text-right {{ (($receive + $payments) < 0) ? 'text-danger' : '' }}">
                                 {{ \App\Models\CurrencyExchangeRate::format(($receive + $payments), 'RUB', 0, true) }}
                             </td>
                         @endforeach
@@ -328,14 +328,14 @@
                             @endphp
                             <tr class="total-row">
                                 <td class="ps-2 fw-bolder">{{ $object->name }}</td>
-                                <td>{{ $object->code }}</td>
+                                <td class="text-center">{{ $object->code }}</td>
 
                                 @foreach($periods as $period)
                                     @php
                                         $receive = $plans->where('object_id', $object->id)->where('date', $period['start'])->sum('amount');
                                         $payment = $cfPayments['objects'][$object->id][$period['start']]['total'] ?? 0;
                                     @endphp
-                                    <td class="text-right fw-bolder">
+                                    <td class="text-right fw-bolder {{ (($receive + $payment) < 0) ? 'text-danger' : '' }}">
                                         {{ \App\Models\CurrencyExchangeRate::format(($receive + $payment), 'RUB', 0, true) }}
                                     </td>
                                 @endforeach
@@ -758,7 +758,7 @@
 
                                 Расходы офиса
                             </td>
-                            <td>27.1</td>
+                            <td class="text-center">27.1</td>
 
                             @php
                                 $totalOfficeObject = 0;
@@ -971,7 +971,7 @@
                                     <span class="pe-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="{{ $group->name }}">+</span>
                                     {{ $group->name }}
                                 </td>
-                                <td>{{ $group->object->code ?? '' }}</td>
+                                <td class="text-center">{{ $group->object->code ?? '' }}</td>
 
                                 @php
                                     $groupTotal = 0;

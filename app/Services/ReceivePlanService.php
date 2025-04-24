@@ -384,6 +384,14 @@ class ReceivePlanService
             'objects_details' => [],
         ];
 
+        foreach ($periods as $period) {
+            $payments['total']['all'][$period['start']] = 0;
+            $payments['total']['contractors'][$period['start']] = 0;
+            $payments['total']['providers_fix'][$period['start']] = 0;
+            $payments['total']['providers_float'][$period['start']] = 0;
+            $payments['total']['service'][$period['start']] = 0;
+        }
+
         $info = Cache::get('cash_flow_1c_data', []);
 
         foreach ($info as $objectId => $value) {
@@ -403,11 +411,6 @@ class ReceivePlanService
                     'providers_float' => 0,
                     'service' => 0,
                 ];
-                $payments['total']['all'][$period['start']] = 0;
-                $payments['total']['contractors'][$period['start']] = 0;
-                $payments['total']['providers_fix'][$period['start']] = 0;
-                $payments['total']['providers_float'][$period['start']] = 0;
-                $payments['total']['service'][$period['start']] = 0;
 
                 foreach ($value['contractors'] as $contractor) {
                     $date = Carbon::parse($contractor['date'])->format('Y-m-d');

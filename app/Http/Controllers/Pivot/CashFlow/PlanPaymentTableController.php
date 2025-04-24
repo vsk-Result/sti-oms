@@ -9,8 +9,8 @@ use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\Object\BObject;
 use App\Models\Object\ReceivePlan;
 use App\Services\PlanPaymentEntryService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PlanPaymentTableController extends Controller
 {
@@ -21,7 +21,7 @@ class PlanPaymentTableController extends Controller
         $this->planPaymentEntryService = $planPaymentEntryService;
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): View
     {
         $planPaymentGroups = PlanPaymentGroup::all();
         $CFPlanPayments = PlanPayment::all();
