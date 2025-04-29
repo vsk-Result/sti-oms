@@ -53,6 +53,7 @@ Route::post('pivots/cash-flow/plan-payments/destroy', [PlanPaymentController::cl
 Route::post('pivots/cash-flow/plan-payments/entries', [PlanPaymentEntryController::class, 'store'])->name('pivots.cash_flow.plan_payments.entries.store');
 Route::post('pivots/cash-flow/plan-payments/group/create', [PlanPaymentGroupController::class, 'store'])->name('pivots.cash_flow.plan_payments.group.store');
 Route::post('pivots/cash-flow/plan-payments/group/update', [PlanPaymentGroupController::class, 'update'])->name('pivots.cash_flow.plan_payments.group.update');
+Route::get('pivots/cash-flow/plan-payments/group/{group}/destroy', [PlanPaymentGroupController::class, 'destroy'])->name('pivots.cash_flow.plan_payments.group.destroy');
 Route::get('pivots/cash-flow/plan-payments/table', [PlanPaymentTableController::class, 'index'])->name('pivots.cash_flow.plan_payments.table.index');
 Route::get('pivots/cash-flow/notifications/read', [NotificationController::class, 'update'])->name('pivots.cash_flow.notifications.update');
 Route::post('pivots/cash-flow/comments/update', [CommentController::class, 'update'])->name('pivots.cash_flow.comments.update');

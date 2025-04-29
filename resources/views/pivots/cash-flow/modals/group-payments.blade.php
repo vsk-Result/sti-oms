@@ -45,7 +45,10 @@
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="form-group mb-6">
-                                                <label class="form-label">{{ $group->name }}</label>
+                                                <div class="d-flex flex-row justify-content-between">
+                                                    <label class="form-label">{{ $group->name }}</label>
+                                                    <a href="{{ route('pivots.cash_flow.plan_payments.group.destroy', $group) }}" class="text-danger">удалить</a>
+                                                </div>
                                                 <select
                                                         name="payments[{{ $group->id }}][]"
                                                         data-control="select2"

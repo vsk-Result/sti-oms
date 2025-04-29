@@ -49,6 +49,23 @@ class PlanPaymentGroupService
         }
     }
 
+    public function destroyPlanPaymentGroup(array $requestData): void
+    {
+        $group = $this->findGroup($requestData['group_id']);
+
+        if (!$group) {
+            return;
+        }
+
+        foreach ($group->payments as $payment) {
+            $payment->update([
+                'group_id' => null
+            ]);
+        }
+
+        $group->delete();
+    }
+
     public function findGroup(int $groupId): PlanPaymentGroup | null
     {
         return PlanPaymentGroup::find($groupId);
