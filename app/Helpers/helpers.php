@@ -63,3 +63,22 @@ if (! function_exists('get_date_and_month_from_string')) {
         return $month . '-' . $year;
     }
 }
+
+if (! function_exists('translate_month')) {
+    function translate_month($month) {
+        return [
+            "January" => 'Январь',
+            "February" => 'Февраль',
+            "March" => 'Март',
+            "April" => 'Апрель',
+            "May" => 'Май',
+            "June" => 'Июнь',
+            "July" => 'Июль',
+            "August" => 'Август',
+            "September" => 'Сентябрь',
+            "October" => 'Октябрь',
+            "November" => 'Ноябрь',
+            "December" => 'Декабрь',
+        ][$month];
+    }
+}

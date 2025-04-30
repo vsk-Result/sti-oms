@@ -377,6 +377,14 @@
                 </div>
             @endcan
 
+            @can('index accrued-taxes')
+                <div class="menu-item">
+                    <a href="{{ route('accrued_taxes.index') }}" class="menu-link {{ request()->is('accrued-taxes*') ? 'active' : '' }}">
+                        <span class="menu-title">Начисленные налоги</span>
+                    </a>
+                </div>
+            @endcan
+
             @canAny(['index crm-costs', 'index crm-split-avans-imports', 'index scheduler', 'index upload-debts-status'])
                 <div class="menu-item pt-5">
                     <div class="menu-content pb-2">
