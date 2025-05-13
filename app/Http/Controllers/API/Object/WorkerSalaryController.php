@@ -55,16 +55,24 @@ class WorkerSalaryController extends Controller
         }
 
         $totalMonthsAmount = [];
+        $totalWorkersSalaryMonthsAmount = [];
+        $totalITRSalaryMonthsAmount = [];
         foreach ($objects as $object) {
             $objectInfo = [
                 'id' => $object->id,
-                'name' => $object->getName()
+                'name' => $object->getName(),
+                'workers_salary' => [],
+                'itr_salary' => [],
+                'total_for_object_workers_salary' => [],
+                'total_for_object_itr_salary' => [],
+                'total_for_object' => [],
             ];
-            $details = $object->getWorkSalaryDebtDetails();
 
-            $summaryAmount = 0;
-            foreach ($details as $detail) {
-                $objectInfo['info'][] = [
+            $workersSalaryDetails = $object->getWorkSalaryDebtDetails();
+
+            $summaryWorkersSalaryAmount = 0;
+            foreach ($workersSalaryDetails as $detail) {
+                $objectInfo['workers_salary'][] = [
                     'name' => 'Общее за ' . $detail['date'],
                     'sum' => $detail['amount']
                 ];
@@ -73,33 +81,94 @@ class WorkerSalaryController extends Controller
                     $totalMonthsAmount[$detail['date']] = 0;
                 }
 
+                if (! isset($totalWorkersSalaryMonthsAmount[$detail['date']])) {
+                    $totalWorkersSalaryMonthsAmount[$detail['date']] = 0;
+                }
+
                 $totalMonthsAmount[$detail['date']] += $detail['amount'];
-                $summaryAmount += $detail['amount'];
+                $totalWorkersSalaryMonthsAmount[$detail['date']] += $detail['amount'];
+                $summaryWorkersSalaryAmount += $detail['amount'];
             }
 
-            if (!is_valid_amount_in_range($summaryAmount)) {
-                continue;
+            $itrSalaryDetails = $object->getITRSalaryDebtDetails();
+
+            $summaryITRSalaryAmount = 0;
+            foreach ($itrSalaryDetails as $detail) {
+                $objectInfo['itr_salary'][] = [
+                    'name' => 'Общее за ' . $detail['formatted_date'],
+                    'sum' => $detail['amount']
+                ];
+
+                if (! isset($totalMonthsAmount[$detail['formatted_date']])) {
+                    $totalMonthsAmount[$detail['formatted_date']] = 0;
+                }
+
+                if (! isset($totalITRSalaryMonthsAmount[$detail['formatted_date']])) {
+                    $totalITRSalaryMonthsAmount[$detail['formatted_date']] = 0;
+                }
+
+                $totalMonthsAmount[$detail['formatted_date']] += $detail['amount'];
+                $totalITRSalaryMonthsAmount[$detail['formatted_date']] += $detail['amount'];
+                $summaryITRSalaryAmount += $detail['amount'];
             }
 
-            $objectInfo['total_for_object'] = [
-                'name' => 'Общее за объект ' . $object->getName(),
-                'sum' => $summaryAmount
-            ];
 
-            $info['objects'][] = $objectInfo;
+            if (is_valid_amount_in_range($summaryWorkersSalaryAmount + $summaryITRSalaryAmount)) {
+                $objectInfo['total_for_object_workers_salary'] = [
+                    'name' => 'Общее за объект ' . $object->getName(),
+                    'sum' => $summaryWorkersSalaryAmount
+                ];
+
+                $objectInfo['total_for_object_itr_salary'] = [
+                    'name' => 'Общее за объект ' . $object->getName(),
+                    'sum' => $summaryITRSalaryAmount
+                ];
+
+                $objectInfo['total_for_object'] = [
+                    'name' => 'Общее за объект ' . $object->getName(),
+                    'sum' => $summaryWorkersSalaryAmount + $summaryITRSalaryAmount
+                ];
+
+                $info['salary'][] = $objectInfo;
+            }
         }
 
+        $totalWorkersSalaryAmount = 0;
+        $totalITRSalaryAmount = 0;
         $totalAmount = 0;
-        foreach ($totalMonthsAmount as $month => $amount) {
-            $info['total']['total_list'][] = [
+        foreach ($totalWorkersSalaryMonthsAmount as $month => $amount) {
+            $info['total']['workers_salary']['total_list'][] = [
                 'name' => 'Общее за ' . $month,
                 'sum' => $amount
             ];
             $totalAmount += $amount;
+            $totalWorkersSalaryAmount += $amount;
         }
 
-        $info['total']['total_for_all_object']['name'] = 'Общий долг';
-        $info['total']['total_for_all_object']['sum'] = $totalAmount;
+        foreach ($totalITRSalaryMonthsAmount as $month => $amount) {
+            $info['total']['itr_salary']['total_list'][] = [
+                'name' => 'Общее за ' . $month,
+                'sum' => $amount
+            ];
+            $totalITRSalaryAmount += $amount;
+            $totalAmount += $amount;
+        }
+
+        foreach ($totalMonthsAmount as $month => $amount) {
+            $info['total']['salary']['total_list'][] = [
+                'name' => 'Общее за ' . $month,
+                'sum' => $amount
+            ];
+        }
+
+        $info['total']['workers_salary']['total_for_all_object']['name'] = 'Общий долг';
+        $info['total']['workers_salary']['total_for_all_object']['sum'] = $totalWorkersSalaryAmount;
+
+        $info['total']['itr_salary']['total_for_all_object']['name'] = 'Общий долг';
+        $info['total']['itr_salary']['total_for_all_object']['sum'] = $totalITRSalaryAmount;
+
+        $info['total']['salary']['total_for_all_object']['name'] = 'Общий долг';
+        $info['total']['salary']['total_for_all_object']['sum'] = $totalAmount;
 
         $info['credits'] = [];
         $info['loans'] = [];

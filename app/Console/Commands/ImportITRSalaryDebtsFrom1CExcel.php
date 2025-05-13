@@ -63,6 +63,12 @@ class ImportITRSalaryDebtsFrom1CExcel extends HandledCommand
 
                 $formattedInfo[$objectCode]['total_amount'] += -$period['Sum'];
             }
+
+            $details = $formattedInfo[$objectCode]['details'];
+            $dates = array_column($details, 'date');
+            array_multisort($dates, SORT_ASC, SORT_STRING, $details);
+
+            $formattedInfo[$objectCode]['details'] = $details;
         }
 
         Cache::put('itr_salary_1c_data', $formattedInfo);
