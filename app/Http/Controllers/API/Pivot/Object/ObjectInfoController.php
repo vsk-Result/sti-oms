@@ -46,6 +46,8 @@ class ObjectInfoController extends Controller
                 'provider_debt_fix' => 0,
                 'provider_debt_float' => 0,
                 'service_debts' => 0,
+                'workers_salary_debts' => 0,
+                'itr_salary_debts' => 0,
                 'salary_debts' => 0,
                 'tax_debts' => 0,
                 'credits_debts' => 0,
@@ -107,8 +109,9 @@ class ObjectInfoController extends Controller
             $providerDebtsAmountFix = $inf['provider_debt_fix'];
             $providerDebtsAmountFloat = $inf['provider_debt_float'];
             $serviceDebtsAmount = $inf['service_debt'];
-            $salaryDebtsAmount = $inf['workers_salary_debt'];
-            $totalDebts = $contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount + $contractorDebtsAmountGU + $salaryDebtsAmount;
+            $workersSalaryDebtsAmount = $inf['workers_salary_debt'];
+            $ITRSalaryDebtsAmount = $inf['itr_salary_debt'];
+            $totalDebts = $contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount + $contractorDebtsAmountGU + $workersSalaryDebtsAmount + $ITRSalaryDebtsAmount;
 
             $info['debts'][] = [
                 'id' => $object->id,
@@ -119,7 +122,9 @@ class ObjectInfoController extends Controller
                 'provider_debt_fix' => $providerDebtsAmountFix,
                 'provider_debt_float' => $providerDebtsAmountFloat,
                 'service_debts' => $serviceDebtsAmount,
-                'salary_debts' => $salaryDebtsAmount,
+                'workers_salary_debts' => $workersSalaryDebtsAmount,
+                'itr_salary_debts' => $ITRSalaryDebtsAmount,
+                'salary_debts' => $workersSalaryDebtsAmount + $ITRSalaryDebtsAmount,
                 'total_debts' => $totalDebts,
             ];
 
@@ -129,7 +134,9 @@ class ObjectInfoController extends Controller
             $info['total']['provider_debt_fix'] += $providerDebtsAmountFix;
             $info['total']['provider_debt_float'] += $providerDebtsAmountFloat;
             $info['total']['service_debts'] += $serviceDebtsAmount;
-            $info['total']['salary_debts'] += $salaryDebtsAmount;
+            $info['total']['workers_salary_debts'] += $workersSalaryDebtsAmount;
+            $info['total']['itr_salary_debts'] += $ITRSalaryDebtsAmount;
+            $info['total']['salary_debts'] += $workersSalaryDebtsAmount + $ITRSalaryDebtsAmount;
             $info['total']['total_debts'] += $totalDebts;
         }
 
