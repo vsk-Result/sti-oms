@@ -35,10 +35,21 @@ class CashFlowController extends Controller
         $periods = $this->receivePlanService->getPeriods(null, $request->get('period'));
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
 
+        $cfPayments = $this->receivePlanService->getCFPaymentsForAll($periods);
+        $object27_1 = BObject::where('code', '27.1')->first();
+
         $activeObjectIds = BObject::active()->orderBy('code')->pluck('id')->toArray();
         $closedObjectIds = ReceivePlan::whereBetween('date', [$periods[0]['start'], end($periods)['start']])->groupBy('object_id')->pluck('object_id')->toArray();
+        $cfPaymentsObjectIds = array_keys($cfPayments['objects']);
 
-        $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
+        foreach ($cfPaymentsObjectIds as $index => $objectId) {
+            if ($object27_1->id === $objectId) {
+                unset($cfPaymentsObjectIds[$index]);
+                break;
+            }
+        }
+
+        $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds, $cfPaymentsObjectIds))->get();
         $objectList = BObject::active()->get();
 
         $filteredObjects = $request->get('object_id', []);
@@ -49,9 +60,6 @@ class CashFlowController extends Controller
         $hasUnreadNotifications = $this->notificationService->hasUnreadNotifications();
 
         $period = Carbon::parse($periods[0]['start'])->format('d.m.Y') . ' - ' . Carbon::parse(end($periods)['end'])->format('d.m.Y');
-
-        $cfPayments = $this->receivePlanService->getCFPaymentsForAll($periods);
-
 
         $aho = PlanPayment::where('name', 'АХО')->first();
 
@@ -74,7 +82,7 @@ class CashFlowController extends Controller
                 'periods', 'objects', 'plans', 'period',
                'planPaymentGroups', 'CFPlanPayments', 'CFPlanPaymentEntries', 'objectList', 'reasons',
                 'hasUnreadNotifications', 'newNotifications', 'historyNotifications', 'isNotificationsAvailable', 'otherPlanPayments',
-                'cfPayments', 'viewName', 'accounts', 'filteredObjects'
+                'cfPayments', 'viewName', 'accounts', 'filteredObjects', 'object27_1'
             )
         );
     }

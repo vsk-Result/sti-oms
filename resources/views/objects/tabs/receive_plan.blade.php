@@ -3,6 +3,9 @@
 @section('object-tab-title', 'Cash Flow')
 
 @section('object-tab-content')
+    @include('objects.modals.cash_flow_add_payment')
+    @include('objects.modals.cash_flow_payments')
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card mb-5 mb-xl-8">
@@ -11,11 +14,33 @@
 
                     <div class="card-toolbar">
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            <button {{ $cashFlowPayments->count() === 0 ? 'disabled' : '' }} type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#cashFlowPaymentsModal">
+                                <span class="svg-icon svg-icon-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
+                                        <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
+                                        <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
+                                    </svg>
+                                </span>
+                                Расходы ({{ $cashFlowPayments->count() }})
+                            </button>
+
+                            <a href="#" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#cashFlowAddPaymentModal">
+                                <span class="svg-icon svg-icon-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
+                                        <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
+                                        <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
+                                    </svg>
+                                </span>
+                                Новый расход
+                            </a>
+
                             <form action="{{ route('objects.receive_plan.exports.store', $object) }}" method="POST" class="hidden">
                                 @csrf
                                 <a
                                         href="javascript:void(0);"
-                                        class="btn btn-light-primary"
+                                        class="btn btn-light-success"
                                         onclick="event.preventDefault(); this.closest('form').submit();"
                                 >
                                     <span class="svg-icon svg-icon-2">
@@ -79,7 +104,9 @@
                                 @endforeach
 
                                 <tr class="total-row">
-                                    <td class="ps-2 fw-bolder">Расходы ИТОГО</td>
+                                    <td class="ps-2 fw-bolder">
+                                        Расходы ИТОГО
+                                    </td>
 
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['total'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
@@ -273,6 +300,30 @@
                 $tr.addClass('collapsed');
                 $(`.collapse-row[data-trigger="${trigger}"]`).show();
             }
-        })
+        });
+
+        $('#organization-select').select2({
+            sorter: function(data) {
+                return data.sort(function(a, b) {
+                    return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
+                });
+            },
+            ajax: {
+                url: '/organizations?type=select',
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        search: params.term,
+                    };
+                },
+                processResults: function (data) {
+                    const results = [];
+                    $.each(data.organizations, function(id, text) {
+                        results.push({id, text})
+                    });
+                    return {results};
+                }
+            }
+        });
     </script>
 @endpush

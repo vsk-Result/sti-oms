@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Object;
 
 use App\Http\Controllers\Controller;
 use App\Models\Object\BObject;
+use App\Models\Object\CashFlowPayment;
 use App\Models\Object\ReceivePlan;
 use App\Services\ReceivePlanService;
 use Illuminate\Contracts\View\View;
@@ -25,11 +26,12 @@ class ReceivePlanController extends Controller
         $periods = $this->receivePlanService->getPeriods($object->id);
         $plans = $this->receivePlanService->getPlans($object->id, $periods[0]['start'], end($periods)['start']);
         $cfPayments = $this->receivePlanService->getCFPayments($object->id, $periods);
+        $cashFlowPayments = CashFlowPayment::where('object_id', $object->id)->get();
 
         return view(
             'objects.tabs.receive_plan',
             compact(
-                'object', 'reasons', 'periods', 'plans', 'cfPayments'
+                'object', 'reasons', 'periods', 'plans', 'cfPayments', 'cashFlowPayments'
             )
         );
     }

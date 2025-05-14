@@ -7,6 +7,7 @@ use App\Models\CashFlow\Notification;
 use App\Models\CashFlow\PlanPayment;
 use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
+use App\Models\Object\CashFlowPayment;
 use App\Models\Object\ReceivePlan;
 use App\Models\Status;
 use App\Services\CashFlow\NotificationService;
@@ -253,6 +254,116 @@ class ReceivePlanService
         ];
 
         $info = Cache::get('cash_flow_1c_data', []);
+        $manualPayments = CashFlowPayment::where('object_id', $objectId)->get();
+
+        if (! isset($info[$objectId]) && $manualPayments->count() === 0) {
+            return $payments;
+        }
+
+        foreach ($periods as $index => $period) {
+            $payments['total'][$period['start']] = 0;
+            $payments['contractors'][$period['start']] = 0;
+            $payments['providers_fix'][$period['start']] = 0;
+            $payments['providers_float'][$period['start']] = 0;
+            $payments['service'][$period['start']] = 0;
+        }
+
+        if ($manualPayments->count() > 0) {
+            $contractors = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_RAD);
+            $providersFix = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_MATERIAL_FIX);
+            $providersFloat = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_MATERIAL_FLOAT);
+            $services = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_SERVICE);
+
+            foreach ($periods as $index => $period) {
+                foreach ($contractors as $contractor) {
+                    if (! isset($payments['details']['contractors'][$contractor->organization->name][$period['start']])) {
+                        $payments['details']['contractors'][$contractor->organization->name][$period['start']] = 0;
+                    }
+
+                    if ($index === 0) {
+                        if ($contractor->date <= $period['end']) {
+                            $payments['contractors'][$period['start']] += $contractor['amount'];
+                            $payments['total'][$period['start']] += $contractor['amount'];
+
+                            $payments['details']['contractors'][$contractor->organization->name][$period['start']] += $contractor['amount'];
+                        }
+                    } else {
+                        if ($contractor->date >= $period['start'] && $contractor->date <= $period['end']) {
+                            $payments['contractors'][$period['start']] += $contractor['amount'];
+                            $payments['total'][$period['start']] += $contractor['amount'];
+
+                            $payments['details']['contractors'][$contractor->organization->name][$period['start']] += $contractor['amount'];
+                        }
+                    }
+                }
+
+                foreach ($providersFix as $fix) {
+                    if (! isset($payments['details']['providers_fix'][$fix->organization->name][$period['start']])) {
+                        $payments['details']['providers_fix'][$fix->organization->name][$period['start']] = 0;
+                    }
+
+                    if ($index === 0) {
+                        if ($fix->date <= $period['end']) {
+                            $payments['providers_fix'][$period['start']] += $fix['amount'];
+                            $payments['total'][$period['start']] += $fix['amount'];
+
+                            $payments['details']['providers_fix'][$fix->organization->name][$period['start']] += $fix['amount'];
+                        }
+                    } else {
+                        if ($fix->date >= $period['start'] && $fix->date <= $period['end']) {
+                            $payments['providers_fix'][$period['start']] += $fix['amount'];
+                            $payments['total'][$period['start']] += $fix['amount'];
+
+                            $payments['details']['providers_fix'][$fix->organization->name][$period['start']] += $fix['amount'];
+                        }
+                    }
+                }
+
+                foreach ($providersFloat as $float) {
+                    if (! isset($payments['details']['providers_float'][$float->organization->name][$period['start']])) {
+                        $payments['details']['providers_float'][$float->organization->name][$period['start']] = 0;
+                    }
+
+                    if ($index === 0) {
+                        if ($float->date <= $period['end']) {
+                            $payments['providers_float'][$period['start']] += $float['amount'];
+                            $payments['total'][$period['start']] += $float['amount'];
+
+                            $payments['details']['providers_float'][$float->organization->name][$period['start']] += $float['amount'];
+                        }
+                    } else {
+                        if ($float->date >= $period['start'] && $float->date <= $period['end']) {
+                            $payments['providers_float'][$period['start']] += $float['amount'];
+                            $payments['total'][$period['start']] += $float['amount'];
+
+                            $payments['details']['providers_float'][$float->organization->name][$period['start']] += $float['amount'];
+                        }
+                    }
+                }
+
+                foreach ($services as $service) {
+                    if (! isset($payments['details']['service'][$service->organization->name][$period['start']])) {
+                        $payments['details']['service'][$service->organization->name][$period['start']] = 0;
+                    }
+
+                    if ($index === 0) {
+                        if ($service->date <= $period['end']) {
+                            $payments['service'][$period['start']] += $service['amount'];
+                            $payments['total'][$period['start']] += $service['amount'];
+
+                            $payments['details']['service'][$service->organization->name][$period['start']] += $service['amount'];
+                        }
+                    } else {
+                        if ($service->date >= $period['start'] && $service->date <= $period['end']) {
+                            $payments['service'][$period['start']] += $service['amount'];
+                            $payments['total'][$period['start']] += $service['amount'];
+
+                            $payments['details']['service'][$service->organization->name][$period['start']] += $service['amount'];
+                        }
+                    }
+                }
+            }
+        }
 
         if (! isset($info[$objectId])) {
             return $payments;
@@ -264,11 +375,6 @@ class ReceivePlanService
         $service = $info[$objectId]['service'];
 
         foreach ($periods as $index => $period) {
-            $payments['total'][$period['start']] = 0;
-            $payments['contractors'][$period['start']] = 0;
-            $payments['providers_fix'][$period['start']] = 0;
-            $payments['providers_float'][$period['start']] = 0;
-            $payments['service'][$period['start']] = 0;
 
             foreach ($contractors as $contractor) {
                 $date = Carbon::parse($contractor['date'])->format('Y-m-d');
@@ -533,6 +639,213 @@ class ReceivePlanService
 
                             $payments['objects_details'][$objectId]['service'][$ser['organization']][$period['start']] += $ser['amount'];
                         }
+                    }
+                }
+            }
+        }
+
+        $manualPayments = CashFlowPayment::get();
+
+        $contractors = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_RAD);
+        $providersFix = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_MATERIAL_FIX);
+        $providersFloat = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_MATERIAL_FLOAT);
+        $services = $manualPayments->where('category_id', CashFlowPayment::CATEGORY_SERVICE);
+
+        foreach ($contractors as $contractor) {
+            $objectId = $contractor->object_id;
+
+            if (! isset($payments['objects_details'][$objectId])) {
+                $payments['objects_details'][$objectId] = [
+                    'contractors' => [],
+                    'providers' => [],
+                    'providers_fix' => [],
+                    'providers_float' => [],
+                    'service' => [],
+                ];
+            }
+
+            foreach ($periods as $index => $period) {
+                if (!isset($payments['objects'][$objectId][$period['start']])) {
+                    $payments['objects'][$objectId][$period['start']] = [
+                        'total' => 0,
+                        'contractors' => 0,
+                        'providers_fix' => 0,
+                        'providers_float' => 0,
+                        'service' => 0,
+                    ];
+                }
+
+                if (! isset($payments['objects_details'][$objectId]['contractors'][$contractor->organization->name][$period['start']])) {
+                    $payments['objects_details'][$objectId]['contractors'][$contractor->organization->name][$period['start']] = 0;
+                }
+
+                if ($index === 0) {
+                    if ($contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['contractors'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['contractors'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['contractors'][$contractor->organization->name][$period['start']] += $contractor->amount;
+                    }
+                } else {
+                    if ($contractor->date >= $period['start'] && $contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['contractors'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['contractors'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['contractors'][$contractor->organization->name][$period['start']] += $contractor->amount;
+                    }
+                }
+            }
+        }
+
+        foreach ($providersFix as $contractor) {
+            $objectId = $contractor->object_id;
+
+            if (! isset($payments['objects_details'][$objectId])) {
+                $payments['objects_details'][$objectId] = [
+                    'contractors' => [],
+                    'providers' => [],
+                    'providers_fix' => [],
+                    'providers_float' => [],
+                    'service' => [],
+                ];
+            }
+
+            foreach ($periods as $index => $period) {
+                if (!isset($payments['objects'][$objectId][$period['start']])) {
+                    $payments['objects'][$objectId][$period['start']] = [
+                        'total' => 0,
+                        'contractors' => 0,
+                        'providers_fix' => 0,
+                        'providers_float' => 0,
+                        'service' => 0,
+                    ];
+                }
+
+                if (! isset($payments['objects_details'][$objectId]['providers_fix'][$contractor->organization->name][$period['start']])) {
+                    $payments['objects_details'][$objectId]['providers_fix'][$contractor->organization->name][$period['start']] = 0;
+                }
+
+                if ($index === 0) {
+                    if ($contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['providers_fix'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['providers_fix'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['providers_fix'][$contractor->organization->name][$period['start']] += $contractor->amount;
+                    }
+                } else {
+                    if ($contractor->date >= $period['start'] && $contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['providers_fix'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['providers_fix'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['providers_fix'][$contractor->organization->name][$period['start']] += $contractor->amount;
+                    }
+                }
+            }
+        }
+
+        foreach ($providersFloat as $contractor) {
+            $objectId = $contractor->object_id;
+
+            if (! isset($payments['objects_details'][$objectId])) {
+                $payments['objects_details'][$objectId] = [
+                    'contractors' => [],
+                    'providers' => [],
+                    'providers_fix' => [],
+                    'providers_float' => [],
+                    'service' => [],
+                ];
+            }
+
+            foreach ($periods as $index => $period) {
+                if (!isset($payments['objects'][$objectId][$period['start']])) {
+                    $payments['objects'][$objectId][$period['start']] = [
+                        'total' => 0,
+                        'contractors' => 0,
+                        'providers_fix' => 0,
+                        'providers_float' => 0,
+                        'service' => 0,
+                    ];
+                }
+
+                if (! isset($payments['objects_details'][$objectId]['providers_float'][$contractor->organization->name][$period['start']])) {
+                    $payments['objects_details'][$objectId]['providers_float'][$contractor->organization->name][$period['start']] = 0;
+                }
+
+                if ($index === 0) {
+                    if ($contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['providers_float'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['providers_float'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['providers_float'][$contractor->organization->name][$period['start']] += $contractor->amount;
+                    }
+                } else {
+                    if ($contractor->date >= $period['start'] && $contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['providers_float'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['providers_float'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['providers_float'][$contractor->organization->name][$period['start']] += $contractor->amount;
+                    }
+                }
+            }
+        }
+
+        foreach ($services as $contractor) {
+            $objectId = $contractor->object_id;
+
+            if (! isset($payments['objects_details'][$objectId])) {
+                $payments['objects_details'][$objectId] = [
+                    'contractors' => [],
+                    'providers' => [],
+                    'providers_fix' => [],
+                    'providers_float' => [],
+                    'service' => [],
+                ];
+            }
+
+            foreach ($periods as $index => $period) {
+                if (!isset($payments['objects'][$objectId][$period['start']])) {
+                    $payments['objects'][$objectId][$period['start']] = [
+                        'total' => 0,
+                        'contractors' => 0,
+                        'providers_fix' => 0,
+                        'providers_float' => 0,
+                        'service' => 0,
+                    ];
+                }
+
+                if (! isset($payments['objects_details'][$objectId]['service'][$contractor->organization->name][$period['start']])) {
+                    $payments['objects_details'][$objectId]['service'][$contractor->organization->name][$period['start']] = 0;
+                }
+
+                if ($index === 0) {
+                    if ($contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['service'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['service'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['service'][$contractor->organization->name][$period['start']] += $contractor->amount;
+                    }
+                } else {
+                    if ($contractor->date >= $period['start'] && $contractor->date <= $period['end']) {
+                        $payments['objects'][$objectId][$period['start']]['service'] += $contractor->amount;
+                        $payments['objects'][$objectId][$period['start']]['total'] += $contractor->amount;
+                        $payments['total']['all'][$period['start']] += $contractor->amount;
+                        $payments['total']['service'][$period['start']] += $contractor->amount;
+
+                        $payments['objects_details'][$objectId]['service'][$contractor->organization->name][$period['start']] += $contractor->amount;
                     }
                 }
             }
