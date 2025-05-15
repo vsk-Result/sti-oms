@@ -145,6 +145,17 @@
                                 <span class="menu-title">Отчет о проживании</span>
                             </a>
                         </div>
+
+                        @can('index pivot-calculate-workers-cost')
+                            <div class="menu-item">
+                                <a href="{{ route('pivots.calculate_workers_cost.index') }}" class="menu-link py-2 {{ request()->is('pivots/calculate-workers-cost*') ? 'active' : '' }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Расчет стоимости рабочих</span>
+                                </a>
+                            </div>
+                        @endcan
                     </div>
                 </div>
             @endcan

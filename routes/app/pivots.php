@@ -21,6 +21,8 @@ use App\Http\Controllers\Pivot\MoneyMovement\MoneyMovementController;
 use App\Http\Controllers\Pivot\MoneyMovement\ExportController as MoneyMovementExportController;
 use App\Http\Controllers\Pivot\Residence\ResidenceController;
 use App\Http\Controllers\Pivot\Residence\ResidenceExportController;
+use App\Http\Controllers\Pivot\CalculateWorkersCost\CalculateWorkersCostController;
+use App\Http\Controllers\Pivot\CalculateWorkersCost\CalculateWorkersCostControllerExportController;
 
 // Сводная по долгам от СТИ
 Route::get('pivots/debts', [DebtController::class, 'index'])->name('pivots.debts.index');
@@ -73,3 +75,9 @@ Route::post('pivots/money-movement/export', [MoneyMovementExportController::clas
 Route::get('pivots/residence', [ResidenceController::class, 'index'])->name('pivots.residence.index');
 // Экспорт отчета по проживанию
 Route::post('pivots/residence/export', [ResidenceExportController::class, 'store'])->name('pivots.residence.exports.store');
+
+
+// Отчет по расчету стоимости рабочих
+Route::get('pivots/calculate-workers-cost', [CalculateWorkersCostController::class, 'index'])->name('pivots.calculate_workers_cost.index');
+// Экспорт отчета по проживанию
+Route::post('pivots/calculate-workers-cost/export', [CalculateWorkersCostControllerExportController::class, 'store'])->name('pivots.calculate_workers_cost.exports.store');

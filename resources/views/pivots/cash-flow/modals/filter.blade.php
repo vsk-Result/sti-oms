@@ -46,6 +46,7 @@
                                     data-dropdown-parent="#filterCashFlowModal"
                                     multiple
                                 >
+                                    <option value="{{ $object27_1->id }}" {{ in_array($object27_1->id, request()->input('object_id', [])) ? 'selected' : '' }}>{{ $object27_1->code . ' ' . $object27_1->name }}</option>
                                     @foreach($objects as $obj)
                                         <option value="{{ $obj->id }}" {{ in_array($obj->id, request()->input('object_id', [])) ? 'selected' : '' }}>{{ $obj->code . ' ' . $obj->name }}</option>
                                     @endforeach

@@ -82,22 +82,7 @@
                     </thead>
 
                     <tbody class="text-gray-600 fw-bold fs-7">
-                    @foreach($accounts as $accountName => $amount)
-                        <tr class="text-start text-muted fs-8 gs-0">
-                            <td class="min-w-400px ps-8 fw-bolder">{{ $accountName }}</td>
-                            <td class="min-w-50px text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
-
-                            @foreach($periods as $period)
-                                <td class="min-w-250px text-right fst-italic">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
-                                </td>
-                            @endforeach
-
-                            <td class="min-w-250px text-right pe-2 fst-italic">
-                                {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
-                            </td>
-                        </tr>
-                    @endforeach
+                        @include('pivots.cash-flow.partial.accounts_rows')
 
                     <tr class="text-start text-muted fw-bolder fs-7 gs-0 total-row">
                         <td class="min-w-400px ps-2">САЛЬДО ИТОГО, в том числе:</td>
@@ -325,9 +310,14 @@
                                 if ($totalSaldo == 0) {
                                     continue;
                                 }
+
+                                $balanceWithGeneral = $totalSaldo + $object->generalCosts()->sum('amount') + $object->transferService()->sum('amount');
                             @endphp
                             <tr class="total-row">
-                                <td class="ps-2 fw-bolder">{{ $object->name }}</td>
+                                <td class="ps-2 fw-bolder">
+                                    {{ $object->name }}
+                                    <span class="ps-10 {{ $balanceWithGeneral < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($balanceWithGeneral, 'RUB', 0, true) }}</span>
+                                </td>
                                 <td class="text-center">{{ $object->code }}</td>
 
                                 @foreach($periods as $period)
@@ -345,27 +335,29 @@
                                 </td>
                             </tr>
 
-                            <tr class="text-start text-muted fw-bolder fs-7 gs-0 object-row">
-                                <td class="min-w-400px ps-5">ПОСТУПЛЕНИЯ ИТОГО, в том числе:</td>
-                                <td class="min-w-50px"></td>
+                            @if ($totalReceive > 0)
+                                <tr class="text-start text-muted fw-bolder fs-7 gs-0 object-row">
+                                    <td class="min-w-400px ps-5">ПОСТУПЛЕНИЯ ИТОГО, в том числе:</td>
+                                    <td class="min-w-50px"></td>
 
-                                @php
-                                    $total = 0;
-                                @endphp
-                                @foreach($periods as $period)
                                     @php
-                                        $amount = $plans->where('object_id', $object->id)->where('date', $period['start'])->sum('amount');
-                                        $total += $amount;
+                                        $total = 0;
                                     @endphp
-                                    <td class="min-w-250px text-right">
-                                        {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
-                                    </td>
-                                @endforeach
+                                    @foreach($periods as $period)
+                                        @php
+                                            $amount = $plans->where('object_id', $object->id)->where('date', $period['start'])->sum('amount');
+                                            $total += $amount;
+                                        @endphp
+                                        <td class="min-w-250px text-right">
+                                            {{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}
+                                        </td>
+                                    @endforeach
 
-                                <td class="min-w-250px text-right pe-2">
-                                    {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
-                                </td>
-                            </tr>
+                                    <td class="min-w-250px text-right pe-2">
+                                        {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
+                                    </td>
+                                </tr>
+                            @endif
 
                             @foreach($reasons as $reasonId => $reason)
                                 @php
@@ -1073,97 +1065,7 @@
                             <td colspan="{{ 3 + count($periods) }}"></td>
                         </tr>
 
-                        <tr class="object-row plan-payment">
-                            <td class="ps-2 fw-bolder">Итого расходов по неделям:</td>
-                            <td></td>
-
-                            @php
-                                $total = 0;
-                            @endphp
-                            @foreach($periods as $index => $period)
-                                @php
-                                    if ($index === 0) {
-                                        $amount = -abs($CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['total']['all'][$period['start']]);
-                                    } else {
-                                        $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs($cfPayments['total']['all'][$period['start']]);
-                                    }
-
-                                    $total += $amount;
-                                @endphp
-
-                                <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
-                            @endforeach
-
-                            <td class="text-right pe-2 fw-bolder">
-                                {{ \App\Models\CurrencyExchangeRate::format($total, 'RUB', 0, true) }}
-                            </td>
-                        </tr>
-
-{{--                        <tr class="object-row plan-payment">--}}
-{{--                            <td class="ps-2 fw-bolder">Итого расходов по месяцам:</td>--}}
-{{--                            <td></td>--}}
-
-{{--                            @foreach($periods as $period)--}}
-{{--                                @php--}}
-{{--                                    //                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');--}}
-{{--                                @endphp--}}
-
-{{--                                <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>--}}
-{{--                            @endforeach--}}
-
-{{--                            <td class="text-right pe-2"></td>--}}
-{{--                        </tr>--}}
-
-                        <tr class="object-row plan-payment">
-                            <td class="ps-2 fw-bolder">Сальдо (без учета целевых авансов) по неделям:</td>
-                            <td></td>
-
-                            @foreach($periods as $index => $period)
-                                @php
-                                    $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
-
-                                    if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
-                                    } else {
-                                        $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
-                                    }
-
-                                    $diff = $otherAmount - $amount;
-                                @endphp
-
-                                <td class="cell-center fw-bolder {{ $diff < 0 ? 'text-danger' : '' }}">{{ \App\Models\CurrencyExchangeRate::format($diff, 'RUB', 0, true) }}</td>
-                            @endforeach
-
-                            <td class="text-right pe-2"></td>
-                        </tr>
-
-                        <tr class="object-row plan-payment">
-                            <td class="ps-2 fw-bolder">Накопительное Сальдо (без учета целевых авансов) по неделям:</td>
-                            <td></td>
-
-                            @php
-                                $prev = 0;
-                            @endphp
-
-                            @foreach($periods as $index => $period)
-                                @php
-                                    $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
-
-                                    if ($index === 0) {
-                                        $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
-                                    } else {
-                                        $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
-                                    }
-
-                                    $diff = $otherAmount - $amount + $prev;
-                                    $prev = $diff;
-                                @endphp
-
-                                <td class="cell-center fw-bolder {{ $diff < 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($diff, 'RUB', 0, true) }}</td>
-                            @endforeach
-
-                            <td class="text-right pe-2"></td>
-                        </tr>
+                        @include('pivots.cash-flow.partial.total_rows')
                     </tbody>
                 </table>
             </div>

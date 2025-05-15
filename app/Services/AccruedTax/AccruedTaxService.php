@@ -12,6 +12,7 @@ class AccruedTaxService
     const TAX_NAMES = [
         'НДС',
         'Налог на прибыль',
+        'Транспортный налог',
     ];
 
     const YEARS = [

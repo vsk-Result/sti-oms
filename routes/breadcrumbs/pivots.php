@@ -43,3 +43,8 @@ Breadcrumbs::for('pivots.residence.index', function (BreadcrumbTrail $trail) {
     $trail->push('Отчет о проживании');
 });
 
+Breadcrumbs::for('pivots.calculate_workers_cost.index', function (BreadcrumbTrail $trail) {
+    $route = auth()->user()->can('index calculate-workers-cost') ? route('pivots.calculate_workers_cost.index') : null;
+    $trail->parent('home');
+    $trail->push('Расчет стоимости рабочих', $route);
+});
