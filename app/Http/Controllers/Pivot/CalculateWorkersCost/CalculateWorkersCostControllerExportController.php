@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Pivot\CalculateWorkersCost;
 
-use App\Exports\Pivot\CalculateWorkersCost\Export;
+use App\Exports\Pivot\CalculateWorkersCost\ExportByCompany;
+use App\Exports\Pivot\CalculateWorkersCost\ExportByObject;
 use App\Http\Controllers\Controller;
 use App\Services\Pivots\CalculateWorkersCost\CalculateWorkersCostService;
 use Illuminate\Http\Request;
@@ -15,11 +16,23 @@ class CalculateWorkersCostControllerExportController extends Controller
 
     public function store(Request $request): BinaryFileResponse
     {
-        $info = $this->calculateWorkersCostService->getPivotInfo();
+        $objectIds = $request->get('object_id', []);
+        $year = $request->get('year', date('Y'));
+
+        if (count($objectIds) > 0) {
+            $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects($year, $objectIds);
+
+            return Excel::download(
+                new ExportByObject($infoByObjects, $year),
+                'Расчет стоимости рабочих по объектам за ' . $year . ' год.xlsx'
+            );
+        }
+
+        $info = $this->calculateWorkersCostService->getPivotInfoByCompany($year);
 
         return Excel::download(
-            new Export($info),
-            'Расчет стоимости рабочих по компании.xlsx'
+            new ExportByCompany($info, $year),
+            'Расчет стоимости рабочих по компании за ' . $year . ' год.xlsx'
         );
     }
 }

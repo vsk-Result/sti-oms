@@ -16,11 +16,13 @@ class PivotSheet implements
     private string $sheetName;
 
     private array $info;
+    private $year;
 
-    public function __construct(string $sheetName, array $info)
+    public function __construct(string $sheetName, array $info, $year)
     {
         $this->sheetName = $sheetName;
         $this->info = $info;
+        $this->year = $year;
     }
 
     public function title(): string
@@ -30,7 +32,7 @@ class PivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $year = 2024;
+        $year = $this->year;
         $quarts = [
             '1 квартал' => [$year . '-01-01', $year . '-03-31'],
             '2 квартал' => [$year . '-04-01', $year . '-06-30'],
@@ -61,17 +63,17 @@ class PivotSheet implements
                     $sheet->setCellValue('A' . $rowIndex, $item['group']);
                 }
 
-                $sheet->setCellValue('B' . $rowIndex, $item['quarts']['1 квартал']['amount']);
-                $sheet->setCellValue('C' . $rowIndex, $item['quarts']['1 квартал']['rate']);
+                $sheet->setCellValue('B' . $rowIndex, $this->formatAmount($item['quarts']['1 квартал']['amount']));
+                $sheet->setCellValue('C' . $rowIndex, $this->formatAmount($item['quarts']['1 квартал']['rate']));
 
-                $sheet->setCellValue('D' . $rowIndex, $item['quarts']['2 квартал']['amount']);
-                $sheet->setCellValue('E' . $rowIndex, $item['quarts']['2 квартал']['rate']);
+                $sheet->setCellValue('D' . $rowIndex, $this->formatAmount($item['quarts']['2 квартал']['amount']));
+                $sheet->setCellValue('E' . $rowIndex, $this->formatAmount($item['quarts']['2 квартал']['rate']));
 
-                $sheet->setCellValue('F' . $rowIndex, $item['quarts']['3 квартал']['amount']);
-                $sheet->setCellValue('G' . $rowIndex, $item['quarts']['3 квартал']['rate']);
+                $sheet->setCellValue('F' . $rowIndex, $this->formatAmount($item['quarts']['3 квартал']['amount']));
+                $sheet->setCellValue('G' . $rowIndex, $this->formatAmount($item['quarts']['3 квартал']['rate']));
 
-                $sheet->setCellValue('H' . $rowIndex, $item['quarts']['4 квартал']['amount']);
-                $sheet->setCellValue('I' . $rowIndex, $item['quarts']['4 квартал']['rate']);
+                $sheet->setCellValue('H' . $rowIndex, $this->formatAmount($item['quarts']['4 квартал']['amount']));
+                $sheet->setCellValue('I' . $rowIndex, $this->formatAmount($item['quarts']['4 квартал']['rate']));
 
                 $sheet->getRowDimension($rowIndex)->setRowHeight(30);
                 $rowIndex++;
@@ -81,17 +83,17 @@ class PivotSheet implements
         $sheet->setCellValue('A' . $rowIndex, 'Итого');
         $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
-        $sheet->setCellValue('B' . $rowIndex, $this->info['total']['amount'][$year]['quarts']['1 квартал']);
-        $sheet->setCellValue('C' . $rowIndex, $this->info['total']['rate'][$year]['quarts']['1 квартал']);
+        $sheet->setCellValue('B' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['1 квартал']));
+        $sheet->setCellValue('C' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['1 квартал']));
 
-        $sheet->setCellValue('D' . $rowIndex, $this->info['total']['amount'][$year]['quarts']['2 квартал']);
-        $sheet->setCellValue('E' . $rowIndex, $this->info['total']['rate'][$year]['quarts']['2 квартал']);
+        $sheet->setCellValue('D' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['2 квартал']));
+        $sheet->setCellValue('E' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['2 квартал']));
 
-        $sheet->setCellValue('F' . $rowIndex, $this->info['total']['amount'][$year]['quarts']['3 квартал']);
-        $sheet->setCellValue('G' . $rowIndex, $this->info['total']['rate'][$year]['quarts']['3 квартал']);
+        $sheet->setCellValue('F' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['3 квартал']));
+        $sheet->setCellValue('G' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['3 квартал']));
 
-        $sheet->setCellValue('H' . $rowIndex, $this->info['total']['amount'][$year]['quarts']['4 квартал']);
-        $sheet->setCellValue('I' . $rowIndex, $this->info['total']['rate'][$year]['quarts']['4 квартал']);
+        $sheet->setCellValue('H' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['4 квартал']));
+        $sheet->setCellValue('I' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['4 квартал']));
 
         $rowIndex++;
 
@@ -127,6 +129,7 @@ class PivotSheet implements
         $sheet->getStyle('A1:I2')->getFont()->setBold(true);
         $sheet->getStyle('A' . ($rowIndex - 1) . ':I' . $rowIndex)->getFont()->setBold(true);
 
+        $sheet->getStyle('B2:I' . ($rowIndex - 1))->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(false);
         $sheet->getStyle('A1:I2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getStyle('B' . $rowIndex . ':I' . $rowIndex)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getStyle('A1:I' . $rowIndex)->getAlignment()->setVertical('center')->setWrapText(false);
@@ -138,5 +141,10 @@ class PivotSheet implements
         ]);
 
         $sheet->getStyle('A' . ($rowIndex - 1) . ':I' . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
+    }
+
+    public function formatAmount($amount)
+    {
+        return $amount == 0 ? '-' : $amount;
     }
 }
