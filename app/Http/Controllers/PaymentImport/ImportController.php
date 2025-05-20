@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\PaymentImport;
 use App\Models\Object\BObject;
 use App\Services\PaymentImport\PaymentImportService;
+use App\Services\PaymentImport\Type\CRMCostClosureImportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,10 +18,12 @@ use App\Models\Currency;
 class ImportController extends Controller
 {
     private PaymentImportService $importService;
+    private CRMCostClosureImportService $CRMCostClosureImportService;
 
-    public function __construct(PaymentImportService $importService)
+    public function __construct(PaymentImportService $importService, CRMCostClosureImportService $CRMCostClosureImportService)
     {
         $this->importService = $importService;
+        $this->CRMCostClosureImportService = $CRMCostClosureImportService;
     }
 
     public function index(Request $request): View
@@ -36,7 +39,9 @@ class ImportController extends Controller
 
         $invalidBalanceStatement = $this->importService->getInvalidBalanceStatement();
 
-        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate', 'companies', 'types', 'banks', 'statuses', 'currencies', 'invalidBalanceStatement'));
+        $closuresCount = $this->CRMCostClosureImportService->getClosures()->count();
+
+        return view('payment-imports.index', compact('importsPaginated', 'importsGroupedByDate', 'companies', 'types', 'banks', 'statuses', 'currencies', 'invalidBalanceStatement', 'closuresCount'));
     }
 
     public function show(PaymentImport $import): View

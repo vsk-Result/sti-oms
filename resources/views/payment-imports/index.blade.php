@@ -59,6 +59,9 @@
                                     </svg>
                                 </span>
                                 Загрузить оплаты
+                                @if ($closuresCount > 0)
+                                    <span class="ms-2 badge badge-sm badge-circle badge-outline badge-danger">{{ $closuresCount }}</span>
+                                @endif
                             </button>
 
                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
@@ -71,6 +74,10 @@
                                 <div class="menu-item px-3">
                                     <a href="{{ route('payment_imports.types.crm_cost_closures.create') }}" class="menu-link px-3">
                                         Из кассы CRM
+
+                                        @if ($closuresCount > 0)
+                                            <span class="ms-4 badge badge-sm badge-circle badge-danger">{{ $closuresCount }}</span>
+                                        @endif
                                     </a>
                                 </div>
 
