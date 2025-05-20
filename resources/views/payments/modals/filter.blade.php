@@ -51,6 +51,11 @@
                                     </button>
                                 </label>
                                 <input name="description" class="form-control form-control-solid" value="{{ request()->input('description', '') }}" />
+
+                                <div class="mt-3">
+                                    <span class="description-or badge cursor-pointer badge-light bg-hover-secondary">%% - для условия ИЛИ</span>
+                                    <span class="description-and badge cursor-pointer badge-light bg-hover-secondary">^^ - для условия И</span>
+                                </div>
                             </div>
 
                             <div class="form-group mb-3">

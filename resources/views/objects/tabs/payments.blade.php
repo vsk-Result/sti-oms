@@ -175,6 +175,16 @@
             $('input[name=period]').val('01.01.' + year + ' - 31.12.' + year);
         });
 
+        $('.description-or').on('click', function() {
+            const $input = $('input[name=description]');
+            $input .val($input.val() + '%%');
+        });
+
+        $('.description-and').on('click', function() {
+            const $input = $('input[name=description]');
+            $input .val($input.val() + '^^');
+        });
+
         mainApp.initFreezeTable(1);
     </script>
 @endpush
