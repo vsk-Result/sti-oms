@@ -311,7 +311,9 @@
                                     continue;
                                 }
 
-                                $balanceWithGeneral = $totalSaldo + $object->generalCosts()->sum('amount') + $object->transferService()->sum('amount');
+                                $totalPayments = $object->payments->sum('amount');
+
+                                $balanceWithGeneral = $totalPayments + $object->generalCosts()->sum('amount') + $object->transferService()->sum('amount');
                             @endphp
                             <tr class="total-row">
                                 <td class="ps-2 fw-bolder">
