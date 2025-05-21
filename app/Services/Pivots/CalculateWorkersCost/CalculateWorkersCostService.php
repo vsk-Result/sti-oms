@@ -263,7 +263,7 @@ class CalculateWorkersCostService
                 foreach ($quarts as $index => $quart) {
                     if ($codes[0] === 'general_costs_percent') {
                         $paymentQuery = \App\Models\Payment::query()->whereBetween('date', [$quart[0], $quart[1]])->whereIn('company_id', [1, 5]);
-                        $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.11', '7.11.1', '.7.11.2', '7.1', '7.2', '7.5'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                        $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                             + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
                         $amount = $generalAmount * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
                     } elseif ($codes[0] === 'accrued_taxes') {
