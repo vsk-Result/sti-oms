@@ -52,9 +52,12 @@
                                 <tr class="fw-bolder">
                                     <th rowspan="2" valign="middle" class="min-w-150px ps-2 text-center">Объект</th>
                                     <th rowspan="2" valign="middle" class="min-w-500px ps-2 text-center">Раздел</th>
+
                                     @foreach($infoByObjects['years'] as $year => $quarts)
                                         <th class="text-center" colspan="8">{{ $year }}</th>
                                     @endforeach
+
+                                    <th class="text-center total-cell fw-bolder" colspan="2">Итого</th>
                                 </tr>
 
                                 <tr class="fw-bolder">
@@ -64,6 +67,9 @@
                                             <th class="text-center min-w-150px">Расчет по часу</th>
                                         @endforeach
                                     @endforeach
+
+                                    <th class="text-center min-w-150px total-cell fw-bolder">Сумма</th>
+                                    <th class="text-center min-w-150px total-cell fw-bolder">Расчет по часу</th>
                                 </tr>
                             </thead>
 
@@ -82,6 +88,9 @@
                                                 <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['total']['rate'][$year]['quarts'][$index], 'RUB', 0, true) }}</td>
                                             @endforeach
                                         @endforeach
+
+                                        <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['total']['total']['amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-end pe-2 total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['total']['total']['rate'], 'RUB', 0, true) }}</td>
                                     </tr>
 
                                     @foreach($info['data'] as $items)
@@ -93,6 +102,9 @@
                                                     <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($quart['amount'], 'RUB', 0, true) }}</td>
                                                     <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($quart['rate'], 'RUB', 0, true) }}</td>
                                                 @endforeach
+
+                                                <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($item['total']['amount'], 'RUB', 0, true) }}</td>
+                                                <td class="text-end pe-2 total-cell">{{ \App\Models\CurrencyExchangeRate::format($item['total']['rate'], 'RUB', 0, true) }}</td>
                                             </tr>
                                         @endforeach
                                     @endforeach
@@ -106,6 +118,9 @@
                                                 <td class="text-end hl">{{ \App\Models\CurrencyExchangeRate::format($info['total']['rate'][$year]['quarts'][$index], 'RUB', 0, true) }}</td>
                                             @endforeach
                                         @endforeach
+
+                                        <td class="text-end pe-2 total-cell fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($info['total']['total']['amount'], 'RUB', 0, true) }}</td>
+                                        <td class="text-end pe-2 total-cell fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($info['total']['total']['rate'], 'RUB', 0, true) }}</td>
                                     </tr>
 
                                     <tr class="collapse-row" data-trigger="details-{{ $objectCode }}" style="background-color: #f7f7f7; display: none;">
@@ -116,6 +131,8 @@
                                                 <td class="text-center hl" colspan="2">{{ number_format($rate, 0, '.', ' ') }}</td>
                                             @endforeach
                                         @endforeach
+
+                                        <td class="text-center pe-2 total-cell fw-bolder" colspan="2">{{ number_format($info['total']['total']['hours'], 0, '.', ' ') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -142,6 +159,11 @@
 
         .table tr.cpsd {
             background-color: #eee;
+        }
+
+        .table th.total-cell, .table td.total-cell {
+            border: 1px solid #c8c8c8 !important;
+            background-color: #eee !important;
         }
     </style>
 @endpush

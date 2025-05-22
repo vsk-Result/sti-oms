@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Pivot\Object;
 
 use App\Http\Controllers\Controller;
+use App\Models\CashFlow\PlanPayment;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
 use App\Models\Object\BObject;
@@ -140,18 +141,41 @@ class ObjectInfoController extends Controller
             $info['total']['total_debts'] += $totalDebts;
         }
 
-        $taxPlans = TaxPlanItem::where('paid', false)
-            ->where('due_date', '<', Carbon::now())
-            ->get();
+        $ndsPlanPayment = PlanPayment::where('name', 'НДС')->first();
+        $pribPlanPayment = PlanPayment::where('name', 'Налог на прибыль')->first();
+        $strahPlanPayment = PlanPayment::where('name', 'Страховые взносы')->first();
+        $ndflPlanPayment = PlanPayment::where('name', 'НДФЛ')->first();
+        $transpPlanPayment = PlanPayment::where('name', 'Транспортный налог')->first();
+        $peniPlanPayment = PlanPayment::where('name', 'Пени')->first();
+
+        $tax_debts_nds = $ndsPlanPayment ? $ndsPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        $tax_debts_strah = $pribPlanPayment ? $pribPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        $tax_debts_prib = $strahPlanPayment ? $strahPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        $tax_debts_ndfl = $ndflPlanPayment ? $ndflPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        $tax_debts_transport = $transpPlanPayment ? $transpPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        $tax_debts_penis = $peniPlanPayment ? $peniPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+
+//        $taxPlans = TaxPlanItem::where('paid', false)
+//            ->where('due_date', '<', Carbon::now())
+//            ->get();
+//
+//        $info['total']['tax_debts'] = $objectsInfo->summary->{'Активные'}->{'tax_debt'};
+//
+//        $info['total']['tax_debts_nds'] = -$taxPlans->where('name', 'НДС')->sum('amount');
+//        $info['total']['tax_debts_strah'] = -$taxPlans->where('name', 'Страховые взносы')->sum('amount');
+//        $info['total']['tax_debts_prib'] = -$taxPlans->whereIn('name', ['Налог на прибыль аванс', 'Налог на прибыль'])->sum('amount');
+//        $info['total']['tax_debts_ndfl'] = -$taxPlans->where('name', 'НДФЛ')->sum('amount');
+//        $info['total']['tax_debts_transport'] = -$taxPlans->where('name', 'Транспортный налог')->sum('amount');
+//        $info['total']['tax_debts_penis'] = -$taxPlans->where('name', 'Пени')->sum('amount');
 
         $info['total']['tax_debts'] = $objectsInfo->summary->{'Активные'}->{'tax_debt'};
 
-        $info['total']['tax_debts_nds'] = -$taxPlans->where('name', 'НДС')->sum('amount');
-        $info['total']['tax_debts_strah'] = -$taxPlans->where('name', 'Страховые взносы')->sum('amount');
-        $info['total']['tax_debts_prib'] = -$taxPlans->whereIn('name', ['Налог на прибыль аванс', 'Налог на прибыль'])->sum('amount');
-        $info['total']['tax_debts_ndfl'] = -$taxPlans->where('name', 'НДФЛ')->sum('amount');
-        $info['total']['tax_debts_transport'] = -$taxPlans->where('name', 'Транспортный налог')->sum('amount');
-        $info['total']['tax_debts_penis'] = -$taxPlans->where('name', 'Пени')->sum('amount');
+        $info['total']['tax_debts_nds'] = -abs($tax_debts_nds);
+        $info['total']['tax_debts_strah'] = -abs($tax_debts_strah);
+        $info['total']['tax_debts_prib'] = -abs($tax_debts_prib);
+        $info['total']['tax_debts_ndfl'] = -abs($tax_debts_ndfl);
+        $info['total']['tax_debts_transport'] = -abs($tax_debts_transport);
+        $info['total']['tax_debts_penis'] = -abs($tax_debts_penis);
 
         $info['total']['total_debts'] += $info['total']['tax_debts'];
 

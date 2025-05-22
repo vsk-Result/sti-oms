@@ -65,16 +65,24 @@ class CalculateWorkersCostService
                 $year => []
             ],
             'rates' => [
-                $year => []
+                $year => [],
             ],
             'total' => [
                 'amount' => [$year => []],
                 'rate' => [$year => []],
+                'total' => [
+                    'amount' => 0,
+                    'rate' => 0,
+                    'hours' => 0,
+                ]
             ]
         ];
 
         foreach ($quarts as $index => $quart) {
-            $info['rates'][$year]['quarts'][$index] = Workhour::whereBetween('date', [$quart[0], $quart[1]])->sum('hours');
+            $hours = Workhour::whereBetween('date', [$quart[0], $quart[1]])->sum('hours');
+
+            $info['rates'][$year]['quarts'][$index] = $hours;
+            $info['total']['total']['hours'] += $hours;
         }
 
         foreach (self::COMPANY_GROUPS as $group => $codes) {
@@ -82,7 +90,11 @@ class CalculateWorkersCostService
 
             $item = [
                 'group' => $group,
-                'quarts' => []
+                'quarts' => [],
+                'total' => [
+                    'amount' => 0,
+                    'rate' => 0,
+                ],
             ];
 
             foreach ($quarts as $index => $quart) {
@@ -102,46 +114,7 @@ class CalculateWorkersCostService
                         ->sum('amount');
                     $amount += (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
                         ->where('amount', '<', 0)
-                        ->whereIn('id', [
-                            260500,
-                            260499,
-                            260498,
-                            260497,
-                            260496,
-                            260495,
-                            260494,
-                            260493,
-                            260492,
-                            256558,
-                            256557,
-                            256556,
-                            256555,
-                            256554,
-                            256553,
-                            256552,
-                            256551,
-                            256550,
-                            255753,
-                            255752,
-                            255751,
-                            255750,
-                            255749,
-                            255748,
-                            255747,
-                            255746,
-                            255745,
-                            255744,
-                            255743,
-                            255742,
-                            255741,
-                            255740,
-                            255739,
-                            255738,
-                            255737,
-                            255736,
-                            255735,
-                            255734,
-                        ])
+                        ->where('description', 'LIKE', 'transfer trosak')
                         ->sum('amount');
                 } else {
                     $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
@@ -170,7 +143,14 @@ class CalculateWorkersCostService
 
                 $info['total']['amount'][$year]['quarts'][$index] += $amount;
                 $info['total']['rate'][$year]['quarts'][$index] += $rate;
+
+                $item['total']['amount'] += $amount;
+
+                $info['total']['total']['amount'] += $amount;
             }
+
+            $item['total']['rate'] = $item['total']['amount'] / $info['total']['total']['hours'];
+            $info['total']['total']['rate'] += $item['total']['rate'];
 
             $info['data'][$year][] = $item;
         }
@@ -243,11 +223,18 @@ class CalculateWorkersCostService
                 'total' => [
                     'amount' => [$year => []],
                     'rate' => [$year => []],
+                    'total' => [
+                        'amount' => 0,
+                        'rate' => 0,
+                        'hours' => 0,
+                    ]
                 ]
             ];
 
             foreach ($quarts as $index => $quart) {
-                $info['rates'][$year]['quarts'][$index] = Workhour::whereBetween('date', [$quart[0], $quart[1]])->whereIn('o_id', $crmObjects)->sum('hours');
+                $hours = Workhour::whereBetween('date', [$quart[0], $quart[1]])->whereIn('o_id', $crmObjects)->sum('hours');
+                $info['rates'][$year]['quarts'][$index] = $hours;
+                $info['total']['total']['hours'] += $hours;
             }
 
             $object27_1 = BObject::where('code', '27.1')->first();
@@ -257,7 +244,11 @@ class CalculateWorkersCostService
 
                 $item = [
                     'group' => $group,
-                    'quarts' => []
+                    'quarts' => [],
+                    'total' => [
+                        'amount' => 0,
+                        'rate' => 0,
+                    ],
                 ];
 
                 foreach ($quarts as $index => $quart) {
@@ -282,6 +273,8 @@ class CalculateWorkersCostService
                             ->sum('amount');
                     }
 
+                    $amount = -abs($amount);
+
                     $rate = $info['rates'][$year]['quarts'][$index] != 0 ? $amount / $info['rates'][$year]['quarts'][$index] : 0;
 
                     $item['quarts'][$index] = [
@@ -299,7 +292,14 @@ class CalculateWorkersCostService
 
                     $info['total']['amount'][$year]['quarts'][$index] += $amount;
                     $info['total']['rate'][$year]['quarts'][$index] += $rate;
+
+                    $item['total']['amount'] += $amount;
+
+                    $info['total']['total']['amount'] += $amount;
                 }
+
+                $item['total']['rate'] = $item['total']['amount'] / $info['total']['total']['hours'];
+                $info['total']['total']['rate'] += $item['total']['rate'];
 
                 $info['data'][$year][] = $item;
             }

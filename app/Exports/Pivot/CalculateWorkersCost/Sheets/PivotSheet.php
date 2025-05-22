@@ -42,6 +42,7 @@ class PivotSheet implements
 
         $sheet->setCellValue('A1', 'Раздел');
         $sheet->setCellValue('B1', $year);
+        $sheet->setCellValue('J1', 'Итого');
         $sheet->setCellValue('B2', '1 квартал');
         $sheet->setCellValue('C2', 'Расчет по часу');
         $sheet->setCellValue('D2', '2 квартал');
@@ -50,9 +51,12 @@ class PivotSheet implements
         $sheet->setCellValue('G2', 'Расчет по часу');
         $sheet->setCellValue('H2', '4 квартал');
         $sheet->setCellValue('I2', 'Расчет по часу');
+        $sheet->setCellValue('J2', 'Сумма');
+        $sheet->setCellValue('K2', 'Расчет по часу');
 
         $sheet->mergeCells('A1:A2');
         $sheet->mergeCells('B1:I1');
+        $sheet->mergeCells('J1:K1');
 
         $rowIndex = 3;
         foreach ($this->info['data'] as $items) {
@@ -75,6 +79,9 @@ class PivotSheet implements
                 $sheet->setCellValue('H' . $rowIndex, $this->formatAmount($item['quarts']['4 квартал']['amount']));
                 $sheet->setCellValue('I' . $rowIndex, $this->formatAmount($item['quarts']['4 квартал']['rate']));
 
+                $sheet->setCellValue('J' . $rowIndex, $this->formatAmount($item['total']['amount']));
+                $sheet->setCellValue('K' . $rowIndex, $this->formatAmount($item['total']['rate']));
+
                 $sheet->getRowDimension($rowIndex)->setRowHeight(30);
                 $rowIndex++;
             }
@@ -95,22 +102,28 @@ class PivotSheet implements
         $sheet->setCellValue('H' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['4 квартал']));
         $sheet->setCellValue('I' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['4 квартал']));
 
+        $sheet->setCellValue('J' . $rowIndex, $this->formatAmount($this->info['total']['total']['amount']));
+        $sheet->setCellValue('K' . $rowIndex, $this->formatAmount($this->info['total']['total']['rate']));
+
         $rowIndex++;
 
         $sheet->setCellValue('A' . $rowIndex, 'Количество часов рабочих (по данным из CRM)');
         $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
         $sheet->setCellValue('B' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['1 квартал'], 0, '.', ' '));
-        $sheet->setCellValue('C' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['1 квартал'], 0, '.', ' '));
+        $sheet->mergeCells('B' . $rowIndex . ':C' . $rowIndex);
 
         $sheet->setCellValue('D' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['2 квартал'], 0, '.', ' '));
-        $sheet->setCellValue('E' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['2 квартал'], 0, '.', ' '));
+        $sheet->mergeCells('D' . $rowIndex . ':E' . $rowIndex);
 
         $sheet->setCellValue('F' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['3 квартал'], 0, '.', ' '));
-        $sheet->setCellValue('G' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['3 квартал'], 0, '.', ' '));
+        $sheet->mergeCells('F' . $rowIndex . ':G' . $rowIndex);
 
         $sheet->setCellValue('H' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['4 квартал'], 0, '.', ' '));
-        $sheet->setCellValue('I' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['4 квартал'], 0, '.', ' '));
+        $sheet->mergeCells('H' . $rowIndex . ':I' . $rowIndex);
+
+        $sheet->setCellValue('J' . $rowIndex, number_format($this->info['total']['total']['hours'], 0, '.', ' '));
+        $sheet->mergeCells('J' . $rowIndex . ':K' . $rowIndex);
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
 
@@ -125,22 +138,25 @@ class PivotSheet implements
         $sheet->getColumnDimension('G')->setWidth(30);
         $sheet->getColumnDimension('H')->setWidth(30);
         $sheet->getColumnDimension('I')->setWidth(30);
+        $sheet->getColumnDimension('J')->setWidth(30);
+        $sheet->getColumnDimension('K')->setWidth(30);
 
-        $sheet->getStyle('A1:I2')->getFont()->setBold(true);
-        $sheet->getStyle('A' . ($rowIndex - 1) . ':I' . $rowIndex)->getFont()->setBold(true);
+        $sheet->getStyle('A1:K2')->getFont()->setBold(true);
+        $sheet->getStyle('A' . ($rowIndex - 1) . ':K' . $rowIndex)->getFont()->setBold(true);
 
-        $sheet->getStyle('B2:I' . ($rowIndex - 1))->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(false);
-        $sheet->getStyle('A1:I2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('B' . $rowIndex . ':I' . $rowIndex)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('A1:I' . $rowIndex)->getAlignment()->setVertical('center')->setWrapText(false);
+        $sheet->getStyle('B2:K' . ($rowIndex - 1))->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(false);
+        $sheet->getStyle('A1:K2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('B' . $rowIndex . ':K' . $rowIndex)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('A1:K' . $rowIndex)->getAlignment()->setVertical('center')->setWrapText(false);
 
-        $sheet->getStyle('B3:I'. ($rowIndex - 1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('B3:K'. ($rowIndex - 1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        $sheet->getStyle('A1:I'. $rowIndex)->applyFromArray([
+        $sheet->getStyle('A1:K'. $rowIndex)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'aaaaaa']]]
         ]);
 
-        $sheet->getStyle('A' . ($rowIndex - 1) . ':I' . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
+        $sheet->getStyle('A' . ($rowIndex - 1) . ':K' . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('J1:K' . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
     }
 
     public function formatAmount($amount)
