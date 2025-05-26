@@ -114,7 +114,7 @@ class CalculateWorkersCostService
                         ->sum('amount');
                     $amount += (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
                         ->where('amount', '<', 0)
-                        ->where('description', 'LIKE', 'transfer trosak')
+                        ->where('description', 'LIKE', '%transfer trosak%')
                         ->sum('amount');
                 } else {
                     $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
