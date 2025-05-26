@@ -4,6 +4,7 @@ namespace App\Services\Pivots\CalculateWorkersCost;
 
 use App\Models\AccruedTax\AccruedTax;
 use App\Models\CRM\CObject;
+use App\Models\CRM\Employee;
 use App\Models\CRM\Workhour;
 use App\Models\Object\BObject;
 use App\Models\Payment;
@@ -116,6 +117,11 @@ class CalculateWorkersCostService
                         ->where('amount', '<', 0)
                         ->where('description', 'LIKE', '%transfer trosak%')
                         ->sum('amount');
+                } elseif ($codes[0] === '7.8;7.8.2;7.9.2;7.9') {
+                    $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
+
+                    $payments = -abs(Payment::whereBetween('date', [$quart[0], $quart[1]])->sum('value'));
+                    $amount += $payments;
                 } else {
                     $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
                 }
@@ -265,7 +271,16 @@ class CalculateWorkersCostService
                         $amount = AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
                     } elseif ($codes[0] === 'accrued_taxes_transport') {
                         $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
-                    }  else {
+                    } elseif ($codes[0] === '7.8;7.8.2;7.9.2;7.9') {
+                        $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
+                            ->where('amount', '<', 0)
+                            ->whereIn('code', $codes)
+                            ->where('object_id', $object->id)
+                            ->sum('amount');
+
+                        $payments = -abs(Payment::whereBetween('date', [$quart[0], $quart[1]])->whereIn('code', $crmObjects)->sum('value'));
+                        $amount += $payments;
+                    } else {
                         $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
                             ->where('amount', '<', 0)
                             ->whereIn('code', $codes)
