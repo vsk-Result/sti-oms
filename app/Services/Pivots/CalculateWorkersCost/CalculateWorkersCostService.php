@@ -4,9 +4,9 @@ namespace App\Services\Pivots\CalculateWorkersCost;
 
 use App\Models\AccruedTax\AccruedTax;
 use App\Models\CRM\CObject;
-use App\Models\CRM\Employee;
 use App\Models\CRM\Workhour;
 use App\Models\Object\BObject;
+use App\Models\CRM\Payment as CRMPayment;
 use App\Models\Payment;
 
 class CalculateWorkersCostService
@@ -120,7 +120,7 @@ class CalculateWorkersCostService
                 } elseif ($codes[0] === '7.8') {
                     $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
 
-                    $payments = -abs(Payment::whereBetween('date', [$quart[0], $quart[1]])->sum('value'));
+                    $payments = -abs(CRMPayment::whereBetween('date', [$quart[0], $quart[1]])->sum('value'));
                     $amount += $payments;
                 } else {
                     $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
@@ -278,7 +278,7 @@ class CalculateWorkersCostService
                             ->where('object_id', $object->id)
                             ->sum('amount');
 
-                        $payments = -abs(Payment::whereBetween('date', [$quart[0], $quart[1]])->whereIn('code', $crmObjects)->sum('value'));
+                        $payments = -abs(CRMPayment::whereBetween('date', [$quart[0], $quart[1]])->whereIn('code', $crmObjects)->sum('value'));
                         $amount += $payments;
                     } else {
                         $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
