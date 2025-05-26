@@ -19,11 +19,13 @@ class ReceivePlanService
 {
     private Sanitizer $sanitizer;
     private NotificationService $notificationService;
+    private CurrencyExchangeRateService $currencyExchangeService;
 
-    public function __construct(Sanitizer $sanitizer, NotificationService $notificationService)
+    public function __construct(Sanitizer $sanitizer, NotificationService $notificationService, CurrencyExchangeRateService $currencyExchangeService)
     {
         $this->sanitizer = $sanitizer;
         $this->notificationService = $notificationService;
+        $this->currencyExchangeService = $currencyExchangeService;
     }
 
     public function getPeriods(?int $objectId = null, ?string $initialPeriod = null): array
@@ -374,6 +376,9 @@ class ReceivePlanService
         $providersFloat = $info[$objectId]['providers_float'];
         $service = $info[$objectId]['service'];
 
+        $USDExchangeRate = $this->currencyExchangeService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'USD');
+        $EURExchangeRate = $this->currencyExchangeService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
+
         foreach ($periods as $index => $period) {
 
             foreach ($contractors as $contractor) {
@@ -383,19 +388,27 @@ class ReceivePlanService
                     $payments['details']['contractors'][$contractor['organization']][$period['start']] = 0;
                 }
 
+                $amount = $contractor['amount'];
+
+                if ($contractor['currency'] === 'USD') {
+                    $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                } elseif ($contractor['currency'] === 'EUR') {
+                    $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
-                        $payments['contractors'][$period['start']] += $contractor['amount'];
-                        $payments['total'][$period['start']] += $contractor['amount'];
+                        $payments['contractors'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['contractors'][$contractor['organization']][$period['start']] += $contractor['amount'];
+                        $payments['details']['contractors'][$contractor['organization']][$period['start']] += $amount;
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
-                        $payments['contractors'][$period['start']] += $contractor['amount'];
-                        $payments['total'][$period['start']] += $contractor['amount'];
+                        $payments['contractors'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['contractors'][$contractor['organization']][$period['start']] += $contractor['amount'];
+                        $payments['details']['contractors'][$contractor['organization']][$period['start']] += $amount;
                     }
                 }
             }
@@ -407,19 +420,27 @@ class ReceivePlanService
                     $payments['details']['providers_fix'][$fix['organization']][$period['start']] = 0;
                 }
 
+                $amount = $fix['amount'];
+
+                if ($fix['currency'] === 'USD') {
+                    $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                } elseif ($fix['currency'] === 'EUR') {
+                    $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
-                        $payments['providers_fix'][$period['start']] += $fix['amount'];
-                        $payments['total'][$period['start']] += $fix['amount'];
+                        $payments['providers_fix'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['providers_fix'][$fix['organization']][$period['start']] += $fix['amount'];
+                        $payments['details']['providers_fix'][$fix['organization']][$period['start']] += $amount;
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
-                        $payments['providers_fix'][$period['start']] += $fix['amount'];
-                        $payments['total'][$period['start']] += $fix['amount'];
+                        $payments['providers_fix'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['providers_fix'][$fix['organization']][$period['start']] += $fix['amount'];
+                        $payments['details']['providers_fix'][$fix['organization']][$period['start']] += $amount;
                     }
                 }
             }
@@ -431,19 +452,27 @@ class ReceivePlanService
                     $payments['details']['providers_float'][$float['organization']][$period['start']] = 0;
                 }
 
+                $amount = $float['amount'];
+
+                if ($float['currency'] === 'USD') {
+                    $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                } elseif ($float['currency'] === 'EUR') {
+                    $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
-                        $payments['providers_float'][$period['start']] += $float['amount'];
-                        $payments['total'][$period['start']] += $float['amount'];
+                        $payments['providers_float'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['providers_float'][$float['organization']][$period['start']] += $float['amount'];
+                        $payments['details']['providers_float'][$float['organization']][$period['start']] += $amount;
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
-                        $payments['providers_float'][$period['start']] += $float['amount'];
-                        $payments['total'][$period['start']] += $float['amount'];
+                        $payments['providers_float'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['providers_float'][$float['organization']][$period['start']] += $float['amount'];
+                        $payments['details']['providers_float'][$float['organization']][$period['start']] += $amount;
                     }
                 }
             }
@@ -455,19 +484,27 @@ class ReceivePlanService
                     $payments['details']['service'][$ser['organization']][$period['start']] = 0;
                 }
 
+                $amount = $ser['amount'];
+
+                if ($ser['currency'] === 'USD') {
+                    $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                } elseif ($ser['currency'] === 'EUR') {
+                    $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                }
+
                 if ($index === 0) {
                     if ($date <= $period['end']) {
-                        $payments['service'][$period['start']] += $ser['amount'];
-                        $payments['total'][$period['start']] += $ser['amount'];
+                        $payments['service'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['service'][$ser['organization']][$period['start']] += $ser['amount'];
+                        $payments['details']['service'][$ser['organization']][$period['start']] += $amount;
                     }
                 } else {
                     if ($date >= $period['start'] && $date <= $period['end']) {
-                        $payments['service'][$period['start']] += $ser['amount'];
-                        $payments['total'][$period['start']] += $ser['amount'];
+                        $payments['service'][$period['start']] += $amount;
+                        $payments['total'][$period['start']] += $amount;
 
-                        $payments['details']['service'][$ser['organization']][$period['start']] += $ser['amount'];
+                        $payments['details']['service'][$ser['organization']][$period['start']] += $amount;
                     }
                 }
             }
@@ -500,6 +537,9 @@ class ReceivePlanService
 
         $info = Cache::get('cash_flow_1c_data', []);
 
+        $USDExchangeRate = $this->currencyExchangeService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'USD');
+        $EURExchangeRate = $this->currencyExchangeService->getExchangeRate(Carbon::now()->format('Y-m-d'), 'EUR');
+
         foreach ($info as $objectId => $value) {
             $payments['objects_details'][$objectId] = [
                 'contractors' => [],
@@ -525,23 +565,31 @@ class ReceivePlanService
                         $payments['objects_details'][$objectId]['contractors'][$contractor['organization']][$period['start']] = 0;
                     }
 
+                    $amount = $contractor['amount'];
+
+                    if ($contractor['currency'] === 'USD') {
+                        $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                    } elseif ($contractor['currency'] === 'EUR') {
+                        $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                    }
+
                     if ($index === 0) {
                         if ($date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['contractors'] += $contractor['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $contractor['amount'];
-                            $payments['total']['all'][$period['start']] += $contractor['amount'];
-                            $payments['total']['contractors'][$period['start']] += $contractor['amount'];
+                            $payments['objects'][$objectId][$period['start']]['contractors'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['contractors'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['contractors'][$contractor['organization']][$period['start']] += $contractor['amount'];
+                            $payments['objects_details'][$objectId]['contractors'][$contractor['organization']][$period['start']] += $amount;
                         }
                     } else {
                         if ($date >= $period['start'] && $date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['contractors'] += $contractor['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $contractor['amount'];
-                            $payments['total']['all'][$period['start']] += $contractor['amount'];
-                            $payments['total']['contractors'][$period['start']] += $contractor['amount'];
+                            $payments['objects'][$objectId][$period['start']]['contractors'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['contractors'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['contractors'][$contractor['organization']][$period['start']] += $contractor['amount'];
+                            $payments['objects_details'][$objectId]['contractors'][$contractor['organization']][$period['start']] += $amount;
                         }
                     }
                 }
@@ -557,25 +605,33 @@ class ReceivePlanService
                         $payments['objects_details'][$objectId]['providers_fix'][$fix['organization']][$period['start']] = 0;
                     }
 
+                    $amount = $fix['amount'];
+
+                    if ($fix['currency'] === 'USD') {
+                        $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                    } elseif ($fix['currency'] === 'EUR') {
+                        $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                    }
+
                     if ($index === 0) {
                         if ($date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['providers_fix'] += $fix['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $fix['amount'];
-                            $payments['total']['all'][$period['start']] += $fix['amount'];
-                            $payments['total']['providers_fix'][$period['start']] += $fix['amount'];
+                            $payments['objects'][$objectId][$period['start']]['providers_fix'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['providers_fix'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['providers'][$fix['organization']][$period['start']] += $fix['amount'];
-                            $payments['objects_details'][$objectId]['providers_fix'][$fix['organization']][$period['start']] += $fix['amount'];
+                            $payments['objects_details'][$objectId]['providers'][$fix['organization']][$period['start']] += $amount;
+                            $payments['objects_details'][$objectId]['providers_fix'][$fix['organization']][$period['start']] += $amount;
                         }
                     } else {
                         if ($date >= $period['start'] && $date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['providers_fix'] += $fix['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $fix['amount'];
-                            $payments['total']['all'][$period['start']] += $fix['amount'];
-                            $payments['total']['providers_fix'][$period['start']] += $fix['amount'];
+                            $payments['objects'][$objectId][$period['start']]['providers_fix'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['providers_fix'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['providers'][$fix['organization']][$period['start']] += $fix['amount'];
-                            $payments['objects_details'][$objectId]['providers_fix'][$fix['organization']][$period['start']] += $fix['amount'];
+                            $payments['objects_details'][$objectId]['providers'][$fix['organization']][$period['start']] += $amount;
+                            $payments['objects_details'][$objectId]['providers_fix'][$fix['organization']][$period['start']] += $amount;
                         }
                     }
                 }
@@ -591,25 +647,33 @@ class ReceivePlanService
                         $payments['objects_details'][$objectId]['providers_float'][$float['organization']][$period['start']] = 0;
                     }
 
+                    $amount = $float['amount'];
+
+                    if ($float['currency'] === 'USD') {
+                        $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                    } elseif ($float['currency'] === 'EUR') {
+                        $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                    }
+
                     if ($index === 0) {
                         if ($date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['providers_float'] += $float['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $float['amount'];
-                            $payments['total']['all'][$period['start']] += $float['amount'];
-                            $payments['total']['providers_float'][$period['start']] += $float['amount'];
+                            $payments['objects'][$objectId][$period['start']]['providers_float'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['providers_float'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['providers'][$float['organization']][$period['start']] += $float['amount'];
-                            $payments['objects_details'][$objectId]['providers_float'][$float['organization']][$period['start']] += $float['amount'];
+                            $payments['objects_details'][$objectId]['providers'][$float['organization']][$period['start']] += $amount;
+                            $payments['objects_details'][$objectId]['providers_float'][$float['organization']][$period['start']] += $amount;
                         }
                     } else {
                         if ($date >= $period['start'] && $date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['providers_float'] += $float['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $float['amount'];
-                            $payments['total']['all'][$period['start']] += $float['amount'];
-                            $payments['total']['providers_float'][$period['start']] += $float['amount'];
+                            $payments['objects'][$objectId][$period['start']]['providers_float'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['providers_float'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['providers'][$float['organization']][$period['start']] += $float['amount'];
-                            $payments['objects_details'][$objectId]['providers_float'][$float['organization']][$period['start']] += $float['amount'];
+                            $payments['objects_details'][$objectId]['providers'][$float['organization']][$period['start']] += $amount;
+                            $payments['objects_details'][$objectId]['providers_float'][$float['organization']][$period['start']] += $amount;
                         }
                     }
                 }
@@ -621,23 +685,31 @@ class ReceivePlanService
                         $payments['objects_details'][$objectId]['service'][$ser['organization']][$period['start']] = 0;
                     }
 
+                    $amount = $ser['amount'];
+
+                    if ($ser['currency'] === 'USD') {
+                        $amount = $amount * ($USDExchangeRate->rate ?? 0);
+                    } elseif ($ser['currency'] === 'EUR') {
+                        $amount = $amount * ($EURExchangeRate->rate ?? 0);
+                    }
+
                     if ($index === 0) {
                         if ($date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['service'] += $ser['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $ser['amount'];
-                            $payments['total']['all'][$period['start']] += $ser['amount'];
-                            $payments['total']['service'][$period['start']] += $ser['amount'];
+                            $payments['objects'][$objectId][$period['start']]['service'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['service'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['service'][$ser['organization']][$period['start']] += $ser['amount'];
+                            $payments['objects_details'][$objectId]['service'][$ser['organization']][$period['start']] += $amount;
                         }
                     } else {
                         if ($date >= $period['start'] && $date <= $period['end']) {
-                            $payments['objects'][$objectId][$period['start']]['service'] += $ser['amount'];
-                            $payments['objects'][$objectId][$period['start']]['total'] += $ser['amount'];
-                            $payments['total']['all'][$period['start']] += $ser['amount'];
-                            $payments['total']['service'][$period['start']] += $ser['amount'];
+                            $payments['objects'][$objectId][$period['start']]['service'] += $amount;
+                            $payments['objects'][$objectId][$period['start']]['total'] += $amount;
+                            $payments['total']['all'][$period['start']] += $amount;
+                            $payments['total']['service'][$period['start']] += $amount;
 
-                            $payments['objects_details'][$objectId]['service'][$ser['organization']][$period['start']] += $ser['amount'];
+                            $payments['objects_details'][$objectId]['service'][$ser['organization']][$period['start']] += $amount;
                         }
                     }
                 }
