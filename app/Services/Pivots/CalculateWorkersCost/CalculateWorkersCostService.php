@@ -117,7 +117,7 @@ class CalculateWorkersCostService
                         ->where('amount', '<', 0)
                         ->where('description', 'LIKE', '%transfer trosak%')
                         ->sum('amount');
-                } elseif ($codes[0] === '7.8;7.8.2;7.9.2;7.9') {
+                } elseif ($codes[0] === '7.8') {
                     $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
 
                     $payments = -abs(Payment::whereBetween('date', [$quart[0], $quart[1]])->sum('value'));
@@ -271,7 +271,7 @@ class CalculateWorkersCostService
                         $amount = AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
                     } elseif ($codes[0] === 'accrued_taxes_transport') {
                         $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
-                    } elseif ($codes[0] === '7.8;7.8.2;7.9.2;7.9') {
+                    } elseif ($codes[0] === '7.8') {
                         $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
                             ->where('amount', '<', 0)
                             ->whereIn('code', $codes)
