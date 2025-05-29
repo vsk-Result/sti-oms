@@ -57,9 +57,9 @@ class OrganizationController extends Controller
                          $objName = BObject::find($objectId)->name;
                         if (isset($request->object_id)) {
                             if ($request->object_id === $objectId) {
-                                $objects[$objName]['amount'] = $amountInfo['amount_without_guarantee'];
+                                $objects[$objName]['amount'] = $amountInfo['amount_without_guarantee'] + $amountInfo['avans'];
                                 $objects[$objName]['guarantee'] = $amountInfo['guarantee'];
-                                $result['amount'] += $amountInfo['amount_without_guarantee'];
+                                $result['amount'] += $amountInfo['amount_without_guarantee'] + $amountInfo['avans'];
                                 $result['guarantee'] += $amountInfo['guarantee'];
 
                                 break;
@@ -68,9 +68,9 @@ class OrganizationController extends Controller
                             continue;
                         }
 
-                        $objects[$objName]['amount'] = $amountInfo['amount_without_guarantee'];
+                        $objects[$objName]['amount'] = $amountInfo['amount_without_guarantee'] + $amountInfo['avans'];
                         $objects[$objName]['guarantee'] = $amountInfo['guarantee'];
-                        $result['amount'] += $amountInfo['amount_without_guarantee'];
+                        $result['amount'] += $amountInfo['amount_without_guarantee'] + $amountInfo['avans'];
                         $result['guarantee'] += $amountInfo['guarantee'];
                     }
 

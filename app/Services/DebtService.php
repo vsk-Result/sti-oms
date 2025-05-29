@@ -48,6 +48,7 @@ class DebtService
                 if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
                     $pivot['entries'][$organizationInfo['organization_name']][$object->id] = [
                         'amount' => 0,
+                        'avans' => 0,
                         'amount_without_guarantee' => 0,
                         'guarantee' => 0,
                     ];
@@ -58,6 +59,7 @@ class DebtService
                 }
 
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount'] += $organizationInfo['total_amount'];
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id]['avans'] += $organizationInfo['avans'];
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount_without_guarantee'] += $organizationInfo['amount'];
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['guarantee'] += $organizationInfo['guarantee'];
                 $pivot['total'][$object->id] += $organizationInfo['total_amount'];
@@ -68,6 +70,7 @@ class DebtService
                 if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
                     $pivot['entries'][$organizationInfo['organization_name']][$object->id] = [
                         'amount' => 0,
+                        'avans' => 0,
                         'amount_without_guarantee' => 0,
                         'guarantee' => 0,
                     ];
@@ -78,6 +81,7 @@ class DebtService
                 }
 
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount'] += $organizationInfo['amount'];
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id]['avans'] += $organizationInfo['avans'];
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount_without_guarantee'] += $organizationInfo['amount'];
                 $pivot['total'][$object->id] += $organizationInfo['amount'];
                 $organizations[$organizationInfo['organization_name']] += $organizationInfo['amount'];
@@ -87,6 +91,7 @@ class DebtService
                 if (!isset($pivot['entries'][$organizationInfo['organization_name']][$object->id])) {
                     $pivot['entries'][$organizationInfo['organization_name']][$object->id] = [
                         'amount' => 0,
+                        'avans' => 0,
                         'amount_without_guarantee' => 0,
                         'guarantee' => 0,
                     ];
@@ -97,6 +102,7 @@ class DebtService
                 }
 
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount'] += $organizationInfo['amount'];
+                $pivot['entries'][$organizationInfo['organization_name']][$object->id]['avans'] += $organizationInfo['avans'];
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount_without_guarantee'] += $organizationInfo['amount'];
                 $pivot['total'][$object->id] += $organizationInfo['amount'];
                 $organizations[$organizationInfo['organization_name']] += $organizationInfo['amount'];
