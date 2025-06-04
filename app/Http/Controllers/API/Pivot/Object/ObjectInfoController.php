@@ -16,17 +16,17 @@ class ObjectInfoController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-//        if (! $request->has('verify_hash')) {
-//            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
-//        }
-//
-//        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
-//            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
-//        }
-//
-//        if (! $request->has('access_objects')) {
-//            return response()->json(['error' => 'Отсутствует access_objects'], 403);
-//        }
+        if (! $request->has('verify_hash')) {
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+        }
+
+        if ($request->get('verify_hash') !== config('qr.verify_hash')) {
+            return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
+        }
+
+        if (! $request->has('access_objects')) {
+            return response()->json(['error' => 'Отсутствует access_objects'], 403);
+        }
 
         $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
 
