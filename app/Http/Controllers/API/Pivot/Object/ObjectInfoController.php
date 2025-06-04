@@ -149,8 +149,8 @@ class ObjectInfoController extends Controller
         $peniPlanPayment = PlanPayment::where('name', 'Пени')->first();
 
         $tax_debts_nds = $ndsPlanPayment ? $ndsPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
-        $tax_debts_strah = $pribPlanPayment ? $pribPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
-        $tax_debts_prib = $strahPlanPayment ? $strahPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        $tax_debts_prib = $pribPlanPayment ? $pribPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        $tax_debts_strah = $strahPlanPayment ? $strahPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
         $tax_debts_ndfl = $ndflPlanPayment ? $ndflPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
         $tax_debts_transport = $transpPlanPayment ? $transpPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
         $tax_debts_penis = $peniPlanPayment ? $peniPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
