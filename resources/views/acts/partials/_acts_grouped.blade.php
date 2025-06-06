@@ -123,7 +123,7 @@
                 <tbody class="text-gray-600 fw-bold">
                     <tr class="fw-bolder" style="background-color: #fbfbfb; color: #737373;">
                         <td class="ps-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="fix-acts">+</td>
-                        <td colspan="5" class="ps-4" style="vertical-align: middle;">Итого (фиксированная часть)</td>
+                        <td colspan="5" class="ps-4" style="vertical-align: middle;">Итого (неизменяемая часть)</td>
                         <td>
                             {{ \App\Models\CurrencyExchangeRate::format($total['amount_fix']['RUB'], 'RUB') }}
                         </td>
@@ -226,7 +226,7 @@
                     <tr class="fw-bolder" style="background-color: #fbfbfb; color: #737373;">
                         <td class="ps-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="float-acts">+</td>
 
-                        <td colspan="5" class="ps-4" style="vertical-align: middle;">Итого (переменная часть)</td>
+                        <td colspan="5" class="ps-4" style="vertical-align: middle;">Итого (изменяемая часть)</td>
                         <td>
                             {{ \App\Models\CurrencyExchangeRate::format($total['amount_float']['RUB'], 'RUB') }}
                         </td>

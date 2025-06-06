@@ -55,7 +55,7 @@ class ImportManualReplaceDebtsFromExcel extends HandledCommand
                 $this->sendErrorMessage('Не удалось загрузить файл для импорта долгов по подрядчикам, поставщикам, за услуги "' . $import->getFilename() . '"');
                 $this->sendErrorMessage($e->getMessage());
                 $this->endProcess();
-                return 0;
+                continue;
             }
 
             if (! empty($data['errors'])) {
@@ -64,7 +64,7 @@ class ImportManualReplaceDebtsFromExcel extends HandledCommand
                     $this->sendErrorMessage($error);
                 }
                 $this->endProcess();
-                return 0;
+                continue;
             }
 
             $this->sendInfoMessage('Файл "' . $import->getFilename() . '" успешно загружен');
@@ -82,7 +82,7 @@ class ImportManualReplaceDebtsFromExcel extends HandledCommand
                 $this->sendErrorMessage('Не удалось обновить сводные данные долгов по подрядчикам');
                 $this->sendErrorMessage($e->getMessage());
                 $this->endProcess();
-                return 0;
+                continue;
             }
 
             $this->sendInfoMessage('Сводные данные по подрядчикам успешно обновлены');
@@ -100,7 +100,7 @@ class ImportManualReplaceDebtsFromExcel extends HandledCommand
                 $this->sendErrorMessage('Не удалось обновить сводные данные долгов по поставщикам');
                 $this->sendErrorMessage($e->getMessage());
                 $this->endProcess();
-                return 0;
+                continue;
             }
 
             $this->sendInfoMessage('Сводные данные по поставщикам успешно обновлены');
@@ -118,7 +118,7 @@ class ImportManualReplaceDebtsFromExcel extends HandledCommand
                 $this->sendErrorMessage('Не удалось обновить сводные данные долгов за услуги');
                 $this->sendErrorMessage($e->getMessage());
                 $this->endProcess();
-                return 0;
+                continue;
             }
 
             $this->sendInfoMessage('Сводные данные за услуги успешно обновлены');

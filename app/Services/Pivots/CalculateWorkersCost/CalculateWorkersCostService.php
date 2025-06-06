@@ -9,13 +9,14 @@ use App\Models\Object\BObject;
 use App\Models\CRM\Payment as CRMPayment;
 use App\Models\Payment;
 use App\Models\SERVICE\WorkhourPivot;
+use Illuminate\Support\Facades\Cache;
 
 class CalculateWorkersCostService
 {
     const COMPANY_GROUPS = [
         'ФОТ рабочие' => 'workers_salary',
-        'ФОТ офис + ФОТ ИТР' => '7.8.1;7.9.1',
-        'НДФЛ + страховые взносы + трансфер' => '7.3;7.3.1;7.3.2',
+        'ФОТ офис + ФОТ ИТР' => 'itr_salary',
+        'НДФЛ + страховые взносы' => '7.3;7.3.1;7.3.2',
         'Трансфер' => 'transfer',
         'Административные' => '5.1;5.2;5.3;5.4;5.5;5.6;5.7;5.15;5.17;7.16;7.17;7.19;7.20;7.21;7.22;7.23;7.24;7.25;7.26;7.27;7.29;7.30;7.31;7.32',
         'Питание' => '5.13;5.13.1;5.13.2',
@@ -33,7 +34,7 @@ class CalculateWorkersCostService
 
     const OBJECTS_GROUPS = [
         'ФОТ рабочие' => 'workers_salary',
-        'ФОТ ИТР' => '7.8.1;7.9.1',
+        'ФОТ ИТР' => 'itr_salary',
         'Налоги с з/п' => '7.3;7.3.1;7.3.2',
         'Административные' => '5.1;5.2;5.3;5.4;5.5;5.6;5.7;5.15;5.17;7.20;7.21;7.25;7.26;7.30;7.31;7.32',
         'Питание' => '5.13;5.13.1;5.13.2',
@@ -87,6 +88,8 @@ class CalculateWorkersCostService
             $info['total']['total']['hours'] += $hours;
         }
 
+        $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
+
         foreach (self::COMPANY_GROUPS as $group => $codes) {
             $codes = explode(';', $codes);
 
@@ -117,6 +120,14 @@ class CalculateWorkersCostService
                         ->sum('amount');
                 } elseif ($codes[0] === 'workers_salary') {
                     $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
+                } elseif ($codes[0] === 'itr_salary') {
+                    $amount = 0;
+
+                    foreach ($ITRSalaryPivot as $date => $pivot) {
+                        if ($date >= $quart[0] && $date <= $quart[1]) {
+                            $amount += $pivot['total'];
+                        }
+                    }
                 } else {
                     $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
                 }
@@ -177,6 +188,8 @@ class CalculateWorkersCostService
         $objects = BObject::whereIn('id', $objectIds)->orderBy('code')->get();
 
         $quartsWorkhoursPercents = [];
+
+        $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
 
         foreach ($quarts as $index => $quart) {
             $objectIdsOnQuarts = [];
@@ -268,6 +281,18 @@ class CalculateWorkersCostService
                         $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
                     } elseif ($codes[0] === 'workers_salary') {
                         $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                    } elseif ($codes[0] === 'itr_salary') {
+                        $amount = 0;
+
+                        foreach ($ITRSalaryPivot as $date => $pivot) {
+                            if ($date >= $quart[0] && $date <= $quart[1]) {
+                                foreach ($pivot['objects'] as $code => $am) {
+                                    if ($code == $object->code) {
+                                        $amount += $am;
+                                    }
+                                }
+                            }
+                        }
                     } else {
                         $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
                             ->where('amount', '<', 0)
