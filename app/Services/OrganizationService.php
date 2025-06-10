@@ -23,6 +23,7 @@ class OrganizationService
 
         $organizationByName = Organization::where('name', $requestData['name'])->first();
         $organizationByINN = Organization::where('inn', $requestData['inn'])->first();
+        $organizationByINN2 = Organization::where('inn', '0' . $requestData['inn'])->first();
 
         if (empty($requestData['inn'])) {
             return $organizationByName ?: $this->createOrganization($requestData);
@@ -30,6 +31,10 @@ class OrganizationService
 
         if ($organizationByINN) {
             return $organizationByINN;
+        }
+
+        if ($organizationByINN2) {
+            return $organizationByINN2;
         }
 
         if ($organizationByName) {
