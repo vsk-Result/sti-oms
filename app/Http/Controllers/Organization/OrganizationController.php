@@ -36,8 +36,13 @@ class OrganizationController extends Controller
 
             $query = Organization::query();
             $objectIds = $request->get('objects');
+            $search = $request->get('search');
 
-            $query->where('name', 'LIKE', '%' . $request->get('search') . '%');
+            $query->where(function($q) use($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%');
+                $q->orWhere('inn', 'LIKE', '%' . $search . '%');
+            });
+
 
             if (! empty($objectIds)) {
                 $organizationsIds = [];
