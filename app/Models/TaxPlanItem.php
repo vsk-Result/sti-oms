@@ -21,7 +21,8 @@ class TaxPlanItem extends Model implements Audit
 
     protected $fillable = [
         'created_by_user_id', 'updated_by_user_id', 'name', 'amount', 'due_date',
-        'period', 'in_one_c', 'paid', 'payment_date', 'status_id', 'company_id', 'object_id'
+        'period', 'in_one_c', 'paid', 'payment_date', 'status_id', 'company_id', 'object_id',
+        'cash_flow_group_id', 'cash_flow_name', 'to_cash_flow'
     ];
 
     public function company(): BelongsTo

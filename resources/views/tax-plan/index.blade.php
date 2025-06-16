@@ -32,6 +32,11 @@
                 </div>
 
                 <div class="card-toolbar">
+                    <a href="{{ route('tax_plan.move_cf.store') }}" class="btn btn-light-success me-3">
+                        Синхронизировать с Cash Flow
+                        <br>{{ \Illuminate\Support\Facades\Cache::get('tax_plan_to_cash_flow_last_update', '-') }}
+                    </a>
+
                     <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterTaxPlanModal">
                         <span class="svg-icon svg-icon-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">

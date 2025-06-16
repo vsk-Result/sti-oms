@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Object\BObject;
 use App\Models\TaxPlanItem;
+use App\Services\PlanPaymentGroupService;
 use App\Services\TaxPlanItemService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -15,12 +16,10 @@ use Illuminate\Http\Request;
 
 class TaxPlanItemController extends Controller
 {
-    private TaxPlanItemService $taxPlanItemService;
-
-    public function __construct(TaxPlanItemService $taxPlanItemService)
-    {
-        $this->taxPlanItemService = $taxPlanItemService;
-    }
+    public function __construct(
+        private TaxPlanItemService $taxPlanItemService,
+        private PlanPaymentGroupService $planPaymentGroupService
+    ) {}
 
     public function index(Request $request): View
     {
@@ -44,9 +43,11 @@ class TaxPlanItemController extends Controller
             $copyItem = TaxPlanItem::find($request->get('copy-item-id'));
         }
 
+        $cashFlowGroups = $this->planPaymentGroupService->getGroups();
         $companies = Company::orderBy('id')->get();
         $objects = BObject::orderBy('code')->get();
-        return view('tax-plan.create', compact('companies', 'objects', 'copyItem'));
+
+        return view('tax-plan.create', compact('companies', 'objects', 'copyItem', 'cashFlowGroups'));
     }
 
     public function store(StoreTaxPlanItemRequest $request): RedirectResponse
@@ -59,7 +60,9 @@ class TaxPlanItemController extends Controller
     {
         $companies = Company::orderBy('id')->get();
         $objects = BObject::orderBy('code')->get();
-        return view('tax-plan.edit', compact('item', 'companies', 'objects'));
+        $cashFlowGroups = $this->planPaymentGroupService->getGroups();
+
+        return view('tax-plan.edit', compact('item', 'companies', 'objects', 'cashFlowGroups'));
     }
 
     public function update(TaxPlanItem $item, UpdateTaxPlanItemRequest $request): RedirectResponse

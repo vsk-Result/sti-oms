@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TaxPlanItem\MoveToCashFlowController;
 use App\Http\Controllers\TaxPlanItem\TaxPlanItemController;
 use App\Http\Controllers\TaxPlanItem\HistoryController;
 use App\Http\Controllers\TaxPlanItem\ExportController;
@@ -11,6 +12,10 @@ Route::get('tax-plan/history', [HistoryController::class, 'index'])->name('tax_p
 // Экспорт плана
 
 Route::post('tax-plan/export', [ExportController::class, 'store'])->name('tax_plan.exports.store');
+
+// Синхронизация с Cash Flow
+
+Route::get('tax-plan/move-to-cash-flow', [MoveToCashFlowController::class, 'store'])->name('tax_plan.move_cf.store');
 
 // План налогов к оплате
 

@@ -16,6 +16,11 @@ class PlanPaymentGroupService
         $this->sanitizer = $sanitizer;
     }
 
+    public function getGroups(): array
+    {
+        return PlanPaymentGroup::orderBy('name')->pluck('name', 'id')->toArray();
+    }
+
     public function createPlanPaymentGroup(array $requestData): void
     {
         PlanPaymentGroup::create([
@@ -69,5 +74,10 @@ class PlanPaymentGroupService
     public function findGroup(int $groupId): PlanPaymentGroup | null
     {
         return PlanPaymentGroup::find($groupId);
+    }
+
+    public function findGroupByName(string $name): PlanPaymentGroup | null
+    {
+        return PlanPaymentGroup::where('name', $name)->first();
     }
 }

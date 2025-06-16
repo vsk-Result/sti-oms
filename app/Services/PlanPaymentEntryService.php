@@ -37,11 +37,14 @@ class PlanPaymentEntryService
     {
         $amount = isset($requestData['amount']) ? $this->sanitizer->set($requestData['amount'])->toAmount()->get() : 0;
         $period = Carbon::parse($requestData['date'])->startOfWeek()->format('d.m.Y') . ' - ' . Carbon::parse($requestData['date'])->endOfWeek()->format('d.m.Y');
-        $this->notificationService->createNotification(
-            Notification::TYPE_PAYMENT,
-            Notification::EVENT_TYPE_CREATE,
-            'Сумма расхода "' . PlanPayment::find($requestData['payment_id'])->name . '" изменилась с "0 ₽" на "' . CurrencyExchangeRate::format($amount, 'RUB') . '" за период "' . $period . '"'
-        );
+
+        if (! isset($requestData['without_notify'])) {
+            $this->notificationService->createNotification(
+                Notification::TYPE_PAYMENT,
+                Notification::EVENT_TYPE_CREATE,
+                'Сумма расхода "' . PlanPayment::find($requestData['payment_id'])->name . '" изменилась с "0 ₽" на "' . CurrencyExchangeRate::format($amount, 'RUB') . '" за период "' . $period . '"'
+            );
+        }
 
         return PlanPaymentEntry::create([
             'payment_id' => $requestData['payment_id'],

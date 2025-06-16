@@ -16,10 +16,10 @@ class AccruedTaxService
     ];
 
     const YEARS = [
-        '2022',
-        '2023',
-        '2024',
         '2025',
+        '2024',
+        '2023',
+        '2022',
     ];
 
     public function __construct(private Sanitizer $sanitizer) {}

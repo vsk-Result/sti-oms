@@ -4,22 +4,24 @@
 
 <tr class="collapse-row plan-payment {{ !is_valid_amount_in_range($total) && (auth()->id() !== 12 && auth()->id() !== 31) ? 'd-none' : '' }}" data-trigger="{{ $gr }}" data-group="{{ $gr }}">
     <td class="ps-8">
-        <span class="{{ auth()->user()->can('index cash-flow-plan-payments') ? 'cursor-pointer plan-payment-name' : '' }}">{{ $payment->name }}</span>
-        @can('index cash-flow-plan-payments')
-            <input
-                    type="text"
-                    value=""
-                    class="form-control form-control-sm form-control-solid update-plan-payment-input"
-                    autocomplete="off"
-                    data-url="{{ route('pivots.cash_flow.plan_payments.update') }}"
-                    data-destroy-url="{{ route('pivots.cash_flow.plan_payments.destroy') }}"
-                    data-payment-id="{{ $payment->id }}"
-                    style="display: none;"
-            />
-        @endcan
+        <span class="{{ auth()->user()->can('index cash-flow-plan-payments') && !$payment->from_tax_plan ? 'cursor-pointer plan-payment-name' : '' }}">{{ $payment->name }}</span>
+        @if (!$payment->from_tax_plan)
+            @can('index cash-flow-plan-payments')
+                <input
+                        type="text"
+                        value=""
+                        class="form-control form-control-sm form-control-solid update-plan-payment-input"
+                        autocomplete="off"
+                        data-url="{{ route('pivots.cash_flow.plan_payments.update') }}"
+                        data-destroy-url="{{ route('pivots.cash_flow.plan_payments.destroy') }}"
+                        data-payment-id="{{ $payment->id }}"
+                        style="display: none;"
+                />
+            @endcan
+        @endif
     </td>
     <td class="text-center">
-        @if (auth()->user()->can('index cash-flow-plan-payments'))
+        @if (auth()->user()->can('index cash-flow-plan-payments') && !$payment->from_tax_plan)
             <select
                     name="object_id"
                     data-control="select2"
@@ -59,14 +61,14 @@
             data-object="{{ $payment->object->code ?? 'null' }}"
         >
             <div class="comment-marker {{ $comment ? 'has-comment' : '' }}"></div>
-            @if (auth()->user()->can('index cash-flow-plan-payments'))
+            @if (auth()->user()->can('index cash-flow-plan-payments') && !$payment->from_tax_plan)
                 <input
-                        type="text"
-                        value="{{ $amount }}"
-                        class="amount-mask form-control form-control-sm form-control-solid db-field"
-                        autocomplete="off"
-                        data-payment-id="{{ $payment->id }}"
-                        data-date="{{ $period['start'] }}"
+                    type="text"
+                    value="{{ $amount }}"
+                    class="amount-mask form-control form-control-sm form-control-solid db-field"
+                    autocomplete="off"
+                    data-payment-id="{{ $payment->id }}"
+                    data-date="{{ $period['start'] }}"
                 />
             @else
                 {{ \App\Models\CurrencyExchangeRate::format(-abs($amount), 'RUB', 0, true) }}

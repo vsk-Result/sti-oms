@@ -203,6 +203,69 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Синхронизировать с Cash Flow</label>
+                                                <div class="position-relative mb-3">
+                                                    <select name="to_cash_flow" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        @php
+                                                            $selectedToCashFlow = 0;
+                                                            if ($copyItem) {
+                                                                $selectedToCashFlow = $copyItem->to_cash_flow;
+                                                            }
+                                                        @endphp
+
+                                                        @foreach(['Нет', 'Да'] as $index => $value)
+                                                            <option value="{{ $index }}" {{ $selectedToCashFlow === $index ? 'selected' : '' }}>{{ $value }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Группа в Cash Flow</label>
+                                                <div class="position-relative mb-3">
+                                                    <select name="cash_flow_group_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        @php
+                                                            $selectedGroupId = null;
+                                                            if ($copyItem) {
+                                                                $selectedGroupId = $copyItem->cash_flow_group_id;
+                                                            }
+                                                        @endphp
+
+                                                        <option value="{{ null }}" {{ is_null($selectedGroupId) ? 'selected' : '' }}>Без группы</option>
+                                                        @foreach($cashFlowGroups as $groupId => $groupName)
+                                                            <option value="{{ $groupId }}" {{ $selectedGroupId === $groupId ? 'selected' : '' }}>{{ $groupName }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Название в Cash Flow</label>
+                                                <div class="position-relative mb-3">
+                                                    <input
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        type="text"
+                                                        name="cash_flow_name"
+                                                        value="{{ old('cash_flow_name', $copyItem ? $copyItem->cash_flow_name : '') }}"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

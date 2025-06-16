@@ -107,6 +107,9 @@ class TaxPlanItemService
     {
         $item = TaxPlanItem::create([
             'name' => $requestData['name'],
+            'cash_flow_group_id' => $requestData['cash_flow_group_id'],
+            'cash_flow_name' => $requestData['cash_flow_name'],
+            'to_cash_flow' => $requestData['to_cash_flow'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
@@ -123,6 +126,9 @@ class TaxPlanItemService
     {
         $item->update([
             'name' => $requestData['name'],
+            'cash_flow_group_id' => $requestData['cash_flow_group_id'],
+            'cash_flow_name' => $requestData['cash_flow_name'],
+            'to_cash_flow' => $requestData['to_cash_flow'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'due_date' => $requestData['due_date'],
             'period' => $requestData['period'],
@@ -138,5 +144,27 @@ class TaxPlanItemService
     public function destroyItem(TaxPlanItem $item): void
     {
         $item->delete();
+    }
+
+    public function getPaymentsForCashFlow(): array
+    {
+        $result = [];
+
+        $payments = TaxPlanItem::where('company_id', 1)
+            ->where('paid', false)
+            ->where('to_cash_flow', true)
+            ->get();
+
+        foreach ($payments as $payment) {
+            $result[] = [
+                'group_id' => $payment->cash_flow_group_id,
+                'object_id' => $payment->object_id,
+                'date' => $payment->due_date,
+                'name' => empty($payment->cash_flow_name) ? $payment->name : $payment->cash_flow_name,
+                'amount' => -abs($payment->amount)
+            ];
+        }
+
+        return $result;
     }
 }

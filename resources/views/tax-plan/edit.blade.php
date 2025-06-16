@@ -189,6 +189,55 @@
                                         />
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Синхронизировать с Cash Flow</label>
+                                                <div class="position-relative mb-3">
+                                                    <select name="to_cash_flow" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        @foreach(['Нет', 'Да'] as $index => $value)
+                                                            <option value="{{ $index }}" {{ $item->to_cash_flow === $index ? 'selected' : '' }}>{{ $value }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Группа в Cash Flow</label>
+                                                <div class="position-relative mb-3">
+                                                    <select name="cash_flow_group_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                        <option value="{{ null }}" {{ is_null($item->cash_flow_group_id) ? 'selected' : '' }}>Без группы</option>
+                                                        @foreach($cashFlowGroups as $groupId => $groupName)
+                                                            <option value="{{ $groupId }}" {{ $item->cash_flow_group_id === $groupId ? 'selected' : '' }}>{{ $groupName }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-10 fv-row">
+                                            <div class="mb-1">
+                                                <label class="form-label fw-bolder text-dark fs-6">Название в Cash Flow</label>
+                                                <div class="position-relative mb-3">
+                                                    <input
+                                                            class="form-control form-control-lg form-control-solid"
+                                                            type="text"
+                                                            name="cash_flow_name"
+                                                            value="{{ old('cash_flow_name', $item->cash_flow_name) }}"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
