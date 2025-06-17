@@ -518,36 +518,36 @@ class MakeFinanceReportHistory extends HandledCommand
                             }
                         }
 
-                        if ($field === 'prognoz_material' && $object->status_id === Status::STATUS_ACTIVE && ! in_array($object->code, ['369', '360'])) {
-                            $fixMatPlan = $object->planPayments->where('field', 'prognoz_material_fix')->first();
-                            $floatMatPlan = $object->planPayments->where('field', 'prognoz_material_float')->first();
-
-                            if ($fixMatPlan) {
-                                $amnt = 0;
-                                $cncts = $object->contracts->where('type_id', Contract::TYPE_MAIN);
-                                foreach ($cncts as $cnct) {
-                                    $amnt += $cnct->getMaterialAmount();
-                                }
-
-                                $amnt = $amnt + $object->payments()->where('amount', '<', 0)->where('category', Payment::CATEGORY_MATERIAL)->sum('amount') + $providerDebtsAmount;
-
-                                if ($object->code === '363' && $floatMatPlan) {
-                                    $amnt = $amnt + $floatMatPlan->amount;
-                                }
-
-                                $fixMatPlan->update([
-                                    'amount' => -$amnt
-                                ]);
-                            }
-
-                            $prognozAmount = $object->planPayments->whereIn('field', ['prognoz_material_fix', 'prognoz_material_float'])->sum('amount');
-                            $p = $object->planPayments->where('field', 'prognoz_material')->first();
-                            if ($p) {
-                                $p->update([
-                                    'amount' => $prognozAmount
-                                ]);
-                            }
-                        }
+//                        if ($field === 'prognoz_material' && $object->status_id === Status::STATUS_ACTIVE && ! in_array($object->code, ['369', '360'])) {
+//                            $fixMatPlan = $object->planPayments->where('field', 'prognoz_material_fix')->first();
+//                            $floatMatPlan = $object->planPayments->where('field', 'prognoz_material_float')->first();
+//
+//                            if ($fixMatPlan) {
+//                                $amnt = 0;
+//                                $cncts = $object->contracts->where('type_id', Contract::TYPE_MAIN);
+//                                foreach ($cncts as $cnct) {
+//                                    $amnt += $cnct->getMaterialAmount();
+//                                }
+//
+//                                $amnt = $amnt + $object->payments()->where('amount', '<', 0)->where('category', Payment::CATEGORY_MATERIAL)->sum('amount') + $providerDebtsAmount;
+//
+//                                if ($object->code === '363' && $floatMatPlan) {
+//                                    $amnt = $amnt + $floatMatPlan->amount;
+//                                }
+//
+//                                $fixMatPlan->update([
+//                                    'amount' => -$amnt
+//                                ]);
+//                            }
+//
+//                            $prognozAmount = $object->planPayments->whereIn('field', ['prognoz_material_fix', 'prognoz_material_float'])->sum('amount');
+//                            $p = $object->planPayments->where('field', 'prognoz_material')->first();
+//                            if ($p) {
+//                                $p->update([
+//                                    'amount' => $prognozAmount
+//                                ]);
+//                            }
+//                        }
 
                         if ($field === 'prognoz_consalting_after_work') {
                             $total[$year][$object->code]['prognoz_consalting'] += $prognozAmount;
