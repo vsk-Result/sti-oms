@@ -3,7 +3,11 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body pt-9 pb-0">
-                    @include('objects.parts._object_general_info')
+                    @if (auth()->user()->hasRole(['demo']))
+                        @include('objects.parts._object_general_info_demo')
+                    @else
+                        @include('objects.parts._object_general_info')
+                    @endif
                 </div>
             </div>
         </div>

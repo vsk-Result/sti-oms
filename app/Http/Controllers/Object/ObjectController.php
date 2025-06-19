@@ -52,6 +52,10 @@ class ObjectController extends Controller
             $query->whereIn('id', auth()->user()->objects->pluck('id'));
         }
 
+        if (auth()->user()->hasRole(['demo'])) {
+            $query->where('code', '399');
+        }
+
         $objects = $query->orderByRaw('CONVERT(code, SIGNED) desc')->paginate(10)->withQueryString();
 
         return response()->json([

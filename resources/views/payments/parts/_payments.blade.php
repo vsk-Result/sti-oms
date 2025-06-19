@@ -3,44 +3,47 @@
         @if (! auth()->user()->hasRole('finance-object-user-mini'))
         <div class="card-title">
 
-            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
-                <div class="d-flex align-items-center">
-                    @php
-                        $balance = $totalInfo['amount_pay'] + $totalInfo['amount_receive'];
-                    @endphp
-                    <div class="fs-4 fw-bolder {{ $balance >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($balance, 2, '.', ' ') }}</div>
-                </div>
-                @if (isset($object))
-                    <div class="fw-bold fs-6 text-gray-400">Баланс без общ. расходов</div>
-                @else
-                    <div class="fw-bold fs-6 text-gray-400">Баланс</div>
-                @endif
-            </div>
+            @if (!auth()->user()->hasRole(['demo']))
 
-            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
-                <a href="javascript::void(0);" class="amount-expression-quick" data-operator="<" data-operator-force>
+                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
                     <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-danger">{{ number_format($totalInfo['amount_pay'], 2, '.', ' ') }}</div>
+                        @php
+                            $balance = $totalInfo['amount_pay'] + $totalInfo['amount_receive'];
+                        @endphp
+                        <div class="fs-4 fw-bolder {{ $balance >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($balance, 2, '.', ' ') }}</div>
                     </div>
-                    <div class="fw-bold fs-6 text-gray-400">Расходы</div>
-                </a>
-            </div>
-
-            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
-                <a href="javascript::void(0);" class="amount-expression-quick" data-operator=">" data-operator-force>
-                    <div class="d-flex align-items-center">
-                        <div class="fs-4 fw-bolder text-success">{{ number_format($totalInfo['amount_receive'], 2, '.', ' ') }}</div>
-                    </div>
-                    <div class="fw-bold fs-6 text-gray-400">Приходы</div>
-                </a>
-            </div>
-
-            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
-                <div class="d-flex align-items-center">
-                    <div class="fs-4 fw-bolder">{{ number_format($payments->total(), 0, '.', ' ') }}</div>
+                    @if (isset($object))
+                        <div class="fw-bold fs-6 text-gray-400">Баланс без общ. расходов</div>
+                    @else
+                        <div class="fw-bold fs-6 text-gray-400">Баланс</div>
+                    @endif
                 </div>
-                <div class="fw-bold fs-6 text-gray-400">Оплат</div>
-            </div>
+
+                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                    <a href="javascript::void(0);" class="amount-expression-quick" data-operator="<" data-operator-force>
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder text-danger">{{ number_format($totalInfo['amount_pay'], 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Расходы</div>
+                    </a>
+                </div>
+
+                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                    <a href="javascript::void(0);" class="amount-expression-quick" data-operator=">" data-operator-force>
+                        <div class="d-flex align-items-center">
+                            <div class="fs-4 fw-bolder text-success">{{ number_format($totalInfo['amount_receive'], 2, '.', ' ') }}</div>
+                        </div>
+                        <div class="fw-bold fs-6 text-gray-400">Приходы</div>
+                    </a>
+                </div>
+
+                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                    <div class="d-flex align-items-center">
+                        <div class="fs-4 fw-bolder">{{ number_format($payments->total(), 0, '.', ' ') }}</div>
+                    </div>
+                    <div class="fw-bold fs-6 text-gray-400">Оплат</div>
+                </div>
+            @endif
         </div>
         @endif
         <div class="card-toolbar">
@@ -54,12 +57,10 @@
                     Фильтр
                 </button>
 
-                <form action="{{ route('payments.exports.store') . (strpos(request()->fullUrl(), '?') !== false ? substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) : '') }}" method="POST" class="hidden">
-                    @csrf
+                @if (auth()->user()->hasRole(['demo']))
                     <a
-                        href="javascript:void(0);"
-                        class="btn btn-light-primary me-3"
-                        onclick="event.preventDefault(); this.closest('form').submit();"
+                            href="/storage/public/Выгрузка оплат в Excel.xlsx"
+                            class="btn btn-light-primary me-3"
                     >
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -70,7 +71,28 @@
                             </span>
                         Экспорт
                     </a>
-                </form>
+                @else
+                    <form action="{{ route('payments.exports.store') . (strpos(request()->fullUrl(), '?') !== false ? substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) : '') }}" method="POST" class="hidden">
+                        @csrf
+                        <a
+                                href="javascript:void(0);"
+                                class="btn btn-light-primary me-3"
+                                onclick="event.preventDefault(); this.closest('form').submit();"
+                        >
+                            <span class="svg-icon svg-icon-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.3" x="12.75" y="4.25" width="12" height="2" rx="1" transform="rotate(90 12.75 4.25)" fill="black"></rect>
+                                    <path d="M12.0573 6.11875L13.5203 7.87435C13.9121 8.34457 14.6232 8.37683 15.056 7.94401C15.4457 7.5543 15.4641 6.92836 15.0979 6.51643L12.4974 3.59084C12.0996 3.14332 11.4004 3.14332 11.0026 3.59084L8.40206 6.51643C8.0359 6.92836 8.0543 7.5543 8.44401 7.94401C8.87683 8.37683 9.58785 8.34458 9.9797 7.87435L11.4427 6.11875C11.6026 5.92684 11.8974 5.92684 12.0573 6.11875Z" fill="black"></path>
+                                    <path d="M18.75 8.25H17.75C17.1977 8.25 16.75 8.69772 16.75 9.25C16.75 9.80228 17.1977 10.25 17.75 10.25C18.3023 10.25 18.75 10.6977 18.75 11.25V18.25C18.75 18.8023 18.3023 19.25 17.75 19.25H5.75C5.19772 19.25 4.75 18.8023 4.75 18.25V11.25C4.75 10.6977 5.19771 10.25 5.75 10.25C6.30229 10.25 6.75 9.80228 6.75 9.25C6.75 8.69772 6.30229 8.25 5.75 8.25H4.75C3.64543 8.25 2.75 9.14543 2.75 10.25V19.25C2.75 20.3546 3.64543 21.25 4.75 21.25H18.75C19.8546 21.25 20.75 20.3546 20.75 19.25V10.25C20.75 9.14543 19.8546 8.25 18.75 8.25Z" fill="#C4C4C4"></path>
+                                </svg>
+                            </span>
+                            Экспорт
+                        </a>
+                    </form>
+                @endif
+
+
+
 
                 @can('create payments')
                     <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}" class="create-payment btn btn-light-primary me-3">
@@ -116,17 +138,25 @@
             <table class="table table-hover align-middle table-row-dashed fs-7">
                 <thead>
                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                    <th data-sort-by="date" class="ps-3 sortable-row min-w-125px">Дата</th>
-                    <th data-sort-by="company_id" class="sortable-row min-w-100px">Компания</th>
-                    <th data-sort-by="bank_id" class="sortable-row min-w-125px">Банк</th>
-                    <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>
-                    <th data-sort-by="code" class="sortable-row min-w-70px">Статья затрат</th>
-                    <th data-sort-by="organization_receiver_id" class="sortable-row min-w-125px">Контрагент</th>
-                    <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
-                    <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
-                    <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
-                    @if (! auth()->user()->hasRole('object-leader'))
-                        <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
+                    @if (auth()->user()->hasRole(['demo']))
+                        <th data-sort-by="company_id" class="sortable-row min-w-100px ps-3">Компания</th>
+                        <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>
+                        <th data-sort-by="organization_receiver_id" class="sortable-row min-w-125px">Контрагент</th>
+                        <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
+                        <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
+                    @else
+                        <th data-sort-by="date" class="ps-3 sortable-row min-w-125px">Дата</th>
+                        <th data-sort-by="company_id" class="sortable-row min-w-100px">Компания</th>
+                        <th data-sort-by="bank_id" class="sortable-row min-w-125px">Банк</th>
+                        <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>
+                        <th data-sort-by="code" class="sortable-row min-w-70px">Статья затрат</th>
+                        <th data-sort-by="organization_receiver_id" class="sortable-row min-w-125px">Контрагент</th>
+                        <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
+                        <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
+                        <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
+                        @if (! auth()->user()->hasRole('object-leader'))
+                            <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
+                        @endif
                     @endif
                 </tr>
                 </thead>
@@ -143,132 +173,160 @@
                         }
                     @endphp
                     <tr data-payment-update-url="{{ route('payments.update', $payment) }}" style="{{ $style }}">
-                        <td class="position-relative">
-                            @if ($payment->was_split)
-                                <div class="position-absolute start-0 top-0 w-2px h-100 rounded-2 bg-{{ $payment->getSplitColor() }}"></div>
-                            @endif
-                            @if (auth()->user()->can('edit payments'))
-                                <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
-                            @else
-                                {{ $payment->getDateFormatted() }}
-                            @endif
-                        </td>
-                        <td>{!! $payment->company->getShortNameColored() !!}</td>
-                        <td>{{ $payment->getBankName() }}</td>
-                        <td>
-                            @if($payment->object && auth()->user()->can('show objects') && $payment->type_id === \App\Models\Payment::TYPE_OBJECT)
-                                <a href="{{ route('objects.show', $payment->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</a>
-                            @else
-                                @if ($payment->object)
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
+                        @if (auth()->user()->hasRole(['demo']))
+                            <td class="ps-3">{!! $payment->company->getShortNameColored() !!}</td>
+                            <td>
+                                @if($payment->object && auth()->user()->can('show objects') && $payment->type_id === \App\Models\Payment::TYPE_OBJECT)
+                                    <a href="{{ route('objects.show', $payment->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</a>
                                 @else
-                                    {{ $payment->getObject() }}
+                                    @if ($payment->object)
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
+                                    @else
+                                        {{ $payment->getObject() }}
+                                    @endif
                                 @endif
-                            @endif
-                        </td>
-                        <td>{{ $payment->code }}</td>
-                        <td>
-                            @if ($payment->amount < 0)
-                                {{ $payment->organizationReceiver?->name }}
-                            @else
-                                {{ $payment->organizationSender?->name }}
-                            @endif
-                        </td>
-                        <td>{{ $payment->description }}</td>
-                        <td>
-                            <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ $payment->getAmount() }}</span>
-                            @if ($payment->currency !== 'RUB')
-                                <span class="text-muted fw-bold text-muted d-block fs-7" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="left" title="Курс: {{ $payment->currency_rate }}">
-                                    ({{ \App\Models\CurrencyExchangeRate::format($payment->currency_amount, $payment->currency) }})
-                                </span>
-                            @else
-                                <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
-                            @endif
-                        </td>
-                        <td>{{ $payment->category }}</td>
-                        @if (! auth()->user()->hasRole('object-leader'))
-                            <td class="text-end text-dark fw-bolder">
-                            <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
-                                <span class="svg-icon svg-icon-5 m-0">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                        <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                                                    </svg>
-                                                </span>
-                            </a>
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
-                                @can('edit payments')
-                                    <div class="menu-item px-3">
-                                        <a href="javascript:void(0);" data-edit-payment-url="{{ route('payments.edit', $payment) }}" class="edit-payment menu-link px-3">Изменить</a>
-                                    </div>
+                            </td>
+                            <td>
+                                @if ($payment->amount < 0)
+                                    {{ $payment->organizationReceiver?->name }}
+                                @else
+                                    {{ $payment->organizationSender?->name }}
+                                @endif
+                            </td>
+                            <td>{{ $payment->description }}</td>
+                            <td>
+                                <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ $payment->getAmount() }}</span>
+                            </td>
+                        @else
 
-                                    <div class="menu-item px-3">
-                                        {{--                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">--}}
-                                        {{--                                                        @csrf--}}
-                                        {{--                                                        <a--}}
-                                        {{--                                                            href="javascript:void(0)"--}}
-                                        {{--                                                            class="menu-link px-3"--}}
-                                        {{--                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите сделать копию оплаты?')) {this.closest('form').submit();}"--}}
-                                        {{--                                                        >--}}
-                                        {{--                                                            Сделать копию--}}
-                                        {{--                                                        </a>--}}
-                                        {{--                                                    </form>--}}
-                                        <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
-                                    </div>
+                            <td class="position-relative">
+                                @if ($payment->was_split)
+                                    <div class="position-absolute start-0 top-0 w-2px h-100 rounded-2 bg-{{ $payment->getSplitColor() }}"></div>
+                                @endif
+                                @if (auth()->user()->can('edit payments'))
+                                    <a href="{{ route('payments.edit', $payment) }}" class="menu-link px-3">{{ $payment->getDateFormatted() }}</a>
+                                @else
+                                    {{ $payment->getDateFormatted() }}
+                                @endif
+                            </td>
+                            <td>{!! $payment->company->getShortNameColored() !!}</td>
+                            <td>{{ $payment->getBankName() }}</td>
+                            <td>
+                                @if($payment->object && auth()->user()->can('show objects') && $payment->type_id === \App\Models\Payment::TYPE_OBJECT)
+                                    <a href="{{ route('objects.show', $payment->object) }}" class="show-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</a>
+                                @else
+                                    @if ($payment->object)
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
+                                    @else
+                                        {{ $payment->getObject() }}
+                                    @endif
+                                @endif
+                            </td>
+                            <td>{{ $payment->code }}</td>
+                            <td>
+                                @if ($payment->amount < 0)
+                                    {{ $payment->organizationReceiver?->name }}
+                                @else
+                                    {{ $payment->organizationSender?->name }}
+                                @endif
+                            </td>
+                            <td>{{ $payment->description }}</td>
+                            <td>
+                                <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ $payment->getAmount() }}</span>
+                                @if ($payment->currency !== 'RUB')
+                                    <span class="text-muted fw-bold text-muted d-block fs-7" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-dark" data-bs-placement="left" title="Курс: {{ $payment->currency_rate }}">
+                                        ({{ \App\Models\CurrencyExchangeRate::format($payment->currency_amount, $payment->currency) }})
+                                    </span>
+                                @else
+                                    <span class="text-muted fw-bold text-muted d-block fs-7">{{ $payment->getAmountWithoutNDS() }} без НДС</span>
+                                @endif
+                            </td>
+                            <td>{{ $payment->category }}</td>
+                            @if (! auth()->user()->hasRole('object-leader'))
+                                <td class="text-end text-dark fw-bolder">
+                                <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
+                                    <span class="svg-icon svg-icon-5 m-0">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                            <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                                                        </svg>
+                                                    </span>
+                                </a>
+                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
+                                    @can('edit payments')
+                                        <div class="menu-item px-3">
+                                            <a href="javascript:void(0);" data-edit-payment-url="{{ route('payments.edit', $payment) }}" class="edit-payment menu-link px-3">Изменить</a>
+                                        </div>
 
-                                    @if ($payment->isTransfer() && auth()->user()->hasRole('super-admin'))
-                                        <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-end">
-                                            <a href="#" class="menu-link px-3">
-                                                <span class="menu-title">Выделить</span>
-                                                <span class="menu-arrow"></span>
-                                            </a>
-                                            <div class="menu-sub menu-sub-dropdown w-175px py-4" style="">
-                                                <div class="menu-item px-3 text-center">
-                                                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Шрифт</div>
-                                                </div>
-                                                <div class="menu-item px-3">
-                                                    <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="#7e8299" style="color: #7e8299;">Сбросить</a>
-                                                    <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="red" style="color: red;">Красный</a>
-                                                    <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="#60bd60" style="color: #60bd60;">Зеленый</a>
-                                                </div>
-                                                <div class="menu-item px-3 text-center">
-                                                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Оплату</div>
-                                                </div>
-                                                <div class="menu-item px-3">
-                                                    <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#ffffff" style="background-color: #ffffff;">Сбросить</a>
-                                                    <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#fdfd6b" style="background-color: #fdfd6b;">&nbsp;</a>
-                                                    <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#d7ffb7" style="background-color: #d7ffb7;">&nbsp;</a>
+                                        <div class="menu-item px-3">
+                                            {{--                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">--}}
+                                            {{--                                                        @csrf--}}
+                                            {{--                                                        <a--}}
+                                            {{--                                                            href="javascript:void(0)"--}}
+                                            {{--                                                            class="menu-link px-3"--}}
+                                            {{--                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите сделать копию оплаты?')) {this.closest('form').submit();}"--}}
+                                            {{--                                                        >--}}
+                                            {{--                                                            Сделать копию--}}
+                                            {{--                                                        </a>--}}
+                                            {{--                                                    </form>--}}
+                                            <a href="javascript:void(0);" data-create-payment-url="{{ route('payments.create') }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
+                                        </div>
+
+                                        @if ($payment->isTransfer() && auth()->user()->hasRole('super-admin'))
+                                            <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-end">
+                                                <a href="#" class="menu-link px-3">
+                                                    <span class="menu-title">Выделить</span>
+                                                    <span class="menu-arrow"></span>
+                                                </a>
+                                                <div class="menu-sub menu-sub-dropdown w-175px py-4" style="">
+                                                    <div class="menu-item px-3 text-center">
+                                                        <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Шрифт</div>
+                                                    </div>
+                                                    <div class="menu-item px-3">
+                                                        <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="#7e8299" style="color: #7e8299;">Сбросить</a>
+                                                        <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="red" style="color: red;">Красный</a>
+                                                        <a href="javascript:void(0);" class="payment-fill-color menu-link px-3" data-color="#60bd60" style="color: #60bd60;">Зеленый</a>
+                                                    </div>
+                                                    <div class="menu-item px-3 text-center">
+                                                        <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Оплату</div>
+                                                    </div>
+                                                    <div class="menu-item px-3">
+                                                        <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#ffffff" style="background-color: #ffffff;">Сбросить</a>
+                                                        <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#fdfd6b" style="background-color: #fdfd6b;">&nbsp;</a>
+                                                        <a href="javascript:void(0);" class="payment-fill-row menu-link px-3 my-1 py-1" data-color="#d7ffb7" style="background-color: #d7ffb7;">&nbsp;</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @endif
+                                        @endif
 
-                                    @if ($payment->audits->count() > 0)
+                                        @if ($payment->audits->count() > 0)
+                                            <div class="menu-item px-3">
+                                                <a href="{{ route('payments.history.index') }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>
+                                            </div>
+                                        @else
+                                            <div class="menu-item px-3" style="cursor:default !important;">
+                                                <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
+                                            </div>
+                                        @endif
+
                                         <div class="menu-item px-3">
-                                            <a href="{{ route('payments.history.index') }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>
+                                            <form action="{{ route('payments.destroy', $payment) }}" method="POST" class="hidden">
+                                                @csrf
+                                                @method('DELETE')
+                                                <a
+                                                    href="javascript:void(0)"
+                                                    class="menu-link px-3 text-danger"
+                                                    onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить оплату?')) {this.closest('form').submit();}"
+                                                >
+                                                    Удалить
+                                                </a>
+                                            </form>
                                         </div>
-                                    @else
-                                        <div class="menu-item px-3" style="cursor:default !important;">
-                                            <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
-                                        </div>
-                                    @endif
-
-                                    <div class="menu-item px-3">
-                                        <form action="{{ route('payments.destroy', $payment) }}" method="POST" class="hidden">
-                                            @csrf
-                                            @method('DELETE')
-                                            <a
-                                                href="javascript:void(0)"
-                                                class="menu-link px-3 text-danger"
-                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить оплату?')) {this.closest('form').submit();}"
-                                            >
-                                                Удалить
-                                            </a>
-                                        </form>
-                                    </div>
-                                @endcan
-                            </div>
-                        </td>
+                                    @endcan
+                                </div>
+                            </td>
+                            @endif
                         @endif
+
                     </tr>
                 @empty
                     <tr>

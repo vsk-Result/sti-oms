@@ -41,14 +41,19 @@
         <div id="kt_content_container" class="d-flex flex-column-fluid align-items-stretch container-fluid">
 
             @include('sidebars.main')
-            @include('sidebars.managers_objects')
+
+            @if (!auth()->user()->hasRole(['demo']))
+                @include('sidebars.managers_objects')
+            @endif
 
             <div class="wrapper d-flex flex-column flex-row-fluid mt-5 mt-lg-10" id="kt_wrapper">
                 <div class="content flex-column-fluid" id="kt_content">
 
                     @include('toolbars.main')
 
-                    @include('sidebars.cost_codes')
+                    @if (!auth()->user()->hasRole(['demo']))
+                        @include('sidebars.cost_codes')
+                    @endif
 
                     @yield('content')
                 </div>
