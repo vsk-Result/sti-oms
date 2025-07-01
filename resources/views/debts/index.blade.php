@@ -90,7 +90,9 @@
                                 <td>{{ $debt->getType() }}</td>
                                 <td>{{ $debt->category }}</td>
                                 <td>{{ $debt->order_author }}</td>
-                                <td>{{ $debt->organization?->name }}</td>
+                                <td>
+                                    @include('partials.check_organization', ['organizationName' => $debt->organization?->name, 'organizationInn' => $debt->organization?->inn])
+                                </td>
                                 <td>{{ $debt->contract }}</td>
                                 <td>{{ $debt->description }}</td>
                                 <td>{{ $debt->invoice_number }}</td>

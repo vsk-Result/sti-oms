@@ -116,7 +116,9 @@
                         <tbody class="text-gray-600 fw-bold">
                             @forelse($contractorDebts['organizations'] as $organizationInfo)
                                 <tr>
-                                    <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
+                                    <td class="ps-2">
+                                        @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name']])
+                                    </td>
                                     <td class="text-success text-end pe-2">
                                         {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['unwork_avans']) }}
                                     </td>
@@ -190,7 +192,9 @@
                                 <tbody class="text-gray-600 fw-bold">
                                     @forelse($serviceDebts['organizations'] as $organizationInfo)
                                         <tr>
-                                            <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
+                                            <td class="ps-2">
+                                                @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name']])
+                                            </td>
                                             <td class="text-danger text-end pe-2">
                                                 {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
                                             </td>
@@ -250,7 +254,9 @@
                             <tbody class="text-gray-600 fw-bold">
                                 @forelse($providerDebts['organizations'] as $organizationInfo)
                                     <tr class="row-edit-debt-manual">
-                                        <td class="ps-2">{{ $organizationInfo['organization_name'] }}</td>
+                                        <td class="ps-2">
+                                            @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name']])
+                                        </td>
                                         <td class="text-danger text-end">
                                             {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_fix']) }}
                                         </td>

@@ -127,7 +127,7 @@
                             <td>{{ $loan->getBankName() }}</td>
                             <td>
                                 @if ($loan->isLender())
-                                    {{ $loan->organization?->name }}
+                                    @include('partials.check_organization', ['organizationName' => $loan->organization?->name, 'organizationInn' => $loan->organization?->inn])
                                 @else
                                     {!! $loan->company?->getShortNameColored() !!}
                                 @endif
@@ -136,7 +136,7 @@
                                 @if ($loan->isLender())
                                     {!! $loan->company?->getShortNameColored() !!}
                                 @else
-                                    {{ $loan->organization?->name }}
+                                    @include('partials.check_organization', ['organizationName' => $loan->organization?->name, 'organizationInn' => $loan->organization?->inn])
                                 @endif
                             </td>
                             <td>

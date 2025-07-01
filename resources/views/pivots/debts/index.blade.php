@@ -57,7 +57,7 @@
                         @forelse($pivot['organizations'] as $organizationName => $am)
                             <tr>
                                 <td class="ps-4 br {{ $loop->first ? 'bt' : '' }}">
-                                    {{ $organizationName }}
+                                    @include('partials.check_organization', ['organizationName' => $organizationName])
                                 </td>
                                 <td class="text-danger text-right hl {{ $loop->first ? 'bt' : '' }}">
                                     {{ \App\Models\CurrencyExchangeRate::format(array_sum($pivot['entries'][$organizationName]), 'RUB') }}

@@ -188,9 +188,9 @@
                             </td>
                             <td>
                                 @if ($payment->amount < 0)
-                                    {{ $payment->organizationReceiver?->name }}
+                                    @include('partials.check_organization', ['organizationName' => $payment->organizationReceiver?->name, 'organizationInn' => $payment->organizationReceiver?->inn])
                                 @else
-                                    {{ $payment->organizationSender?->name }}
+                                    @include('partials.check_organization', ['organizationName' => $payment->organizationSender?->name, 'organizationInn' => $payment->organizationSender?->inn])
                                 @endif
                             </td>
                             <td>{{ $payment->description }}</td>
@@ -225,9 +225,9 @@
                             <td>{{ $payment->code }}</td>
                             <td>
                                 @if ($payment->amount < 0)
-                                    {{ $payment->organizationReceiver?->name }}
+                                    @include('partials.check_organization', ['organizationName' => $payment->organizationReceiver?->name, 'organizationInn' => $payment->organizationReceiver?->inn])
                                 @else
-                                    {{ $payment->organizationSender?->name }}
+                                    @include('partials.check_organization', ['organizationName' => $payment->organizationSender?->name, 'organizationInn' => $payment->organizationSender?->inn])
                                 @endif
                             </td>
                             <td>{{ $payment->description }}</td>
