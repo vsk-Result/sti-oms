@@ -2,7 +2,7 @@
 
 namespace App\Exports\Pivot\CalculateWorkersCost;
 
-use App\Exports\Pivot\CalculateWorkersCost\Sheets\PivotSheet;
+use App\Exports\Pivot\CalculateWorkersCost\Sheets\ObjectPivotSheet;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class ExportByObject implements WithMultipleSheets
@@ -21,7 +21,7 @@ class ExportByObject implements WithMultipleSheets
         $sheets = [];
 
         foreach ($this->info['objects'] as $objectName => $info) {
-            $sheets[] = new PivotSheet($objectName, $info, $this->year);
+            $sheets[] = new ObjectPivotSheet($objectName, $info, $this->year);
         }
 
         return $sheets;
