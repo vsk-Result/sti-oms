@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Console\HandledCommand;
+use App\Helpers\Sanitizer;
 use App\Imports\Organization\WarningOrganizationImport;
 use App\Models\Object\BObject;
+use App\Services\OrganizationService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
@@ -16,6 +18,12 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
     protected $description = 'Загружает организации с проблемами из Excel';
 
     protected string $period = 'Один раз в 20:00';
+
+    public function __construct(Sanitizer $sanitizer)
+    {
+        parent::__construct();
+        $this->sanitizer = $sanitizer;
+    }
 
     public function handle()
     {
@@ -43,7 +51,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
                 $type = 'Судебные разбирательства';
                 $organizationName = trim($row[4] ?? '');
                 $inn = trim($row[5] ?? '');
-                $amount = (float) ($row[7] ?? 0);
+                $amount = $this->sanitizer->set($row[7] ?? 0)->toAmount()->get();
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
@@ -61,7 +69,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
                 $organizationName = trim($row[4] ?? '');
                 $explodeInn = explode(' ', trim($row[5] ?? ''));
                 $inn = $explodeInn[count($explodeInn) - 1] ?? '';
-                $amount = (float) ($row[7] ?? 0);
+                $amount = $this->sanitizer->set($row[7] ?? 0)->toAmount()->get();
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
@@ -78,7 +86,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
                 $type = 'Претензии по дебиторке';
                 $organizationName = trim($row[1] ?? '');
                 $inn = trim($row[4] ?? '');
-                $amount = (float) ($row[3] ?? 0);
+                $amount = $this->sanitizer->set($row[3] ?? 0)->toAmount()->get();
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
@@ -97,7 +105,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
 
                 $explodeInn = explode(' ', trim($row[5] ?? ''));
                 $inn = $explodeInn[count($explodeInn) - 1] ?? '';
-                $amount = (float) ($row[7] ?? 0);
+                $amount = $this->sanitizer->set($row[7] ?? 0)->toAmount()->get();
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
