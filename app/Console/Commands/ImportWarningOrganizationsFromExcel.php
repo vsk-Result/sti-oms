@@ -43,7 +43,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
                 $type = 'Судебные разбирательства';
                 $organizationName = trim($row[4] ?? '');
                 $inn = trim($row[5] ?? '');
-                $amount = $row[7] ?? 0;
+                $amount = (float) ($row[7] ?? 0);
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
@@ -61,7 +61,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
                 $organizationName = trim($row[4] ?? '');
                 $explodeInn = explode(' ', trim($row[5] ?? ''));
                 $inn = $explodeInn[count($explodeInn) - 1] ?? '';
-                $amount = $row[7] ?? 0;
+                $amount = (float) ($row[7] ?? 0);
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
@@ -78,7 +78,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
                 $type = 'Претензии по дебиторке';
                 $organizationName = trim($row[1] ?? '');
                 $inn = trim($row[4] ?? '');
-                $amount = $row[3] ?? 0;
+                $amount = (float) ($row[3] ?? 0);
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
@@ -97,7 +97,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
 
                 $explodeInn = explode(' ', trim($row[5] ?? ''));
                 $inn = $explodeInn[count($explodeInn) - 1] ?? '';
-                $amount = $row[7] ?? 0;
+                $amount = (float) ($row[7] ?? 0);
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
             }
