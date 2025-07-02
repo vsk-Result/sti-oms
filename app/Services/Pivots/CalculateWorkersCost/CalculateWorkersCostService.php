@@ -121,8 +121,7 @@ class CalculateWorkersCostService
                         ->where('description', 'LIKE', '%transfer trosak%')
                         ->sum('amount');
                 } elseif ($codes[0] === 'workers_salary') {
-                    $amount = 0;
-//                    $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
+                    $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
                 } elseif ($codes[0] === 'itr_salary') {
                     $amount = 0;
 
@@ -300,8 +299,7 @@ class CalculateWorkersCostService
                         } elseif ($codes[0] === 'accrued_taxes_transport') {
                             $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
                         } elseif ($codes[0] === 'workers_salary') {
-                            $amount = 0;
-//                            $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                            $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->where('code', $object->code)->sum('amount');
                         } elseif ($codes[0] === 'itr_salary') {
                             $amount = 0;
 
