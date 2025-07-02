@@ -186,11 +186,11 @@ class CalculateWorkersCostService
 //        $contractLastEndDate = Contract::whereIn('object_id', $objectIds)->where('end_date', '!=', null)->get()->sortBy('end_date', SORT_NATURAL)->last();
 
         if ($contractLastStartDate) {
-            $contractStartDate = $contractLastStartDate->start_date;
+            $contractStartDate = $contractLastStartDate->date;
         }
 
         if ($contractLastEndDate) {
-            $contractEndDate = $contractLastEndDate->end_date;
+            $contractEndDate = $contractLastEndDate->date;
         }
 
         if (!empty($contractStartDate) && !empty($contractEndDate)) {
