@@ -6,12 +6,12 @@
 
         if (isset($organizationInn)) {
             $foundByInn = array_search($organizationInn, array_column($warningOrganizationsInfo, 'inn'));
-            if ($foundByInn) {
+            if ($foundByInn !== false) {
                 $warningInfo = $warningOrganizationsInfo[$foundByInn];
             }
         } elseif (isset($organizationName)) {
             $foundByName = array_search($organizationName, array_column($warningOrganizationsInfo, 'organizationName'));
-            if ($foundByName) {
+            if ($foundByName !== false) {
                 $warningInfo = $warningOrganizationsInfo[$foundByName];
             }
         }
