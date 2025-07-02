@@ -1,15 +1,15 @@
 @php
     $warningInfo = null;
 
-    if ($organizationInn || $organizationName) {
+    if (isset($organizationInn) || isset($organizationName)) {
         $warningOrganizationsInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_data', []);
 
-        if ($organizationInn) {
+        if (isset($organizationInn)) {
             $foundByInn = array_search($organizationInn, array_column($warningOrganizationsInfo, 'inn'));
             if ($foundByInn) {
                 $warningInfo = $warningOrganizationsInfo[$foundByInn];
             }
-        } elseif ($organizationName) {
+        } elseif (isset($organizationName)) {
             $foundByName = array_search($organizationName, array_column($warningOrganizationsInfo, 'organizationName'));
             if ($foundByName) {
                 $warningInfo = $warningOrganizationsInfo[$foundByName];
