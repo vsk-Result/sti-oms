@@ -64,7 +64,15 @@ class OrganizationController extends Controller
             }
 
             if ($request->get('type') === 'select') {
-                $organizations = $query->orderBy('name')->pluck('name', 'id');
+                $organizations = [];
+
+                foreach ($query->orderBy('name')->get() as $item) {
+                    if (! empty($item->inn)) {
+                        $organizations[$item->id] = $item->name . ', ' . $item->inn;
+                    } else {
+                        $organizations[$item->id] = $item->name;
+                    }
+                }
                 return response()->json(compact('organizations'));
             }
 
