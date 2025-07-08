@@ -51,7 +51,7 @@ class CashCheck extends Model implements Audit
 
     public function getStatus(): string
     {
-        return $this->getStatuses()[$this->status_id];
+        return self::getStatuses()[$this->status_id];
     }
 
     public function getStatusColor(): string
@@ -64,7 +64,7 @@ class CashCheck extends Model implements Audit
         return $this->getEmailStatusColors()[$this->email_send_status_id];
     }
 
-    public function getStatuses(): array
+    public static function getStatuses(): array
     {
         return [
             self::STATUS_UNCKECKED => 'Не проверен',
@@ -123,7 +123,7 @@ class CashCheck extends Model implements Audit
 
     public function scopeUnchecked($query)
     {
-        return $query->whereIn('status_id', [self::STATUS_UNCKECKED, self::STATUS_CHECKING, self::STATUS_CHECKED]);
+        return $query->whereIn('status_id', [self::STATUS_UNCKECKED, self::STATUS_CHECKING]);
     }
 
     public function scopeChecked($query)

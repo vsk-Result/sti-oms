@@ -22,18 +22,22 @@ class CashCheckService
 
     public function __construct(private CRMCostClosureImportService $CRMCostClosureImportService) {}
 
-    public function getCashChecks(): LengthAwarePaginator
+    public function getCashChecks(array $requestData): LengthAwarePaginator
     {
         $query = CashCheck::query();
 
         $query->forManager(auth()->id());
 
-        $query->unchecked();
+        if (! empty($requestData['status_id'])) {
+            $query->whereIn('status_id', $requestData['status_id']);
+        } else {
+            $query->unchecked();
+        }
 
         $perPage = 30;
-//        if (! empty($requestData['count_per_page'])) {
-//            $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
-//        }
+        if (! empty($requestData['count_per_page'])) {
+            $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+        }
 
         $query->orderBy('status_id')->orderByDesc('period');
 

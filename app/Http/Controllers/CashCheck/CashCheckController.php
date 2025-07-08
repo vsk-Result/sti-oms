@@ -13,12 +13,13 @@ class CashCheckController extends Controller
 {
     public function __construct(private CashCheckService $cashCheckService) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $uncheckedChecks = $this->cashCheckService->getCashChecks();
+        $statuses = CashCheck::getStatuses();
+        $uncheckedChecks = $this->cashCheckService->getCashChecks($request->toArray());
         $uncheckedChecksGroupedByPeriod = collect($uncheckedChecks->items())->groupBy('period');
 
-        return view('crm-cash-checks.index', compact('uncheckedChecksGroupedByPeriod', 'uncheckedChecks'));
+        return view('crm-cash-checks.index', compact('uncheckedChecksGroupedByPeriod', 'uncheckedChecks', 'statuses'));
     }
 
     public function store(Request $request): JsonResponse
