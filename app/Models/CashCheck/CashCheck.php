@@ -146,9 +146,9 @@ class CashCheck extends Model implements Audit
         return $this->email_send_status_id === self::EMAIL_SEND_STATUS_SEND;
     }
 
-    public function getFormattedPeriod(): string
+    public static function getFormattedPeriodGeneral($period): string
     {
-        $period = Carbon::parse($this->period . '-01')->format('F Y');
+        $period = Carbon::parse($period . '-01')->format('F Y');
         $period = str_replace('January', 'Январь', $period);
         $period = str_replace('February', 'Февраль', $period);
         $period = str_replace('March', 'Март', $period);
@@ -163,5 +163,10 @@ class CashCheck extends Model implements Audit
         $period = str_replace('December', 'Декабрь', $period);
 
         return $period;
+    }
+
+    public function getFormattedPeriod(): string
+    {
+        return self::getFormattedPeriodGeneral($this->period);
     }
 }

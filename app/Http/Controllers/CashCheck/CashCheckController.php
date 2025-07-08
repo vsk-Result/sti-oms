@@ -15,9 +15,10 @@ class CashCheckController extends Controller
 
     public function index(): View
     {
-        $uncheckedChecks = CashCheck::forManager(auth()->id())->unchecked()->orderBy('status_id')->get();
+        $uncheckedChecks = $this->cashCheckService->getCashChecks();
+        $uncheckedChecksGroupedByPeriod = collect($uncheckedChecks->items())->groupBy('period');
 
-        return view('crm-cash-checks.index', compact('uncheckedChecks'));
+        return view('crm-cash-checks.index', compact('uncheckedChecksGroupedByPeriod', 'uncheckedChecks'));
     }
 
     public function store(Request $request): JsonResponse

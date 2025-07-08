@@ -6,8 +6,11 @@ use App\Imports\CostManager\CostManagerImport;
 use App\Models\CashCheck\CashCheck;
 use App\Models\CashCheck\Manager;
 use App\Models\Object\BObject;
+use App\Models\PaymentImport;
 use App\Models\User;
 use App\Services\PaymentImport\Type\CRMCostClosureImportService;
+use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -18,6 +21,24 @@ class CashCheckService
     private const DEFAULT_MANAGER_EMAILS = ['aleksandra.kondakova@st-ing.com'];
 
     public function __construct(private CRMCostClosureImportService $CRMCostClosureImportService) {}
+
+    public function getCashChecks(): LengthAwarePaginator
+    {
+        $query = CashCheck::query();
+
+        $query->forManager(auth()->id());
+
+        $query->unchecked();
+
+        $perPage = 15;
+//        if (! empty($requestData['count_per_page'])) {
+//            $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
+//        }
+
+        $query->orderBy('status_id')->orderByDesc('period');
+
+        return $query->paginate($perPage)->withQueryString();
+    }
 
     public function createCashCheck(array $requestData): CashCheck
     {
