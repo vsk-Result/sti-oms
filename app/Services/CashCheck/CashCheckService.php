@@ -30,7 +30,7 @@ class CashCheckService
 
         $query->unchecked();
 
-        $perPage = 15;
+        $perPage = 30;
 //        if (! empty($requestData['count_per_page'])) {
 //            $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
 //        }
