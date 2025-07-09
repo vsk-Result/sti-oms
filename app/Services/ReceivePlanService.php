@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Helpers\Sanitizer;
 use App\Models\CashFlow\Notification;
-use App\Models\CashFlow\PlanPayment;
 use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Models\Object\CashFlowPayment;
@@ -12,7 +11,7 @@ use App\Models\Object\ReceivePlan;
 use App\Models\Status;
 use App\Services\CashFlow\NotificationService;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class ReceivePlanService
