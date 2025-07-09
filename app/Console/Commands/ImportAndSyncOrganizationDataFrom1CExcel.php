@@ -25,6 +25,7 @@ class ImportAndSyncOrganizationDataFrom1CExcel extends HandledCommand
 
         $this->startProcess();
 
+        $organizationsBefore = Organization::count();
         $syncByInn = 0;
         $syncByInn2 = 0;
         $syncByShortName = 0;
@@ -50,7 +51,7 @@ class ImportAndSyncOrganizationDataFrom1CExcel extends HandledCommand
                     $inn = $row[3];
                     $kpp = $row[4];
 
-                    $organizationExist = Organization::where('name', $fullName)->where('inn', $inn)->first();
+                    $organizationExist = Organization::where('name', $shortName)->where('inn', $inn)->first();
 
                     if ($organizationExist) {
                         $exist++;
@@ -62,28 +63,32 @@ class ImportAndSyncOrganizationDataFrom1CExcel extends HandledCommand
                     $organizationByINN = Organization::where('inn', $inn)->first();
                     $organizationByINN2 = Organization::where('inn', '0' . $inn)->first();
 
-                    $fullName = empty($fullName) ? $shortName : $fullName;
+                    $newName = empty($shortName) ? $fullName : $shortName;
+
+                    if (empty($newName)) {
+                        continue;
+                    }
 
                     if ($organizationByINN) {
-                        $organizationByINN->update(['name' => $fullName]);
+                        $organizationByINN->update(['name' => $newName]);
                         $syncByInn++;
                         continue;
                     }
 
                     if ($organizationByINN2) {
-                        $organizationByINN2->update(['name' => $fullName, 'inn' => '0' . $inn]);
+                        $organizationByINN2->update(['name' => $newName, 'inn' => '0' . $inn]);
                         $syncByInn2++;
                         continue;
                     }
 
                     if ($organizationByShortName) {
-                        $organizationByShortName->update(['name' => $fullName, 'inn' => $inn, 'kpp' => $kpp]);
+                        $organizationByShortName->update(['name' => $newName, 'inn' => $inn, 'kpp' => $kpp]);
                         $syncByShortName++;
                         continue;
                     }
 
                     if ($organizationByFullName) {
-                        $organizationByFullName->update(['inn' => $inn, 'kpp' => $kpp]);
+                        $organizationByFullName->update(['name' => $newName, 'inn' => $inn, 'kpp' => $kpp]);
                         $syncByFullName++;
                         continue;
                     }
@@ -91,7 +96,7 @@ class ImportAndSyncOrganizationDataFrom1CExcel extends HandledCommand
                     Organization::create([
                         'company_id' => null,
                         'category' => '',
-                        'name' => $fullName,
+                        'name' => $newName,
                         'inn' => $inn,
                         'kpp' => $kpp,
                         'status_id' => Status::STATUS_ACTIVE,
@@ -105,7 +110,9 @@ class ImportAndSyncOrganizationDataFrom1CExcel extends HandledCommand
             $this->sendErrorMessage($e->getMessage());
             $this->endProcess();
 
-            dd($syncByInn, $syncByInn2, $syncByShortName, $syncByFullName, $created, $exist, $e->getMessage());
+            $organizationsAfter = Organization::count();
+
+            dd($organizationsBefore, $syncByInn, $syncByInn2, $syncByShortName, $syncByFullName, $created, $exist, $organizationsAfter, $e->getMessage());
             return 0;
         }
 
@@ -113,7 +120,9 @@ class ImportAndSyncOrganizationDataFrom1CExcel extends HandledCommand
 
         $this->endProcess();
 
-        dd($syncByInn, $syncByInn2, $syncByShortName, $syncByFullName, $created, $exist);
+        $organizationsAfter = Organization::count();
+
+        dd($organizationsBefore, $syncByInn, $syncByInn2, $syncByShortName, $syncByFullName, $created, $exist, $organizationsAfter);
 
         return 0;
     }

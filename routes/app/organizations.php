@@ -1,8 +1,13 @@
 <?php
 
 use App\Http\Controllers\Organization\OrganizationController;
+use App\Http\Controllers\Organization\ExportController;
 use App\Http\Controllers\Organization\TransferPaymentController;
 use App\Http\Controllers\Organization\TransferPaymentImportController;
+
+// Экспорт контрагентов
+
+Route::post('organizations/export', [ExportController::class, 'store'])->name('organizations.exports.store');
 
 // Импорт переноса оплат
 
