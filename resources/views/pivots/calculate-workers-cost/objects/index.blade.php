@@ -6,6 +6,7 @@
 
 @section('content')
     @include('pivots.calculate-workers-cost.modals.filter')
+    @include('pivots.calculate-workers-cost.modals.update_itr_salary')
 
     <div class="row">
         <div class="col-lg-12">
@@ -14,6 +15,15 @@
                     <div class="card-title">Расчет стоимости рабочих по объектам</div>
 
                         <div class="card-toolbar">
+                            <a
+                                    class="btn btn-light-primary me-3"
+                                    href="javascript:void(0);"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#updateITRSalaryModal"
+                            >
+                                Обновить расходы по зарплате ИТР
+                            </a>
+
                             <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterCalculateWorkersCostModal">
                                 <span class="svg-icon svg-icon-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -46,6 +56,15 @@
                 </div>
 
                 <div class="card-body py-3">
+                    @if (session()->has('import_itr_salary_status'))
+                        <div class="alert alert-dismissible bg-light-{{ session()->get('import_itr_salary_status_color') }} border border-dashed border-{{ session()->get('import_itr_salary_status_color') }} d-flex flex-column flex-sm-row p-5">
+                            <div class="d-flex flex-column">
+                                <h5 class="mb-1">Информация о загрузке расходов по ИТР</h5>
+                                <p>{{ session()->get('import_itr_salary_status') }}</p>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="table-responsive freeze-table">
                         <table class="table table-bordered align-middle table-row-dashed fs-6 gy-3">
                             <thead>

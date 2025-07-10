@@ -23,6 +23,7 @@ use App\Http\Controllers\Pivot\Residence\ResidenceController;
 use App\Http\Controllers\Pivot\Residence\ResidenceExportController;
 use App\Http\Controllers\Pivot\CalculateWorkersCost\CalculateWorkersCostController;
 use App\Http\Controllers\Pivot\CalculateWorkersCost\CalculateWorkersCostControllerExportController;
+use App\Http\Controllers\Pivot\CalculateWorkersCost\ITRSalaryController;
 
 // Сводная по долгам от СТИ
 Route::get('pivots/debts', [DebtController::class, 'index'])->name('pivots.debts.index');
@@ -81,3 +82,6 @@ Route::post('pivots/residence/export', [ResidenceExportController::class, 'store
 Route::get('pivots/calculate-workers-cost', [CalculateWorkersCostController::class, 'index'])->name('pivots.calculate_workers_cost.index');
 // Экспорт отчета по проживанию
 Route::post('pivots/calculate-workers-cost/export', [CalculateWorkersCostControllerExportController::class, 'store'])->name('pivots.calculate_workers_cost.exports.store');
+
+// Обновление расходов по ИТР
+Route::post('pivots/calculate-workers-cost/itr-salary', [ITRSalaryController::class, 'store'])->name('pivots.calculate_workers_cost.itr_salary.store');
