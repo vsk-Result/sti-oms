@@ -4,10 +4,16 @@ use App\Http\Controllers\Organization\OrganizationController;
 use App\Http\Controllers\Organization\ExportController;
 use App\Http\Controllers\Organization\TransferPaymentController;
 use App\Http\Controllers\Organization\TransferPaymentImportController;
+use App\Http\Controllers\Organization\WarningOrganizationController;
 
 // Экспорт контрагентов
 
 Route::post('organizations/export', [ExportController::class, 'store'])->name('organizations.exports.store');
+
+// Обновление проблемных контрагентов
+
+Route::post('organizations/warnings', [WarningOrganizationController::class, 'store'])->name('organizations.warnings.store');
+
 
 // Импорт переноса оплат
 

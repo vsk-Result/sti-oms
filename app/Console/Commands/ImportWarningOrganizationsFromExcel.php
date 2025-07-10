@@ -17,7 +17,7 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
 
     protected $description = 'Загружает организации с проблемами из Excel';
 
-    protected string $period = 'Один раз в 20:00';
+    protected string $period = 'Вручную';
 
     public function __construct(Sanitizer $sanitizer)
     {

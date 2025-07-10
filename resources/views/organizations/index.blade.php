@@ -5,6 +5,8 @@
 @section('breadcrumbs', Breadcrumbs::render('organizations.index'))
 
 @section('content')
+    @include('organizations.modals.update_warning_organization')
+
     <div class="post" id="kt_post">
         <div class="card">
             <div class="card-header border-0 pt-6">
@@ -21,6 +23,15 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end me-3" data-kt-user-table-toolbar="base">
+                        <a
+                                class="btn btn-light-primary me-3"
+                                href="javascript:void(0);"
+                                data-bs-toggle="modal"
+                                data-bs-target="#updateWarningOrganizationModal"
+                        >
+                            Обновить проблемных контрагентов
+                        </a>
+
                         @can('create organizations')
                             <a href="{{ route('organizations.create') }}" class="btn btn-light-primary">
                                 <span class="svg-icon svg-icon-3">
