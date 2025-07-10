@@ -16,11 +16,11 @@ class ClearOrganizations extends HandledCommand
 
     public function handle()
     {
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
 //        $array = [
 //            'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТ ЬЮ "ФИТАУТ ПРО"',
@@ -84,7 +84,7 @@ class ClearOrganizations extends HandledCommand
 
         $deleted = [];
         $logs[] = '[' . now()->format('d.m.Y H:i:s') . '] Анализ дублирующихся контрагентов';
-        $organizations = Organization::orderBy('name')->take(5000)->get();
+        $organizations = Organization::orderBy('name')->get();
 
         foreach ($organizations as $organization1) {
 
