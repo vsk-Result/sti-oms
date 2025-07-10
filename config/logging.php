@@ -137,6 +137,12 @@ return [
             'path' => storage_path('logs/split/payments_split.log'),
             'level' => 'debug',
         ],
+
+        'organizations_delete_duplication' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/organizations/delete_duplication.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];
