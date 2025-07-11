@@ -97,37 +97,9 @@ class PivotSheetTwo implements
         $filteredObjects = $this->requestData['object_id'] ?? [];
 
         $row = count($accounts) + 2;
-        $sheet->setCellValue('A' . $row, 'САЛЬДО ИТОГО, в том числе:');
+
+        $sheet->setCellValue('A' . $row, 'ПОСТУПЛЕНИЯ ИТОГО, в том числе:');
         $sheet->setCellValue('B' . $row, 'Код объекта');
-
-        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
-        $sheet->getRowDimension($row)->setRowHeight(30);
-        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
-
-
-        $total = 0;
-        $columnIndex = 3;
-        foreach($periods as $period) {
-            $column = $this->getColumnWord($columnIndex);
-
-            $receive = $plans->where('date', $period['start'])->sum('amount');
-            $payments = $cfPayments['total']['all'][$period['start']];
-            $total += $receive + $payments;
-
-            $sheet->setCellValue($column . $row, ($receive + $payments) != 0 ? ($receive + $payments) : '');
-
-            if (($receive + $payments) < 0) {
-                $sheet->getStyle($column . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
-            }
-
-            $columnIndex++;
-        }
-
-        $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
-
-        $row++;
-
-        $sheet->setCellValue('A' . $row, '     ПОСТУПЛЕНИЯ ИТОГО, в том числе:');
         $sheet->setCellValue('A' . $row + 1, '         Целевые авансы');
         $sheet->setCellValue('A' . $row + 2, '         Прочие поступления');
 
@@ -136,7 +108,7 @@ class PivotSheetTwo implements
         $sheet->getRowDimension($row + 1)->setRowHeight(25);
         $sheet->getRowDimension($row + 2)->setRowHeight(25);
 
-        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
         $sheet->getStyle('A' . $row . ':'. $lastColumn . ($row + 2))->getFont()->setItalic(true);
         $sheet->getStyle('A' . $row . ':'. $lastColumn . ($row + 2))->getFont()->setSize(11);
 
@@ -200,7 +172,7 @@ class PivotSheetTwo implements
             $sheet->setCellValue('B' . $row, $object->code);
             $sheet->getRowDimension($row)->setRowHeight(30);
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
-            $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
+            $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
             $columnIndex = 3;
             foreach($periods as $period) {
@@ -455,7 +427,8 @@ class PivotSheetTwo implements
 
         $sheet->setCellValue('A' . $row, 'РАСХОДЫ ОБЪЕКТОВ, в том числе:');
         $sheet->getRowDimension($row)->setRowHeight(30);
-        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
 
         $total = 0;
         $columnIndex = 3;
@@ -545,7 +518,7 @@ class PivotSheetTwo implements
             $sheet->setCellValue('B' . $row, $object->code);
             $sheet->getRowDimension($row)->setRowHeight(30);
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
-            $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
+            $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
             $columnIndex = 3;
             foreach($periods as $period) {
