@@ -354,13 +354,6 @@ class PivotSheet implements
                     $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Материалы', $row, 'providers');
                     $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Накладные/Услуги', $row, 'service');
                 }
-
-                $sheet->getRowDimension($row)->setRowHeight(30);
-
-                $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
-                $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-
-                $row++;
             }
         }
 
