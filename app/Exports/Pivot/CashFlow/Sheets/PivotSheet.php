@@ -321,8 +321,23 @@ class PivotSheet implements
             if (isset($cfPayments['objects'][$object->id])) {
                 $sheet->setCellValue('A' . $row, '    ' . 'РАСХОДЫ ИТОГО, в том числе:');
 
+                $columnIndex = 3;
+                $total = 0;
+                foreach($periods as $period) {
+                    $column = $this->getColumnWord($columnIndex);
+
+                    $amount = $cfPayments['objects'][$object->id][$period['start']]['total'] ?? 0;
+                    $total += $amount;
+
+                    $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+                    $columnIndex++;
+                }
+
+                $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
+                $row++;
+
                 if ($object->code === '363') {
-                    $row++;
                     $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Работы', $row, 'contractors');
                     $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Материалы', $row, 'providers', true);
                     $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, '- фиксированная часть', $row, 'providers_fix');
@@ -339,20 +354,6 @@ class PivotSheet implements
                 $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
                 $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-                $columnIndex = 3;
-                $total = 0;
-                foreach($periods as $period) {
-                    $column = $this->getColumnWord($columnIndex);
-
-                    $amount = $cfPayments['objects'][$object->id][$period['start']]['total'] ?? 0;
-                    $total += $amount;
-
-                    $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
-
-                    $columnIndex++;
-                }
-
-                $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
                 $row++;
             }
         }
@@ -407,9 +408,9 @@ class PivotSheet implements
         $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
         $row++;
 
-        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Работы', $row, 'contractors', false, true);
-        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Материалы', $row, 'providers', false, true);
-        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Накладные/Услуги', $row, 'service', false, true);
+        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Работы', $row, 'contractors');
+        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Материалы', $row, 'providers');
+        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Накладные/Услуги', $row, 'service');
 
         $planGroupedPaymentAmount = [];
         foreach ($planPaymentGroups as $group) {
@@ -658,7 +659,7 @@ class PivotSheet implements
         return ($n<26) ? chr(ord('A') + $n) : 'A' .  chr(ord('A') + $n % 26);
     }
 
-    public function fillPayments($sheet, $lastColumn, $objectId, $periods, $cfPayments, $title, &$row, $key, $skipDetails = false, $twoLevels = false)
+    public function fillPayments($sheet, $lastColumn, $objectId, $periods, $cfPayments, $title, &$row, $key, $skipDetails = false)
     {
         $sheet->setCellValue('A' . $row, '        ' . $title);
         $sheet->getRowDimension($row)->setRowHeight(25);
@@ -677,12 +678,6 @@ class PivotSheet implements
 
         $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
         $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setItalic(true);
-
-        if ($twoLevels) {
-            $sheet->getRowDimension($row)->setOutlineLevel(1)
-                ->setVisible(true)
-                ->setCollapsed(false);
-        }
 
         $row++;
 
@@ -713,7 +708,7 @@ class PivotSheet implements
             $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setItalic(true);
 
-            $sheet->getRowDimension($row)->setOutlineLevel($twoLevels ? 2 : 1)
+            $sheet->getRowDimension($row)->setOutlineLevel(1)
                 ->setVisible(true)
                 ->setCollapsed(false);
 
