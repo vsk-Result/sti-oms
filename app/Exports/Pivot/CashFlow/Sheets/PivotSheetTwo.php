@@ -159,7 +159,7 @@ class PivotSheetTwo implements
             $totalSaldo = 0;
             foreach($periods as $period) {
                 $totalReceive += $plans->where('object_id', $object->id)->where('date', $period['start'])->sum('amount');
-                $totalPayment += $cfPayments['objects'][$object->id][$period['start']]['total'] ?? 0;
+                $totalPayment += 0;
 
                 $totalSaldo += ($totalReceive + $totalPayment);
             }
