@@ -320,6 +320,9 @@ class PivotSheet implements
 
             if (isset($cfPayments['objects'][$object->id])) {
                 $sheet->setCellValue('A' . $row, '    ' . 'РАСХОДЫ ИТОГО, в том числе:');
+                $sheet->getRowDimension($row)->setRowHeight(30);
+                $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
+                $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
                 $columnIndex = 3;
                 $total = 0;
