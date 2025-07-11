@@ -82,7 +82,17 @@ class PivotSheet implements
         $activeObjectIds = BObject::active()->orderBy('code')->pluck('id')->toArray();
         $closedObjectIds = ReceivePlan::whereBetween('date', [$periods[0]['start'], end($periods)['start']])->groupBy('object_id')->pluck('object_id')->toArray();
 
-        $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds))->get();
+        $object27_1 = BObject::where('code', '27.1')->first();
+        $cfPaymentsObjectIds = array_keys($cfPayments['objects']);
+
+        foreach ($cfPaymentsObjectIds as $index => $objectId) {
+            if ($object27_1->id === $objectId) {
+                unset($cfPaymentsObjectIds[$index]);
+                break;
+            }
+        }
+
+        $objects = BObject::whereIn('id', array_merge($activeObjectIds, $closedObjectIds, $cfPaymentsObjectIds))->get();
 
         $filteredObjects = $this->requestData['object_id'] ?? [];
 
@@ -105,6 +115,7 @@ class PivotSheet implements
             $total += $receive + $payments;
 
             $sheet->setCellValue($column . $row, ($receive + $payments) != 0 ? ($receive + $payments) : '');
+            $sheet->getStyle($column . $row)->getFont()->setColor(new Color(($receive + $payments) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
             $columnIndex++;
         }
@@ -244,6 +255,7 @@ class PivotSheet implements
                 $payment = $cfPayments['objects'][$object->id][$period['start']]['total'] ?? 0;
 
                 $sheet->setCellValue($column . $row, ($receive + $payment) != 0 ? ($receive + $payment) : '');
+                $sheet->getStyle($column . $row)->getFont()->setColor(new Color(($receive + $payment) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
                 $columnIndex++;
             }
@@ -310,29 +322,16 @@ class PivotSheet implements
                 $sheet->setCellValue('A' . $row, '    ' . 'РАСХОДЫ ИТОГО, в том числе:');
 
                 if ($object->code === '363') {
-                    $sheet->setCellValue('A' . $row + 1, '        ' . 'Работы');
-                    $sheet->setCellValue('A' . $row + 2, '        ' . 'Материалы');
-                    $sheet->setCellValue('A' . $row + 3, '            ' . '- фиксированная часть');
-                    $sheet->setCellValue('A' . $row + 4, '            ' . '- изменяемая часть');
-                    $sheet->setCellValue('A' . $row + 5, '        ' . 'Накладные/Услуги');
-
-                    $sheet->getRowDimension($row + 1)->setRowHeight(25);
-                    $sheet->getRowDimension($row + 2)->setRowHeight(25);
-                    $sheet->getRowDimension($row + 3)->setRowHeight(25);
-                    $sheet->getRowDimension($row + 4)->setRowHeight(25);
-                    $sheet->getRowDimension($row + 5)->setRowHeight(25);
-
-                    $sheet->getStyle('A' . $row . ':' . $lastColumn . ($row + 5))->getFont()->setItalic(true);
+                    $row++;
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Работы', $row, 'contractors');
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Материалы', $row, 'providers', true);
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, '- фиксированная часть', $row, 'providers_fix');
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, '- изменяемая часть', $row, 'providers_float');
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Накладные/Услуги', $row, 'service');
                 } else {
-                    $sheet->setCellValue('A' . $row + 1, '        ' . 'Работы');
-                    $sheet->setCellValue('A' . $row + 2, '        ' . 'Материалы');
-                    $sheet->setCellValue('A' . $row + 3, '        ' . 'Накладные/Услуги');
-
-                    $sheet->getRowDimension($row + 1)->setRowHeight(25);
-                    $sheet->getRowDimension($row + 2)->setRowHeight(25);
-                    $sheet->getRowDimension($row + 3)->setRowHeight(25);
-
-                    $sheet->getStyle('A' . $row . ':' . $lastColumn . ($row + 3))->getFont()->setItalic(true);
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Работы', $row, 'contractors');
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Материалы', $row, 'providers');
+                    $this->fillPayments($sheet, $lastColumn, $object->id, $periods, $cfPayments, 'Накладные/Услуги', $row, 'service');
                 }
 
                 $sheet->getRowDimension($row)->setRowHeight(30);
@@ -355,82 +354,13 @@ class PivotSheet implements
 
                 $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
                 $row++;
-
-                if ($object->code === '363') {
-                    $columnIndex = 3;
-                    $totalContractors = 0;
-                    $totalProviders = 0;
-                    $totalProvidersFix = 0;
-                    $totalProvidersFloat = 0;
-                    $totalService = 0;
-                    foreach($periods as $period) {
-                        $column = $this->getColumnWord($columnIndex);
-
-                        $contractors = $cfPayments['objects'][$object->id][$period['start']]['contractors'] ?? 0;
-                        $providers = ($cfPayments['objects'][$object->id][$period['start']]['providers_fix'] ?? 0) + ($cfPayments['objects'][$object->id][$period['start']]['providers_float'] ?? 0);
-                        $providersFix = $cfPayments['objects'][$object->id][$period['start']]['providers_fix'] ?? 0;
-                        $providersFloat = $cfPayments['objects'][$object->id][$period['start']]['providers_float'] ?? 0;
-                        $service = $cfPayments['objects'][$object->id][$period['start']]['service'] ?? 0;
-
-                        $totalContractors += $contractors;
-                        $totalProviders += $providers;
-                        $totalProvidersFix += $providersFix;
-                        $totalProvidersFloat += $providersFloat;
-                        $totalService += $service;
-
-                        $sheet->setCellValue($column . $row, $contractors != 0 ? $contractors : '');
-                        $sheet->setCellValue($column . ($row + 1), $providers != 0 ? $providers : '');
-                        $sheet->setCellValue($column . ($row + 2), $providersFix != 0 ? $providersFix : '');
-                        $sheet->setCellValue($column . ($row + 3), $providersFloat != 0 ? $providersFloat : '');
-                        $sheet->setCellValue($column . ($row + 4), $service != 0 ? $service : '');
-
-                        $columnIndex++;
-                    }
-
-                    $sheet->setCellValue($lastColumn . $row, $totalContractors != 0 ? $totalContractors : '');
-                    $sheet->setCellValue($lastColumn . ($row + 1), $totalProviders != 0 ? $totalProviders : '');
-                    $sheet->setCellValue($lastColumn . ($row + 2), $totalProvidersFix != 0 ? $totalProvidersFix : '');
-                    $sheet->setCellValue($lastColumn . ($row + 3), $totalProvidersFloat != 0 ? $totalProvidersFloat : '');
-                    $sheet->setCellValue($lastColumn . ($row + 4), $totalService != 0 ? $totalService : '');
-
-                    $row = $row + 5;
-                } else {
-                    $columnIndex = 3;
-                    $totalContractors = 0;
-                    $totalProviders = 0;
-                    $totalService = 0;
-                    foreach($periods as $period) {
-                        $column = $this->getColumnWord($columnIndex);
-
-                        $contractors = $cfPayments['objects'][$object->id][$period['start']]['contractors'] ?? 0;
-                        $providers = ($cfPayments['objects'][$object->id][$period['start']]['providers_fix'] ?? 0) + ($cfPayments['objects'][$object->id][$period['start']]['providers_float'] ?? 0);
-                        $service = $cfPayments['objects'][$object->id][$period['start']]['service'] ?? 0;
-
-                        $totalContractors += $contractors;
-                        $totalProviders += $providers;
-                        $totalService += $service;
-
-                        $sheet->setCellValue($column . $row, $contractors != 0 ? $contractors : '');
-                        $sheet->setCellValue($column . ($row + 1), $providers != 0 ? $providers : '');
-                        $sheet->setCellValue($column . ($row + 2), $service != 0 ? $service : '');
-
-                        $columnIndex++;
-                    }
-
-                    $sheet->setCellValue($lastColumn . $row, $totalContractors != 0 ? $totalContractors : '');
-                    $sheet->setCellValue($lastColumn . ($row + 1), $totalProviders != 0 ? $totalProviders : '');
-                    $sheet->setCellValue($lastColumn . ($row + 2), $totalService != 0 ? $totalService : '');
-
-                    $row = $row + 3;
-                }
             }
         }
-
 
         $sheet->getRowDimension($row)->setRowHeight(5);
         $row++;
 
-        $sheet->setCellValue('A' . $row, 'РАСХОДЫ ИТОГО, в том числе:');
+        $sheet->setCellValue('A' . $row, 'Общие расходы:');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
         $officeObjectId = BObject::where('code', '27.1')->first()->id;
@@ -441,9 +371,9 @@ class PivotSheet implements
 
             $column = $this->getColumnWord($columnIndex);
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) + ($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
+                $amount = -abs($CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
             } else {
-                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') + ($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
+                $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
             }
 
             $total += $amount;
@@ -457,7 +387,8 @@ class PivotSheet implements
         $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
         $row++;
 
-        $sheet->setCellValue('A' . $row, '27.1');
+        $sheet->setCellValue('A' . $row, 'Расходы офиса');
+        $sheet->setCellValue('B' . $row, '27.1');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
         $total = 0;
@@ -476,6 +407,9 @@ class PivotSheet implements
         $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
         $row++;
 
+        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Работы', $row, 'contractors', false, true);
+        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Материалы', $row, 'providers', false, true);
+        $this->fillPayments($sheet, $lastColumn, $officeObjectId, $periods, $cfPayments, 'Накладные/Услуги', $row, 'service', false, true);
 
         $planGroupedPaymentAmount = [];
         foreach ($planPaymentGroups as $group) {
@@ -505,7 +439,7 @@ class PivotSheet implements
                 continue;
             }
 
-            $sheet->setCellValue('A' . $row, $group->name . ' ИТОГО:');
+            $sheet->setCellValue('A' . $row, $group->name);
             $sheet->setCellValue('B' . $row, $group->object->code ?? '');
             $sheet->getRowDimension($row)->setRowHeight(30);
 
@@ -596,6 +530,10 @@ class PivotSheet implements
         }
 
         foreach($otherPlanPayments as $paymentName => $paymentAmount) {
+            if (!is_valid_amount_in_range($paymentAmount)) {
+                continue;
+            }
+
             $sheet->setCellValue('A' . $row, $paymentName);
             $sheet->getRowDimension($row)->setRowHeight(30);
 
@@ -605,7 +543,7 @@ class PivotSheet implements
 
                 $column = $this->getColumnWord($columnIndex);
                 if ($index === 0) {
-                    $amount = $paymentAmount;
+                    $amount = -abs($paymentAmount);
                 } else {
                     $amount = 0;
                 }
@@ -631,9 +569,9 @@ class PivotSheet implements
 
             $column = $this->getColumnWord($columnIndex);
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') - $cfPayments['total']['all'][$period['start']] + array_sum($otherPlanPayments);
+                $amount = -abs($CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['total']['all'][$period['start']]);
             } else {
-                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
+                $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs($cfPayments['total']['all'][$period['start']]);
             }
 
             $total += $amount;
@@ -659,7 +597,7 @@ class PivotSheet implements
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) + array_sum($accounts) - $cfPayments['total']['all'][$period['start']];
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
             } else {
                 $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
             }
@@ -684,7 +622,7 @@ class PivotSheet implements
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) + array_sum($accounts) - $cfPayments['total']['all'][$period['start']];
+                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
             } else {
                 $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
             }
@@ -697,7 +635,6 @@ class PivotSheet implements
 
             $columnIndex++;
         }
-
 
         $sheet->getStyle('A1:' . 'A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left');
         $sheet->getStyle('C2:' . $lastColumn . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
@@ -719,5 +656,68 @@ class PivotSheet implements
     private function getColumnWord($n) {
         $n--;
         return ($n<26) ? chr(ord('A') + $n) : 'A' .  chr(ord('A') + $n % 26);
+    }
+
+    public function fillPayments($sheet, $lastColumn, $objectId, $periods, $cfPayments, $title, &$row, $key, $skipDetails = false, $twoLevels = false)
+    {
+        $sheet->setCellValue('A' . $row, '        ' . $title);
+        $sheet->getRowDimension($row)->setRowHeight(25);
+
+        $columnIndex = 3;
+        $total = 0;
+        foreach($periods as $period) {
+            $column = $this->getColumnWord($columnIndex);
+
+            $amount = $cfPayments['objects'][$objectId][$period['start']][$key] ?? 0;
+            $total += $amount;
+
+            $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+            $columnIndex++;
+        }
+
+        $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
+        $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setItalic(true);
+
+        if ($twoLevels) {
+            $sheet->getRowDimension($row)->setOutlineLevel(1)
+                ->setVisible(true)
+                ->setCollapsed(false);
+        }
+
+        $row++;
+
+        if ($skipDetails) {
+            return;
+        }
+
+        if (! isset($cfPayments['objects_details'][$objectId][$key])) {
+            return;
+        }
+
+        foreach($cfPayments['objects_details'][$objectId][$key] as $name => $info) {
+            $sheet->setCellValue('A' . $row, '                ' . $name);
+            $sheet->getRowDimension($row)->setRowHeight(25);
+
+            $columnIndex = 3;
+            $total = 0;
+            foreach($periods as $period) {
+                $column = $this->getColumnWord($columnIndex);
+
+                $amount = $info[$period['start']] ?? 0;
+                $total += $amount;
+
+                $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+                $columnIndex++;
+            }
+
+            $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
+            $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setItalic(true);
+
+            $sheet->getRowDimension($row)->setOutlineLevel($twoLevels ? 2 : 1)
+                ->setVisible(true)
+                ->setCollapsed(false);
+
+            $row++;
+        }
     }
 }
