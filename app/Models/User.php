@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CashAccount\CashAccount;
 use App\Models\Object\BObject;
 use App\Traits\HasStatus;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -54,6 +55,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function objects(): BelongsToMany
     {
         return $this->belongsToMany(BObject::class, 'object_user', 'object_id', 'user_id');
+    }
+
+    public function sharedCashAccounts(): BelongsToMany
+    {
+        return $this->belongsToMany(CashAccount::class, 'cash_account_user', 'cash_account_id', 'user_id');
     }
 
     public function getPhoto(): string

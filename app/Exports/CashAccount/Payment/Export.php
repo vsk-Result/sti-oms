@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Exports\CashAccount\Payment;
+
+use App\Exports\CashAccount\Payment\Sheets\PaymentSheet;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+
+class Export implements WithMultipleSheets
+{
+    private Builder $payments;
+
+    public function __construct(Builder $payments)
+    {
+        $this->payments = $payments;
+    }
+
+    public function sheets(): array
+    {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 3000);
+
+        return [
+            new PaymentSheet('Таблица оплат', (clone $this->payments), $this->payments->count()),
+        ];
+    }
+}

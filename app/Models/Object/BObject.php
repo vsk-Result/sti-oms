@@ -157,6 +157,22 @@ class BObject extends Model implements Audit
         return $result;
     }
 
+    public static function getObjectCodes(): array
+    {
+        $result = [];
+        $objects = static::orderByDesc('code')->get();
+
+        if (auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
+            $objects = static::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+        }
+
+        foreach ($objects as $object) {
+            $result[$object->id] = $object->code;
+        }
+
+        return $result;
+    }
+
     public function getPhoto(): string
     {
         return $this->photo ? "/storage/$this->photo" : asset('images/blanks/object_photo_blank.jpg');
