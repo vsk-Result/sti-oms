@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class PivotSheet implements
+class PivotSheetTwo implements
     WithTitle,
     WithStyles
 {
