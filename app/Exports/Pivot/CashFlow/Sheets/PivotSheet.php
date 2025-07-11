@@ -115,7 +115,10 @@ class PivotSheet implements
             $total += $receive + $payments;
 
             $sheet->setCellValue($column . $row, ($receive + $payments) != 0 ? ($receive + $payments) : '');
-            $sheet->getStyle($column . $row)->getFont()->setColor(new Color(($receive + $payments) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+            if (($receive + $payments) < 0) {
+                $sheet->getStyle($column . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+            }
 
             $columnIndex++;
         }
@@ -672,7 +675,12 @@ class PivotSheet implements
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
 
-            $amount = $cfPayments['objects'][$objectId][$period['start']][$key] ?? 0;
+            if ($key === 'providers') {
+                $amount = ($cfPayments['objects'][$objectId][$period['start']][$key . '_fix'] ?? 0) + ($cfPayments['objects'][$objectId][$period['start']][$key . '_float'] ?? 0);
+            } else {
+                $amount = $cfPayments['objects'][$objectId][$period['start']][$key] ?? 0;
+            }
+
             $total += $amount;
 
             $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
