@@ -148,6 +148,6 @@ class PaymentReceiveReportService
             $paymentInfo['accrued_taxes'][$year]['total'] += $paymentInfo['accrued_taxes'][$year][$month];
         }
 
-        return compact('receiveInfo', 'paymentInfo', 'monthsFull');
+        return compact('receiveInfo', 'paymentInfo', 'monthsFull', 'months');
     }
 }

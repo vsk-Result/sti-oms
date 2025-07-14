@@ -59,7 +59,7 @@
                                     <td class="ps-5">КС 2</td>
                                     <td>Материал</td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['material'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -70,7 +70,7 @@
                                     <td class="ps-5"></td>
                                     <td>Работы</td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['rad'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -81,7 +81,7 @@
                                     <td class="ps-5"></td>
                                     <td>Накладные</td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['service'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -92,7 +92,7 @@
                                     <td class="ps-5"></td>
                                     <td>Итого выручка: </td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -103,7 +103,7 @@
                                     <td class="ps-5 fw-bolder">Расходная часть</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right"></td>
                                     @endforeach
 
@@ -114,7 +114,7 @@
                                     <td class="ps-5">Подрядчики</td>
                                     <td>Материал</td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['contractors']['material'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -125,7 +125,7 @@
                                     <td class="ps-5"></td>
                                     <td>Работы</td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['contractors']['rad'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -136,7 +136,7 @@
                                     <td class="ps-5">Поставщики</td>
                                     <td>Материал</td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['providers']['material'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -147,7 +147,7 @@
                                     <td class="ps-5">Услуги/накладные</td>
                                     <td>Содержание стройплащадки</td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['service']['service'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -158,7 +158,7 @@
                                     <td class="ps-5">Зарплата рабочие</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_workers'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -169,7 +169,7 @@
                                     <td class="ps-5">Зарплата ИТР</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_itr'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -180,7 +180,7 @@
                                     <td class="ps-5">Налоги с зп</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_taxes'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -191,7 +191,7 @@
                                     <td class="ps-5">Услуги трансфера</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['transfer'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -202,7 +202,7 @@
                                     <td class="ps-5">Общие затраты (в т.ч офис)</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['general_costs'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -213,7 +213,7 @@
                                     <td class="ps-5">Налоги (НДС,прибыль)</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['accrued_taxes'][2025][$month] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -224,7 +224,7 @@
                                     <td class="ps-5"></td>
                                     <td>Итого расходы: </td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
@@ -235,7 +235,7 @@
                                     <td class="ps-5"></td>
                                     <td>Маржа: </td>
 
-                                    @foreach($reportInfo['monthsFull'] as $month)
+                                    @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>
                                     @endforeach
 
