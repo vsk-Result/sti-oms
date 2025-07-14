@@ -51,6 +51,11 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-active-primary me-6 {{ request()->is('*/receive-plan') ? 'active' : '' }}" href="{{ route('objects.receive_plan.index', $object) }}?object_id%5B%5D={{ $object->id }}">Cash Flow</a>
                                 </li>
+                                @if (auth()->user()->hasRole('super-admin'))
+                                    <li class="nav-item">
+                                        <a class="nav-link text-active-primary me-6 {{ request()->is('*/payment-receive-report') ? 'active' : '' }}" href="{{ route('objects.payment_receive_report.index', $object) }}?object_id%5B%5D={{ $object->id }}">Отчет доходов и расходов</a>
+                                    </li>
+                                @endif
         {{--                            <li class="nav-item d-flex flex-row align-items-center">--}}
         {{--                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/check') ? 'active' : '' }}" href="{{ route('objects.check.index', $object) }}?object_id%5B%5D={{ $object->id }}">Проверка</a>--}}
         {{--                            </li>--}}
