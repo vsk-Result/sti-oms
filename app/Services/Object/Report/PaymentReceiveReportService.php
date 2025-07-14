@@ -125,20 +125,20 @@ class PaymentReceiveReportService
             $transferData = ObjectService::getDistributionTransferServiceByPeriod($period);
 
 //            $paymentInfo['salary_workers'][$year][$month] = 0;
-            $paymentInfo['salary_workers'][$year][$month] = (float) WorkhourPivot::where('date', $year . '-' . $month)
+            $paymentInfo['salary_workers'][$year][$month] = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
                             ->where('is_main', true)
                             ->where('code', $object->code)
-                            ->sum('amount');
+                            ->sum('amount'));
 
-            $paymentInfo['salary_itr'][$year][$month] = $itrAmount;
+            $paymentInfo['salary_itr'][$year][$month] = -abs($itrAmount);
 
-            $paymentInfo['salary_taxes'][$year][$month] = 0;
+            $paymentInfo['salary_taxes'][$year][$month] = -abs(0);
 
-            $paymentInfo['transfer'][$year][$month] = $transferData[$object->id]['transfer_amount'] ?? 0;
+            $paymentInfo['transfer'][$year][$month] = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
 
-            $paymentInfo['general_costs'][$year][$month] = $generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0);
+            $paymentInfo['general_costs'][$year][$month] = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0));
 
-            $paymentInfo['accrued_taxes'][$year][$month] = AccruedTax::whereBetween('date', $period)->sum('amount') * ($workhoursPercents[$year . '-' . $month][$object->code] ?? 0);
+            $paymentInfo['accrued_taxes'][$year][$month] = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($workhoursPercents[$year . '-' . $month][$object->code] ?? 0));
 
             $paymentInfo['salary_workers'][$year]['total'] += $paymentInfo['salary_workers'][$year][$month];
             $paymentInfo['salary_itr'][$year]['total'] += $paymentInfo['salary_itr'][$year][$month];
