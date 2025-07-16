@@ -33,23 +33,30 @@ class PaymentReceiveReportService
         ];
         $months = array_keys($monthsFull);
 
-        $receiveInfo = [];
-        $receiveInfo['material'][$year]['total'] = 0;
-        $receiveInfo['rad'][$year]['total'] = 0;
-        $receiveInfo['service'][$year]['total'] = 0;
+        $receiveInfo = [
+            'material' => [$year => ['total' => 0]],
+            'rad' => [$year => ['total' => 0]],
+            'service' => [$year => ['total' => 0]],
+            'total' => [$year => ['total' => 0]]
+        ];
 
         foreach ($months as $month) {
             $period = [$year . '-' . $month . '-01', $year . '-' . $month . '-31'];
-            $receiveInfo['material'][$year][$month] = $object->acts()
-                ->whereBetween('date', $period)->sum('amount');
-            $receiveInfo['rad'][$year][$month] = $object->acts()
-                ->whereBetween('date', $period)->sum('rad_amount');
-            $receiveInfo['service'][$year][$month] = $object->acts()
-                ->whereBetween('date', $period)->sum('opste_amount');
 
-            $receiveInfo['material'][$year]['total'] += $receiveInfo['material'][$year][$month];
-            $receiveInfo['rad'][$year]['total'] += $receiveInfo['rad'][$year][$month];
-            $receiveInfo['service'][$year]['total'] += $receiveInfo['service'][$year][$month];
+            $material = $object->acts()->whereBetween('date', $period)->sum('amount');
+            $rad = $object->acts()->whereBetween('date', $period)->sum('rad_amount');
+            $service = $object->acts()->whereBetween('date', $period)->sum('opste_amount');
+
+            $receiveInfo['material'][$year][$month] = $material;
+            $receiveInfo['rad'][$year][$month] = $rad;
+            $receiveInfo['service'][$year][$month] = $service;
+
+            $receiveInfo['material'][$year]['total'] += $material;
+            $receiveInfo['rad'][$year]['total'] += $rad;
+            $receiveInfo['service'][$year]['total'] += $service;
+
+            $receiveInfo['total'][$year][$month] = $material + $rad + $service;
+            $receiveInfo['total'][$year]['total'] += $receiveInfo['total'][$year][$month];
         }
 
         $paymentInfo = [
@@ -69,6 +76,7 @@ class PaymentReceiveReportService
             'transfer' => [$year => ['total' => 0]],
             'general_costs' => [$year => ['total' => 0]],
             'accrued_taxes' => [$year => ['total' => 0]],
+            'total' => [$year => ['total' => 0]]
         ];
 
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
@@ -124,21 +132,24 @@ class PaymentReceiveReportService
 
             $transferData = ObjectService::getDistributionTransferServiceByPeriod($period);
 
+            $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
+                ->where('is_main', true)
+                ->where('code', $object->code)
+                ->sum('amount'));
+
+            $salaryItr = -abs($itrAmount);
+            $salaryTaxes = -abs(0);
+            $transfer = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
+            $generalCosts = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0));
+            $accruedTaxes = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($workhoursPercents[$year . '-' . $month][$object->code] ?? 0));
+
 //            $paymentInfo['salary_workers'][$year][$month] = 0;
-            $paymentInfo['salary_workers'][$year][$month] = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
-                            ->where('is_main', true)
-                            ->where('code', $object->code)
-                            ->sum('amount'));
-
-            $paymentInfo['salary_itr'][$year][$month] = -abs($itrAmount);
-
-            $paymentInfo['salary_taxes'][$year][$month] = -abs(0);
-
-            $paymentInfo['transfer'][$year][$month] = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
-
-            $paymentInfo['general_costs'][$year][$month] = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0));
-
-            $paymentInfo['accrued_taxes'][$year][$month] = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($workhoursPercents[$year . '-' . $month][$object->code] ?? 0));
+            $paymentInfo['salary_workers'][$year][$month] = $salaryWorkers;
+            $paymentInfo['salary_itr'][$year][$month] = $salaryItr;
+            $paymentInfo['salary_taxes'][$year][$month] = $salaryTaxes;
+            $paymentInfo['transfer'][$year][$month] = $transfer;
+            $paymentInfo['general_costs'][$year][$month] = $generalCosts;
+            $paymentInfo['accrued_taxes'][$year][$month] = $accruedTaxes;
 
             $paymentInfo['salary_workers'][$year]['total'] += $paymentInfo['salary_workers'][$year][$month];
             $paymentInfo['salary_itr'][$year]['total'] += $paymentInfo['salary_itr'][$year][$month];
@@ -146,6 +157,9 @@ class PaymentReceiveReportService
             $paymentInfo['transfer'][$year]['total'] += $paymentInfo['transfer'][$year][$month];
             $paymentInfo['general_costs'][$year]['total'] += $paymentInfo['general_costs'][$year][$month];
             $paymentInfo['accrued_taxes'][$year]['total'] += $paymentInfo['accrued_taxes'][$year][$month];
+
+            $paymentInfo['total'][$year][$month] = $salaryWorkers + $salaryItr + $salaryTaxes + $transfer + $generalCosts + $accruedTaxes;
+            $paymentInfo['total'][$year]['total'] += $paymentInfo['total'][$year][$month];
         }
 
         return compact('receiveInfo', 'paymentInfo', 'monthsFull', 'months');
