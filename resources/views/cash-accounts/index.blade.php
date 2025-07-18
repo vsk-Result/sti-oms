@@ -31,7 +31,7 @@
                             <div class="d-flex flex-column me-2">
                                 <a href="{{ route('cash_accounts.show', $cashAccount) }}" class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</a>
 
-                                <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible->name }}</span>
+                                <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
                             </div>
 
                             <span class="symbol symbol-50px">
