@@ -2,7 +2,7 @@
 
 namespace App\Models\CashAccount;
 
-use App\Models\CRM\User;
+use App\Models\User;
 use App\Models\Object\BObject;
 use App\Traits\HasUser;
 use Illuminate\Database\Eloquent\Model;
