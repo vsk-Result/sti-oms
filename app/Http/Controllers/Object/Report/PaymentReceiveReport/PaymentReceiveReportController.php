@@ -9,12 +9,7 @@ use Illuminate\Contracts\View\View;
 
 class PaymentReceiveReportController extends Controller
 {
-    private PaymentReceiveReportService $paymentReceiveReportService;
-
-    public function __construct(PaymentReceiveReportService $paymentReceiveReportService)
-    {
-        $this->paymentReceiveReportService = $paymentReceiveReportService;
-    }
+    public function __construct(private PaymentReceiveReportService $paymentReceiveReportService) {}
 
     public function index(BObject $object): View
     {

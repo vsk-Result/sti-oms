@@ -18,6 +18,7 @@ use App\Http\Controllers\Object\PivotController;
 use App\Http\Controllers\Object\ReceivePlanController;
 use App\Http\Controllers\Object\ReceivePlanExportController;
 use App\Http\Controllers\Object\Report\PaymentReceiveReport\PaymentReceiveReportController;
+use App\Http\Controllers\Object\Report\PaymentReceiveReport\PaymentReceiveReportExportController;
 use App\Http\Controllers\Object\UserController;
 use App\Http\Controllers\Object\WriteoffController;
 use App\Http\Controllers\Object\CashFlow\CashFlowPaymentController;
@@ -122,3 +123,4 @@ Route::get('objects/{object}/reports/payments-receive', [PaymentsReceiveControll
 // Новый отчет по приходам и расходам
 
 Route::get('objects/{object}/payment-receive-report', [PaymentReceiveReportController::class, 'index'])->name('objects.payment_receive_report.index');
+Route::post('objects/{object}/payment-receive-report/export', [PaymentReceiveReportExportController::class, 'store'])->name('objects.payment_receive_report.export.store');
