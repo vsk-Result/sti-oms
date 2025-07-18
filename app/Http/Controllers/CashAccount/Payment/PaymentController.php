@@ -37,7 +37,8 @@ class PaymentController extends Controller
         $currencies = Currency::getCurrencies();
 
         $totalInfo = [];
-        $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
+        $requestData = array_merge(['cash_account_id' => $cashAccount->id], $request->toArray());
+        $payments = $this->paymentService->filterPayments($requestData, true, $totalInfo);
 
         $activeOrganizations = [];
         if (! empty($request->get('organization_id'))) {
