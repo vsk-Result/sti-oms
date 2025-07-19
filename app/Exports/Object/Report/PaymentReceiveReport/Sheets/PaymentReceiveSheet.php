@@ -15,15 +15,16 @@ class PaymentReceiveSheet implements
     WithStyles,
     ShouldAutoSize
 {
-    public function __construct(private array $reportInfo) {}
+    public function __construct(private array $reportInfo, private $year) {}
 
     public function title(): string
     {
-        return 'Отчет доходов и расходов';
+        return $this->year;
     }
 
     public function styles(Worksheet $sheet): void
     {
+        $year = $this->year;
         $reportInfo = $this->reportInfo;
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
@@ -67,7 +68,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['material'][2025][$month] ?? 0;
+            $amount = $reportInfo['receiveInfo']['material'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -78,7 +79,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['material'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['material'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, '');
@@ -88,7 +89,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['rad'][2025][$month] ?? 0;
+            $amount = $reportInfo['receiveInfo']['rad'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -99,7 +100,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['rad'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['rad'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, '');
@@ -109,7 +110,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['service'][2025][$month] ?? 0;
+            $amount = $reportInfo['receiveInfo']['service'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -120,7 +121,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['service'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['service'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, '');
@@ -132,7 +133,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['total'][2025][$month];
+            $amount = $reportInfo['receiveInfo']['total'][$year][$month];
 
             if ($amount == 0) {
                 $amount = '';
@@ -143,7 +144,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['total'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['total'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Расходная часть	');
@@ -159,7 +160,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['contractors']['material'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['contractors']['material'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -170,7 +171,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['contractors']['material'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['contractors']['material'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, '');
@@ -180,7 +181,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['contractors']['rad'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['contractors']['rad'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -191,7 +192,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['contractors']['rad'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['contractors']['rad'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Поставщики');
@@ -201,7 +202,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['providers']['material'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['providers']['material'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -212,7 +213,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['providers']['material'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['providers']['material'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Услуги/накладные');
@@ -222,7 +223,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['service']['service'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['service']['service'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -233,7 +234,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['service']['service'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['service']['service'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Зарплата рабочие');
@@ -243,7 +244,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['salary_workers'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['salary_workers'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -254,7 +255,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_workers'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_workers'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Зарплата ИТР');
@@ -264,7 +265,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['salary_itr'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['salary_itr'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -275,7 +276,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_itr'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_itr'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Налоги с зп');
@@ -285,7 +286,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['salary_taxes'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['salary_taxes'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -296,7 +297,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_taxes'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_taxes'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Услуги трансфера');
@@ -306,7 +307,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['transfer'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['transfer'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -317,7 +318,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['transfer'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['transfer'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Общие затраты (в т.ч офис)');
@@ -327,7 +328,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['general_costs'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['general_costs'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -338,7 +339,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['general_costs'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['general_costs'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, 'Налоги (НДС,прибыль)');
@@ -348,7 +349,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['accrued_taxes'][2025][$month] ?? 0;
+            $amount = $reportInfo['paymentInfo']['accrued_taxes'][$year][$month] ?? 0;
 
             if ($amount == 0) {
                 $amount = '';
@@ -359,7 +360,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['accrued_taxes'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['accrued_taxes'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, '');
@@ -371,7 +372,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['total'][2025][$month];
+            $amount = $reportInfo['paymentInfo']['total'][$year][$month];
 
             if ($amount == 0) {
                 $amount = '';
@@ -382,7 +383,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['total'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['total'][$year]['total']);
         $row++;
 
         $sheet->setCellValue('A' . $row, '');
@@ -394,7 +395,7 @@ class PaymentReceiveSheet implements
         $columnIndex = 3;
         foreach($reportInfo['months'] as $month) {
             $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['total'][2025][$month] + $reportInfo['paymentInfo']['total'][2025][$month];
+            $amount = $reportInfo['receiveInfo']['total'][$year][$month] + $reportInfo['paymentInfo']['total'][$year][$month];
 
             if ($amount == 0) {
                 $amount = '';
@@ -405,7 +406,7 @@ class PaymentReceiveSheet implements
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['total'][2025]['total'] + $reportInfo['paymentInfo']['total'][2025]['total']);
+        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['total'][$year]['total'] + $reportInfo['paymentInfo']['total'][$year]['total']);
         $sheet->getStyle('A' . $row . ':' . $column . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
         $sheet->getStyle('C3:' . $column . $row)->getNumberFormat()->setFormatCode('#,##0');

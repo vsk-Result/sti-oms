@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Cache;
 
 class PaymentReceiveReportService
 {
-    public function getReportInfo(BObject $object): array
+    public function getReportInfo(BObject $object, array $requestData): array
     {
-        $year = 2025;
+        $year = $requestData['year'];
         $monthsFull = [
             '01' => 'Январь',
             '02' => 'Февраль',
@@ -132,12 +132,10 @@ class PaymentReceiveReportService
 
             $transferData = ObjectService::getDistributionTransferServiceByPeriod($period);
 
-//            $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
-//                ->where('is_main', true)
-//                ->where('code', $object->code)
-//                ->sum('amount'));
-
-            $salaryWorkers = 0;
+            $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
+                ->where('is_main', true)
+                ->where('code', $object->code)
+                ->sum('amount'));
 
             $salaryItr = -abs($itrAmount);
             $salaryTaxes = -abs(0);
@@ -145,7 +143,6 @@ class PaymentReceiveReportService
             $generalCosts = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0));
             $accruedTaxes = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($workhoursPercents[$year . '-' . $month][$object->code] ?? 0));
 
-//            $paymentInfo['salary_workers'][$year][$month] = 0;
             $paymentInfo['salary_workers'][$year][$month] = $salaryWorkers;
             $paymentInfo['salary_itr'][$year][$month] = $salaryItr;
             $paymentInfo['salary_taxes'][$year][$month] = $salaryTaxes;
