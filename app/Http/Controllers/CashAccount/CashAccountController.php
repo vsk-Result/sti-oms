@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CashAccount;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
+use App\Models\Object\BObject;
 use App\Models\User;
 use App\Services\CashAccount\CashAccountService;
 use Illuminate\Http\RedirectResponse;
@@ -25,12 +26,13 @@ class CashAccountController extends Controller
     public function create(): View
     {
         $responsibleUsers = User::orderBy('name')->get();
+        $objects = BObject::getObjectCodes();
 
         if (!auth()->user()->hasRole('super-admin')) {
             $responsibleUsers = User::where('id', auth()->id())->get();
         }
 
-        return view('cash-accounts.create', compact('responsibleUsers'));
+        return view('cash-accounts.create', compact('responsibleUsers', 'objects'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -46,7 +48,8 @@ class CashAccountController extends Controller
 
     public function edit(CashAccount $cashAccount): View
     {
-        return view('cash-accounts.edit', compact('cashAccount'));
+        $objects = BObject::getObjectCodes();
+        return view('cash-accounts.edit', compact('cashAccount', $objects));
     }
 
     public function update(CashAccount $cashAccount, Request $request): RedirectResponse
@@ -57,7 +60,7 @@ class CashAccountController extends Controller
 
     public function destroy(CashAccount $cashAccount): RedirectResponse
     {
-        $this->cashAccountService->destroyCashAccount($cashAccount);
+//        $this->cashAccountService->destroyCashAccount($cashAccount);
         return redirect()->route('cash_accounts.index');
     }
 }

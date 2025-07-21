@@ -32,6 +32,12 @@
                                 <a href="{{ route('cash_accounts.show', $cashAccount) }}" class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</a>
 
                                 <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
+
+                                <div class="d-flex gap-1 flex-row mt-4">
+                                    @foreach($cashAccount->objects->sortBy('code') as $object)
+                                        <a href="{{ route('objects.show', $object->id) }}"><span class="badge badge-light">{{ $object->code }}</span></a>
+                                    @endforeach
+                                </div>
                             </div>
 
                             <span class="symbol symbol-50px">

@@ -167,7 +167,7 @@ class BObject extends Model implements Audit
         }
 
         foreach ($objects as $object) {
-            $result[$object->id] = $object->code;
+            $result[$object->id] = $object->getName();
         }
 
         return $result;

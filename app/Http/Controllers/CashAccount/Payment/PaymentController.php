@@ -30,7 +30,6 @@ class PaymentController extends Controller
 
     public function index(CashAccount $cashAccount, Request $request): View
     {
-        $objects = BObject::orderBy('code')->get();
         $worktypes = WorkType::getWorkTypes();
         $categories = CashAccountPayment::getCategories();
         $codes = KostCode::getCodes();
@@ -48,7 +47,7 @@ class PaymentController extends Controller
         return view(
             'cash-accounts.payments.index',
             compact(
-                'payments', 'objects', 'worktypes', 'categories',
+                'payments', 'worktypes', 'categories',
                'totalInfo', 'activeOrganizations', 'codes', 'currencies', 'cashAccount'
             )
         );
@@ -57,7 +56,7 @@ class PaymentController extends Controller
     public function create(CashAccount $cashAccount, Request $request): JsonResponse
     {
         $categories = CashAccountPayment::getCategories();
-        $objects = BObject::getObjectCodes();
+        $objects = $cashAccount->getObjects();
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
 
@@ -85,7 +84,7 @@ class PaymentController extends Controller
     public function edit(CashAccount $cashAccount, CashAccountPayment $payment, Request $request): JsonResponse
     {
         $categories = CashAccountPayment::getCategories();
-        $objects = BObject::getObjectCodes();
+        $objects = $cashAccount->getObjects();
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
 

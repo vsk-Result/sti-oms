@@ -27,14 +27,28 @@ class CashAccountService
     public function createCashAccount(array $requestData): CashAccount
     {
         $balance = $this->sanitizer->set($requestData['start_balance_amount'])->toAmount()->get();
-
-        return CashAccount::create([
+        $cashAccount = CashAccount::create([
             'name' => $requestData['name'],
             'responsible_user_id' => $requestData['responsible_user_id'],
             'start_balance_amount' => $balance,
             'balance_amount' => $balance,
             'status_id' => CashAccount::STATUS_ACTIVE
         ]);
+
+        $cashAccount->objects()->sync($requestData['object_id']);
+
+        return $cashAccount;
+    }
+
+    public function updateCashAccount(CashAccount $cashAccount, array $requestData): CashAccount
+    {
+        $cashAccount->update([
+            'name' => $requestData['name'],
+        ]);
+
+        $cashAccount->objects()->sync($requestData['object_id']);
+
+        return $cashAccount;
     }
 
     public function updateBalance(CashAccount $cashAccount): void

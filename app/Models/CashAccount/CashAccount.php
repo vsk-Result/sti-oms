@@ -78,4 +78,15 @@ class CashAccount extends Model
     {
         return $this->balance_amount;
     }
+
+    public function getObjects(): array
+    {
+        $objects = [];
+
+        foreach ($this->objects as $object) {
+            $objects[$object->id] = $object->getName();
+        }
+
+        return $objects;
+    }
 }
