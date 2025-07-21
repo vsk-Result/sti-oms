@@ -26,7 +26,7 @@ class Act extends Model implements Audit, HasMedia
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
         'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id',
         'currency', 'currency_rate', 'number', 'planned_payment_date', 'manual_left_paid_amount',
-        'rad_amount', 'opste_amount'
+        'rad_amount', 'opste_amount', 'other_deduction_amount'
     ];
 
     public function contract(): BelongsTo

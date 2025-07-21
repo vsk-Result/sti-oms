@@ -221,6 +221,7 @@ class ActService
             'opste_amount' => $this->sanitizer->set($requestData['opste_amount'])->toAmount()->get(),
             'amount_avans' => $this->sanitizer->set($requestData['amount_avans'])->toAmount()->get(),
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
+            'other_deduction_amount' => $this->sanitizer->set($requestData['other_deduction_amount'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'status_id' => Status::STATUS_ACTIVE,
             'currency' => $contract->currency,
@@ -229,7 +230,7 @@ class ActService
         ]);
 
         $act->update([
-            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit
+            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit - $act->other_deduction_amount
         ]);
 
         if (! empty($requestData['payments_date'])) {
@@ -277,6 +278,7 @@ class ActService
             'opste_amount' => $this->sanitizer->set($requestData['opste_amount'])->toAmount()->get(),
             'amount_avans' => $this->sanitizer->set($requestData['amount_avans'])->toAmount()->get(),
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
+            'other_deduction_amount' => $this->sanitizer->set($requestData['other_deduction_amount'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'status_id' => $requestData['status_id'],
             'currency' => $contract->currency,
@@ -285,7 +287,7 @@ class ActService
         ]);
 
         $act->update([
-            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit
+            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit - $act->other_deduction_amount
         ]);
 
         $currentPaymentsIds = $act->payments()->pluck('id', 'id')->toArray();

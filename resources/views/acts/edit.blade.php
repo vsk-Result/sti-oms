@@ -235,8 +235,28 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-4 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Прочие удержания</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                        class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('other_deduction_amount') ? 'is-invalid' : '' }}"
+                                                        type="text"
+                                                        name="other_deduction_amount"
+                                                        value="{{ old('other_deduction_amount', $act->other_deduction_amount) }}"
+                                                        autocomplete="off"
+                                                />
+                                            </div>
+                                            @if ($errors->has('other_deduction_amount'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div>{{ implode(' ', $errors->get('other_deduction_amount')) }}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
 
-                                    <div class="col-md-8 mb-10 fv-row">
+
+                                    <div class="col-md-4 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Описание</label>
                                             <div class="position-relative mb-3">
