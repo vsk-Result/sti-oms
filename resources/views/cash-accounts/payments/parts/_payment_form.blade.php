@@ -58,6 +58,8 @@
                                     <option value="{{ $copyPayment->organization_id }}" selected>{{ \App\Models\Organization::find($copyPayment->organization_id)?->name }}</option>
                                 @endif
                             </select>
+
+                            <a target="_blank" href="{{ route('organizations.create') }}">Создать нового</a>
                         </div>
                     </div>
                 </div>
