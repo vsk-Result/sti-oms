@@ -113,6 +113,7 @@
                             <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
                             <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
                             <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
+                            <th class="min-w-200px">Вложения</th>
                             <th class="min-w-125px text-end rounded-end pe-4"></th>
                         </tr>
                     </thead>
@@ -139,6 +140,13 @@
                                 <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($payment->amount) }}</span>
                             </td>
                             <td>{{ $payment->category }}</td>
+                            <td>
+                                @foreach($payment->getMedia() as $media)
+                                    <div class="d-flex align-items-center mb-3">
+                                        <a target="_blank" href="{{ $media->getUrl() }}" class="text-gray-800 text-hover-primary">{{ $media->file_name . '      (' . $media->human_readable_size . ')' }}</a>
+                                    </div>
+                                @endforeach
+                            </td>
                             <td class="text-end text-dark fw-bolder">
                                 <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                     <span class="svg-icon svg-icon-5 m-0">

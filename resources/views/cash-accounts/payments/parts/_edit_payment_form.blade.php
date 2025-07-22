@@ -41,7 +41,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Контрагент</label>
                             <div class="position-relative mb-3">
-                                <select name="organization_id" data-control="select2" class="organization-select form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
+                                <select required name="organization_id" data-control="select2" class="organization-select form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     <option value="{{ $payment->organization_id }}" selected>{{ \App\Models\Organization::find($payment->organization_id)?->name }}</option>
                                 </select>
                             </div>
@@ -116,6 +116,25 @@
                                     rows="3"
                                     name="description"
                                 >{{ old('description', $payment->description) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-10 fv-row">
+                        <div class="mb-1">
+                            <label class="form-label fw-bolder text-dark fs-6">Файлы</label>
+                            <input
+                                    type="file"
+                                    multiple
+                                    class="form-control form-control-solid {{ $errors->has('files.*') ? 'is-invalid' : '' }}"
+                                    placeholder=""
+                                    name="files[]"
+                                    accept=".jpg, .jpeg, .png, .pdf, .doc, .docx, .xls, .xlsx"
+                            />
+                            <div class="form-text">Доступные форматы:
+                                <code>jpg, jpeg, png, pdf, doc, docx, xls, xlsx</code>
                             </div>
                         </div>
                     </div>

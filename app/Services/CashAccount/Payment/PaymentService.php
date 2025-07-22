@@ -103,6 +103,14 @@ class PaymentService
             'amount' => $amount,
             'status_id' => $requestData['status_id'] ?? $payment->status_id,
         ]);
+
+        if (! empty($requestData['files'])) {
+            foreach ($requestData['files'] as $file) {
+                if (! is_null($file)) {
+                    $payment->addMedia($file)->toMediaCollection();
+                }
+            }
+        }
     }
 
     public function destroyPayment(CashAccountPayment $payment): void
