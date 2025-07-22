@@ -7,6 +7,7 @@
 @section('content')
     @include('pivots.calculate-workers-cost.modals.filter')
     @include('pivots.calculate-workers-cost.modals.update_itr_salary')
+    @include('pivots.calculate-workers-cost.modals.update_ndfl')
 
     <div class="row">
         <div class="col-lg-12">
@@ -19,9 +20,18 @@
                                     class="btn btn-light-primary me-3"
                                     href="javascript:void(0);"
                                     data-bs-toggle="modal"
+                                    data-bs-target="#updateNDFLModal"
+                            >
+                                Обновить НДФЛ и взносы
+                            </a>
+
+                            <a
+                                    class="btn btn-light-primary me-3"
+                                    href="javascript:void(0);"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#updateITRSalaryModal"
                             >
-                                Обновить расходы по зарплате ИТР
+                                Обновить расходы ИТР
                             </a>
 
                             <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#filterCalculateWorkersCostModal">
@@ -59,8 +69,8 @@
                     @if (session()->has('import_itr_salary_status'))
                         <div class="alert alert-dismissible bg-light-{{ session()->get('import_itr_salary_status_color') }} border border-dashed border-{{ session()->get('import_itr_salary_status_color') }} d-flex flex-column flex-sm-row p-5">
                             <div class="d-flex flex-column">
-                                <h5 class="mb-1">Информация о загрузке расходов по ИТР</h5>
-                                <p>{{ session()->get('import_itr_salary_status') }}</p>
+                                <h5 class="mb-1">Информация о загрузке файла</h5>
+                                <p class="mb-0">{{ session()->get('import_itr_salary_status') }}</p>
                             </div>
                         </div>
                     @endif

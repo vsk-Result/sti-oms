@@ -18,7 +18,7 @@ class CalculateWorkersCostService
     const COMPANY_GROUPS = [
         'ФОТ рабочие' => 'workers_salary',
         'ФОТ офис + ФОТ ИТР' => 'itr_salary',
-        'НДФЛ + страховые взносы' => '7.3;7.3.1;7.3.2',
+        'НДФЛ + страховые взносы' => 'ndfl',
         'Трансфер' => 'transfer',
         'Административные' => '5.1;5.2;5.3;5.4;5.5;5.6;5.7;5.15;5.17;7.16;7.17;7.19;7.20;7.21;7.22;7.23;7.24;7.25;7.26;7.27;7.29;7.30;7.31;7.32',
         'Питание' => '5.13;5.13.1;5.13.2',
@@ -62,6 +62,13 @@ class CalculateWorkersCostService
             '4 квартал' => [$year . '-10-01', $year . '-12-31'],
         ];
 
+        $quartMonths = [
+            '1 квартал' => [$year . '-01', $year . '-02', $year . '-03'],
+            '2 квартал' => [$year . '-04', $year . '-05', $year . '-06'],
+            '3 квартал' => [$year . '-07', $year . '-08', $year . '-09'],
+            '4 квартал' => [$year . '-10', $year . '-11', $year . '-12'],
+        ];
+
         $info = [
             'years' => [
                 $year => $quarts
@@ -91,6 +98,7 @@ class CalculateWorkersCostService
         }
 
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
+        $NDFLPivot = Cache::get('ndfl_pivot_data_excel', []);
 
         foreach (self::COMPANY_GROUPS as $group => $codes) {
             $codes = explode(';', $codes);
@@ -105,7 +113,20 @@ class CalculateWorkersCostService
             ];
 
             foreach ($quarts as $index => $quart) {
-                if ($codes[0] === 'accrued_taxes') {
+                if ($codes[0] === 'ndfl') {
+                    $amount = 0;
+                    $months = $quartMonths[$index];
+
+                    foreach ($months as $month) {
+                        $ndflAmount = ($NDFLPivot['ndfl'][$month]['total'] ?? 0) + ($NDFLPivot['strah'][$month]['total'] ?? 0);
+
+                        if ($ndflAmount != 0) {
+                            $amount += $ndflAmount;
+                        } else {
+                            $amount += (float) Payment::whereBetween('date', [$month . '-01', $month . '-31'])->where('amount', '<', 0)->whereIn('code', ['7.3', '7.3.1', '7.3.2'])->sum('amount');
+                        }
+                    }
+                } elseif ($codes[0] === 'accrued_taxes') {
                     $amount = AccruedTax::whereBetween('date', [$quart[0], $quart[1]])->sum('amount');
                     $amount += (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', ['7.5'])->sum('amount');
                 } elseif ($codes[0] === 'accrued_taxes_nds') {
@@ -121,7 +142,8 @@ class CalculateWorkersCostService
                         ->where('description', 'LIKE', '%transfer trosak%')
                         ->sum('amount');
                 } elseif ($codes[0] === 'workers_salary') {
-                    $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
+                    $amount = 0;
+//                    $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
                 } elseif ($codes[0] === 'itr_salary') {
                     $amount = 0;
 
