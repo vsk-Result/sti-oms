@@ -67,7 +67,8 @@ class ObjectController extends Controller
     public function create(): View
     {
         $organizations = Organization::orderBy('name')->get();
-        return view('objects.create', compact('organizations'));
+        $positions = ResponsiblePersonPosition::getPositions();
+        return view('objects.create', compact('organizations', 'positions'));
     }
 
     public function store(StoreObjectRequest $request): RedirectResponse

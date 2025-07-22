@@ -43,6 +43,26 @@ class ObjectService
 
         $object->customers()->sync($requestData['customer_id'] ?? []);
 
+        if (! empty($requestData['person_name'])) {
+            foreach ($requestData['person_name'] as $index => $personName) {
+                $name = $this->sanitizer->set($personName)->upperCaseAllFirstWords()->get();
+                $email = $this->sanitizer->set($requestData['person_email'][$index])->get();
+                $phone = $this->sanitizer->set($requestData['person_phone'][$index])->get();
+                $positionId = $requestData['person_position'][$index];
+
+                if (! empty($name)) {
+                    ResponsiblePerson::create([
+                        'object_id' => $object->id,
+                        'fullname' => $name,
+                        'position_id' => $positionId,
+                        'email' => $email,
+                        'phone' => $phone,
+                        'status_id' => Status::STATUS_ACTIVE,
+                    ]);
+                }
+            }
+        }
+
         return $object;
     }
 
