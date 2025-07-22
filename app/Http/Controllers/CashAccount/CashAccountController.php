@@ -48,8 +48,8 @@ class CashAccountController extends Controller
 
     public function edit(CashAccount $cashAccount): View
     {
-        $objects = BObject::getObjectCodes();
-        return view('cash-accounts.edit', compact('cashAccount', $objects));
+        $objects = $cashAccount->getObjects();
+        return view('cash-accounts.edit', compact('cashAccount', 'objects'));
     }
 
     public function update(CashAccount $cashAccount, Request $request): RedirectResponse
@@ -60,7 +60,7 @@ class CashAccountController extends Controller
 
     public function destroy(CashAccount $cashAccount): RedirectResponse
     {
-//        $this->cashAccountService->destroyCashAccount($cashAccount);
+        $this->cashAccountService->destroyCashAccount($cashAccount);
         return redirect()->route('cash_accounts.index');
     }
 }

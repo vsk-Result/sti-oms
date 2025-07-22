@@ -13,10 +13,10 @@ class CashAccountService
     public function getResponsibleCashAccounts(): Collection
     {
         if (auth()->user()->hasRole('super-admin')) {
-            return CashAccount::get();
+            return CashAccount::active()->get();
         }
 
-        return CashAccount::where('responsible_user_id', auth()->id())->get();
+        return CashAccount::active()->where('responsible_user_id', auth()->id())->get();
     }
 
     public function getSharedCashAccounts(): Collection
@@ -47,6 +47,15 @@ class CashAccountService
         ]);
 
         $cashAccount->objects()->sync($requestData['object_id']);
+
+        return $cashAccount;
+    }
+
+    public function destroyCashAccount(CashAccount $cashAccount): CashAccount
+    {
+        $cashAccount->update([
+            'status_id' => CashAccount::STATUS_DELETED,
+        ]);
 
         return $cashAccount;
     }

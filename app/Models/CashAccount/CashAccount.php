@@ -89,4 +89,9 @@ class CashAccount extends Model
 
         return $objects;
     }
+
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status_id', [self::STATUS_ACTIVE]);
+    }
 }
