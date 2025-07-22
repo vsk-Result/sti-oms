@@ -2,6 +2,7 @@
 
 namespace App\Services\PaymentImport;
 
+use App\Models\Company;
 use App\Models\PaymentImport;
 use App\Services\PaymentService;
 use Carbon\Carbon;
@@ -76,7 +77,7 @@ class PaymentImportService
 
     public function getInvalidBalanceStatement(): PaymentImport | null
     {
-        foreach (PaymentImport::where('type_id', PaymentImport::TYPE_STATEMENT)->latest('date')->get() as $import) {
+        foreach (PaymentImport::whereNotIn('company_id', Company::getDT()->id)->where('type_id', PaymentImport::TYPE_STATEMENT)->latest('date')->get() as $import) {
             if ($import->hasInvalidBalance()) {
                 return $import;
             }

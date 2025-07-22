@@ -50,6 +50,7 @@ class PaymentSheet implements
             'Сумма c НДС',
             'Сумма без НДС',
             'Контрагент',
+            'ИНН',
             'Информация',
             'Категория',
             'Компания',
@@ -71,17 +72,18 @@ class PaymentSheet implements
                 $sheet->setCellValue('F' . $row, $payment->amount);
                 $sheet->setCellValue('G' . $row, $payment->amount_without_nds);
                 $sheet->setCellValue('H' . $row, $payment->amount < 0 ? ($payment->organizationReceiver->name ?? '') : ($payment->organizationSender->name ?? ''));
-                $sheet->setCellValue('I' . $row, $payment->description);
-                $sheet->setCellValue('J' . $row, $payment->category);
-                $sheet->setCellValue('K' . $row, $payment->company->name ?? '');
-                $sheet->setCellValue('L' . $row, $payment->getBankName());
-                $sheet->setCellValue('M' . $row, $payment->id);
+                $sheet->setCellValue('I' . $row, ($payment->amount < 0 ? ($payment->organizationReceiver->inn ?? '') : ($payment->organizationSender->inn ?? '')) . ' ');
+                $sheet->setCellValue('J' . $row, $payment->description);
+                $sheet->setCellValue('K' . $row, $payment->category);
+                $sheet->setCellValue('L' . $row, $payment->company->name ?? '');
+                $sheet->setCellValue('M' . $row, $payment->getBankName());
+                $sheet->setCellValue('N' . $row, $payment->id);
 
                 $row++;
             }
         });
 
-        $sheet->getStyle('A1:M' . ($this->paymentCount + 1))->applyFromArray([
+        $sheet->getStyle('A1:N' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
@@ -90,9 +92,9 @@ class PaymentSheet implements
         $sheet->getStyle('G2:G' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
-        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
 
-        $sheet->setAutoFilter('A1:M' . ($this->paymentCount + 1));
+        $sheet->setAutoFilter('A1:N' . ($this->paymentCount + 1));
     }
 
     public function columnWidths(): array
