@@ -77,7 +77,7 @@ class PaymentImportService
 
     public function getInvalidBalanceStatement(): PaymentImport | null
     {
-        foreach (PaymentImport::whereNotIn('company_id', Company::getDT()->id)->where('type_id', PaymentImport::TYPE_STATEMENT)->latest('date')->get() as $import) {
+        foreach (PaymentImport::whereNotIn('company_id', [Company::getDT()->id])->where('type_id', PaymentImport::TYPE_STATEMENT)->latest('date')->get() as $import) {
             if ($import->hasInvalidBalance()) {
                 return $import;
             }
