@@ -37,7 +37,7 @@ class CalculateWorkersCostService
     const OBJECTS_GROUPS = [
         'ФОТ рабочие' => 'workers_salary',
         'ФОТ ИТР' => 'itr_salary',
-        'Налоги с з/п' => '7.3;7.3.1;7.3.2',
+        'Налоги с з/п' => 'ndfl',
         'Административные' => '5.1;5.2;5.3;5.4;5.5;5.6;5.7;5.15;5.17;7.20;7.21;7.25;7.26;7.30;7.31;7.32',
         'Питание' => '5.13;5.13.1;5.13.2',
         'Проживание' => '5.14;5.14.1;5.14.2',
@@ -237,6 +237,13 @@ class CalculateWorkersCostService
                 '4 квартал' => [$year . '-10-01', $year . '-12-31'],
             ];
 
+            $quartMonths = [
+                '1 квартал' => [$year . '-01', $year . '-02', $year . '-03'],
+                '2 квартал' => [$year . '-04', $year . '-05', $year . '-06'],
+                '3 квартал' => [$year . '-07', $year . '-08', $year . '-09'],
+                '4 квартал' => [$year . '-10', $year . '-11', $year . '-12'],
+            ];
+
             $infoByObjects['years'][$year] = $quarts;
 
             $quartsWorkhoursPercents = [];
@@ -308,7 +315,24 @@ class CalculateWorkersCostService
                     $codes = explode(';', $codes);
 
                     foreach ($quarts as $index => $quart) {
-                        if ($codes[0] === 'general_costs_percent') {
+                        if ($codes[0] === 'ndfl') {
+                            $amount = 0;
+                            $months = $quartMonths[$index];
+
+                            foreach ($months as $month) {
+                                $ndflAmount = ($NDFLPivot['ndfl'][$month]['objects'][$object->code] ?? 0) + ($NDFLPivot['strah'][$month]['objects'][$object->code] ?? 0);
+
+                                if ($ndflAmount != 0) {
+                                    $amount += $ndflAmount;
+                                } else {
+                                    $amount += $amount = (float) Payment::whereBetween('date', [$month . '-01', $month . '-31'])
+                                        ->where('amount', '<', 0)
+                                        ->whereIn('code', ['7.3', '7.3.1', '7.3.2'])
+                                        ->where('object_id', $object->id)
+                                        ->sum('amount');
+                                }
+                            }
+                        } elseif ($codes[0] === 'general_costs_percent') {
                             $paymentQuery = \App\Models\Payment::query()->whereBetween('date', [$quart[0], $quart[1]])->whereIn('company_id', [1, 5]);
                             $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                                 + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
