@@ -26,13 +26,14 @@ class CashAccountController extends Controller
     public function create(): View
     {
         $responsibleUsers = User::orderBy('name')->get();
+        $sharedUsers = User::where('id', '!=', auth()->id())->orderBy('name')->get();
         $objects = BObject::getObjectCodes();
 
         if (!auth()->user()->hasRole('super-admin')) {
             $responsibleUsers = User::where('id', auth()->id())->get();
         }
 
-        return view('cash-accounts.create', compact('responsibleUsers', 'objects'));
+        return view('cash-accounts.create', compact('responsibleUsers', 'objects', 'sharedUsers'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -49,7 +50,8 @@ class CashAccountController extends Controller
     public function edit(CashAccount $cashAccount): View
     {
         $objects = $cashAccount->getObjects();
-        return view('cash-accounts.edit', compact('cashAccount', 'objects'));
+        $sharedUsers = User::where('id', '!=', $cashAccount->responsible_user_id)->orderBy('name')->get();
+        return view('cash-accounts.edit', compact('cashAccount', 'objects', 'sharedUsers'));
     }
 
     public function update(CashAccount $cashAccount, Request $request): RedirectResponse

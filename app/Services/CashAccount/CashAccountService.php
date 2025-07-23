@@ -36,6 +36,7 @@ class CashAccountService
         ]);
 
         $cashAccount->objects()->sync($requestData['object_id']);
+        $cashAccount->sharedUsers()->sync($requestData['shared_user_id']);
 
         return $cashAccount;
     }
@@ -47,6 +48,7 @@ class CashAccountService
         ]);
 
         $cashAccount->objects()->sync($requestData['object_id']);
+        $cashAccount->sharedUsers()->sync($requestData['shared_user_id']);
 
         return $cashAccount;
     }

@@ -66,9 +66,22 @@
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Объект</label>
                                             <div class="position-relative mb-3">
-                                                <select name="object_id[]" data-control="select2" class="form-select form-select-solid form-select-lg" multiple>
+                                                <select required name="object_id[]" data-control="select2" class="form-select form-select-solid form-select-lg" multiple>
                                                     @foreach($objects as $objectId => $objectName)
                                                         <option value="{{ $objectId }}">{{ $objectName }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Доступ к кассе</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="shared_user_id[]" multiple data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($sharedUsers as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
