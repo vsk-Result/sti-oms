@@ -140,7 +140,7 @@ class MakeFinanceReportHistory extends HandledCommand
 
             $generalObjectCodes = BObject::getCodesWithoutWorktype();
             $hideObjectCodes = ['362', '368'];
-            $hidePrognozObjectCodes = ['346', '353'];
+            $hidePrognozObjectCodes = ['346', '353', '369', '360'];
 
             $years = [];
 
@@ -498,7 +498,7 @@ class MakeFinanceReportHistory extends HandledCommand
                             $prognozAmountWithoutNDS = 0;
                         }
 
-                        if (in_array($object->code, ['369', '360'])) {
+                        if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
                             $prognozAmount = 0;
                             $prognozAmountWithoutNDS = 0;
                         }
