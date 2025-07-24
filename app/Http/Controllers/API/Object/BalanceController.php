@@ -51,8 +51,15 @@ class BalanceController extends Controller
                     continue;
                 }
 
+                $contractStartDate = '';
                 $contractEndDate = '';
+
+                $contractLastStartDate = Contract::where('object_id', $object->id)->where('start_date', '!=', null)->get()->sortBy('start_date', SORT_NATURAL)->first();
                 $contractLastEndDate = Contract::where('object_id', $object->id)->where('end_date', '!=', null)->get()->sortBy('end_date', SORT_NATURAL)->last();
+
+                if ($contractLastStartDate) {
+                    $contractStartDate = $contractLastStartDate->start_date;
+                }
 
                 if ($contractLastEndDate) {
                     $contractEndDate = $contractLastEndDate->end_date;
@@ -65,6 +72,7 @@ class BalanceController extends Controller
                     'title' => $object->code . ' | '  . $object->name,
                     'balance' => $total->{$year}->{$object->code}->{'objectBalance'},
                     'balance_with_general_balance' => $total->{$year}->{$object->code}->{'balance_with_general_balance'},
+                    'contract_start_date' => $contractStartDate,
                     'contract_end_date' => $contractEndDate,
                     'photo' => ($objectFull && $objectFull->photo) ? ("/storage/" . $objectFull->photo) : asset('images/blanks/object_photo_blank.jpg'),
                 ];
