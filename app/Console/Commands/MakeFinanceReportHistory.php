@@ -496,11 +496,13 @@ class MakeFinanceReportHistory extends HandledCommand
                         if (in_array($object->code, $hidePrognozObjectCodes)) {
                             $prognozAmount = 0;
                             $prognozAmountWithoutNDS = 0;
+                            continue;
                         }
 
                         if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
                             $prognozAmount = 0;
                             $prognozAmountWithoutNDS = 0;
+                            continue;
                         }
 
                         foreach ($object->planPayments as $planPayment) {
