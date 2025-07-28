@@ -496,24 +496,33 @@ class MakeFinanceReportHistory extends HandledCommand
                         if (in_array($object->code, $hidePrognozObjectCodes)) {
                             $prognozAmount = 0;
                             $prognozAmountWithoutNDS = 0;
-                            continue;
                         }
 
                         if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
                             $prognozAmount = 0;
                             $prognozAmountWithoutNDS = 0;
-                            continue;
                         }
 
                         foreach ($object->planPayments as $planPayment) {
                             if ($field === $planPayment->field) {
                                 if ($planPayment->isAutoCalculation()) {
-                                    $planPayment->update([
-                                        'amount' => $prognozAmount
-                                    ]);
+                                    if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
+                                        $planPayment->update([
+                                            'amount' => 0
+                                        ]);
+                                    } else {
+                                        $planPayment->update([
+                                            'amount' => $prognozAmount
+                                        ]);
+                                    }
                                 } else {
-                                    $prognozAmount = $planPayment->amount;
-                                    $prognozAmountWithoutNDS = $planPayment->amount;
+                                    if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
+                                        $prognozAmount = 0;
+                                        $prognozAmountWithoutNDS = 0;
+                                    } else {
+                                        $prognozAmount = $planPayment->amount;
+                                        $prognozAmountWithoutNDS = $planPayment->amount;
+                                    }
                                 }
 
                                 break;
