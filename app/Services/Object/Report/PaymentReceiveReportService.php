@@ -10,6 +10,7 @@ use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\SERVICE\WorkhourPivot;
 use App\Services\ObjectService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class PaymentReceiveReportService
@@ -41,7 +42,8 @@ class PaymentReceiveReportService
         ];
 
         foreach ($months as $month) {
-            $period = [$year . '-' . $month . '-01', $year . '-' . $month . '-31'];
+            $end = Carbon::parse($year . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
+            $period = [$year . '-' . $month . '-01', $end];
 
             $material = $object->acts()->whereBetween('date', $period)->sum('amount');
             $rad = $object->acts()->whereBetween('date', $period)->sum('rad_amount');
