@@ -3,8 +3,6 @@
 namespace App\Services\Object\Report;
 
 use App\Models\AccruedTax\AccruedTax;
-use App\Models\CRM\CObject;
-use App\Models\CRM\Workhour;
 use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
 use App\Models\Payment;
@@ -90,32 +88,20 @@ class PaymentReceiveReportService
             $end = Carbon::parse($year . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
             $period = [$year . '-' . $month . '-01', $end];
 
-            $workhoursPercents = [];
-            $objectIdsOnQuarts = [];
-            $workhours = Workhour::whereBetween('date', $period)->get();
-            foreach ($workhours->groupBy('o_id') as $oIds => $wks) {
-                $cObject = CObject::find($oIds);
-                if (!$cObject) {
-                    $objectIdsOnQuarts['none'] = $wks->sum('hours');
-                } else {
-                    $objectIdsOnQuarts[$cObject->code] = $wks->sum('hours');
-                }
+            $receivePercents = [];
+            $objectsReceives = [];
+            $receives = Payment::whereBetween('date', $period)
+                ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
+                ->where('amount', '>', 0)
+                ->get();
+
+            foreach ($receives->groupBy('object_id') as $oId => $payments) {
+                $objectsReceives[$oId] = $payments->sum('amount');
             }
 
-            $wObjects = [];
-            foreach ($objectIdsOnQuarts as $oCode => $hours) {
-                $mainCode = $oCode === '27.1' ? $oCode : substr($oCode, 0, strpos($oCode, '.'));
-
-                if (!isset($wObjects[$mainCode])) {
-                    $wObjects[$mainCode] = 0;
-                }
-
-                $wObjects[$mainCode] += $hours;
-            }
-
-            $sum = array_sum($wObjects);
-            foreach ($wObjects as $oCode => $hours) {
-                $workhoursPercents[$year . '-' .$month][$oCode] = $hours / $sum;
+            $sum = array_sum($objectsReceives);
+            foreach ($objectsReceives as $oId => $amount) {
+                $receivePercents[$year . '-' .$month][$oId] = $amount / $sum;
             }
 
             $itrAmount = 0;
@@ -144,7 +130,7 @@ class PaymentReceiveReportService
             $salaryTaxes = -abs(0);
             $transfer = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
             $generalCosts = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0));
-            $accruedTaxes = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($workhoursPercents[$year . '-' . $month][$object->code] ?? 0));
+            $accruedTaxes = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($receivePercents[$year . '-' . $month][$object->id] ?? 0));
 
             $paymentInfo['salary_workers'][$year][$month] = $salaryWorkers;
             $paymentInfo['salary_itr'][$year][$month] = $salaryItr;
