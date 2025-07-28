@@ -506,7 +506,7 @@ class MakeFinanceReportHistory extends HandledCommand
                         foreach ($object->planPayments as $planPayment) {
                             if ($field === $planPayment->field) {
                                 if ($planPayment->isAutoCalculation()) {
-                                    if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
+                                    if (! is_null($object->closing_date) || ! empty($object->closing_date) || in_array($object->code, $hidePrognozObjectCodes)) {
                                         $planPayment->update([
                                             'amount' => 0
                                         ]);
@@ -516,7 +516,7 @@ class MakeFinanceReportHistory extends HandledCommand
                                         ]);
                                     }
                                 } else {
-                                    if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
+                                    if (! is_null($object->closing_date) || ! empty($object->closing_date) || in_array($object->code, $hidePrognozObjectCodes)) {
                                         $prognozAmount = 0;
                                         $prognozAmountWithoutNDS = 0;
                                     } else {
