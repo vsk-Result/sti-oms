@@ -87,7 +87,8 @@ class PaymentReceiveReportService
         $financeReportHistory = FinanceReportHistory::getCurrentFinanceReportForObject($object);
 
         foreach ($months as $month) {
-            $period = [$year . '-' . $month . '-01', $year . '-' . $month . '-31'];
+            $end = Carbon::parse($year . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
+            $period = [$year . '-' . $month . '-01', $end];
 
             $workhoursPercents = [];
             $objectIdsOnQuarts = [];
