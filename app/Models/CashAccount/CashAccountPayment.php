@@ -3,6 +3,7 @@
 namespace App\Models\CashAccount;
 
 use App\Models\Company;
+use App\Models\CRM\Employee;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\Payment;
@@ -23,7 +24,8 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
     protected $fillable = [
         'cash_account_id', 'created_by_user_id', 'updated_by_user_id', 'company_id', 'object_id', 'type_id',
-        'category', 'code', 'description', 'date', 'amount', 'status_id', 'organization_id'
+        'category', 'code', 'description', 'date', 'amount', 'status_id', 'organization_id', 'crm_avans_id',
+        'crm_employee_id', 'crm_date', 'object_worktype_id'
     ];
 
     const TYPE_OBJECT = 0;
@@ -37,6 +39,11 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     public function cashAccount(): BelongsTo
     {
         return $this->belongsTo(CashAccount::class, 'cash_account_id');
+    }
+
+    public function crmEmployee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'crm_employee_id');
     }
 
     public function company(): BelongsTo
@@ -67,6 +74,12 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     public function getObjectCode(): string
     {
         if ($this->type_id === static::TYPE_OBJECT) {
+            if (! is_null($this->object_worktype_id)) {
+                return $this->object->isWithoutWorktype() || $this->code == '0'
+                    ? $this->object->code
+                    : $this->object->code . '.' . $this->object_worktype_id;
+            }
+
             return $this->object->code ?? '';
         }
 
@@ -87,5 +100,20 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         if ($this->type_id === static::TYPE_OBJECT) {
             return $this->amount < 0 ? 'Расход' : 'Приход';
         }
+    }
+
+    public function getDescription()
+    {
+        $description = $this->description;
+
+        if (!is_null($this->crm_employee_id) && $this->code === '7.8.2') {
+            $description .= ', выплата аванса ' . $this->crmEmployee->getFullname() . ' за ' . $this->crm_date;
+        }
+
+        if (!is_null($this->crm_employee_id) && $this->code === '7.9.2') {
+            $description .= ', выплата зарплаты ' . $this->crmEmployee->getFullname() . ' за ' . $this->crm_date;
+        }
+
+        return $description;
     }
 }

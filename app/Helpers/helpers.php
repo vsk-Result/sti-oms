@@ -30,7 +30,7 @@ if (! function_exists('is_valid_amount_in_range')) {
 }
 
 if (! function_exists('get_date_and_month_from_string')) {
-    function get_date_and_month_from_string($value) {
+    function get_date_and_month_from_string($value, $reverse = false) {
         $year = substr($value, strpos($value, ' ') + 1);
 
         $month = '';
@@ -60,6 +60,10 @@ if (! function_exists('get_date_and_month_from_string')) {
             $month = '12';
         }
 
+        if ($reverse) {
+            return $year . '-' . $month;
+        }
+
         return $month . '-' . $year;
     }
 }
@@ -80,5 +84,31 @@ if (! function_exists('translate_month')) {
             "November" => 'Ноябрь',
             "December" => 'Декабрь',
         ][$month];
+    }
+}
+
+if (! function_exists('translate_year_month')) {
+    function translate_year_month($date) {
+        if (is_null($date) || empty($date)) {
+            return '';
+        }
+
+        $year = substr($date, 0, 4);
+        $month = substr($date, 5);
+
+        return [
+            "01" => 'Январь',
+            "02" => 'Февраль',
+            "03" => 'Март',
+            "04" => 'Апрель',
+            "05" => 'Май',
+            "06" => 'Июнь',
+            "07" => 'Июль',
+            "08" => 'Август',
+            "09" => 'Сентябрь',
+            "10" => 'Октябрь',
+            "11" => 'Ноябрь',
+            "12" => 'Декабрь',
+        ][$month] . ' ' . $year;
     }
 }

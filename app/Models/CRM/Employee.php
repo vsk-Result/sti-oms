@@ -143,4 +143,15 @@ class Employee extends Model
     {
         return $this->unique;
     }
+
+    public static function getEmployeeList(): array
+    {
+        $employees = [];
+
+        foreach (self::orderBy('secondname')->get() as $employee) {
+            $employees[$employee->id] = $employee->getUniqueID() . ' | ' . $employee->getFullname();
+        }
+
+        return $employees;
+    }
 }

@@ -93,6 +93,18 @@
                 </div>
 
                 <div class="row mb-6">
+                    <label class="col-lg-4 col-form-label fw-bold fs-6">ID пользователя в CRM</label>
+                    <div class="col-lg-8 fv-row">
+                        <input
+                            type="text"
+                            name="crm_user_id"
+                            class="form-control form-control-lg form-control-solid"
+                            value="{{ old('crm_user_id', $user->crm_user_id) }}"
+                        />
+                    </div>
+                </div>
+
+                <div class="row mb-6">
                     <label class="col-lg-4 col-form-label fw-bold fs-6">Пароль</label>
                     <div class="col-lg-8 fv-row">
                         <a href="{{ route('users.passwords.reset.edit', $user) }}" class="btn btn-light btn-active-light-primary">Изменить пароль</a>

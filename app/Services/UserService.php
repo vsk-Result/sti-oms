@@ -36,6 +36,7 @@ class UserService
             'email' => $this->sanitizer->set($requestData['email'])->lowerCase()->get(),
             'phone' => $this->sanitizer->set($requestData['phone'])->toPhone()->get(),
             'photo' => $photo,
+            'crm_user_id' => $requestData['crm_user_id'] ?? null,
             'status_id' => $requestData['status_id'] ?? $user->status_id,
             'email_verified_at' => array_key_exists('email_verified_at', $requestData) ? $requestData['email_verified_at'] : $user->email_verified_at,
         ]);

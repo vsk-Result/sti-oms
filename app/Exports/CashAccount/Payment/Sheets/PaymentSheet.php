@@ -65,7 +65,7 @@ class PaymentSheet implements
                 $sheet->setCellValue('D' . $row, $payment->code . ' ');
                 $sheet->setCellValue('E' . $row, $payment->amount);
                 $sheet->setCellValue('F' . $row, $payment->amount < 0 ? ($payment->organizationReceiver->name ?? '') : ($payment->organizationSender->name ?? ''));
-                $sheet->setCellValue('G' . $row, $payment->description);
+                $sheet->setCellValue('G' . $row, $payment->getDescription());
                 $sheet->setCellValue('H' . $row, $payment->category);
                 $sheet->setCellValue('I' . $row, $payment->id);
 

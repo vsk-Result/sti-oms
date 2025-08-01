@@ -2,6 +2,7 @@
 
 namespace App\Models\CashAccount;
 
+use App\Models\Object\WorkType;
 use App\Models\User;
 use App\Models\Object\BObject;
 use App\Traits\HasUser;
@@ -81,13 +82,22 @@ class CashAccount extends Model
 
     public function getObjects(): array
     {
-        $objects = [];
+        $result = [];
+        $workTypes = WorkType::getWorkTypes();
+        $objects = $this->objects;
 
-        foreach ($this->objects as $object) {
-            $objects[$object->id] = $object->getName();
+        foreach ($objects as $object) {
+            if ($object->isWithoutWorktype()) {
+                $result[$object->id . '::' . null] = $object->getName();
+            } else {
+                $result[$object->id . '::' . null] = $object->getName();
+                foreach ($workTypes as $workType) {
+                    $result[$object->id . '::' . $workType['id']] = $object->code . '.' . $workType['code'];
+                }
+            }
         }
 
-        return $objects;
+        return $result;
     }
 
     public function scopeActive($query)

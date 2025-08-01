@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CashAccount\Payment;
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
 use App\Models\CashAccount\CashAccountPayment;
+use App\Models\CRM\Employee;
 use App\Models\Currency;
 use App\Models\KostCode;
 use App\Models\Object\BObject;
@@ -59,6 +60,7 @@ class PaymentController extends Controller
         $objects = $cashAccount->getObjects();
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
+        $crmEmployees = Employee::getEmployeeList();
 
         $copyPayment = null;
         if ($request->has('copy_payment_id')) {
@@ -67,7 +69,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'payment_form' => view('cash-accounts.payments.parts._payment_form', compact('cashAccount', 'codes', 'copyPayment', 'categories', 'objects', 'organizations'))->render()
+            'payment_form' => view('cash-accounts.payments.parts._payment_form', compact('cashAccount', 'codes', 'copyPayment', 'categories', 'objects', 'organizations', 'crmEmployees'))->render()
         ]);
     }
 
@@ -87,10 +89,11 @@ class PaymentController extends Controller
         $objects = $cashAccount->getObjects();
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
+        $crmEmployees = Employee::getEmployeeList();
 
         return response()->json([
             'status' => 'success',
-            'payment_form' => view('cash-accounts.payments.parts._edit_payment_form', compact('cashAccount', 'codes', 'payment', 'categories', 'objects', 'organizations'))->render()
+            'payment_form' => view('cash-accounts.payments.parts._edit_payment_form', compact('cashAccount', 'codes', 'payment', 'categories', 'objects', 'organizations', 'crmEmployees'))->render()
         ]);
     }
 

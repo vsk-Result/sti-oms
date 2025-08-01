@@ -135,7 +135,7 @@
                             <td>
                                 @include('partials.check_organization', ['organizationName' => $payment->organization?->name, 'organizationInn' => $payment->organization?->inn])
                             </td>
-                            <td>{{ $payment->description }}</td>
+                            <td>{{ $payment->getDescription() }}</td>
                             <td>
                                 <span class="{{ $payment->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ \App\Models\CurrencyExchangeRate::format($payment->amount) }}</span>
                             </td>
@@ -315,6 +315,16 @@
                             }
                         }
                     });
+
+                    $('#create-code').on('change', function() {
+                        if ($(this).val() === '7.8.2' || $(this).val() === '7.9.2') {
+                            $('#create-employee-crm').show();
+                            $('#create-organization').hide();
+                        } else {
+                            $('#create-employee-crm').hide();
+                            $('#create-organization').show();
+                        }
+                    });
                 }
             );
         });
@@ -359,6 +369,18 @@
                                 }
                             }
                         });
+
+                        $('#create-code').on('change', function() {
+                            if ($(this).val() === '7.8.2' || $(this).val() === '7.9.2') {
+                                $('#create-employee-crm').show();
+                                $('#create-organization').hide();
+                            } else {
+                                $('#create-employee-crm').hide();
+                                $('#create-organization').show();
+                            }
+                        });
+
+                        $('#create-code').trigger('change');
                     }
                 );
             }
@@ -403,6 +425,18 @@
                             }
                         }
                     });
+
+                    $('#edit-code').on('change', function() {
+                        if ($(this).val() === '7.8.2' || $(this).val() === '7.9.2') {
+                            $('#edit-employee-crm').show();
+                            $('#edit-organization').hide();
+                        } else {
+                            $('#edit-employee-crm').hide();
+                            $('#edit-organization').show();
+                        }
+                    });
+
+                    $('#edit-code').trigger('change');
                 }
             );
         });
