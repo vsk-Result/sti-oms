@@ -88,6 +88,10 @@ class CashAccount extends Model
         $workTypes = WorkType::getWorkTypes();
         $objects = $this->objects;
 
+        if ($objects->count() === 0) {
+            $objects = BObject::getObjectsList(true);
+        }
+
         foreach ($objects as $object) {
             if ($object->isWithoutWorktype()) {
                 $result[$object->id . '::' . null] = $object->getName();
