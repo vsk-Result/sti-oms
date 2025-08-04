@@ -2,6 +2,7 @@
 
 namespace App\Models\CashAccount;
 
+use App\Models\KostCode;
 use App\Models\Object\WorkType;
 use App\Models\User;
 use App\Models\Object\BObject;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class CashAccount extends Model
 {
@@ -103,5 +105,26 @@ class CashAccount extends Model
     public function scopeActive($query)
     {
         return $query->whereIn('status_id', [self::STATUS_ACTIVE]);
+    }
+
+    public function getPopularPaymentCodes(): array
+    {
+        $codes = [];
+        $topCodes = $this->payments()->select('code', DB::raw('count(*) as total'))
+            ->groupBy('code')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->pluck('total', 'code');
+
+        foreach ($topCodes as $code => $count) {
+            $codes[$code] = KostCode::getTitleByCode($code);
+        }
+
+        return $codes;
+    }
+
+    public function isCurrentResponsible(): bool
+    {
+        return auth()->id() === $this->responsible_id;
     }
 }

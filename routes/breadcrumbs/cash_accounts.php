@@ -29,5 +29,5 @@ Breadcrumbs::for('cash_accounts.edit', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('cash_accounts.payments.index', function (BreadcrumbTrail $trail, CashAccount $cashAccount) {
     $route = auth()->user()->can('index cash-accounts') ? route('cash_accounts.payments.index', $cashAccount) : null;
     $trail->parent('cash_accounts.index');
-    $trail->push('Оплаты кассы ' . $cashAccount->name, $route);
+    $trail->push('Записи кассы ' . $cashAccount->name, $route);
 });

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Оплаты кассы ' . $cashAccount->name)
-@section('toolbar-title', 'Оплаты кассы ' . $cashAccount->name)
+@section('title', 'Записи кассы ' . $cashAccount->name)
+@section('toolbar-title', 'Записи кассы ' . $cashAccount->name)
 @section('breadcrumbs', Breadcrumbs::render('cash_accounts.payments.index', $cashAccount))
 
 @section('content')
@@ -34,7 +34,7 @@
 {{--                        Фильтр--}}
 {{--                    </button>--}}
 
-                    @can('create payments')
+                    @if ($cashAccount->isCurrentResponsible())
                         <a href="javascript:void(0);" data-create-payment-url="{{ route('cash_accounts.payments.create', $cashAccount) }}" class="create-payment btn btn-light-primary me-3">
                             <span class="svg-icon svg-icon-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -43,9 +43,10 @@
                                     <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
                                 </svg>
                             </span>
-                            Новая оплата
+                            Новая запись
                         </a>
-                    @endcan
+                    @endif
+
 
                     <form action="{{ route('cash_accounts.payments.exports.store', $cashAccount) . (strpos(request()->fullUrl(), '?') !== false ? substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) : '') }}" method="POST" class="hidden">
                         @csrf
@@ -65,16 +66,18 @@
                         </a>
                     </form>
 
-                    <a href="#" class="btn btn-light-dark me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
-                        <span class="svg-icon svg-icon-3">
-                            <span class="svg-icon svg-icon-5 m-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                                </svg>
+                    @if ($cashAccount->isCurrentResponsible())
+                        <a href="#" class="btn btn-light-dark me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+                            <span class="svg-icon svg-icon-3">
+                                <span class="svg-icon svg-icon-5 m-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                                    </svg>
+                                </span>
                             </span>
-                        </span>
-                         Касса
-                    </a>
+                             Касса
+                        </a>
+                    @endif
 
                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
                         @can('edit contracts')
@@ -120,7 +123,13 @@
                     <tbody class="text-gray-600 fw-bold">
                     @forelse($payments as $payment)
                         <tr data-payment-update-url="{{ route('cash_accounts.payments.update', [$cashAccount, $payment]) }}">
-                            <td class="ps-3">{{ $payment->getType() }}</td>
+                            <td class="ps-3">
+                                {{ $payment->getType() }}
+
+                                @if (! is_null($payment->getCrmAvansData()['employee_id']))
+                                    <span class="text-warning">(CRM)</span>
+                                @endif
+                            </td>
                             <td class="position-relative">
                                 {{ $payment->getDateFormatted() }}
                             </td>
@@ -131,7 +140,9 @@
                                     {{ $payment->getObjectCode() }}
                                 @endif
                             </td>
-                            <td>{{ $payment->code }}</td>
+                            <td>
+                                <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ \App\Models\KostCode::getTitleByCode($payment->code) }}">{{ $payment->code }}</span>
+                            </td>
                             <td>
                                 @include('partials.check_organization', ['organizationName' => $payment->organization?->name, 'organizationInn' => $payment->organization?->inn])
                             </td>
@@ -148,53 +159,55 @@
                                 @endforeach
                             </td>
                             <td class="text-end text-dark fw-bolder">
-                                <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
-                                    <span class="svg-icon svg-icon-5 m-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                                        </svg>
-                                    </span>
-                                </a>
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
-                                    <div class="menu-item px-3">
-                                        <a href="javascript:void(0);" data-edit-payment-url="{{ route('cash_accounts.payments.edit', [$cashAccount, $payment]) }}" class="edit-payment menu-link px-3">Изменить</a>
-                                    </div>
+                                @if ($cashAccount->isCurrentResponsible())
+                                    <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
+                                        <span class="svg-icon svg-icon-5 m-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                                            </svg>
+                                        </span>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
+                                        <div class="menu-item px-3">
+                                            <a href="javascript:void(0);" data-edit-payment-url="{{ route('cash_accounts.payments.edit', [$cashAccount, $payment]) }}" class="edit-payment menu-link px-3">Изменить</a>
+                                        </div>
 
-                                    <div class="menu-item px-3">
-                                        <a href="javascript:void(0);" data-create-payment-url="{{ route('cash_accounts.payments.create', $cashAccount) }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
-                                    </div>
+                                        <div class="menu-item px-3">
+                                            <a href="javascript:void(0);" data-create-payment-url="{{ route('cash_accounts.payments.create', $cashAccount) }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
+                                        </div>
 
-{{--                                    @if ($payment->audits->count() > 0)--}}
-{{--                                        <div class="menu-item px-3">--}}
-{{--                                            <a href="{{ route('cash_accounts.payments.history.index', [$cashAccount, $payment]) }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>--}}
-{{--                                        </div>--}}
-{{--                                    @else--}}
-{{--                                        <div class="menu-item px-3" style="cursor:default !important;">--}}
-{{--                                            <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>--}}
-{{--                                        </div>--}}
-{{--                                    @endif--}}
+    {{--                                    @if ($payment->audits->count() > 0)--}}
+    {{--                                        <div class="menu-item px-3">--}}
+    {{--                                            <a href="{{ route('cash_accounts.payments.history.index', [$cashAccount, $payment]) }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>--}}
+    {{--                                        </div>--}}
+    {{--                                    @else--}}
+    {{--                                        <div class="menu-item px-3" style="cursor:default !important;">--}}
+    {{--                                            <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>--}}
+    {{--                                        </div>--}}
+    {{--                                    @endif--}}
 
-                                    <div class="menu-item px-3">
-                                        <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
-                                            @csrf
-                                            @method('DELETE')
-                                            <a
-                                                    href="javascript:void(0)"
-                                                    class="menu-link px-3 text-danger"
-                                                    onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить оплату?')) {this.closest('form').submit();}"
-                                            >
-                                                Удалить
-                                            </a>
-                                        </form>
+                                        <div class="menu-item px-3">
+                                            <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
+                                                @csrf
+                                                @method('DELETE')
+                                                <a
+                                                        href="javascript:void(0)"
+                                                        class="menu-link px-3 text-danger"
+                                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить запись?')) {this.closest('form').submit();}"
+                                                >
+                                                    Удалить
+                                                </a>
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
                             <td colspan="9">
                                 <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                    Оплаты отсутствуют
+                                    Записи отсутствуют
                                 </p>
                             </td>
                         </tr>
@@ -319,18 +332,26 @@
                     $('#create-code').on('change', function() {
                         if ($(this).val() === '7.8.2' || $(this).val() === '7.9.2') {
                             $('#create-employee-crm').show();
+                            $('#create-itr').hide();
+                            $('#create-organization').hide();
+                        } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
+                            $('#create-itr').show();
+                            $('#create-employee-crm').hide();
                             $('#create-organization').hide();
                         } else {
                             $('#create-employee-crm').hide();
+                            $('#create-itr').hide();
                             $('#create-organization').show();
                         }
                     });
+
+                    $('#create-code').trigger('change');
                 }
             );
         });
 
         $('.copy-payment').on('click', function() {
-            if (confirm('Вы действительно создать оплату на основе данной?')) {
+            if (confirm('Вы действительно создать запись на основе данной?')) {
                 $('#createPaymentModal .modal-content').html('');
                 const url = $(this).data('create-payment-url');
                 mainApp.sendAJAX(
@@ -373,9 +394,15 @@
                         $('#create-code').on('change', function() {
                             if ($(this).val() === '7.8.2' || $(this).val() === '7.9.2') {
                                 $('#create-employee-crm').show();
+                                $('#create-itr').hide();
+                                $('#create-organization').hide();
+                            } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
+                                $('#create-itr').show();
+                                $('#create-employee-crm').hide();
                                 $('#create-organization').hide();
                             } else {
                                 $('#create-employee-crm').hide();
+                                $('#create-itr').hide();
                                 $('#create-organization').show();
                             }
                         });
@@ -429,9 +456,15 @@
                     $('#edit-code').on('change', function() {
                         if ($(this).val() === '7.8.2' || $(this).val() === '7.9.2') {
                             $('#edit-employee-crm').show();
+                            $('#edit-itr').hide();
+                            $('#edit-organization').hide();
+                        } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
+                            $('#edit-itr').show();
+                            $('#edit-employee-crm').hide();
                             $('#edit-organization').hide();
                         } else {
                             $('#edit-employee-crm').hide();
+                            $('#edit-itr').hide();
                             $('#edit-organization').show();
                         }
                     });
@@ -468,4 +501,20 @@
         mainApp.initFreezeTable(1);
     </script>
 @endpush
+
+
+@push('styles')
+<style>
+    ul.select2-results__options {
+        max-height: none!important;
+        overflow-y: unset!important;
+    }
+
+    ul.select2-results__options[role="listbox"] {
+        max-height: 250px!important;
+        overflow-y: auto!important;
+    }
+</style>
+@endpush
+
 

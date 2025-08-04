@@ -18,10 +18,8 @@ class UpdateCashAccountPaymentsTable extends Migration
         });
 
         Schema::table('cash_account_payments', function (Blueprint $table) {
-            $table->unsignedTinyInteger('crm_avans_id')->nullable();
+            $table->json('additional_data')->nullable();
             $table->unsignedSmallInteger('object_worktype_id')->nullable();
-            $table->unsignedBigInteger('crm_employee_id')->nullable();
-            $table->string('crm_date')->nullable();
         });
     }
 
@@ -33,7 +31,7 @@ class UpdateCashAccountPaymentsTable extends Migration
     public function down()
     {
         Schema::table('cash_account_payments', function (Blueprint $table) {
-            $table->dropColumn(['crm_avans_id', 'crm_employee_id', 'crm_date', 'object_worktype_id']);
+            $table->dropColumn(['additional_data', 'object_worktype_id']);
         });
 
         Schema::table('users', function (Blueprint $table) {

@@ -22,7 +22,7 @@
         </a>
     </h1>
 
-    <div class="row g-5 g-xl-8">
+    <div class="row g-5 g-xl-8 mb-6">
         @forelse($responsibleCashAccounts as $cashAccount)
             <div class="col-xl-4">
                 <div class="card card-xl-stretch mb-xl-8">
@@ -64,7 +64,7 @@
     </div>
 
     @if ($sharedCashAccounts->count() > 0)
-        <h1 class="d-flex align-items-center my-1 mb-7">
+        <h1 class="d-flex align-items-center mb-7">
             <span class="text-gray-900 fw-bold fs-2">
                 Доступные мне кассы
             </span>

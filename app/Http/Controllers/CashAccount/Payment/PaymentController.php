@@ -8,7 +8,6 @@ use App\Models\CashAccount\CashAccountPayment;
 use App\Models\CRM\Employee;
 use App\Models\Currency;
 use App\Models\KostCode;
-use App\Models\Object\BObject;
 use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Services\CashAccount\CashAccountService;
@@ -16,6 +15,7 @@ use App\Services\CashAccount\Payment\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class PaymentController extends Controller
@@ -61,6 +61,9 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
         $crmEmployees = Employee::getEmployeeList();
+        $popularCodes = $cashAccount->getPopularPaymentCodes();
+        $availableCodes = KostCode::getCodesForPayment();
+        $itr = Cache::get('itr_list_1c_data', []);
 
         $copyPayment = null;
         if ($request->has('copy_payment_id')) {
@@ -69,7 +72,13 @@ class PaymentController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'payment_form' => view('cash-accounts.payments.parts._payment_form', compact('cashAccount', 'codes', 'copyPayment', 'categories', 'objects', 'organizations', 'crmEmployees'))->render()
+            'payment_form' => view(
+                'cash-accounts.payments.parts._payment_form',
+                compact(
+                    'cashAccount', 'codes', 'copyPayment', 'categories',
+                    'objects', 'organizations', 'crmEmployees', 'popularCodes', 'availableCodes', 'itr'
+                )
+            )->render()
         ]);
     }
 
@@ -90,10 +99,19 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
         $crmEmployees = Employee::getEmployeeList();
+        $popularCodes = $cashAccount->getPopularPaymentCodes();
+        $availableCodes = KostCode::getCodesForPayment();
+        $itr = Cache::get('itr_list_1c_data', []);
 
         return response()->json([
             'status' => 'success',
-            'payment_form' => view('cash-accounts.payments.parts._edit_payment_form', compact('cashAccount', 'codes', 'payment', 'categories', 'objects', 'organizations', 'crmEmployees'))->render()
+            'payment_form' => view(
+                'cash-accounts.payments.parts._edit_payment_form',
+                compact(
+                    'cashAccount', 'codes', 'payment', 'categories',
+                    'objects', 'organizations', 'crmEmployees', 'popularCodes', 'availableCodes', 'itr'
+                )
+            )->render()
         ]);
     }
 

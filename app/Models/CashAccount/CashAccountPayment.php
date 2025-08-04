@@ -3,7 +3,6 @@
 namespace App\Models\CashAccount;
 
 use App\Models\Company;
-use App\Models\CRM\Employee;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\Payment;
@@ -24,8 +23,8 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
     protected $fillable = [
         'cash_account_id', 'created_by_user_id', 'updated_by_user_id', 'company_id', 'object_id', 'type_id',
-        'category', 'code', 'description', 'date', 'amount', 'status_id', 'organization_id', 'crm_avans_id',
-        'crm_employee_id', 'crm_date', 'object_worktype_id'
+        'category', 'code', 'description', 'date', 'amount', 'status_id', 'organization_id', 'object_worktype_id',
+        'additional_data'
     ];
 
     const TYPE_OBJECT = 0;
@@ -39,11 +38,6 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     public function cashAccount(): BelongsTo
     {
         return $this->belongsTo(CashAccount::class, 'cash_account_id');
-    }
-
-    public function crmEmployee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'crm_employee_id');
     }
 
     public function company(): BelongsTo
@@ -86,6 +80,11 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         return 'Трансфер';
     }
 
+    public function getObjectId(): string
+    {
+        return $this->object_id . '::' . ($this->object->isWithoutWorktype() || $this->code == '0' ? null : $this->object_worktype_id);
+    }
+
     public function getObjectName(): string
     {
         if ($this->type_id === static::TYPE_OBJECT) {
@@ -105,15 +104,53 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     public function getDescription()
     {
         $description = $this->description;
+        $crmAvansData = $this->getCrmAvansData();
+        $itrData = $this->getItrData();
 
-        if (!is_null($this->crm_employee_id) && $this->code === '7.8.2') {
-            $description .= ', выплата аванса ' . $this->crmEmployee->getFullname() . ' за ' . $this->crm_date;
+        if (! is_null($crmAvansData['employee_name']) && $this->code === '7.8.2') {
+            $description .= ', выплата аванса ' . $crmAvansData['employee_name'] . ' за ' . $crmAvansData['date'];
         }
 
-        if (!is_null($this->crm_employee_id) && $this->code === '7.9.2') {
-            $description .= ', выплата зарплаты ' . $this->crmEmployee->getFullname() . ' за ' . $this->crm_date;
+        if (! is_null($crmAvansData['employee_name']) && $this->code === '7.9.2') {
+            $description .= ', выплата зарплаты ' . $crmAvansData['employee_name'] . ' за ' . $crmAvansData['date'];
+        }
+
+        if (! is_null($itrData['name']) && $this->code === '7.8.1') {
+            $description .= ', выплата аванса ' . $itrData['name'];
+        }
+
+        if (! is_null($itrData['name']) && $this->code === '7.9.1') {
+            $description .= ', выплата зарплаты ' . $itrData['name'];
         }
 
         return $description;
+    }
+
+    public function getAdditionalData(string $key): array
+    {
+        $data = json_decode($this->additional_data, true) ?? [];
+        return $data[$key] ?? [];
+    }
+
+    public function getCrmAvansData(): array
+    {
+        $data = $this->getAdditionalData('crm_avans');
+
+        return [
+            'id' => $data['id'] ?? null,
+            'employee_id' => $data['employee_id'] ?? null,
+            'employee_uid' => $data['employee_uid'] ?? null,
+            'employee_name' => $data['employee_name'] ?? null,
+            'date' => $data['date'] ?? null,
+        ];
+    }
+
+    public function getItrData(): array
+    {
+        $data = $this->getAdditionalData('itr');
+        return [
+            'id' => $data['id'] ?? null,
+            'name' => $data['name'] ?? null,
+        ];
     }
 }

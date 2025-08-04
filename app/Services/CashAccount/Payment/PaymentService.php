@@ -5,11 +5,13 @@ namespace App\Services\CashAccount\Payment;
 use App\Helpers\Sanitizer;
 use App\Models\CashAccount\CashAccountPayment;
 use App\Models\CRM\Avans;
+use App\Models\CRM\Employee;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 
 class PaymentService
 {
@@ -63,21 +65,18 @@ class PaymentService
 
         $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
         $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
-        $crmEmployeeId = null;
-        $crmDate = null;
+        $crmAvansEmployeeId = null;
+        $crmAvansDate = null;
 
-        $isCrmEmployee = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
+        $needCreateCrmAvans = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
+        $needCreateItr = $requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1';
 
-        if ($isCrmEmployee) {
-            $crmDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
-            $crmEmployeeId = $requestData['crm_employee_id'] ?? null;
+        if ($needCreateCrmAvans) {
+            $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
+            $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
             $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
-//
-//            if ($requestData['code'] === '7.8.2') {
-//                $description = $description . ', Выплата аванса рабочему - ' . Employee::find($crmEmployeeId)?->getFullname() . ' за ' . $crmDate;
-//            } else {
-//                $description = $description . ', Выплата зарплаты рабочему - ' . Employee::find($crmEmployeeId)?->getFullname() . ' за ' . $crmDate;
-//            }
+        } elseif ($needCreateItr) {
+            $organizationId = null;
         } else {
             $organizationId = $requestData['organization_id'];
         }
@@ -100,8 +99,6 @@ class PaymentService
             'currency' => $paymentCurrency,
             'currency_rate' => $paymentCurrencyRate,
             'currency_amount' => $amount,
-            'crm_employee_id' => $crmEmployeeId,
-            'crm_date' => $crmDate,
         ]);
 
         if (! empty($requestData['files'])) {
@@ -112,8 +109,23 @@ class PaymentService
             }
         }
 
-        if ($isCrmEmployee) {
-            $this->createCRMEntry($payment);
+        if ($needCreateCrmAvans) {
+            $this->createCRMAvans(
+                $payment,
+                [
+                    'employee_id' => $crmAvansEmployeeId,
+                    'date' => $crmAvansDate
+                ]
+            );
+        }
+
+        if ($needCreateItr) {
+            $this->createItr(
+                $payment,
+                [
+                    'id' => $requestData['itr_id'] ?? null,
+                ]
+            );
         }
 
         return $payment;
@@ -123,15 +135,18 @@ class PaymentService
     {
         $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
         $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
-        $crmEmployeeId = null;
-        $crmDate = null;
+        $crmAvansEmployeeId = null;
+        $crmAvansDate = null;
 
         $isCrmEmployee = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
+        $isItr = $requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1';
 
         if ($isCrmEmployee) {
-            $crmDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
-            $crmEmployeeId = $requestData['crm_employee_id'] ?? null;
+            $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
+            $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
             $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+        } elseif ($isItr) {
+            $organizationId = null;
         } else {
             $organizationId = $requestData['organization_id'];
         }
@@ -139,9 +154,16 @@ class PaymentService
         $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
         $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
 
-        $needCrateCrmAvans = is_null($payment->crm_avans_id) && $isCrmEmployee;
-        $needUpdateCrmAvans = !is_null($payment->crm_avans_id) && $isCrmEmployee;
-        $needDeleteCrmAvans = !is_null($payment->crm_avans_id) && !$isCrmEmployee;
+        $crmAvansData = $payment->getCrmAvansData();
+        $itrData = $payment->getCrmAvansData();
+
+        $needCrateCrmAvans = is_null($crmAvansData['id']) && $isCrmEmployee;
+        $needUpdateCrmAvans = !is_null($crmAvansData['id']) && $isCrmEmployee;
+        $needDeleteCrmAvans = !is_null($crmAvansData['id']) && !$isCrmEmployee;
+
+        $needCrateItr = is_null($itrData['id']) && $isItr;
+        $needUpdateItr = !is_null($itrData['id']) && $isItr;
+        $needDeleteItr = !is_null($itrData['id']) && !$isItr;
 
         $payment->update([
             'object_id' => $objectId,
@@ -155,8 +177,6 @@ class PaymentService
             'amount' => $amount,
             'status_id' => $requestData['status_id'] ?? $payment->status_id,
             'currency_amount' => $amount,
-            'crm_employee_id' => $crmEmployeeId,
-            'crm_date' => $crmDate,
         ]);
 
         if (! empty($requestData['files'])) {
@@ -168,34 +188,68 @@ class PaymentService
         }
 
         if ($needCrateCrmAvans) {
-            $this->createCRMEntry($payment);
+            $this->createCRMAvans(
+                $payment,
+                [
+                    'employee_id' => $crmAvansEmployeeId,
+                    'date' => $crmAvansDate
+                ]
+            );
         }
 
         if ($needUpdateCrmAvans) {
-            $this->updateCRMEntry($payment);
+            $this->updateCRMAvans(
+                $payment,
+                [
+                    'employee_id' => $crmAvansEmployeeId,
+                    'date' => $crmAvansDate
+                ]
+            );
         }
 
         if ($needDeleteCrmAvans) {
-            $this->deleteCRMEntry($payment);
+            $this->deleteCRMAvans($payment);
+        }
+
+        if ($needCrateItr) {
+            $this->createItr(
+                $payment,
+                [
+                    'id' => $requestData['itr_id'] ?? null,
+                ]
+            );
+        }
+
+        if ($needUpdateItr) {
+            $this->updateItr(
+                $payment,
+                [
+                    'id' => $requestData['itr_id'] ?? null,
+                ]
+            );
+        }
+
+        if ($needDeleteItr) {
+            $this->deleteItr($payment);
         }
     }
 
     public function destroyPayment(CashAccountPayment $payment): void
     {
-        if (! is_null($payment->crm_avans_id)) {
-            $this->deleteCRMEntry($payment);
+        if (! is_null($payment->getCrmAvansData()['id'])) {
+            $this->deleteCRMAvans($payment);
         }
 
         $payment->delete();
     }
 
-    public function createCRMEntry(CashAccountPayment $payment): void
+    public function createCRMAvans(CashAccountPayment $payment, array $additionalData): CashAccountPayment
     {
         $avans = new Avans;
         $avans->u_id = auth()->user()->crm_user_id;
-        $avans->e_id = $payment->crm_employee_id;
+        $avans->e_id = $additionalData['employee_id'];
         $avans->type = 'Затраты';
-        $avans->date = $payment->crm_date;
+        $avans->date = $additionalData['date'];
         $avans->code = $payment->getObjectCode();
         $avans->issue_date = Carbon::now();
         $avans->user_change_id = auth()->user()->crm_user_id;
@@ -203,35 +257,134 @@ class PaymentService
         $avans->value = abs($payment->amount);
         $avans->save();
 
+        $crmEmployee = Employee::find($additionalData['employee_id']);
+        $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+        $currentAdditionalData['crm_avans'] = [
+            'id' => $avans->id,
+            'employee_id' => $additionalData['employee_id'],
+            'employee_uid' => $crmEmployee ? $crmEmployee->getUniqueID() : null,
+            'employee_name' => $crmEmployee ? $crmEmployee->getFullname() : null,
+            'date' => $additionalData['date'],
+        ];
+
         $payment->update([
-            'crm_avans_id' => $avans->id
+            'additional_data' => json_encode($currentAdditionalData)
         ]);
+
+        return $payment;
     }
 
-    public function updateCRMEntry(CashAccountPayment $payment): void
+    public function updateCRMAvans(CashAccountPayment $payment, array $additionalData): CashAccountPayment
     {
-        $avans = Avans::find($payment->crm_avans_id);
+        $crmAvansData = $payment->getCrmAvansData();
+        $avans = Avans::find($crmAvansData['id']);
 
-        if ($avans) {
-            $avans->e_id = $payment->crm_employee_id;
-            $avans->date = $payment->crm_date;
-            $avans->code = $payment->getObjectCode();
-            $avans->user_change_id = auth()->user()->crm_user_id;
-            $avans->updated_at = Carbon::now();
-            $avans->value = abs($payment->amount);
-            $avans->update();
+        if (! $avans) {
+            return $payment;
         }
+
+        $avans->e_id = $additionalData['employee_id'];
+        $avans->date = $additionalData['date'];
+        $avans->code = $payment->getObjectCode();
+        $avans->user_change_id = auth()->user()->crm_user_id;
+        $avans->updated_at = Carbon::now();
+        $avans->value = abs($payment->amount);
+        $avans->update();
+
+        $crmEmployee = Employee::find($additionalData['employee_id']);
+        $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+        $currentAdditionalData['crm_avans'] = [
+            'id' => $avans->id,
+            'employee_id' => $additionalData['employee_id'],
+            'employee_uid' => $crmEmployee ? $crmEmployee->getUniqueID() : null,
+            'employee_name' => $crmEmployee ? $crmEmployee->getFullname() : null,
+            'date' => $additionalData['date'],
+        ];
+
+        $payment->update([
+            'additional_data' => json_encode($currentAdditionalData)
+        ]);
+
+        return $payment;
     }
 
-    public function deleteCRMEntry(CashAccountPayment $payment): void
+    public function deleteCRMAvans(CashAccountPayment $payment): void
     {
-        $avans = Avans::find($payment->crm_avans_id);
+        $crmAvansData = $payment->getCrmAvansData();
+        $avans = Avans::find($crmAvansData['id']);
 
         if ($avans) {
             $avans->delete();
+
+            $additionalData = json_decode($payment->additional_data, true) ?? [];
+            $additionalData['crm_avans'] = [];
+
             $payment->update([
-                'crm_avans_id' => null
+                'additional_data' => json_encode($additionalData)
             ]);
         }
+    }
+
+    public function createItr(CashAccountPayment $payment, array $additionalData): CashAccountPayment
+    {
+        $itrList = Cache::get('itr_list_1c_data', []);
+
+        $itrName = null;
+        foreach ($itrList as $itr) {
+            if ($itr['Id'] === $additionalData['id']) {
+                $itrName = $itr['Name'];
+                break;
+            }
+        }
+
+        $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+        $currentAdditionalData['itr'] = [
+            'id' => $additionalData['id'],
+            'name' => $itrName,
+        ];
+
+        $payment->update([
+            'additional_data' => json_encode($currentAdditionalData)
+        ]);
+
+        return $payment;
+    }
+
+    public function updateItr(CashAccountPayment $payment, array $additionalData): CashAccountPayment
+    {
+        $itrList = Cache::get('itr_list_1c_data', []);
+
+        $itrName = null;
+        foreach ($itrList as $itr) {
+            if ($itr['Id'] === $additionalData['id']) {
+                $itrName = $itr['Name'];
+                break;
+            }
+        }
+        $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+        $currentAdditionalData['itr'] = [
+            'id' => $additionalData['id'],
+            'name' => $itrName,
+        ];
+
+        $payment->update([
+            'additional_data' => json_encode($currentAdditionalData)
+        ]);
+
+        return $payment;
+    }
+
+    public function deleteItr(CashAccountPayment $payment): void
+    {
+        $additionalData = json_decode($payment->additional_data, true) ?? [];
+        $additionalData['itr'] = [];
+
+        $payment->update([
+            'additional_data' => json_encode($additionalData)
+        ]);
     }
 }

@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h4 class="modal-title">Изменение оплаты #{{ $payment->id }}</h4>
+    <h4 class="modal-title">Изменение записи #{{ $payment->id }}</h4>
 </div>
 
 <div class="modal-body">
@@ -30,7 +30,7 @@
                             <div class="position-relative mb-3">
                                 <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     @foreach($objects as $objectId => $objectName)
-                                        <option value="{{ $objectId }}" {{ $payment->object_id == $objectId ? 'selected' : '' }}>{{ $objectName }}</option>
+                                        <option value="{{ $objectId }}" {{ $payment->getObjectId() == $objectId ? 'selected' : '' }}>{{ $objectName }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -47,19 +47,42 @@
                                     data-control="select2"
                                     data-dropdown-parent="#editPaymentModal"
                             >
-                                @foreach($codes as $codeL1)
-                                    <option value="{{ $codeL1['code'] }}" {{ $payment->code === $codeL1['code'] ? 'selected' : '' }}>{{ $codeL1['code'] . ' - ' . $codeL1['title'] }}</option>
-                                    @if (count($codeL1['children']) > 0)
-                                        @foreach($codeL1['children'] as $codeL2)
-                                            <option value="{{ $codeL2['code'] }}" {{ $payment->code === $codeL2['code'] ? 'selected' : '' }}>{{ $codeL2['code'] . ' - ' . $codeL2['title'] }}</option>
-                                            @if (count($codeL2['children']) > 0)
-                                                @foreach($codeL2['children'] as $codeL3)
-                                                    <option value="{{ $codeL3['code'] }}" {{ $payment->code === $codeL3['code'] ? 'selected' : '' }}>{{ $codeL3['code'] . ' - ' . $codeL3['title'] }}</option>
-                                                @endforeach
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                @endforeach
+                                <optgroup label="Часть используемые">
+                                    @foreach($popularCodes as $code => $codeName)
+                                        <option value="{{ $code }}" {{ $payment->code === $code ? 'selected' : '' }}>{{ $codeName }}</option>
+                                    @endforeach
+                                </optgroup>
+
+                                <optgroup label="Все статьи">
+                                    @foreach($codes as $codeL1)
+                                        <option
+                                            value="{{ $codeL1['code'] }}" {{ $payment->code === $codeL1['code'] ? 'selected' : '' }}
+                                            {{ in_array($codeL1['code'], $availableCodes) ? '' : 'disabled' }}
+                                        >
+                                            {{ $codeL1['code'] . ' - ' . $codeL1['title'] }}
+                                        </option>
+                                        @if (count($codeL1['children']) > 0)
+                                            @foreach($codeL1['children'] as $codeL2)
+                                                <option
+                                                    value="{{ $codeL2['code'] }}" {{ $payment->code === $codeL2['code'] ? 'selected' : '' }}
+                                                    {{ in_array($codeL2['code'], $availableCodes) ? '' : 'disabled' }}
+                                                >
+                                                    {{ $codeL2['code'] . ' - ' . $codeL2['title'] }}
+                                                </option>
+                                                @if (count($codeL2['children']) > 0)
+                                                    @foreach($codeL2['children'] as $codeL3)
+                                                        <option
+                                                            value="{{ $codeL3['code'] }}" {{ $payment->code === $codeL3['code'] ? 'selected' : '' }}
+                                                            {{ in_array($codeL3['code'], $availableCodes) ? '' : 'disabled' }}
+                                                        >
+                                                            {{ $codeL3['code'] . ' - ' . $codeL3['title'] }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    @endforeach
+                                </optgroup>
                             </select>
                         </div>
                     </div>
@@ -70,7 +93,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Контрагент</label>
                             <div class="position-relative mb-3">
-                                <select required name="organization_id" data-control="select2" class="organization-select form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
+                                <select name="organization_id" data-control="select2" class="organization-select form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     <option value="{{ $payment->organization_id }}" selected>{{ \App\Models\Organization::find($payment->organization_id)?->name }}</option>
                                 </select>
 
@@ -115,7 +138,7 @@
                             <div class="position-relative mb-3">
                                 <select name="crm_employee_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     @foreach($crmEmployees as $employeeId => $employeeName)
-                                        <option value="{{ $employeeId }}" {{ ($payment->crm_employee_id === $employeeId) ? 'selected' : '' }}>{{ $employeeName }}</option>
+                                        <option value="{{ $employeeId }}" {{ ($payment->getCrmAvansData()['employee_id'] == $employeeId) ? 'selected' : '' }}>{{ $employeeName }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -128,7 +151,7 @@
                             <div class="position-relative mb-3">
                                 @php
                                     $months = [];
-                                    foreach (['2025', '2024', '2023', '2022', '2021'] as $year) {
+                                    foreach ([date('Y')] as $year) {
                                         foreach (['Декабрь', 'Ноябрь', 'Октябрь', 'Сентябрь', 'Август', 'Июль', 'Июнь', 'Май', 'Апрель', 'Март', 'Февраль', 'Январь'] as $m) {
                                             $months[] = $m . ' ' . $year;
                                         }
@@ -137,7 +160,22 @@
 
                                 <select name="crm_date" data-control="select2" class="form-select form-select-solid form-select-lg">
                                     @foreach($months as $month)
-                                        <option value="{{ $month }}" {{ translate_year_month($payment->crm_date) === $month ? 'selected' : '' }}>{{ $month }}</option>
+                                        <option value="{{ $month }}" {{ translate_year_month($payment->getCrmAvansData()['date']) === $month ? 'selected' : '' }}>{{ $month }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="edit-itr" class="row border-dashed border-warning p-3 mb-4" style="margin-top: -24px; display: none">
+                    <div class="col-md-4 fv-row">
+                        <div class="mb-1">
+                            <label class="form-label fw-bolder text-dark fs-6">ИТР из 1С</label>
+                            <div class="position-relative mb-3">
+                                <select name="itr_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
+                                    @foreach($itr as $itrData)
+                                        <option value="{{ $itrData['Id'] }}" {{ $payment->getItrData()['id'] == $itrData['Id'] ? 'selected' : '' }}>{{ $itrData['Name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
