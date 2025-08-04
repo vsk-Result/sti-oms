@@ -66,7 +66,7 @@
                         </a>
                     </form>
 
-                    @if ($cashAccount->isCurrentResponsible())
+                    @if (auth()->user()->hasRole('super-admin'))
                         <a href="#" class="btn btn-light-dark me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
                             <span class="svg-icon svg-icon-3">
                                 <span class="svg-icon svg-icon-5 m-0">
