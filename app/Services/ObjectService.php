@@ -255,15 +255,15 @@ class ObjectService
                     ->sum('amount')
                 > 0
             ) {
-                // Убрал по просьбе Оксаны 4 августа 2025 в ватсапе
-//                if (! empty($object->closing_date)) {
-//                    if ($object->closing_date < $startDate) {
-//                        continue;
-//                    }
-//                    if ($object->closing_date >= $startDate && $object->closing_date <= $endDate) {
-//                        $closingDates[] = $object->closing_date;
-//                    }
-//                }
+                // Убрал по просьбе Оксаны 4 августа 2025в
+                if (! empty($object->closing_date)) {
+                    if ($object->closing_date < $startDate) {
+                        continue;
+                    }
+                    if ($object->closing_date >= $startDate && $object->closing_date <= $endDate) {
+                        $closingDates[] = $object->closing_date;
+                    }
+                }
                 $finalObjects->push($object);
             }
         }
