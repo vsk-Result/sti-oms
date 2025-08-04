@@ -332,7 +332,7 @@
                                         <td class="text-success bl text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]['cuming_amount'], 'RUB', 0, true) }}</td>
                                         <td class="text-danger br text-right grouped">{{ \App\Models\CurrencyExchangeRate::format($generalCostsInfo['groupedByYearsInfo'][$year][$object->id]['general_amount'], 'RUB', 0, true) }}</td>
                                     @else
-                                        <td class="bl grouped text-success">{{ \App\Models\CurrencyExchangeRate::format(\App\Models\Object\BObject::find($object->id)->payments()->whereBetween('date', [$year . '-01-01', $year . '-12-31'])->where('payment_type_id', \App\Models\Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '>=', 0)->whereIn('company_id', [1, 5])->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())->sum('amount'), 'RUB', 0, true) }}</td>
+                                        <td class="bl grouped text-success text-right">{{ \App\Models\CurrencyExchangeRate::format(\App\Models\Object\BObject::find($object->id)->payments()->whereBetween('date', [$year . '-01-01', $year . '-12-31'])->where('payment_type_id', \App\Models\Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '>=', 0)->whereIn('company_id', [1, 5])->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())->sum('amount'), 'RUB', 0, true) }}</td>
                                         <td class="br grouped">-</td>
                                     @endif
 
