@@ -309,7 +309,7 @@
                                         }
 
                                         foreach($infoArray as $info) {
-                                            $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
+                                            $totalCuming += \App\Models\Object\BObject::find($object->id)->payments()->whereBetween('date', [$info['start_date'], $info['end_date']])->where('payment_type_id', \App\Models\Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '>=', 0)->whereIn('company_id', [1, 5])->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())->sum('amount');
                                             $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
                                         }
                                     }
