@@ -129,6 +129,6 @@ class CashAccount extends Model
 
     public function isCurrentResponsible(): bool
     {
-        return auth()->id() === $this->responsible_id;
+        return auth()->user()->hasRole('super-admin') || auth()->id() === $this->responsible_id;
     }
 }
