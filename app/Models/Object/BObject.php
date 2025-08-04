@@ -145,9 +145,9 @@ class BObject extends Model implements Audit
 
         foreach ($objects as $object) {
             if ($object->isWithoutWorktype()) {
-                $result[$object->id . '::' . null] = $object->code;
+                $result[$object->id . '::' . null] = $object->getName();
             } else {
-                $result[$object->id . '::' . null] = $object->code;
+                $result[$object->id . '::' . null] = $object->getName();
                 foreach ($workTypes as $workType) {
                     $result[$object->id . '::' . $workType['id']] = $object->code . '.' . $workType['code'];
                 }
