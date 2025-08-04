@@ -255,7 +255,6 @@ class ObjectService
                     ->sum('amount')
                 > 0
             ) {
-                // Убрал по просьбе Оксаны 4 августа 2025в
                 if (! empty($object->closing_date)) {
                     if ($object->closing_date < $startDate) {
                         continue;
