@@ -80,51 +80,6 @@
                                 </div>
 
                                 <div class="fv-row mb-10">
-                                    <label class="form-label fw-bolder text-dark fs-6">ФИО ответственного</label>
-                                    <input
-                                        class="form-control form-control-lg form-control-solid {{ $errors->has('responsible_name') ? 'is-invalid' : '' }}"
-                                        type="text"
-                                        value="{{ old('responsible_name', $object->responsible_name) }}"
-                                        name="responsible_name"
-                                    />
-                                    @if ($errors->has('responsible_name'))
-                                        <div class="fv-plugins-message-container invalid-feedback">
-                                            <div>{{ implode(' ', $errors->get('responsible_name')) }}</div>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="fv-row mb-10">
-                                    <label class="form-label fw-bolder text-dark fs-6">Email ответственного</label>
-                                    <input
-                                        class="form-control form-control-lg form-control-solid {{ $errors->has('responsible_email') ? 'is-invalid' : '' }}"
-                                        type="email"
-                                        value="{{ old('responsible_email', $object->responsible_email) }}"
-                                        name="responsible_email"
-                                    />
-                                    @if ($errors->has('responsible_email'))
-                                        <div class="fv-plugins-message-container invalid-feedback">
-                                            <div>{{ implode(' ', $errors->get('responsible_email')) }}</div>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="fv-row mb-10">
-                                    <label class="form-label fw-bolder text-dark fs-6">Телефон ответственного</label>
-                                    <input
-                                        class="form-control form-control-lg form-control-solid {{ $errors->has('responsible_phone') ? 'is-invalid' : '' }}"
-                                        type="text"
-                                        value="{{ old('responsible_phone', $object->responsible_phone) }}"
-                                        name="responsible_phone"
-                                    />
-                                    @if ($errors->has('responsible_phone'))
-                                        <div class="fv-plugins-message-container invalid-feedback">
-                                            <div>{{ implode(' ', $errors->get('responsible_phone')) }}</div>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="fv-row mb-10">
                                     <label class="form-label fw-bolder text-dark fs-6">Дата закрытия</label>
                                     <input
                                         class="date-range-picker-single form-control form-control-lg form-control-solid {{ $errors->has('closing_date') ? 'is-invalid' : '' }}"
