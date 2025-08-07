@@ -4,6 +4,7 @@ namespace App\Services\CashAccount;
 
 use App\Helpers\Sanitizer;
 use App\Models\CashAccount\CashAccount;
+use App\Models\Status;
 use Illuminate\Database\Eloquent\Collection;
 
 class CashAccountService
@@ -65,7 +66,12 @@ class CashAccountService
     public function updateBalance(CashAccount $cashAccount): void
     {
         $cashAccount->update([
-            'balance_amount' => $cashAccount->start_balance_amount + $cashAccount->payments()->sum('amount')
+            'balance_amount' => $cashAccount->start_balance_amount + $cashAccount->payments()->where('status_id', Status::STATUS_ACTIVE)->sum('amount')
         ]);
+    }
+
+    public function getAccountsWithoutResponsible(CashAccount $cashAccount)
+    {
+        return CashAccount::where('responsible_user_id', '!=', $cashAccount->responsible_user_id)->get();
     }
 }

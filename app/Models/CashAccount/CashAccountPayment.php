@@ -29,11 +29,17 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
     const TYPE_OBJECT = 0;
     const TYPE_TRANSFER = 1;
+    const TYPE_REQUEST = 2;
 
     const STATUS_ACTIVE = 0;
     const STATUS_NEED_CORRECT = 1;
     const STATUS_CLOSED = 2;
     const STATUS_DELETED = 3;
+    const STATUS_WAITING = 4;
+
+    const TRANSFER_STATUS_WAITING = 0;
+    const TRANSFER_STATUS_APPROVE = 1;
+    const TRANSFER_STATUS_DECLINE = 2;
 
     public function cashAccount(): BelongsTo
     {
@@ -99,6 +105,14 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         if ($this->type_id === static::TYPE_OBJECT) {
             return $this->amount < 0 ? 'Расход' : 'Приход';
         }
+
+        if ($this->type_id === static::TYPE_REQUEST) {
+            return 'Получение средств';
+        }
+
+        if ($this->type_id === static::TYPE_TRANSFER) {
+            return 'Передача средств';
+        }
     }
 
     public function getDescription()
@@ -121,6 +135,20 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
         if (! is_null($itrData['name']) && $this->code === '7.9.1') {
             $description .= ', выплата зарплаты ' . $itrData['name'];
+        }
+
+        if ($this->isRequest()) {
+            $requestData = $this->getAdditionalData('request_cash');
+            $transferCashPayment = CashAccountPayment::find($requestData['transfer_payment_id']);
+
+            $description .= ', получение средств от кассы "' . $transferCashPayment?->cashAccount?->name . '". Плановая дата: ' . Carbon::parse($requestData['date_planned'] ?? '')->format('d.m.Y');
+        }
+
+        if ($this->isTransfer()) {
+            $transferData = $this->getAdditionalData('transfer_cash');
+            $requestCashPayment = CashAccountPayment::find($transferData['request_payment_id']);
+
+            $description .= ', передача средств кассе "' . $requestCashPayment?->cashAccount?->name . '". Плановая дата: ' . Carbon::parse($transferData['date_planned'] ?? '')->format('d.m.Y');
         }
 
         return $description;
@@ -152,5 +180,73 @@ class CashAccountPayment extends Model implements Audit, HasMedia
             'id' => $data['id'] ?? null,
             'name' => $data['name'] ?? null,
         ];
+    }
+
+    public function isRequest(): bool
+    {
+        return $this->type_id === self::TYPE_REQUEST;
+    }
+
+    public function getRequestStatus(): string
+    {
+        $requestData = $this->getAdditionalData('request_cash');
+
+        return [
+            self::TRANSFER_STATUS_WAITING => 'Ожидание',
+            self::TRANSFER_STATUS_APPROVE => 'Подтверждено',
+            self::TRANSFER_STATUS_DECLINE => 'Отменено',
+        ][$requestData['status_id']];
+    }
+
+    public function getRequestStatusColor(): string
+    {
+        $requestData = $this->getAdditionalData('request_cash');
+
+        return [
+            self::TRANSFER_STATUS_WAITING => 'warning',
+            self::TRANSFER_STATUS_APPROVE => 'success',
+            self::TRANSFER_STATUS_DECLINE => 'danger',
+        ][$requestData['status_id']];
+    }
+
+    public function isTransfer(): bool
+    {
+        return $this->type_id === self::TYPE_TRANSFER;
+    }
+
+    public function getTransferStatus(): string
+    {
+        $requestData = $this->getAdditionalData('transfer_cash');
+
+        return [
+            self::TRANSFER_STATUS_WAITING => 'Ожидание',
+            self::TRANSFER_STATUS_APPROVE => 'Подтверждено',
+            self::TRANSFER_STATUS_DECLINE => 'Отменено',
+        ][$requestData['status_id']];
+    }
+
+    public function getTransferStatusColor(): string
+    {
+        $requestData = $this->getAdditionalData('transfer_cash');
+
+        return [
+            self::TRANSFER_STATUS_WAITING => 'warning',
+            self::TRANSFER_STATUS_APPROVE => 'success',
+            self::TRANSFER_STATUS_DECLINE => 'danger',
+        ][$requestData['status_id']];
+    }
+
+    public function isWaiting(): bool
+    {
+        return $this->status_id === self::STATUS_WAITING;
+    }
+
+    public function hasActions(): bool
+    {
+        if ($this->isTransfer() || $this->isRequest()) {
+            return $this->isWaiting();
+        }
+
+        return $this->cashAccount->isCurrentResponsible();
     }
 }

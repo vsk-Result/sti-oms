@@ -35,6 +35,7 @@ class PaymentController extends Controller
         $categories = CashAccountPayment::getCategories();
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
+        $transferCashAccounts = $this->cashAccountService->getAccountsWithoutResponsible($cashAccount);
 
         $totalInfo = [];
         $requestData = array_merge(['cash_account_id' => [$cashAccount->id]], $request->toArray());
@@ -49,7 +50,7 @@ class PaymentController extends Controller
             'cash-accounts.payments.index',
             compact(
                 'payments', 'worktypes', 'categories',
-               'totalInfo', 'activeOrganizations', 'codes', 'currencies', 'cashAccount'
+               'totalInfo', 'activeOrganizations', 'codes', 'currencies', 'cashAccount', 'transferCashAccounts'
             )
         );
     }

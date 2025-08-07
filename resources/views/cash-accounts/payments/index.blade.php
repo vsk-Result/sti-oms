@@ -9,6 +9,9 @@
     @include('cash-accounts.payments.modals.create')
     @include('cash-accounts.payments.modals.edit')
 
+    @include('cash-accounts.modals.request_cash')
+    @include('cash-accounts.modals.transfer_cash')
+
     @php
         $balance = $cashAccount->getBalance();
     @endphp
@@ -66,7 +69,7 @@
                         </a>
                     </form>
 
-                    @if (auth()->user()->hasRole('super-admin'))
+                    @if ($cashAccount->isCurrentResponsible())
                         <a href="#" class="btn btn-light-dark me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
                             <span class="svg-icon svg-icon-3">
                                 <span class="svg-icon svg-icon-5 m-0">
@@ -77,29 +80,36 @@
                             </span>
                              Касса
                         </a>
+
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                            <div class="menu-item px-3">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#cashAccountTransferCashModal" class="menu-link px-3">Передать средства</a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#cashAccountRequestCashModal" class="menu-link px-3">Запросить средства</a>
+                            </div>
+                            @if (auth()->user()->hasRole('super-admin'))
+                                <div class="menu-item px-3">
+                                    <a href="{{ route('cash_accounts.edit', $cashAccount) }}" class="menu-link px-3">Изменить</a>
+                                </div>
+
+                                <div class="menu-item px-3">
+                                    <form action="{{ route('cash_accounts.destroy', $cashAccount) }}" method="POST" class="hidden">
+                                        @csrf
+                                        @method('DELETE')
+                                        <a
+                                                href="#"
+                                                class="menu-link px-3 text-danger"
+                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить кассу?')) {this.closest('form').submit();}"
+                                        >
+                                            Удалить
+                                        </a>
+                                    </form>
+                                </div>
+                            @endif
+                        </div>
                     @endif
-
-                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                        @can('edit contracts')
-                            <div class="menu-item px-3">
-                                <a href="{{ route('cash_accounts.edit', $cashAccount) }}" class="menu-link px-3">Изменить</a>
-                            </div>
-
-                            <div class="menu-item px-3">
-                                <form action="{{ route('cash_accounts.destroy', $cashAccount) }}" method="POST" class="hidden">
-                                    @csrf
-                                    @method('DELETE')
-                                    <a
-                                            href="#"
-                                            class="menu-link px-3 text-danger"
-                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить кассу?')) {this.closest('form').submit();}"
-                                    >
-                                        Удалить
-                                    </a>
-                                </form>
-                            </div>
-                        @endcan
-                    </div>
                 </div>
             </div>
         </div>
@@ -128,6 +138,14 @@
 
                                 @if (! is_null($payment->getCrmAvansData()['employee_id']))
                                     <span class="text-warning">(CRM)</span>
+                                @endif
+
+                                @if ($payment->isRequest())
+                                    <span class="text-{{ $payment->getRequestStatusColor() }}">({{ $payment->getRequestStatus() }})</span>
+                                @endif
+
+                                @if ($payment->isTransfer())
+                                    <span class="text-{{ $payment->getTransferStatusColor() }}">({{ $payment->getTransferStatus() }})</span>
                                 @endif
                             </td>
                             <td class="position-relative">
@@ -159,7 +177,7 @@
                                 @endforeach
                             </td>
                             <td class="text-end text-dark fw-bolder">
-                                @if ($cashAccount->isCurrentResponsible())
+                                @if ($payment->hasActions())
                                     <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">Действия
                                         <span class="svg-icon svg-icon-5 m-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -168,37 +186,45 @@
                                         </span>
                                     </a>
                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
-                                        <div class="menu-item px-3">
-                                            <a href="javascript:void(0);" data-edit-payment-url="{{ route('cash_accounts.payments.edit', [$cashAccount, $payment]) }}" class="edit-payment menu-link px-3">Изменить</a>
-                                        </div>
+                                        @if ($payment->isRequest())
+                                            <div class="menu-item px-3">
+                                                <a href="{{ route('cash_accounts.request_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_APPROVE }}" class="text-success menu-link px-3">Подтвердить</a>
+                                            </div>
 
-                                        <div class="menu-item px-3">
-                                            <a href="javascript:void(0);" data-create-payment-url="{{ route('cash_accounts.payments.create', $cashAccount) }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
-                                        </div>
+                                            <div class="menu-item px-3">
+                                                <a href="{{ route('cash_accounts.request_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_DECLINE }}" class="text-danger menu-link px-3">Отклонить</a>
+                                            </div>
+                                        @elseif ($payment->isTransfer())
+                                            <div class="menu-item px-3">
+                                                <a href="{{ route('cash_accounts.transfer_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_APPROVE }}" class="text-success menu-link px-3">Подтвердить</a>
+                                            </div>
 
-    {{--                                    @if ($payment->audits->count() > 0)--}}
-    {{--                                        <div class="menu-item px-3">--}}
-    {{--                                            <a href="{{ route('cash_accounts.payments.history.index', [$cashAccount, $payment]) }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>--}}
-    {{--                                        </div>--}}
-    {{--                                    @else--}}
-    {{--                                        <div class="menu-item px-3" style="cursor:default !important;">--}}
-    {{--                                            <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>--}}
-    {{--                                        </div>--}}
-    {{--                                    @endif--}}
+                                            <div class="menu-item px-3">
+                                                <a href="{{ route('cash_accounts.transfer_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_DECLINE }}" class="text-danger menu-link px-3">Отклонить</a>
+                                            </div>
+                                        @else
+                                            <div class="menu-item px-3">
+                                                <a href="javascript:void(0);" data-edit-payment-url="{{ route('cash_accounts.payments.edit', [$cashAccount, $payment]) }}" class="edit-payment menu-link px-3">Изменить</a>
+                                            </div>
 
-                                        <div class="menu-item px-3">
-                                            <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
-                                                @csrf
-                                                @method('DELETE')
-                                                <a
-                                                        href="javascript:void(0)"
-                                                        class="menu-link px-3 text-danger"
-                                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить запись?')) {this.closest('form').submit();}"
-                                                >
-                                                    Удалить
-                                                </a>
-                                            </form>
-                                        </div>
+                                            <div class="menu-item px-3">
+                                                <a href="javascript:void(0);" data-create-payment-url="{{ route('cash_accounts.payments.create', $cashAccount) }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
+                                            </div>
+
+                                            <div class="menu-item px-3">
+                                                <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <a
+                                                            href="javascript:void(0)"
+                                                            class="menu-link px-3 text-danger"
+                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить запись?')) {this.closest('form').submit();}"
+                                                    >
+                                                        Удалить
+                                                    </a>
+                                                </form>
+                                            </div>
+                                        @endif
                                     </div>
                                 @endif
                             </td>

@@ -133,4 +133,9 @@ class CashAccount extends Model
             || auth()->id() === $this->responsible_user_id
             || in_array(auth()->id(), $this->sharedUsers->pluck('id')->toArray());
     }
+
+    public function getName(): string
+    {
+        return $this->name . ' | ' . $this->responsible->name;
+    }
 }

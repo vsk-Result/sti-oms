@@ -1,8 +1,21 @@
 <?php
 
 use App\Http\Controllers\CashAccount\CashAccountController;
+use App\Http\Controllers\CashAccount\RequestCashController;
+use App\Http\Controllers\CashAccount\TransferCashController;
 use App\Http\Controllers\CashAccount\Payment\PaymentController;
 use App\Http\Controllers\CashAccount\Payment\ExportController;
+
+// Запрос средств у другой кассы
+
+Route::post('cash-accounts/{cashAccount}/request-cash', [RequestCashController::class, 'store'])->name('cash_accounts.request_cash.store');
+Route::get('cash-accounts/{cashAccount}/payments/{payment}/request-cash/update', [RequestCashController::class, 'update'])->name('cash_accounts.request_cash.update');
+
+// Передача средств другой кассе
+
+Route::post('cash-accounts/{cashAccount}/transfer-cash', [TransferCashController::class, 'store'])->name('cash_accounts.transfer_cash.store');
+Route::get('cash-accounts/{cashAccount}/payments/{payment}/transfer-cash/update', [TransferCashController::class, 'update'])->name('cash_accounts.transfer_cash.update');
+
 
 // Кассы
 
