@@ -12,7 +12,7 @@ class ImportITRListDataFrom1C extends HandledCommand
 
     protected $description = 'Загружает список ИТР из 1С';
 
-    protected string $period = 'Вручную';
+    protected string $period = 'Ежедневно в 21:00';
 
     public function handle()
     {

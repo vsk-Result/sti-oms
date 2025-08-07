@@ -32,7 +32,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:update-general-costs')->everyThirtyMinutes();
         $schedule->command('oms:check-objects-for-general-codes-to-customers-exist')->dailyAt('07:00');
         $schedule->command('oms:make-finance-report-history')->everyTenMinutes();
-        $schedule->command('oms:notify-to-email-about-object-balance')->dailyAt('15:00');
         $schedule->command('oms:import-contractor-debts-from-manager-excel')->dailyAt('19:00');
         $schedule->command('oms:update-wrong-payment-code')->dailyAt('20:00');
         $schedule->command('oms:update-object-organization-debt-pivot')->everyThirtyMinutes();
@@ -43,6 +42,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:import-cf-data-from-1c-excel')->hourly();
         $schedule->command('oms:schedule-export-tasks-runner')->everyMinute();
         $schedule->command('oms:notify-to-email-about-crm-cash-check')->everyTenMinutes();
+        $schedule->command('oms:import-itr-list-data-from-one-c')->dailyAt('21:00');
+        $schedule->command('oms:import-period-payments-data-from-one-c')->dailyAt('21:30');
     }
 
     /**

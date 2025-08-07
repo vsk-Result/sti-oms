@@ -80,8 +80,8 @@ class PaymentReceiveReportService
         ];
 
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
+        $paymentPeriodData = Cache::get('p_and_l_payments_period_1c_data', []);
         $object27_1 = BObject::where('code', '27.1')->first();
-
         $financeReportHistory = FinanceReportHistory::getCurrentFinanceReportForObject($object);
 
         foreach ($months as $month) {
@@ -121,6 +121,33 @@ class PaymentReceiveReportService
 
             $transferData = ObjectService::getDistributionTransferServiceByPeriod($period);
 
+            $contractorsMaterial = 0;
+            $contractorsRad = 0;
+            $providersMaterial = 0;
+            $serviceService = 0;
+
+            foreach ($paymentPeriodData as $info) {
+                if ($info['Period'] !== ($year . '-' . $month)) {
+                    continue;
+                }
+
+                foreach ($info['Objects'] as $oInfo) {
+                    if ($oInfo['Object'] !== $object->code) {
+                        continue;
+                    }
+
+                    foreach ($oInfo['ContractorGroups'] as $groupInfo) {
+                        if ($groupInfo['ContractorGroup'] === 'РАБОТЫ') {
+                            $contractorsRad = -$groupInfo['Details'][0]['Sum'];
+                        }
+
+                        if ($groupInfo['ContractorGroup'] === 'НАКЛАДНЫЕ/УСЛУГИ') {
+                            $serviceService = -$groupInfo['Details'][0]['Sum'];
+                        }
+                    }
+                }
+            }
+
             $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
                 ->where('is_main', true)
                 ->where('code', $object->code)
@@ -132,12 +159,22 @@ class PaymentReceiveReportService
             $generalCosts = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0));
             $accruedTaxes = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($receivePercents[$year . '-' . $month][$object->id] ?? 0));
 
+            $paymentInfo['contractors']['material'][$year][$month] = $contractorsMaterial;
+            $paymentInfo['contractors']['rad'][$year][$month] = $contractorsRad;
+            $paymentInfo['providers']['material'][$year][$month] = $providersMaterial;
+            $paymentInfo['service']['service'][$year][$month] = $serviceService;
+
             $paymentInfo['salary_workers'][$year][$month] = $salaryWorkers;
             $paymentInfo['salary_itr'][$year][$month] = $salaryItr;
             $paymentInfo['salary_taxes'][$year][$month] = $salaryTaxes;
             $paymentInfo['transfer'][$year][$month] = $transfer;
             $paymentInfo['general_costs'][$year][$month] = $generalCosts;
             $paymentInfo['accrued_taxes'][$year][$month] = $accruedTaxes;
+
+            $paymentInfo['contractors']['material'][$year]['total'] += $paymentInfo['contractors']['material'][$year][$month];
+            $paymentInfo['contractors']['rad'][$year]['total'] += $paymentInfo['contractors']['rad'][$year][$month];
+            $paymentInfo['providers']['material'][$year]['total'] += $paymentInfo['providers']['material'][$year][$month];
+            $paymentInfo['service']['service'][$year]['total'] += $paymentInfo['service']['service'][$year][$month];
 
             $paymentInfo['salary_workers'][$year]['total'] += $paymentInfo['salary_workers'][$year][$month];
             $paymentInfo['salary_itr'][$year]['total'] += $paymentInfo['salary_itr'][$year][$month];
@@ -146,7 +183,7 @@ class PaymentReceiveReportService
             $paymentInfo['general_costs'][$year]['total'] += $paymentInfo['general_costs'][$year][$month];
             $paymentInfo['accrued_taxes'][$year]['total'] += $paymentInfo['accrued_taxes'][$year][$month];
 
-            $paymentInfo['total'][$year][$month] = $salaryWorkers + $salaryItr + $salaryTaxes + $transfer + $generalCosts + $accruedTaxes;
+            $paymentInfo['total'][$year][$month] = $contractorsMaterial + $contractorsRad + $providersMaterial + $serviceService + $salaryWorkers + $salaryItr + $salaryTaxes + $transfer + $generalCosts + $accruedTaxes;
             $paymentInfo['total'][$year]['total'] += $paymentInfo['total'][$year][$month];
         }
 
