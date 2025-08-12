@@ -33,11 +33,11 @@ class CashAccountService
             'responsible_user_id' => $requestData['responsible_user_id'],
             'start_balance_amount' => $balance,
             'balance_amount' => $balance,
-            'status_id' => CashAccount::STATUS_ACTIVE
+            'status_id' => CashAccount::STATUS_ACTIVE,
         ]);
 
         $cashAccount->objects()->sync($requestData['object_id'] ?? []);
-        $cashAccount->sharedUsers()->sync($requestData['shared_user_id']);
+        $cashAccount->sharedUsers()->sync($requestData['shared_user_id'] ?? []);
 
         return $cashAccount;
     }

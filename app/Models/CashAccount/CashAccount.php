@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class CashAccount extends Model
 {
-    use HasUser, SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'cash_accounts';
 

@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use App\Console\HandledCommand;
 use App\Models\CashAccount\CashAccount;
-use App\Models\KostCode;
-use App\Models\Payment;
 use App\Models\User;
 use App\Services\CashAccount\CashAccountService;
 
@@ -24,11 +22,11 @@ class TransferCostsFromCRMtoOMS extends HandledCommand
 
     public function handle()
     {
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $costs = [
 //            [
@@ -130,13 +128,16 @@ class TransferCostsFromCRMtoOMS extends HandledCommand
                 'name' => $cost['name'],
                 'responsible_user_id' => $cost['oms_user_id'],
                 'balance_amount' => $cost['balance'],
-                'status_id' => CashAccount::STATUS_ACTIVE
+                'status_id' => CashAccount::STATUS_ACTIVE,
             ]);
 
             $user = User::find($cost['oms_user_id']);
-            $user->update([
-                'crm_user_id' => $cost['crm_user_id']
-            ]);
+
+            if ($user) {
+                $user->update([
+                    'crm_user_id' => $cost['crm_user_id']
+                ]);
+            }
         }
 
         $this->sendInfoMessage('Перенос прошел успешно');
