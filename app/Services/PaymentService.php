@@ -506,6 +506,7 @@ class PaymentService
             || str_contains($description, 'перечисление согласно реестру')
             || str_contains($description, 'аванс сотрудников ооо "строй техно инженеринг"')
             || str_contains($description, 'заработная плата сотрудников ооо "строй техно инженеринг"')
+            || str_contains($description, 'Z_0000006223')
             || str_contains($description, 'заработная плата сотрудниковооо')
         ) {
             return true;
