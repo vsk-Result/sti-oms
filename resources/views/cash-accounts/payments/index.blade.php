@@ -194,6 +194,22 @@
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('cash_accounts.request_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_DECLINE }}" class="text-danger menu-link px-3">Отклонить</a>
                                             </div>
+
+                                            @if (auth()->user()->hasRole('super-admin'))
+                                                <div class="menu-item px-3">
+                                                    <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <a
+                                                                href="javascript:void(0)"
+                                                                class="menu-link px-3 text-danger"
+                                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить запись?')) {this.closest('form').submit();}"
+                                                        >
+                                                            Удалить
+                                                        </a>
+                                                    </form>
+                                                </div>
+                                            @endif
                                         @elseif ($payment->isTransfer())
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('cash_accounts.transfer_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_APPROVE }}" class="text-success menu-link px-3">Подтвердить</a>
@@ -202,6 +218,22 @@
                                             <div class="menu-item px-3">
                                                 <a href="{{ route('cash_accounts.transfer_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_DECLINE }}" class="text-danger menu-link px-3">Отклонить</a>
                                             </div>
+
+                                            @if (auth()->user()->hasRole('super-admin'))
+                                                <div class="menu-item px-3">
+                                                    <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <a
+                                                                href="javascript:void(0)"
+                                                                class="menu-link px-3 text-danger"
+                                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить запись?')) {this.closest('form').submit();}"
+                                                        >
+                                                            Удалить
+                                                        </a>
+                                                    </form>
+                                                </div>
+                                            @endif
                                         @else
                                             <div class="menu-item px-3">
                                                 <a href="javascript:void(0);" data-edit-payment-url="{{ route('cash_accounts.payments.edit', [$cashAccount, $payment]) }}" class="edit-payment menu-link px-3">Изменить</a>
