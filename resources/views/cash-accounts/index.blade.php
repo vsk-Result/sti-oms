@@ -52,7 +52,7 @@
                             </div>
 
                             <span class="symbol symbol-50px">
-                                <span style="width: 100px" class="symbol-label fs-5 fw-bold bg-light-success text-success">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
+                                <span style="width: 100px" class="symbol-label fs-5 fw-bold {{ $cashAccount->getBalance() < 0 ? 'bg-light-danger text-danger' : 'bg-light-success text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
                             </span>
                         </div>
                     </div>
@@ -91,8 +91,8 @@
                                 </div>
 
                                 <span class="symbol symbol-50px">
-                                <span style="width: 100px" class="symbol-label fs-5 fw-bold bg-light-success text-success">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
-                            </span>
+                                    <span style="width: 100px" class="symbol-label fs-5 fw-bold {{ $cashAccount->getBalance() < 0 ? 'bg-light-danger text-danger' : 'bg-light-success text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
+                                </span>
                             </div>
                         </div>
                     </div>
