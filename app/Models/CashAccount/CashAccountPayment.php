@@ -244,7 +244,7 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     public function hasActions(): bool
     {
         if ($this->isTransfer() || $this->isRequest()) {
-            return $this->isWaiting();
+            return $this->isWaiting() || auth()->user()->hasRole('super-admin');
         }
 
         return $this->cashAccount->isCurrentResponsible();
