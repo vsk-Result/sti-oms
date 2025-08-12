@@ -21,6 +21,23 @@ class UserService
         $this->sanitizer = $sanitizer;
     }
 
+    public function createUser(array $requestData): User
+    {
+        $user = User::create([
+            'name' => $this->sanitizer->set($requestData['name'])->upperCaseAllFirstWords()->get(),
+            'email' => $this->sanitizer->set($requestData['email'])->lowerCase()->get(),
+            'phone' => $this->sanitizer->set($requestData['phone'])->toPhone()->get(),
+            'photo' => null,
+            'crm_user_id' => $requestData['crm_user_id'] ?? null,
+            'status_id' => Status::STATUS_ACTIVE,
+            'email_verified_at' => Carbon::now(),
+            'password' => Hash::make($requestData['password']),
+            'remember_token' => Str::random(60)
+        ]);
+
+        return $user;
+    }
+
     public function updateUser(User $user, array $requestData): User
     {
         if (array_key_exists('photo', $requestData)) {

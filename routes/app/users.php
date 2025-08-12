@@ -14,6 +14,8 @@ use App\Http\Controllers\User\{
 // Пользователи
 
 Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('can:index admin-users');
+Route::get('users/create', [UserController::class, 'create'])->name('users.create')->middleware('can:create admin-users');
+Route::post('users', [UserController::class, 'store'])->name('users.store')->middleware('can:create admin-users');
 Route::get('users/{user}', [UserController::class, 'show'])->name('users.show')->middleware('can:show admin-users');
 Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
 Route::post('users/{user}', [UserController::class, 'update'])->name('users.update');

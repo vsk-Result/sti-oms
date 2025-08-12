@@ -21,6 +21,11 @@ Breadcrumbs::for('users.edit', function (BreadcrumbTrail $trail, User $user) {
     $trail->push('Настройки аккаунта', route('users.edit', $user));
 });
 
+Breadcrumbs::for('users.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('users.index');
+    $trail->push('Новый пользователь', route('users.create'));
+});
+
 Breadcrumbs::for('users.passwords.reset', function (BreadcrumbTrail $trail, User $user) {
     $trail->parent('users.edit', $user);
     $trail->push('Изменение пароля');

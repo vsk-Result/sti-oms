@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\Status;
 use App\Models\User;
@@ -32,6 +33,26 @@ class UserController extends Controller
         return view('users.show', compact('user'));
     }
 
+    public function create(): View
+    {
+        if (! (auth()->user()->can('create admin-users'))) {
+            abort(403);
+        }
+
+        return view('users.create');
+    }
+
+    public function store(CreateUserRequest $request): RedirectResponse
+    {
+        if (! (auth()->user()->can('create admin-users'))) {
+            abort(403);
+        }
+
+        $this->userService->createUser($request->toArray());
+
+        return redirect()->route('users.index');
+    }
+
     public function edit(User $user): View
     {
         if (! (auth()->user()->can('edit admin-users') || auth()->id() === $user->id)) {
@@ -48,7 +69,9 @@ class UserController extends Controller
         if (! (auth()->user()->can('edit admin-users') || auth()->id() === $user->id)) {
             abort(403);
         }
+
         $this->userService->updateUser($user, $request->toArray());
+
         return redirect()->back();
     }
 
