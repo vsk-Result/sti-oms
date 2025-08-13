@@ -40,7 +40,7 @@ class NotifyToEmailAboutCRMCashCheck extends HandledCommand
                     $m->subject('OMS. Закрытый период ' . $check->getFormattedPeriod() . ' можно закрыть');
 
                     $m->to($check->crmUser->email);
-                    $m->to('result007@yandex.ru');
+//                    $m->to('result007@yandex.ru');
                 });
 
                 $this->cashCheckService->checkSended($check);

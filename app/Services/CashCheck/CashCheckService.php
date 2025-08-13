@@ -81,7 +81,7 @@ class CashCheckService
                 $m->subject('OMS. Новая заявка на закрытый период');
 
                 $m->to($manager->manager->email);
-                $m->to('result007@yandex.ru');
+//                $m->to('result007@yandex.ru');
             });
         } catch(Exception $e){
         }

@@ -39,17 +39,17 @@ class CheckObjectsForGeneralCodesToCustomersExist extends HandledCommand
             }
         }
 
-        if (count($invalidObjects) > 0) {
-            try {
-                Mail::send('emails.objects.general_costs_customers', compact('invalidObjects'), function ($m) {
-                    $m->from('support@st-ing.com', 'OMS Support');
-                    $m->to('result007@yandex.ru')
-                        ->subject('OMS. Проблемные объекты для расчета общих затрат');
-                });
-            } catch(\Exception $e) {
-                $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
-            }
-        }
+//        if (count($invalidObjects) > 0) {
+//            try {
+//                Mail::send('emails.objects.general_costs_customers', compact('invalidObjects'), function ($m) {
+//                    $m->from('support@st-ing.com', 'OMS Support');
+//                    $m->to('result007@yandex.ru')
+//                        ->subject('OMS. Проблемные объекты для расчета общих затрат');
+//                });
+//            } catch(\Exception $e) {
+//                $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
+//            }
+//        }
 
         $this->sendInfoMessage(count($invalidObjects) . ' проблемных объектов выявлено');
 

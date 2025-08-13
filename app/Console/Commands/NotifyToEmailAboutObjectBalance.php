@@ -35,7 +35,7 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
 
         $this->startProcess();
 
-        $alwaysInCopy = ['oksana.dashenko@st-ing.com', 'enes@st-ing.com', 'result007@yandex.ru'];
+        $alwaysInCopy = ['oksana.dashenko@st-ing.com', 'enes@st-ing.com'];
 //        $notificationConfig = [
 //            '346' => ['kseniya.boltisheva@st-ing.com'], // Октафарма
 //            '353' => ['natalya.vorotnikova@st-ing.com'], // Сухаревская (ЖК "Лайон Гейт")
