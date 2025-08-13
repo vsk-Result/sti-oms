@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class CashAccount extends Model
 {
-    use SoftDeletes;
+    use HasUser, SoftDeletes;
 
     protected $table = 'cash_accounts';
 
@@ -136,6 +136,6 @@ class CashAccount extends Model
 
     public function getName(): string
     {
-        return $this->name . ' | ' . $this->responsible->name;
+        return $this->name . ' | ' . $this->responsible?->name ?? '-';
     }
 }
