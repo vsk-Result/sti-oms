@@ -50,7 +50,7 @@ class CashAccountController extends Controller
     public function edit(CashAccount $cashAccount): View
     {
         $responsibleUsers = User::orderBy('name')->get();
-        $objects = $cashAccount->getObjects();
+        $objects = BObject::getObjectCodes();
         $sharedUsers = User::where('id', '!=', $cashAccount->responsible_user_id)->orderBy('name')->get();
 
         if (!auth()->user()->hasRole('super-admin')) {
