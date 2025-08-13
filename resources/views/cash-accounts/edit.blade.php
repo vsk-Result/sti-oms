@@ -60,6 +60,20 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Начальный баланс</label>
+                                            <div class="position-relative mb-3">
+                                                <input
+                                                    class="amount-mask amount-formatted form-control form-control-lg form-control-solid"
+                                                    type="text"
+                                                    name="start_balance_amount"
+                                                    value="{{ old('start_balance_amount', $cashAccount->start_balance_amount) }}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Доступ к кассе</label>

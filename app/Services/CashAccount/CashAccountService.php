@@ -44,8 +44,11 @@ class CashAccountService
 
     public function updateCashAccount(CashAccount $cashAccount, array $requestData): CashAccount
     {
+        $balance = $this->sanitizer->set($requestData['start_balance_amount'])->toAmount()->get();
+
         $cashAccount->update([
             'name' => $requestData['name'],
+            'start_balance_amount' => $balance,
             'responsible_user_id' => $requestData['responsible_user_id'],
         ]);
 
