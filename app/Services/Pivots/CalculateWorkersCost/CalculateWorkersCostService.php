@@ -142,7 +142,8 @@ class CalculateWorkersCostService
                         ->where('description', 'LIKE', '%transfer trosak%')
                         ->sum('amount');
                 } elseif ($codes[0] === 'workers_salary') {
-                    $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
+//                    $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
+                    $amount = 0;
                 } elseif ($codes[0] === 'itr_salary') {
                     $amount = 0;
 

@@ -42,6 +42,10 @@ class SplitTaxPaymentsService
                 $objectCode = explode('.', $code)[0];
             }
 
+            if ($objectCode == 27) {
+                $objectCode = '27.1';
+            }
+
             if (! isset($resultSplitInfo[$objectCode])) {
                 $resultSplitInfo[$objectCode] = 0;
             }
