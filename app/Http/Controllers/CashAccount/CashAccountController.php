@@ -63,6 +63,7 @@ class CashAccountController extends Controller
     public function update(CashAccount $cashAccount, Request $request): RedirectResponse
     {
         $this->cashAccountService->updateCashAccount($cashAccount, $request->toArray());
+        $this->cashAccountService->updateBalance($cashAccount);
         return redirect()->route('cash_accounts.index');
     }
 
