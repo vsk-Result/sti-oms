@@ -49,9 +49,15 @@ class CashAccountController extends Controller
 
     public function edit(CashAccount $cashAccount): View
     {
+        $responsibleUsers = User::orderBy('name')->get();
         $objects = $cashAccount->getObjects();
         $sharedUsers = User::where('id', '!=', $cashAccount->responsible_user_id)->orderBy('name')->get();
-        return view('cash-accounts.edit', compact('cashAccount', 'objects', 'sharedUsers'));
+
+        if (!auth()->user()->hasRole('super-admin')) {
+            $responsibleUsers = User::where('id', auth()->id())->get();
+        }
+
+        return view('cash-accounts.edit', compact('cashAccount', 'objects', 'sharedUsers', 'responsibleUsers'));
     }
 
     public function update(CashAccount $cashAccount, Request $request): RedirectResponse
