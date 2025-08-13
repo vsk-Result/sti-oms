@@ -46,6 +46,7 @@ class CashAccountService
     {
         $cashAccount->update([
             'name' => $requestData['name'],
+            'responsible_user_id' => $requestData['responsible_user_id'],
         ]);
 
         $cashAccount->objects()->sync($requestData['object_id'] ?? []);
