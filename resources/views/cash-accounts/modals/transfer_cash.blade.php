@@ -13,15 +13,41 @@
                             <div class="mb-1">
                                 <label class="form-label fw-bolder text-dark fs-6">Получатель</label>
                                 <div class="position-relative mb-3">
+                                    @php
+                                        $myAccounts = [];
+                                        $otherAccounts = [];
+
+                                        foreach($transferCashAccounts as $ca) {
+                                            if ($ca->responsible_user_id === $cashAccount->responsible_user_id) {
+                                                $myAccounts[] = $ca;
+                                            } else {
+                                                $otherAccounts[] = $ca;
+                                            }
+                                        }
+                                    @endphp
                                     <select
                                         name="receiver_id"
                                         class="form-select form-select-solid"
                                         data-control="select2"
                                         data-dropdown-parent="#cashAccountTransferCashModal"
                                     >
-                                        @foreach($transferCashAccounts as $ca)
-                                            <option value="{{ $ca->id }}">{{ $ca->getName() }}</option>
-                                        @endforeach
+                                        @if (count($myAccounts) > 0)
+                                            <optgroup label="Мои кассы">
+                                                @foreach($myAccounts as $ca)
+                                                    <option value="{{ $ca->id }}">{{ $ca->getName() }}</option>
+                                                @endforeach
+                                            </optgroup>
+
+                                            <optgroup label="Другие кассы">
+                                                @foreach($otherAccounts as $ca)
+                                                    <option value="{{ $ca->id }}">{{ $ca->getName() }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                        @else
+                                            @foreach($transferCashAccounts as $ca)
+                                                <option value="{{ $ca->id }}">{{ $ca->getName() }}</option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
                             </div>
