@@ -76,6 +76,6 @@ class CashAccountService
 
     public function getAccountsWithoutResponsible(CashAccount $cashAccount)
     {
-        return CashAccount::where('status_id', CashAccount::STATUS_ACTIVE)->where('responsible_user_id', '!=', $cashAccount->responsible_user_id)->get();
+        return CashAccount::where('status_id', CashAccount::STATUS_ACTIVE)->where('id', '!=', $cashAccount->id)->get();
     }
 }
