@@ -34,7 +34,7 @@
                                         @if (count($myAccounts) > 0)
                                             <optgroup label="Мои кассы">
                                                 @foreach($myAccounts as $ca)
-                                                    <option value="{{ $ca->id }}">{{ $ca->getName() }}</option>
+                                                    <option value="{{ $ca->id }}">{{ $ca->name }}</option>
                                                 @endforeach
                                             </optgroup>
 
