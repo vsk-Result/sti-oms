@@ -107,6 +107,11 @@ class PivotSheet implements
                 'start_date' => '2024-01-01',
                 'end_date' => '2024-12-31',
                 'bonus' => 0,
+            ],
+            [
+                'start_date' => '2025-01-01',
+                'end_date' => '2025-12-31',
+                'bonus' => 0,
             ]
         ];
 
@@ -151,7 +156,7 @@ class PivotSheet implements
             $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
         }
 
-        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP'];
+        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU'];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
