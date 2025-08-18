@@ -119,6 +119,10 @@ class Contract extends Model implements HasMedia, Audit
 
         if ($this->isMain()) {
 
+            if ($this->object_id === 139) {
+                return 12909631418;
+            }
+
             if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[7])) {
                 return json_decode($this->params)[7] ?? 0;
             }
