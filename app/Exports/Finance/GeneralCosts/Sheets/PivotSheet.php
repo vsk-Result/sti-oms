@@ -7,6 +7,7 @@ use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -112,24 +113,10 @@ class PivotSheet implements
 
         $periods = array_reverse($periods);
 
-        $generalTotalAmount = 0;
-        $generalInfo = [];
-        foreach ($periods as $index => $period) {
-            $datesBetween = [$period['start_date'], $period['end_date']];
-            $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
-            $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.11', '7.11.1', '.7.11.2'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
-                + $period['bonus'];
+        $generalCostsInfo = Cache::get('general_costs', []);
 
-            $generalInfo[$index] = [
-                'start_date' => $period['start_date'],
-                'end_date' => $period['end_date'],
-                'general_amount' => $generalAmount,
-                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
-            ];
-
-            $generalTotalAmount += $generalAmount;
-        }
+        $generalTotalAmount = $generalCostsInfo['generalTotalAmount'];
+        $generalInfo = $generalCostsInfo['generalInfo'];
 
         $averagePercents = [];
         foreach($objects as $object) {
