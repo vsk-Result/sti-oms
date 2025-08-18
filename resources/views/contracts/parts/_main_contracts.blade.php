@@ -173,9 +173,10 @@
                             @foreach(['RUB', 'EUR'] as $currency)
                                 @php
                                     $amount = $contract->getAmount($currency);
+                                    $ch = $contract->children->where('currency', $currency)->count();
                                 @endphp
 
-                                @if ($childrenCount > 0)
+                                @if ($ch > 0)
                                     <a
                                         href="#"
                                         class="btn btn-outline btn-outline-dashed btn-outline-default me-2 mb-2 show-subcontracts"
