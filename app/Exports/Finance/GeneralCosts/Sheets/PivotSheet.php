@@ -108,6 +108,11 @@ class PivotSheet implements
                 'end_date' => '2024-12-31',
                 'bonus' => 0,
             ],
+            [
+                'start_date' => '2025-01-01',
+                'end_date' => '2025-12-31',
+                'bonus' => 0,
+            ]
         ];
 
         $periods = array_reverse($periods);
