@@ -25,6 +25,9 @@ use App\Http\Controllers\Object\CashFlow\CashFlowPaymentController;
 use App\Http\Controllers\Object\Report\ActCategory\ActCategoryController;
 use App\Http\Controllers\Object\Report\ActCategory\ExportController as ActCategoryExportController;
 use App\Http\Controllers\Object\Report\PaymentsReceive\PaymentsReceiveController;
+use App\Http\Controllers\Object\Report\WorkersCost\WorkersCostReportController;
+use App\Http\Controllers\Object\Report\WorkersCost\WorkersCostReportExportController;
+
 
 // Экспорт объекта в Excel
 
@@ -124,3 +127,8 @@ Route::get('objects/{object}/reports/payments-receive', [PaymentsReceiveControll
 
 Route::get('objects/{object}/payment-receive-report', [PaymentReceiveReportController::class, 'index'])->name('objects.payment_receive_report.index');
 Route::post('objects/{object}/payment-receive-report/export', [PaymentReceiveReportExportController::class, 'store'])->name('objects.payment_receive_report.export.store');
+
+// Расчет стоимости рабочих
+
+Route::get('objects/{object}/workers-cost-report', [WorkersCostReportController::class, 'index'])->name('objects.workers_cost_report.index');
+Route::post('objects/{object}/workers-cost-report/export', [WorkersCostReportExportController::class, 'store'])->name('objects.workers_cost_report_report.export.store');

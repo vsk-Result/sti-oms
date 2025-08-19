@@ -10,6 +10,7 @@ use App\Traits\HasUser;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as Audit;
 use Spatie\MediaLibrary\HasMedia;
@@ -17,7 +18,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class CashAccountPayment extends Model implements Audit, HasMedia
 {
-    use Auditable, InteractsWithMedia, HasUser;
+    use Auditable, InteractsWithMedia, HasUser, SoftDeletes;
 
     protected $table = 'cash_account_payments';
 
