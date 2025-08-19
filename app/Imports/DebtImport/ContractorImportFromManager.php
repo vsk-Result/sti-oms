@@ -19,6 +19,7 @@ class ContractorImportFromManager implements WithMultipleSheets, SkipsUnknownShe
             'БАЗА Подрядчики' => new SheetForArray(),
             'Поставщики' => new SheetForArray(),
             'Свод по подряду' => new SheetForArray(),
+            'СВОД подряд' => new SheetForArray(),
         ];
     }
 
