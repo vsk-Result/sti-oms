@@ -400,7 +400,7 @@ class CalculateWorkersCostService
                     $info['data'][$group]['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['data'][$group]['total']['amount']['total'] / $info['total']['hours']['total'];
                 }
 
-                $info['total']['rate']['total'] =$info['total']['amount']['total'] / $info['total']['hours']['total'];
+                $info['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['total']['amount']['total'] / $info['total']['hours']['total'];
                 $infoByObjects['objects'][$object->getName()] = $info;
             }
         }
