@@ -286,7 +286,7 @@
 @push('scripts')
     <script>
         $(function() {
-            mainApp.initFreezeTable(2);
+            mainApp.initFreezeTable(1);
         });
 
         $(document).on('focus', '.db-field', function() {
