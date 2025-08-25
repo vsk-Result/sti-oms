@@ -181,12 +181,12 @@
                                 @if ($payment->isObjectType())
                                     <label class="form-check form-check-custom form-check-solid form-check-inline">
                                         <input
-                                                {{ $payment->canValidate() ? '' : 'disabled' }}
-                                                {{ $payment->isValid() ? 'checked' : '' }}
-                                                data-validate-ca-payment-url="{{ route('cash_accounts.payments.validate.update', [$cashAccount, $payment]) }}"
-                                                class="ca-payment-valid-check form-check-input"
-                                                type="checkbox"
-                                                name="validate"
+                                            {{ $payment->canValidate() ? '' : 'disabled' }}
+                                            {{ $payment->isValid() ? 'checked' : '' }}
+                                            data-validate-ca-payment-url="{{ route('cash_accounts.payments.validate.update', [$cashAccount, $payment]) }}"
+                                            class="ca-payment-valid-check form-check-input"
+                                            type="checkbox"
+                                            name="validate"
                                         />
                                     </label>
                                 @endif

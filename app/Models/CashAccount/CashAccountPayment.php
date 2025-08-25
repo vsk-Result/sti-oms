@@ -263,7 +263,7 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         }
 
         if ($this->isTransfer() || $this->isRequest()) {
-            return $this->isWaiting() || auth()->user()->hasRole('super-admin');
+            return ($this->isWaiting() && !$this->isTransferInitiator());
         }
 
         return $this->cashAccount->isCurrentResponsible();
@@ -284,5 +284,20 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         $isNullObjectPaymentId = is_null($objectPaymentData['object_payment_id']);
 
         return $isSuperAdmin || ($hasValidPermission && $isCurrentSharedUser && $isNullObjectPaymentId);
+    }
+
+    public function isTransferInitiator(): bool
+    {
+        if ($this->isTransfer()) {
+            $requestData = $this->getAdditionalData('transfer_cash');
+            return $requestData['is_initiator'] ?? false;
+        }
+
+        if ($this->isRequest()) {
+            $requestData = $this->getAdditionalData('request_cash');
+            return $requestData['is_initiator'] ?? false;
+        }
+
+        return false;
     }
 }

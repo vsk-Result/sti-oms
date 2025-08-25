@@ -11,7 +11,11 @@ use App\Services\CashAccount\Payment\PaymentService;
 
 class TransferCashService
 {
-    public function __construct(private Sanitizer $sanitizer, private PaymentService $paymentService) {}
+    public function __construct(
+        private Sanitizer $sanitizer,
+        private PaymentService $paymentService,
+        private CashAccountService $cashAccountService
+    ) {}
 
     public function transferCash(CashAccount $cashAccount, array $requestData)
     {
@@ -55,7 +59,8 @@ class TransferCashService
             'additional_data' => json_encode(['request_cash' => [
                 'status_id' => CashAccountPayment::TRANSFER_STATUS_WAITING,
                 'transfer_payment_id' => $transferPayment->id,
-                'date_planned' => $requestData['date']
+                'date_planned' => $requestData['date'],
+                'is_initiator' => false
             ]])
         ]);
 
@@ -63,7 +68,8 @@ class TransferCashService
             'additional_data' => json_encode(['transfer_cash' => [
                 'status_id' => CashAccountPayment::TRANSFER_STATUS_WAITING,
                 'request_payment_id' => $requestPayment->id,
-                'date_planned' => $requestData['date']
+                'date_planned' => $requestData['date'],
+                'is_initiator' => true
             ]])
         ]);
     }
@@ -81,5 +87,19 @@ class TransferCashService
             'additional_data' => json_encode($currentAdditionalData),
             'status_id' => $paymentStatusId
         ]);
+
+        $requestPayment = CashAccountPayment::find($currentAdditionalData['transfer_cash']['request_payment_id']);
+
+        if ($requestPayment) {
+            $currentAdditionalData = json_decode($requestPayment->additional_data, true) ?? [];
+            $currentAdditionalData['request_cash']['status_id'] = $requestData['status_id'];
+
+            $requestPayment->update([
+                'additional_data' => json_encode($currentAdditionalData),
+                'status_id' => $paymentStatusId
+            ]);
+
+            $this->cashAccountService->updateBalance($requestPayment->cashAccount);
+        }
     }
 }
