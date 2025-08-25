@@ -80,6 +80,11 @@ class CashAccount extends Model
     public function getBalance(): float
     {
         return $this->balance_amount;
+
+
+    }public function getBalanceWithTransferApprove(): float
+    {
+        return $this->balance_amount + $this->payments()->where('status_id', CashAccountPayment::STATUS_WAITING)->sum('amount');
     }
 
     public function getObjects(): array

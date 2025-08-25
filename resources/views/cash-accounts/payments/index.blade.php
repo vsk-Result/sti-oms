@@ -14,6 +14,7 @@
 
     @php
         $balance = $cashAccount->getBalance();
+        $balanceWithTransferApprove = $cashAccount->getBalanceWithTransferApprove();
     @endphp
 
     <div class="card mb-5 mb-xl-8">
@@ -24,6 +25,13 @@
                         <div class="fs-4 fw-bolder {{ $balance >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($balance, 2, '.', ' ') }}</div>
                     </div>
                     <div class="fw-bold fs-6 text-gray-400">Баланс</div>
+                </div>
+
+                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6">
+                    <div class="d-flex align-items-center">
+                        <div class="fs-4 fw-bolder {{ $balanceWithTransferApprove >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($balanceWithTransferApprove, 2, '.', ' ') }}</div>
+                    </div>
+                    <div class="fw-bold fs-6 text-gray-400">Баланс с подтвержденными трансферами</div>
                 </div>
             </div>
             <div class="card-toolbar">

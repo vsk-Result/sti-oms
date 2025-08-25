@@ -63,10 +63,12 @@ class PaymentService
         $paymentCurrency = 'RUB';
         $paymentCurrencyRate = 1;
 
+
         $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
         $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
         $crmAvansEmployeeId = null;
         $crmAvansDate = null;
+        $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);
 
         $needCreateCrmAvans = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
         $needCreateItr = $requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1';
@@ -114,7 +116,8 @@ class PaymentService
                 $payment,
                 [
                     'employee_id' => $crmAvansEmployeeId,
-                    'date' => $crmAvansDate
+                    'date' => $crmAvansDate,
+                    'crm_not_need_avans' => $crmNotNeedAvans
                 ]
             );
         }
@@ -137,6 +140,7 @@ class PaymentService
         $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
         $crmAvansEmployeeId = null;
         $crmAvansDate = null;
+        $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);
 
         $isCrmEmployee = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
         $isItr = $requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1';
@@ -192,7 +196,8 @@ class PaymentService
                 $payment,
                 [
                     'employee_id' => $crmAvansEmployeeId,
-                    'date' => $crmAvansDate
+                    'date' => $crmAvansDate,
+                    'crm_not_need_avans' => $crmNotNeedAvans
                 ]
             );
         }
@@ -202,7 +207,8 @@ class PaymentService
                 $payment,
                 [
                     'employee_id' => $crmAvansEmployeeId,
-                    'date' => $crmAvansDate
+                    'date' => $crmAvansDate,
+                    'crm_not_need_avans' => $crmNotNeedAvans
                 ]
             );
         }
@@ -245,27 +251,34 @@ class PaymentService
 
     public function createCRMAvans(CashAccountPayment $payment, array $additionalData): CashAccountPayment
     {
-        $avans = new Avans;
-        $avans->u_id = auth()->user()->crm_user_id;
-        $avans->e_id = $additionalData['employee_id'];
-        $avans->type = 'Затраты';
-        $avans->date = $additionalData['date'];
-        $avans->code = $payment->getObjectCode();
-        $avans->issue_date = Carbon::now();
-        $avans->user_change_id = auth()->user()->crm_user_id;
-        $avans->updated_at = Carbon::now();
-        $avans->value = abs($payment->amount);
-        $avans->save();
+        if ($additionalData['crm_not_need_avans']) {
+            $avansId = null;
+        } else {
+            $avans = new Avans;
+            $avans->u_id = auth()->user()->crm_user_id;
+            $avans->e_id = $additionalData['employee_id'];
+            $avans->type = 'Затраты';
+            $avans->date = $additionalData['date'];
+            $avans->code = $payment->getObjectCode();
+            $avans->issue_date = Carbon::now();
+            $avans->user_change_id = auth()->user()->crm_user_id;
+            $avans->updated_at = Carbon::now();
+            $avans->value = abs($payment->amount);
+            $avans->save();
+
+            $avansId = $avans->id;
+        }
 
         $crmEmployee = Employee::find($additionalData['employee_id']);
         $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
 
         $currentAdditionalData['crm_avans'] = [
-            'id' => $avans->id,
+            'id' => $avansId,
             'employee_id' => $additionalData['employee_id'],
             'employee_uid' => $crmEmployee ? $crmEmployee->getUniqueID() : null,
             'employee_name' => $crmEmployee ? $crmEmployee->getFullname() : null,
             'date' => $additionalData['date'],
+            'crm_not_need_avans' => $additionalData['crm_not_need_avans'],
         ];
 
         $payment->update([
@@ -277,6 +290,25 @@ class PaymentService
 
     public function updateCRMAvans(CashAccountPayment $payment, array $additionalData): CashAccountPayment
     {
+        if ($additionalData['crm_not_need_avans']) {
+            $crmEmployee = Employee::find($additionalData['employee_id']);
+            $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+            $currentAdditionalData['crm_avans'] = [
+                'id' => null,
+                'employee_id' => $additionalData['employee_id'],
+                'employee_uid' => $crmEmployee ? $crmEmployee->getUniqueID() : null,
+                'employee_name' => $crmEmployee ? $crmEmployee->getFullname() : null,
+                'date' => $additionalData['date'],
+            ];
+
+            $payment->update([
+                'additional_data' => json_encode($currentAdditionalData)
+            ]);
+
+            return $payment;
+        }
+
         $crmAvansData = $payment->getCrmAvansData();
         $avans = Avans::find($crmAvansData['id']);
 

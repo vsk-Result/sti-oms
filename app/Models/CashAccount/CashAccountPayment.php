@@ -171,6 +171,7 @@ class CashAccountPayment extends Model implements Audit, HasMedia
             'employee_uid' => $data['employee_uid'] ?? null,
             'employee_name' => $data['employee_name'] ?? null,
             'date' => $data['date'] ?? null,
+            'crm_not_need_avans' => $data['crm_not_need_avans'] ?? false,
         ];
     }
 

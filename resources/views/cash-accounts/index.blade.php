@@ -27,36 +27,38 @@
     <div class="row g-5 g-xl-8 mb-6">
         @forelse($responsibleCashAccounts as $cashAccount)
             <div class="col-xl-4">
+                    <a href="{{ route('cash_accounts.show', $cashAccount) }}">
                 <div class="card card-xl-stretch mb-xl-8">
-                    <div class="card-body d-flex flex-column p-0 position-relative">
+                        <div class="card-body d-flex flex-column p-0 position-relative">
 
-                        @if ($cashAccount->sharedUsers->count() > 0)
-                            <span class=" position-absolute end-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Доступна другим пользователям">
-                                <span class="btn btn-sm btn-icontranslate-middle" data-kt-password-meter-control="visibility">
-                                    <i class="bi bi-eye fs-2"></i>
+                            @if ($cashAccount->sharedUsers->count() > 0)
+                                <span class=" position-absolute end-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Доступна другим пользователям">
+                                    <span class="btn btn-sm btn-icontranslate-middle" data-kt-password-meter-control="visibility">
+                                        <i class="bi bi-eye fs-2"></i>
+                                    </span>
                                 </span>
-                            </span>
-                        @endif
+                            @endif
 
-                        <div class="d-flex flex-stack flex-grow-1 card-p">
-                            <div class="d-flex flex-column me-2">
-                                <a href="{{ route('cash_accounts.show', $cashAccount) }}" class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</a>
+                            <div class="d-flex flex-stack flex-grow-1 card-p">
+                                <div class="d-flex flex-column me-2">
+                                    <div class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</div>
 
-                                <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
+                                    <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
 
-                                <div class="d-flex gap-1 flex-row mt-4">
-                                    @foreach($cashAccount->objects->sortBy('code') as $object)
-                                        <a href="{{ route('objects.show', $object->id) }}"><span class="badge badge-light">{{ $object->code }}</span></a>
-                                    @endforeach
+                                    <div class="d-flex gap-1 flex-row mt-4">
+                                        @foreach($cashAccount->objects->sortBy('code') as $object)
+                                           <span class="badge badge-light">{{ $object->code }}</span>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
 
-                            <span class="symbol symbol-50px">
-                                <span style="width: 100px" class="symbol-label fs-5 fw-bold {{ $cashAccount->getBalance() < 0 ? 'bg-light-danger text-danger' : 'bg-light-success text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
-                            </span>
+                                <span class="symbol symbol-50px">
+                                    <span style="width: 100px" class="symbol-label fs-5 fw-bold {{ $cashAccount->getBalance() < 0 ? 'bg-light-danger text-danger' : 'bg-light-success text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
+                                </span>
+                            </div>
                         </div>
-                    </div>
                 </div>
+                    </a>
             </div>
         @empty
             <p class="text-gray-900-75 fw-semibold fs-5 mt-8">
@@ -76,25 +78,27 @@
             @foreach($sharedCashAccounts as $cashAccount)
                 <div class="col-xl-4">
                     <div class="card card-xl-stretch mb-xl-8">
-                        <div class="card-body d-flex flex-column p-0">
-                            <div class="d-flex flex-stack flex-grow-1 card-p">
-                                <div class="d-flex flex-column me-2">
-                                    <a href="{{ route('cash_accounts.show', $cashAccount) }}" class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</a>
+                        <a href="{{ route('cash_accounts.show', $cashAccount) }}">
+                            <div class="card-body d-flex flex-column p-0">
+                                <div class="d-flex flex-stack flex-grow-1 card-p">
+                                    <div class="d-flex flex-column me-2">
+                                        <div class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</div>
 
-                                    <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
+                                        <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
 
-                                    <div class="d-flex gap-1 flex-row mt-4">
-                                        @foreach($cashAccount->objects->sortBy('code') as $object)
-                                            <a href="{{ route('objects.show', $object->id) }}"><span class="badge badge-light">{{ $object->code }}</span></a>
-                                        @endforeach
+                                        <div class="d-flex gap-1 flex-row mt-4">
+                                            @foreach($cashAccount->objects->sortBy('code') as $object)
+                                               <span class="badge badge-light">{{ $object->code }}</span>
+                                            @endforeach
+                                        </div>
                                     </div>
-                                </div>
 
-                                <span class="symbol symbol-50px">
-                                    <span style="width: 100px" class="symbol-label fs-5 fw-bold {{ $cashAccount->getBalance() < 0 ? 'bg-light-danger text-danger' : 'bg-light-success text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
-                                </span>
+                                    <span class="symbol symbol-50px">
+                                        <span style="width: 100px" class="symbol-label fs-5 fw-bold {{ $cashAccount->getBalance() < 0 ? 'bg-light-danger text-danger' : 'bg-light-success text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             @endforeach

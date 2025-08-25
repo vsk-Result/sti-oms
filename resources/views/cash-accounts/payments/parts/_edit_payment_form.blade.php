@@ -166,6 +166,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-4 fv-row">
+                        <div class="mb-1" style="padding-top: 38px;">
+                            <label class="form-check form-check-custom form-check-solid form-check-inline gap-2">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="crm_not_need_avans"
+                                    {{ $payment->getCrmAvansData()['crm_not_need_avans'] ? 'checked' : '' }}
+                                />
+
+                                Не создавать аванс в CRM
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="edit-itr" class="row border-dashed border-warning p-3 mb-4" style="margin-top: -24px; display: none">
