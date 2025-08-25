@@ -9,7 +9,7 @@
         <div class="col-lg-12">
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-6">
-                    <div class="card-title">Отчет доходов и расходов за {{ $year }}</div>
+                    <div class="card-title">Отчет о доходах и расходах на {{ now()->format('d.m.Y') }} по объекту {{ $object->getName() }}</div>
 
                     <div class="card-toolbar">
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
@@ -55,7 +55,7 @@
                                     <th class="min-w-200px">Накопительные</th>
                                 </tr>
                                 <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
-                                    <th class="min-w-250px ps-2">Заказчик</th>
+                                    <th class="min-w-250px ps-2">Доходная часть</th>
                                     <th class="min-w-250px ps-2">Категория</th>
                                     @foreach($reportInfo['monthsFull'] as $month)
                                         <th class="min-w-200px">Сумма</th>
@@ -100,7 +100,7 @@
 
                                 <tr class="total-row">
                                     <td class="ps-5"></td>
-                                    <td>Итого выручка: </td>
+                                    <td>Итого доходы: </td>
 
                                     @foreach($reportInfo['months'] as $month)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['total'][$year][$month], 'RUB', 0, true) }}</td>
@@ -286,7 +286,7 @@
 @push('scripts')
     <script>
         $(function() {
-            // mainApp.initFreezeTable(1);
+            mainApp.initFreezeTable(2);
         });
 
         $(document).on('focus', '.db-field', function() {

@@ -21,7 +21,7 @@ class PaymentReceiveReportExportController extends Controller
 
         return Excel::download(
             new Export($reportInfo, $year),
-            $object->code . '_Отчет_доходов_и_расходов.xlsx'
+            'Отчет о доходах и расходах на ' . now()->format('d.m.Y') . ' по объекту ' . $object->getName() . '.xlsx'
         );
     }
 }

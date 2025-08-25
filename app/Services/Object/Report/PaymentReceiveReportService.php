@@ -148,10 +148,12 @@ class PaymentReceiveReportService
                 }
             }
 
-            $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
-                ->where('is_main', true)
-                ->where('code', $object->code)
-                ->sum('amount'));
+//            $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
+//                ->where('is_main', true)
+//                ->where('code', $object->code)
+//                ->sum('amount'));
+
+            $salaryWorkers = 0;
 
             $salaryItr = -abs($itrAmount);
             $salaryTaxes = -abs(0);

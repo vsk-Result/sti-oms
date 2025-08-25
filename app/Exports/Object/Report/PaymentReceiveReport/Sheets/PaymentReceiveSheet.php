@@ -39,7 +39,7 @@ class PaymentReceiveSheet implements
         $sheet->getStyle('A1:O2')->getAlignment()->setVertical('center')->setHorizontal('center');
 
         $sheet->setCellValue('A1', 'Отчет доходов и расходов');
-        $sheet->setCellValue('A2', 'Заказчик');
+        $sheet->setCellValue('A2', 'Доходная часть');
         $sheet->setCellValue('B2', 'Категория');
 
         $sheet->mergeCells('A1:B1');
@@ -125,7 +125,7 @@ class PaymentReceiveSheet implements
         $row++;
 
         $sheet->setCellValue('A' . $row, '');
-        $sheet->setCellValue('B' . $row, 'Итого выручка:');
+        $sheet->setCellValue('B' . $row, 'Итого доходы:');
         $sheet->getRowDimension($row)->setRowHeight(50);
         $sheet->getStyle('A' . $row . ':' . $column . $row)->getFont()->setBold(true);
         $sheet->getStyle('A' . $row . ':' . $column . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
