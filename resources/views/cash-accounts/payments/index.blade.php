@@ -127,6 +127,7 @@
                             <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
                             <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
                             <th class="min-w-200px">Вложения</th>
+                            <th class="min-w-100px">Проверка</th>
                             <th class="min-w-125px text-end rounded-end pe-4"></th>
                         </tr>
                     </thead>
@@ -175,6 +176,20 @@
                                         <a target="_blank" href="{{ $media->getUrl() }}" class="text-gray-800 text-hover-primary">{{ $media->file_name . '      (' . $media->human_readable_size . ')' }}</a>
                                     </div>
                                 @endforeach
+                            </td>
+                            <td>
+                                @if ($payment->isObjectType())
+                                    <label class="form-check form-check-custom form-check-solid form-check-inline">
+                                        <input
+                                                {{ $payment->canValidate() ? '' : 'disabled' }}
+                                                {{ $payment->isValid() ? 'checked' : '' }}
+                                                data-validate-ca-payment-url="{{ route('cash_accounts.payments.validate.update', [$cashAccount, $payment]) }}"
+                                                class="ca-payment-valid-check form-check-input"
+                                                type="checkbox"
+                                                name="validate"
+                                        />
+                                    </label>
+                                @endif
                             </td>
                             <td class="text-end text-dark fw-bolder">
                                 @if ($payment->hasActions())
@@ -554,6 +569,19 @@
         $('.description-and').on('click', function() {
             const $input = $('input[name=description]');
             $input .val($input.val() + '^^');
+        });
+
+        $('.ca-payment-valid-check').on('change', function() {
+            const isValid = $(this).prop('checked');
+            const url = $(this).data('validate-ca-payment-url');
+
+            mainApp.sendAJAX(
+                url,
+                'POST',
+                {
+                    valid: isValid
+                }
+            );
         });
 
         mainApp.initFreezeTable(1);

@@ -33,7 +33,7 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     const TYPE_REQUEST = 2;
 
     const STATUS_ACTIVE = 0;
-    const STATUS_NEED_CORRECT = 1;
+    const STATUS_VALID = 1;
     const STATUS_CLOSED = 2;
     const STATUS_DELETED = 3;
     const STATUS_WAITING = 4;
@@ -174,6 +174,15 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         ];
     }
 
+    public function getObjectPaymentData(): array
+    {
+        $data = $this->getAdditionalData('object_payment');
+
+        return [
+            'object_payment_id' => $data['object_payment_id'] ?? null,
+        ];
+    }
+
     public function getItrData(): array
     {
         $data = $this->getAdditionalData('itr');
@@ -215,6 +224,11 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         return $this->type_id === self::TYPE_TRANSFER;
     }
 
+    public function isObjectType(): bool
+    {
+        return $this->type_id === self::TYPE_OBJECT;
+    }
+
     public function getTransferStatus(): string
     {
         $requestData = $this->getAdditionalData('transfer_cash');
@@ -244,10 +258,31 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
     public function hasActions(): bool
     {
+        if ($this->isValid()) {
+            return auth()->user()->hasRole('super-admin');
+        }
+
         if ($this->isTransfer() || $this->isRequest()) {
             return $this->isWaiting() || auth()->user()->hasRole('super-admin');
         }
 
         return $this->cashAccount->isCurrentResponsible();
+    }
+
+    public function isValid(): bool
+    {
+        return $this->status_id === self::STATUS_VALID;
+    }
+
+    public function canValidate(): bool
+    {
+        $objectPaymentData = $this->getObjectPaymentData();
+
+        $isSuperAdmin = auth()->user()->hasRole('super-admin');
+        $hasValidPermission = auth()->user()->can('index cash-accounts-validate');
+        $isCurrentSharedUser = in_array(auth()->id(), $this->cashAccount->sharedUsers->pluck('id')->toArray());
+        $isNullObjectPaymentId = is_null($objectPaymentData['object_payment_id']);
+
+        return $isSuperAdmin || ($hasValidPermission && $isCurrentSharedUser && $isNullObjectPaymentId);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services\CashAccount;
 
 use App\Helpers\Sanitizer;
 use App\Models\CashAccount\CashAccount;
+use App\Models\CashAccount\CashAccountPayment;
 use App\Models\Status;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -77,5 +78,12 @@ class CashAccountService
     public function getAccountsWithoutResponsible(CashAccount $cashAccount)
     {
         return CashAccount::where('status_id', CashAccount::STATUS_ACTIVE)->where('id', '!=', $cashAccount->id)->get();
+    }
+
+    public function getCashAccountsWithValidPayments()
+    {
+        return CashAccount::whereHas('payments', function($q) {
+            $q->where('status_id', CashAccountPayment::STATUS_VALID);
+        })->get();
     }
 }

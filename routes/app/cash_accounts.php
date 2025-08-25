@@ -5,6 +5,7 @@ use App\Http\Controllers\CashAccount\RequestCashController;
 use App\Http\Controllers\CashAccount\TransferCashController;
 use App\Http\Controllers\CashAccount\Payment\PaymentController;
 use App\Http\Controllers\CashAccount\Payment\ExportController;
+use App\Http\Controllers\CashAccount\Payment\PaymentValidateController;
 
 // Запрос средств у другой кассы
 
@@ -39,3 +40,7 @@ Route::post('cash-accounts/{cashAccount}/payments', [PaymentController::class, '
 Route::get('cash-accounts/{cashAccount}/payments/{payment}/edit', [PaymentController::class, 'edit'])->name('cash_accounts.payments.edit');
 Route::post('cash-accounts/{cashAccount}/payments/{payment}', [PaymentController::class, 'update'])->name('cash_accounts.payments.update');
 Route::delete('cash-accounts/{cashAccount}/payments/{payment}/destroy', [PaymentController::class, 'destroy'])->name('cash_accounts.payments.destroy');
+
+// Проверка оплаты по кассе
+
+Route::post('cash-accounts/{cashAccount}/payments/{payment}/validate', [PaymentValidateController::class, 'update'])->name('cash_accounts.payments.validate.update');

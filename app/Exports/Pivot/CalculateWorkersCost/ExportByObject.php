@@ -8,12 +8,10 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class ExportByObject implements WithMultipleSheets
 {
     private array $info;
-    private $year;
 
-    public function __construct(array $info, $year)
+    public function __construct(array $info)
     {
         $this->info = $info;
-        $this->year = $year;
     }
 
     public function sheets(): array
@@ -21,7 +19,7 @@ class ExportByObject implements WithMultipleSheets
         $sheets = [];
 
         foreach ($this->info['objects'] as $objectName => $info) {
-            $sheets[] = new ObjectPivotSheet($objectName, $info, $this->year);
+            $sheets[] = new ObjectPivotSheet($objectName, $info, $this->info['years']);
         }
 
         return $sheets;

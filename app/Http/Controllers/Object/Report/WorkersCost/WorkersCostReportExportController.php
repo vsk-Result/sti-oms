@@ -18,7 +18,7 @@ class WorkersCostReportExportController extends Controller
         $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects(date('Y'), [$object->id]);
 
         return Excel::download(
-            new ExportByObject($infoByObjects, date('Y')),
+            new ExportByObject($infoByObjects),
             'Расчет стоимости рабочих по объекту ' . $object->getName() . '.xlsx'
         );
     }

@@ -16,13 +16,13 @@ class ObjectPivotSheet implements
     private string $sheetName;
 
     private array $info;
-    private $year;
+    private array $years;
 
-    public function __construct(string $sheetName, array $info, $year)
+    public function __construct(string $sheetName, array $info, array $years)
     {
         $this->sheetName = $sheetName;
         $this->info = $info;
-        $this->year = $year;
+        $this->years = $years;
     }
 
     public function title(): string
@@ -32,135 +32,173 @@ class ObjectPivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $year = $this->year;
-        $quarts = [
-            '1 квартал' => [$year . '-01-01', $year . '-03-31'],
-            '2 квартал' => [$year . '-04-01', $year . '-06-30'],
-            '3 квартал' => [$year . '-07-01', $year . '-09-30'],
-            '4 квартал' => [$year . '-10-01', $year . '-12-31'],
-        ];
+        $lastColumnIndex = 3 + count($this->years) * 8;
 
         $sheet->setCellValue('A1', 'Раздел');
-        $sheet->setCellValue('B1', $year);
-        $sheet->setCellValue('J1', 'Итого');
-        $sheet->setCellValue('B2', '1 квартал');
-        $sheet->setCellValue('C2', 'Расчет по часу');
-        $sheet->setCellValue('D2', '2 квартал');
-        $sheet->setCellValue('E2', 'Расчет по часу');
-        $sheet->setCellValue('F2', '3 квартал');
-        $sheet->setCellValue('G2', 'Расчет по часу');
-        $sheet->setCellValue('H2', '4 квартал');
-        $sheet->setCellValue('I2', 'Расчет по часу');
-        $sheet->setCellValue('J2', 'Сумма');
-        $sheet->setCellValue('K2', 'Расчет по часу');
 
-        $sheet->mergeCells('A1:A2');
-        $sheet->mergeCells('B1:I1');
-        $sheet->mergeCells('J1:K1');
+        $columnIndex = 2;
+        foreach ($this->years as $year => $quarts) {
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($column . '1', $year);
+            $yearColumn = $column;
+
+            foreach ($quarts as $quart => $dates) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . '2', $quart);
+                $columnIndex++;
+
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . '2', 'Расчет по часу');
+                $columnIndex++;
+            }
+
+            $sheet->mergeCells($yearColumn . '1:' . $column . '1');
+        }
+
+        $columnTotalOne = $this->getColumnWord($columnIndex);
+        $sheet->setCellValue($columnTotalOne . '1', 'Итого');
+        $sheet->setCellValue($columnTotalOne . '2', 'Сумма');
+        $columnIndex++;
+
+        $columnTotalTwo = $this->getColumnWord($columnIndex);
+        $sheet->setCellValue($columnTotalTwo . '2', 'Расчет по часу');
+
+        $sheet->mergeCells($columnTotalOne . '1:' . $columnTotalTwo . '1');
+
 
         $rowIndex = 3;
-        foreach ($this->info['data'] as $items) {
-            foreach($items as $item) {
-                if (str_starts_with($item['group'], '- ')) {
-                    $sheet->setCellValue('A' . $rowIndex, '    ' . $item['group']);
-                } else {
-                    $sheet->setCellValue('A' . $rowIndex, $item['group']);
-                }
-
-                $sheet->setCellValue('B' . $rowIndex, $this->formatAmount($item['quarts']['1 квартал']['amount']));
-                $sheet->setCellValue('C' . $rowIndex, $this->formatAmount($item['quarts']['1 квартал']['rate']));
-
-                $sheet->setCellValue('D' . $rowIndex, $this->formatAmount($item['quarts']['2 квартал']['amount']));
-                $sheet->setCellValue('E' . $rowIndex, $this->formatAmount($item['quarts']['2 квартал']['rate']));
-
-                $sheet->setCellValue('F' . $rowIndex, $this->formatAmount($item['quarts']['3 квартал']['amount']));
-                $sheet->setCellValue('G' . $rowIndex, $this->formatAmount($item['quarts']['3 квартал']['rate']));
-
-                $sheet->setCellValue('H' . $rowIndex, $this->formatAmount($item['quarts']['4 квартал']['amount']));
-                $sheet->setCellValue('I' . $rowIndex, $this->formatAmount($item['quarts']['4 квартал']['rate']));
-
-                $sheet->setCellValue('J' . $rowIndex, $this->formatAmount($item['total']['amount']));
-                $sheet->setCellValue('K' . $rowIndex, $this->formatAmount($item['total']['rate']));
-
-                $sheet->getRowDimension($rowIndex)->setRowHeight(30);
-                $rowIndex++;
+        foreach ($this->info['data'] as $group => $groupInfo) {
+            if (str_starts_with($group, '- ')) {
+                $sheet->setCellValue('A' . $rowIndex, '    ' . $group);
+            } else {
+                $sheet->setCellValue('A' . $rowIndex, $group);
             }
+
+            $columnIndex = 2;
+            foreach ($this->years as $year => $quarts) {
+                foreach ($quarts as $quart => $dates) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['amount'][$year][$quart]) ? $groupInfo['amount'][$year][$quart] : '-');
+                    $columnIndex++;
+
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['rate'][$year][$quart]) ? $groupInfo['rate'][$year][$quart] : '-');
+                    $columnIndex++;
+                }
+            }
+
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['total']['amount']['total']) ? $groupInfo['total']['amount']['total'] : '-');
+            $columnIndex++;
+
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['total']['rate']['total']) ? $groupInfo['total']['rate']['total'] : '-');
+
+            $sheet->getRowDimension($rowIndex)->setRowHeight(30);
+            $rowIndex++;
         }
+
 
         $sheet->setCellValue('A' . $rowIndex, 'Итого');
         $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
-        $sheet->setCellValue('B' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['1 квартал']));
-        $sheet->setCellValue('C' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['1 квартал']));
+        $columnIndex = 2;
+        foreach ($this->years as $year => $quarts) {
+            foreach ($quarts as $quart => $dates) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['amount'][$year][$quart]) ? $this->info['total']['amount'][$year][$quart] : '-');
+                $columnIndex++;
 
-        $sheet->setCellValue('D' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['2 квартал']));
-        $sheet->setCellValue('E' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['2 квартал']));
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['rate'][$year][$quart]) ? $this->info['total']['rate'][$year][$quart] : '-');
+                $columnIndex++;
+            }
+        }
 
-        $sheet->setCellValue('F' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['3 квартал']));
-        $sheet->setCellValue('G' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['3 квартал']));
+        $column = $this->getColumnWord($columnIndex);
+        $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['amount']['total']) ? $this->info['total']['amount']['total'] : '-');
+        $columnIndex++;
 
-        $sheet->setCellValue('H' . $rowIndex, $this->formatAmount($this->info['total']['amount'][$year]['quarts']['4 квартал']));
-        $sheet->setCellValue('I' . $rowIndex, $this->formatAmount($this->info['total']['rate'][$year]['quarts']['4 квартал']));
+        $column = $this->getColumnWord($columnIndex);
+        $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['rate']['total']) ? $this->info['total']['rate']['total'] : '-');
 
-        $sheet->setCellValue('J' . $rowIndex, $this->formatAmount($this->info['total']['total']['amount']));
-        $sheet->setCellValue('K' . $rowIndex, $this->formatAmount($this->info['total']['total']['rate']));
-
+        $sheet->getRowDimension($rowIndex)->setRowHeight(30);
         $rowIndex++;
+
 
         $sheet->setCellValue('A' . $rowIndex, 'Количество часов рабочих (по данным из CRM)');
         $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
-        $sheet->setCellValue('B' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['1 квартал'], 0, '.', ' '));
-        $sheet->mergeCells('B' . $rowIndex . ':C' . $rowIndex);
+        $columnIndex = 2;
+        foreach ($this->years as $year => $quarts) {
+            foreach ($quarts as $quart => $dates) {
+                $columnOne = $this->getColumnWord($columnIndex);
+                $columnTwo = $this->getColumnWord($columnIndex + 1);
+                $sheet->setCellValue($columnOne . $rowIndex, is_valid_amount_in_range($this->info['hours'][$year][$quart]) ? $this->info['hours'][$year][$quart] : '-');
+                $sheet->mergeCells($columnOne . $rowIndex . ':' . $columnTwo . $rowIndex);
+                $columnIndex += 2;
+            }
+        }
 
-        $sheet->setCellValue('D' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['2 квартал'], 0, '.', ' '));
-        $sheet->mergeCells('D' . $rowIndex . ':E' . $rowIndex);
+        $columnOne = $this->getColumnWord($columnIndex);
+        $columnTwo = $this->getColumnWord($columnIndex + 1);
+        $sheet->setCellValue($columnOne . $rowIndex, is_valid_amount_in_range($this->info['total']['hours']['total']) ? $this->info['total']['hours']['total'] : '-');
+        $sheet->mergeCells($columnOne . $rowIndex . ':' . $columnTwo . $rowIndex);
+        $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
-        $sheet->setCellValue('F' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['3 квартал'], 0, '.', ' '));
-        $sheet->mergeCells('F' . $rowIndex . ':G' . $rowIndex);
 
-        $sheet->setCellValue('H' . $rowIndex, number_format($this->info['rates'][$year]['quarts']['4 квартал'], 0, '.', ' '));
-        $sheet->mergeCells('H' . $rowIndex . ':I' . $rowIndex);
 
-        $sheet->setCellValue('J' . $rowIndex, number_format($this->info['total']['total']['hours'], 0, '.', ' '));
-        $sheet->mergeCells('J' . $rowIndex . ':K' . $rowIndex);
-
+        $lastColumn = $this->getColumnWord($lastColumnIndex);
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
 
         $sheet->getRowDimension(1)->setRowHeight(30);
         $sheet->getRowDimension(2)->setRowHeight(30);
-        $sheet->getColumnDimension('A')->setWidth(100);
-        $sheet->getColumnDimension('B')->setWidth(30);
-        $sheet->getColumnDimension('C')->setWidth(30);
-        $sheet->getColumnDimension('D')->setWidth(30);
-        $sheet->getColumnDimension('E')->setWidth(30);
-        $sheet->getColumnDimension('F')->setWidth(30);
-        $sheet->getColumnDimension('G')->setWidth(30);
-        $sheet->getColumnDimension('H')->setWidth(30);
-        $sheet->getColumnDimension('I')->setWidth(30);
-        $sheet->getColumnDimension('J')->setWidth(30);
-        $sheet->getColumnDimension('K')->setWidth(30);
+        $sheet->getColumnDimension('A')->setWidth(80);
 
-        $sheet->getStyle('A1:K2')->getFont()->setBold(true);
-        $sheet->getStyle('A' . ($rowIndex - 1) . ':K' . $rowIndex)->getFont()->setBold(true);
+        $columnIndex = 2;
+        foreach ($this->years as $quarts) {
+            foreach ($quarts as $dates) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->getColumnDimension($column)->setWidth(18);
+                $columnIndex++;
 
-        $sheet->getStyle('B2:K' . ($rowIndex - 1))->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(false);
-        $sheet->getStyle('A1:K2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('B' . $rowIndex . ':K' . $rowIndex)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('A1:K' . $rowIndex)->getAlignment()->setVertical('center')->setWrapText(false);
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->getColumnDimension($column)->setWidth(18);
+                $columnIndex++;
+            }
+        }
 
-        $sheet->getStyle('B3:K'. ($rowIndex - 1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $column = $this->getColumnWord($columnIndex);
+        $sheet->getColumnDimension($column)->setWidth(30);
+        $columnIndex++;
 
-        $sheet->getStyle('A1:K'. $rowIndex)->applyFromArray([
+        $column = $this->getColumnWord($columnIndex);
+        $sheet->getColumnDimension($column)->setWidth(30);
+
+        $sheet->getStyle('A1:' . $lastColumn . '2')->getFont()->setBold(true);
+        $sheet->getStyle('A' . ($rowIndex - 1) . ':' . $lastColumn . $rowIndex)->getFont()->setBold(true);
+
+        $sheet->getStyle('A1:' . $lastColumn . $rowIndex)->getAlignment()->setVertical('center')->setWrapText(false);
+        $sheet->getStyle('B3:' . $lastColumn . $rowIndex)->getAlignment()->setHorizontal('right')->setWrapText(false);
+        $sheet->getStyle('A1:' . $lastColumn . '2')->getAlignment()->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('B' . $rowIndex . ':' . $lastColumn . $rowIndex)->getAlignment()->setHorizontal('center')->setWrapText(false);
+
+        $sheet->getStyle('B3:' . $lastColumn . $rowIndex)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+        $sheet->getStyle('A1:' . $lastColumn . $rowIndex)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'aaaaaa']]]
         ]);
 
-        $sheet->getStyle('A' . ($rowIndex - 1) . ':K' . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-        $sheet->getStyle('J1:K' . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
+        $sheet->getStyle('A' . ($rowIndex - 1) . ':' . $lastColumn . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
     }
 
     public function formatAmount($amount)
     {
         return $amount == 0 ? '-' : $amount;
+    }
+
+    private function getColumnWord($n) {
+        $n--;
+        return ($n<26) ? chr(ord('A') + $n) : 'A' .  chr(ord('A') + $n % 26);
     }
 }

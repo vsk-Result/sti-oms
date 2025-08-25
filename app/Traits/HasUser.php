@@ -20,7 +20,7 @@ trait HasUser
     public static function bootHasUser()
     {
         static::creating(function ($model) {
-            $model->created_by_user_id = auth()->id();
+            $model->created_by_user_id = auth()->id() ?? 1;
         });
 
         static::updating(function ($model) {

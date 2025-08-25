@@ -387,4 +387,19 @@ class PaymentService
             'additional_data' => json_encode($additionalData)
         ]);
     }
+
+    public function createObjectPayment(CashAccountPayment $payment, array $additionalData): CashAccountPayment
+    {
+        $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+        $currentAdditionalData['object_payment'] = [
+            'object_payment_id' => $additionalData['object_payment_id'],
+        ];
+
+        $payment->update([
+            'additional_data' => json_encode($currentAdditionalData)
+        ]);
+
+        return $payment;
+    }
 }
