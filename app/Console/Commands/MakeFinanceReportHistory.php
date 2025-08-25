@@ -875,7 +875,7 @@ class MakeFinanceReportHistory extends HandledCommand
                 $summary[$year]['deviation_plan_percent'] = 0;
 
                 $strahPlanPayment = \App\Models\CashFlow\PlanPayment::where('name', 'Страховые взносы')->first();
-                $ndflPlanPayment = PlanPayment::where('name', 'НДФЛ')->first();
+                $ndflPlanPayment = \App\Models\CashFlow\PlanPayment::where('name', 'НДФЛ')->first();
 
                 $summary[$year]['tax_debt'] = 0;
                 $summary[$year]['tax_debt'] += -abs($strahPlanPayment ? $strahPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0);
