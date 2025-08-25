@@ -874,11 +874,12 @@ class MakeFinanceReportHistory extends HandledCommand
                 $summary[$year]['fact_ready_percent'] = 0;
                 $summary[$year]['deviation_plan_percent'] = 0;
 
-                $summary[$year]['tax_debt'] = -TaxPlanItem::where('object_id', 0)
-                    ->where('paid', false)
-                    ->where('due_date', '<', Carbon::now())
-                    ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль', 'Страховые взносы'])
-                    ->sum('amount');
+                $strahPlanPayment = \App\Models\CashFlow\PlanPayment::where('name', 'Страховые взносы')->first();
+                $ndflPlanPayment = PlanPayment::where('name', 'НДФЛ')->first();
+
+                $summary[$year]['tax_debt'] = 0;
+                $summary[$year]['tax_debt'] += -abs($strahPlanPayment ? $strahPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0);
+                $summary[$year]['tax_debt'] += -abs($ndflPlanPayment ? $ndflPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0);
 
                 $summary[$year]['objectBalance'] += $summary[$year]['tax_debt'];
                 $summary[$year]['prognozBalance'] += $summary[$year]['tax_debt'];

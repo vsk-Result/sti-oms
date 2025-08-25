@@ -156,7 +156,7 @@ class PaymentReceiveReportService
             $salaryItr = -abs($itrAmount);
             $salaryTaxes = -abs(0);
             $transfer = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
-            $generalCosts = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0));
+            $generalCosts = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0) / 100);
             $accruedTaxes = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($receivePercents[$year . '-' . $month][$object->id] ?? 0));
 
             $paymentInfo['contractors']['material'][$year][$month] = $contractorsMaterial;
