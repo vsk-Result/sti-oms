@@ -3,6 +3,7 @@
 namespace App\Services\DebtImport\Imports;
 
 use App\Models\Object\BObject;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DebtImport\ServiceImportFrom1C as ServiceExcelImport;
 use Illuminate\Http\UploadedFile;
@@ -47,6 +48,7 @@ class ServiceImportFrom1C extends BaseImport
             $amount = $row[13] ?? 0;
             $amountWithoutNDS = $row[21] ?? 0;
             $inn = trim($row[22] ?? '');
+            $period = trim($row[23] ?? '');
 
             if ($organizationType !== 'НАКЛАДНЫЕ/УСЛУГИ') {
                 continue;
@@ -94,6 +96,7 @@ class ServiceImportFrom1C extends BaseImport
                     'organization_name' => $organization->name,
                     'amount' => 0,
                     'amount_without_nds' => 0,
+                    'details' => [],
                 ];
 
                 $objectOrganizationExist[$object->id][$organization->id] = true;
@@ -104,6 +107,13 @@ class ServiceImportFrom1C extends BaseImport
 
             $importInfo['data'][$object->id]['total_amount'] += -$amount;
             $importInfo['data'][$object->id]['total_amount_without_nds'] += -$amountWithoutNDS;
+
+            if (! empty($period)) {
+                $importInfo['data'][$object->id]['organizations'][$organization->id]['details'][] = [
+                    'date' => Carbon::parse($period)->format('Y-m-d'),
+                    'amount' => -$amount
+                ];
+            }
         }
 
         return $importInfo;

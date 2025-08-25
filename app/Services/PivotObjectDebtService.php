@@ -137,6 +137,7 @@ class PivotObjectDebtService
                             'amount_without_nds' => 0,
                             'total_amount' => 0,
                             'total_amount_without_nds' => 0,
+                            'details' => []
                         ];
                     }
 
@@ -151,6 +152,7 @@ class PivotObjectDebtService
                     $info[$objId]['organizations'][$organizationData['organization_name']]['balance_contract'] += $organizationData['balance_contract'] ?? 0;
                     $info[$objId]['organizations'][$organizationData['organization_name']]['total_amount'] += ($organizationData['amount'] ?? 0) + ($organizationData['avans'] ?? 0);
                     $info[$objId]['organizations'][$organizationData['organization_name']]['total_amount_without_nds'] += ($organizationData['amount_without_nds'] ?? 0) + ($organizationData['avans'] ?? 0);
+                    $info[$objId]['organizations'][$organizationData['organization_name']]['details'] = array_merge($info[$objId]['organizations'][$organizationData['organization_name']]['details'], $organizationData['details'] ?? []);
                 }
             }
 
@@ -205,6 +207,7 @@ class PivotObjectDebtService
                         'amount_without_nds' => 0,
                         'total_amount' => 0,
                         'total_amount_without_nds' => 0,
+                        'details' => [],
                     ];
                 }
 
@@ -219,6 +222,7 @@ class PivotObjectDebtService
                 $total['organizations'][$organizationName]['balance_contract'] += $organizationInfo['balance_contract'] ?? 0;
                 $total['organizations'][$organizationName]['total_amount'] += ($organizationInfo['amount'] ?? 0) + ($organizationInfo['avans'] ?? 0);
                 $total['organizations'][$organizationName]['total_amount_without_nds'] += ($organizationInfo['amount_without_nds'] ?? 0) + ($organizationInfo['avans'] ?? 0);
+                $total['organizations'][$organizationName]['details'] = array_merge($total['organizations'][$organizationName]['details'], $organizationInfo['details'] ?? []);
             }
         }
 
@@ -379,7 +383,7 @@ class PivotObjectDebtService
     private function getClearedDetails(array $details, bool $forView = false): array
     {
         $result = [];
-        $exceptKeys = ['organization_id', 'organization_name'];
+        $exceptKeys = ['organization_id', 'organization_name', 'details'];
 
         if ($forView) {
             $exceptKeys[] = 'balance_contract';

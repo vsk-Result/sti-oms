@@ -87,6 +87,25 @@ if (! function_exists('translate_month')) {
     }
 }
 
+if (! function_exists('translate_year_month_word')) {
+    function translate_year_month_word($month) {
+        $period = str_replace('January', 'Январь', $month);
+        $period = str_replace('February', 'Февраль', $period);
+        $period = str_replace('March', 'Март', $period);
+        $period = str_replace('April', 'Апрель', $period);
+        $period = str_replace('May', 'Май', $period);
+        $period = str_replace('June', 'Июнь', $period);
+        $period = str_replace('July', 'Июль', $period);
+        $period = str_replace('August', 'Август', $period);
+        $period = str_replace('September', 'Сентябрь', $period);
+        $period = str_replace('October', 'Октябрь', $period);
+        $period = str_replace('November', 'Ноябрь', $period);
+        $period = str_replace('December', 'Декабрь', $period);
+
+        return $period;
+    }
+}
+
 if (! function_exists('translate_year_month')) {
     function translate_year_month($date) {
         if (is_null($date) || empty($date)) {

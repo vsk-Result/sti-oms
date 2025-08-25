@@ -3,6 +3,7 @@
 namespace App\Services\DebtImport\Imports;
 
 use App\Models\Object\BObject;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DebtImport\ContractorImportFrom1C as ContractorExcelImport;
 use Illuminate\Http\UploadedFile;
@@ -51,6 +52,7 @@ class ContractorImportFrom1C extends BaseImport
             $amountWithoutNDS = $row[21] ?? 0;
             $inn = trim($row[22] ?? '');
             $type = trim($row[23] ?? '');
+            $period = trim($row[24] ?? '');
 
             if ($type === 'Гарантийное удержание') {
                 continue;
@@ -108,6 +110,7 @@ class ContractorImportFrom1C extends BaseImport
                     'amount' => 0,
                     'avans' => 0,
                     'amount_without_nds' => 0,
+                    'details' => [],
                 ];
 
                 $objectOrganizationExist[$object->id][$organization->id] = true;
@@ -122,6 +125,13 @@ class ContractorImportFrom1C extends BaseImport
             } else {
                 $importInfo['data'][$object->id]['organizations'][$organization->id]['avans'] += -$amount;
                 $importInfo['data'][$object->id]['total_avans'] += -$amount;
+            }
+
+            if (! empty($period)) {
+                $importInfo['data'][$object->id]['organizations'][$organization->id]['details'][] = [
+                    'date' => Carbon::parse($period)->format('Y-m-d'),
+                    'amount' => -$amount
+                ];
             }
         }
 
