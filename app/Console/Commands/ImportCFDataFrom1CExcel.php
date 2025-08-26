@@ -19,11 +19,11 @@ class ImportCFDataFrom1CExcel extends HandledCommand
 
     public function handle()
     {
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         try {
 
