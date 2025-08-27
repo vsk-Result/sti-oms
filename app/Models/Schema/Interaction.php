@@ -56,6 +56,8 @@ class Interaction extends Model implements Audit
             'Belenzia-Maviboni_Переуступка',
             'Belenzia-Milenium_Переуступка_1',
             'Belenzia-Milenium_Переуступка_2',
+            'Milenium-Maviboni_Долг',
+            'ДТГ-Milenium_Сумма',
         ];
     }
 
