@@ -346,7 +346,11 @@
                                     <td class="ps-2">
                                         @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name']])
                                     </td>
-                                    <td class="text-danger text-end pe-2">
+
+                                    @php
+                                        $periodSum = array_sum($periodPivotData['data'][$organizationInfo['organization_name']] ?? []);
+                                    @endphp
+                                    <td class="text-danger text-end pe-2 {{ $periodSum !== 0 && $periodSum != $organizationInfo['amount'] ? 'period-warning' : '' }}">
                                         {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
                                     </td>
 
