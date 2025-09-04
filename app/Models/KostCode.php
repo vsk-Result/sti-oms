@@ -907,8 +907,12 @@ class KostCode
         return $codesWithId;
     }
 
-    public static function getTitleByCode(string $code): string
+    public static function getTitleByCode(string | null $code): string
     {
+        if (empty($code) || is_null($code)) {
+            return '';
+        }
+
         $code = str_replace(',', '.', $code);
         foreach (static::$codes as $codeL1) {
             if ($code === $codeL1['code']) {

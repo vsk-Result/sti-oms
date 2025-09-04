@@ -21,7 +21,8 @@ class ExportController extends Controller
 
     public function store(Request $request, CashAccount $cashAccount): BinaryFileResponse
     {
-        $payments = $this->paymentService->filterPayments($request->toArray());
+        $requestData = array_merge(['cash_account_id' => [$cashAccount->id]], $request->toArray());
+        $payments = $this->paymentService->filterPayments($requestData);
 
         return Excel::download(new Export($payments), 'Оплаты по кассе ' . $cashAccount->name . '.xlsx');
     }
