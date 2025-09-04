@@ -145,6 +145,10 @@
                             <td class="ps-3">
                                 {{ $payment->getType() }}
 
+                                @if (auth()->id() === 1)
+                                    {{ $payments->status_id }}
+                                @endif
+
                                 @if (! is_null($payment->getCrmAvansData()['employee_id']))
                                     <span class="text-warning">(CRM)</span>
                                 @endif
