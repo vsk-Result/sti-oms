@@ -71,7 +71,7 @@ class CashAccountService
     public function updateBalance(CashAccount $cashAccount): void
     {
         $cashAccount->update([
-            'balance_amount' => $cashAccount->start_balance_amount + $cashAccount->payments()->where('status_id', Status::STATUS_ACTIVE)->sum('amount')
+            'balance_amount' => $cashAccount->start_balance_amount + $cashAccount->payments()->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID])->sum('amount')
         ]);
     }
 
