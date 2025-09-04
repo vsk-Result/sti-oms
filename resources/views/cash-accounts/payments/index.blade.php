@@ -146,7 +146,7 @@
                                 {{ $payment->getType() }}
 
                                 @if (auth()->id() === 1)
-                                    {{ $payments->status_id }}
+                                    {{ $payment->status_id }}
                                 @endif
 
                                 @if (! is_null($payment->getCrmAvansData()['employee_id']))
