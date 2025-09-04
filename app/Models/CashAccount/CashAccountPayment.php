@@ -259,6 +259,10 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
     public function hasActions(): bool
     {
+        if (auth()->user()->hasRole('super-admin')) {
+            return true;
+        }
+
         if ($this->isValid()) {
             return auth()->user()->hasRole('super-admin');
         }
