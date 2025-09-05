@@ -161,6 +161,10 @@
                             @else
                                 <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $contract->object->name }}">{{ $contract->object->code }}</span>
                             @endif
+
+                                @if(auth()->id() === 1)
+                                    {{ $mainContract->createdBy->name . ' ' . $mainContract->created_at->format('d.m.Y H:s') }}
+                                @endif
                         </td>
                         <td class="px-3">
                             @if(auth()->user()->can('edit contracts'))
