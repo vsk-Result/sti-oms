@@ -415,14 +415,17 @@
                             $('#create-employee-crm').show();
                             $('#create-itr').hide();
                             $('#create-organization').hide();
+                            $('.organization-select').attr('required', false);
                         } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
                             $('#create-itr').show();
                             $('#create-employee-crm').hide();
                             $('#create-organization').hide();
+                            $('.organization-select').attr('required', false);
                         } else {
                             $('#create-employee-crm').hide();
                             $('#create-itr').hide();
                             $('#create-organization').show();
+                            $('.organization-select').attr('required', true);
                         }
                     });
 
@@ -477,14 +480,17 @@
                                 $('#create-employee-crm').show();
                                 $('#create-itr').hide();
                                 $('#create-organization').hide();
+                                $('.organization-select').attr('required', false);
                             } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
                                 $('#create-itr').show();
                                 $('#create-employee-crm').hide();
                                 $('#create-organization').hide();
+                                $('.organization-select').attr('required', false);
                             } else {
                                 $('#create-employee-crm').hide();
                                 $('#create-itr').hide();
                                 $('#create-organization').show();
+                                $('.organization-select').attr('required', true);
                             }
                         });
 
@@ -539,14 +545,17 @@
                             $('#edit-employee-crm').show();
                             $('#edit-itr').hide();
                             $('#edit-organization').hide();
+                            $('.organization-select').attr('required', false);
                         } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
                             $('#edit-itr').show();
                             $('#edit-employee-crm').hide();
                             $('#edit-organization').hide();
+                            $('.organization-select').attr('required', false);
                         } else {
                             $('#edit-employee-crm').hide();
                             $('#edit-itr').hide();
                             $('#edit-organization').show();
+                            $('.organization-select').attr('required', true);
                         }
                     });
 

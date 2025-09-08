@@ -93,7 +93,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Контрагент</label>
                             <div class="position-relative mb-3">
-                                <select name="organization_id" data-control="select2" class="organization-select form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
+                                <select name="organization_id" required data-control="select2" class="organization-select form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     <option value="{{ $payment->organization_id }}" selected>{{ \App\Models\Organization::find($payment->organization_id)?->name }}</option>
                                 </select>
 
