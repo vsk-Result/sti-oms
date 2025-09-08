@@ -207,6 +207,7 @@
                                     class="form-control form-control-lg form-control-solid"
                                     rows="3"
                                     name="description"
+                                    required
                                 >{{ old('description', $payment->description) }}</textarea>
                             </div>
                         </div>
