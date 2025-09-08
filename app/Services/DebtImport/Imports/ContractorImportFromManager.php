@@ -80,7 +80,7 @@ class ContractorImportFromManager extends BaseImport
                 $neotrabotAvansIndex = $this->getTitleIndex('Неотработанный аванс', $row);
                 $avansIndex = $this->getTitleIndex('Авансы к оплате', $row);
                 $ndsIndex = $this->getTitleIndex('ндс', $row);
-                $balanceContractIndex = $this->getTitleIndex('Остаток к оплате по договору', $row);
+                $balanceContractIndex = $this->getTitleIndex('Остаток', $row);
                 $innIndex = $this->getTitleIndex('ИНН', $row);
                 $guaranteeDeadlineIndex = $this->getTitleIndex('срок наступил', $row);
 
