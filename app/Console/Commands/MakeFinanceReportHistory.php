@@ -499,8 +499,10 @@ class MakeFinanceReportHistory extends HandledCommand
                         }
 
                         if (! is_null($object->closing_date) || ! empty($object->closing_date)) {
-                            $prognozAmount = 0;
-                            $prognozAmountWithoutNDS = 0;
+                            if ($object->status_id === Status::STATUS_BLOCKED) {
+                                $prognozAmount = 0;
+                                $prognozAmountWithoutNDS = 0;
+                            }
                         }
 
                         foreach ($object->planPayments as $planPayment) {
