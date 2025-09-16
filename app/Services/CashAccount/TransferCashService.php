@@ -81,7 +81,7 @@ class TransferCashService
 
         $paymentStatusId = $requestData['status_id'] == CashAccountPayment::TRANSFER_STATUS_APPROVE
             ? CashAccountPayment::STATUS_ACTIVE
-            : CashAccountPayment::STATUS_CLOSED;
+            : CashAccountPayment::STATUS_DELETED;
 
         $payment->update([
             'additional_data' => json_encode($currentAdditionalData),
