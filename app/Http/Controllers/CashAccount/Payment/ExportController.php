@@ -24,6 +24,6 @@ class ExportController extends Controller
         $requestData = array_merge(['cash_account_id' => [$cashAccount->id]], $request->toArray());
         $payments = $this->paymentService->filterPayments($requestData);
 
-        return Excel::download(new Export($payments), 'Оплаты по кассе ' . $cashAccount->name . '.xlsx');
+        return Excel::download(new Export($payments), 'Записи по кассе ' . $cashAccount->name . '.xlsx');
     }
 }

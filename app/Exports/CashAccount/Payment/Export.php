@@ -21,7 +21,7 @@ class Export implements WithMultipleSheets
         ini_set('max_execution_time', 3000);
 
         return [
-            new PaymentSheet('Таблица оплат', (clone $this->payments), $this->payments->count()),
+            new PaymentSheet('Таблица записей', (clone $this->payments), $this->payments->count()),
         ];
     }
 }

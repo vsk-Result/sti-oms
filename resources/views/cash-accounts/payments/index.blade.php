@@ -131,11 +131,11 @@
                 <table class="table table-hover align-middle table-row-dashed fs-7">
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th data-sort-by="type" class="ps-3 sortable-row min-w-125px">Тип</th>
+                            <th data-sort-by="type_id" class="ps-3 sortable-row min-w-125px">Тип</th>
                             <th data-sort-by="date" class="ps-3 sortable-row min-w-125px">Дата</th>
                             <th data-sort-by="object_id" class="sortable-row min-w-100px">Объект</th>
                             <th data-sort-by="code" class="sortable-row min-w-70px">Статья затрат</th>
-                            <th data-sort-by="organization_receiver_id" class="sortable-row min-w-125px">Контрагент</th>
+                            <th data-sort-by="organization_id" class="sortable-row min-w-125px">Контрагент</th>
                             <th data-sort-by="description" class="sortable-row min-w-300px">Описание</th>
                             <th data-sort-by="amount" class="sortable-row min-w-150px">Сумма</th>
                             <th data-sort-by="category" class="sortable-row min-w-100px">Категория</th>
