@@ -161,6 +161,10 @@
                                 @if ($payment->isTransfer())
                                     <span class="text-{{ $payment->getTransferStatusColor() }}">({{ $payment->getTransferStatus() }})</span>
                                 @endif
+
+                                @if (auth()->id() === 1)
+                                    {{ $payment->status_id }}
+                                @endif
                             </td>
                             <td class="position-relative">
                                 {{ $payment->getDateFormatted() }}
