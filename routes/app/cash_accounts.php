@@ -3,9 +3,17 @@
 use App\Http\Controllers\CashAccount\CashAccountController;
 use App\Http\Controllers\CashAccount\RequestCashController;
 use App\Http\Controllers\CashAccount\TransferCashController;
+use App\Http\Controllers\CashAccount\ClosePeriodController;
+use App\Http\Controllers\CashAccount\ClosePeriodExportController;
 use App\Http\Controllers\CashAccount\Payment\PaymentController;
 use App\Http\Controllers\CashAccount\Payment\ExportController;
 use App\Http\Controllers\CashAccount\Payment\PaymentValidateController;
+
+// Закрыть период
+
+Route::post('cash-accounts/{cashAccount}/close-period', [ClosePeriodController::class, 'store'])->name('cash_accounts.close_periods.store');
+Route::get('cash-accounts/{cashAccount}/close-period/{closePeriod}/update', [ClosePeriodController::class, 'update'])->name('cash_accounts.close_periods.update');
+Route::post('cash-accounts/{cashAccount}/close-period/{closePeriod}/export', [ClosePeriodExportController::class, 'store'])->name('cash_accounts.close_periods.export.store');
 
 // Запрос средств у другой кассы
 

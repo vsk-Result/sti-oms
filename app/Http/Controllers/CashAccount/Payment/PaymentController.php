@@ -5,12 +5,14 @@ namespace App\Http\Controllers\CashAccount\Payment;
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
 use App\Models\CashAccount\CashAccountPayment;
+use App\Models\CashAccount\ClosePeriod;
 use App\Models\CRM\Employee;
 use App\Models\Currency;
 use App\Models\KostCode;
 use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Services\CashAccount\CashAccountService;
+use App\Services\CashAccount\ClosePeriodService;
 use App\Services\CashAccount\Payment\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,14 +22,11 @@ use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
-    private CashAccountService $cashAccountService;
-    private PaymentService $paymentService;
-
-    public function __construct(CashAccountService $cashAccountService, PaymentService $paymentService)
-    {
-        $this->cashAccountService = $cashAccountService;
-        $this->paymentService = $paymentService;
-    }
+    public function __construct(
+        private CashAccountService $cashAccountService,
+        private PaymentService $paymentService,
+        private ClosePeriodService $closePeriodService
+    ) {}
 
     public function index(CashAccount $cashAccount, Request $request): View
     {
@@ -36,6 +35,8 @@ class PaymentController extends Controller
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
         $transferCashAccounts = $this->cashAccountService->getAccountsWithoutResponsible($cashAccount);
+        $closePeriods = $this->closePeriodService->getClosePeriods($cashAccount);
+        $periodsToClose = $this->closePeriodService->getPeriodsToClose($cashAccount);
 
         $totalInfo = [];
         $requestData = array_merge(['cash_account_id' => [$cashAccount->id]], $request->toArray());
@@ -50,7 +51,8 @@ class PaymentController extends Controller
             'cash-accounts.payments.index',
             compact(
                 'payments', 'worktypes', 'categories',
-               'totalInfo', 'activeOrganizations', 'codes', 'currencies', 'cashAccount', 'transferCashAccounts'
+               'totalInfo', 'activeOrganizations', 'codes', 'currencies', 'cashAccount', 'transferCashAccounts',
+                'closePeriods', 'periodsToClose'
             )
         );
     }

@@ -11,6 +11,7 @@
 
     @include('cash-accounts.modals.request_cash')
     @include('cash-accounts.modals.transfer_cash')
+    @include('cash-accounts.modals.close_periods')
 
     @php
         $balance = $cashAccount->getBalance();
@@ -44,6 +45,10 @@
 {{--                    </span>--}}
 {{--                        Фильтр--}}
 {{--                    </button>--}}
+
+                    <a href="#" class="btn btn-light-warning me-3" data-bs-toggle="modal" data-bs-target="#cashAccountClosePeriodsModal">
+                        Закрытые периоды
+                    </a>
 
                     @if ($cashAccount->isCurrentResponsible())
                         <a href="javascript:void(0);" data-create-payment-url="{{ route('cash_accounts.payments.create', $cashAccount) }}" class="create-payment btn btn-light-primary me-3">

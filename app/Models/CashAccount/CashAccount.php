@@ -49,6 +49,11 @@ class CashAccount extends Model
         return $this->hasMany(CashAccountPayment::class, 'cash_account_id');
     }
 
+    public function closePeriods(): HasMany
+    {
+        return $this->hasMany(ClosePeriod::class, 'cash_account_id');
+    }
+
     public function getStatus(): string
     {
         return $this->getStatuses()[$this->status_id];
@@ -94,7 +99,7 @@ class CashAccount extends Model
         $objects = $this->objects;
 
         if ($objects->count() === 0) {
-            $objects = BObject::active(['27.1', '27.3', '288'])->orderBy('code', 'desc')->get();
+            $objects = BObject::active(['27.1', '27.3', '288', '346'])->orderBy('code', 'desc')->get();
         }
 
         foreach ($objects as $object) {

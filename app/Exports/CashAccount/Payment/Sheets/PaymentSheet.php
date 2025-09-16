@@ -64,7 +64,7 @@ class PaymentSheet implements
                 $sheet->setCellValue('C' . $row, Date::dateTimeToExcel(Carbon::parse($payment->date)));
                 $sheet->setCellValue('D' . $row, $payment->code . ' ');
                 $sheet->setCellValue('E' . $row, $payment->amount);
-                $sheet->setCellValue('F' . $row, $payment->amount < 0 ? ($payment->organizationReceiver->name ?? '') : ($payment->organizationSender->name ?? ''));
+                $sheet->setCellValue('F' . $row, $payment->organization?->name ?? '');
                 $sheet->setCellValue('G' . $row, $payment->getDescription());
                 $sheet->setCellValue('H' . $row, $payment->category);
                 $sheet->setCellValue('I' . $row, $payment->id);

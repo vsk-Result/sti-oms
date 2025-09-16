@@ -21,6 +21,8 @@ class PaymentService
     {
         $paymentQuery = CashAccountPayment::query();
 
+        $paymentQuery->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_WAITING]);
+
         if (! empty($requestData['cash_account_id'])) {
             $paymentQuery->whereIn('cash_account_id', $requestData['cash_account_id']);
         }
