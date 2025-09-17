@@ -35,6 +35,8 @@ class RemoveDubles extends HandledCommand
         $doubles = [];
         $logs = [];
 
+        dd($payments->count());
+
         foreach ($payments as $payment) {
             if (in_array($payment->id, $doubles)) {
                 continue;
@@ -57,7 +59,7 @@ class RemoveDubles extends HandledCommand
            }
         }
 
-        $this->endProcess();
+//        $this->endProcess();
 
         dd($logs);
 
