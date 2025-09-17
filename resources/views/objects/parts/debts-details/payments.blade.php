@@ -21,7 +21,7 @@
         <div class="separator separator-dashed my-3"></div>
 
     @php
-        $transferPayment = $object->transferService()->sum('amount');
+        $transferPayment = $info['transfer_service'];
     @endphp
         <div class="d-flex flex-row justify-content-between">
             <strong>Трансферные расходы</strong>
