@@ -40,7 +40,7 @@ class RemoveDubles extends HandledCommand
                 continue;
             }
 
-            $doublePayments = Payment::whereBetween('date', ['2025-07-01', '2025-09-30'])
+            $doublePayments = Payment::whereBetween('date', ['2025-08-01', '2025-08-15'])
                 ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
                 ->where('id', '!=', $payment->id)
                 ->where('description', $payment->description)
