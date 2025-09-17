@@ -104,6 +104,11 @@
                                 }
                             }
                         }
+
+                        $sortedDates = $periodPivotData['dates'];
+                        asort($sortedDates);
+
+                        $periodPivotData['dates'] = $sortedDates;
                     @endphp
 
                     <table class="table table-hover align-middle table-row-dashed fs-6">
