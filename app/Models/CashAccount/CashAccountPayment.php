@@ -37,6 +37,7 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     const STATUS_CLOSED = 2;
     const STATUS_DELETED = 3;
     const STATUS_WAITING = 4;
+    const STATUS_VALIDATED = 5;
 
     const TRANSFER_STATUS_WAITING = 0;
     const TRANSFER_STATUS_APPROVE = 1;

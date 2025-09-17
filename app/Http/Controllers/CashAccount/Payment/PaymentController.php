@@ -35,6 +35,7 @@ class PaymentController extends Controller
         $statuses = [
             CashAccountPayment::STATUS_ACTIVE => 'Активные',
             CashAccountPayment::STATUS_VALID => 'Проверенные',
+            CashAccountPayment::STATUS_VALIDATED => 'Проверенные и перенесенные на объект',
             CashAccountPayment::STATUS_CLOSED => 'Закрытые',
             CashAccountPayment::STATUS_WAITING => 'В ожидании трансфера',
         ];

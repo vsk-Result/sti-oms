@@ -70,7 +70,7 @@ class PaymentService
         if (! empty($requestData['status_id'])) {
             $paymentQuery->whereIn('status_id', $requestData['status_id']);
         } else {
-            $paymentQuery->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_WAITING]);
+            $paymentQuery->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_WAITING, CashAccountPayment::STATUS_VALIDATED]);
         }
 
         if (! empty($requestData['amount_expression_operator']) && isset($requestData['amount_expression'])) {
@@ -498,6 +498,10 @@ class PaymentService
 
         $payment->update([
             'additional_data' => json_encode($currentAdditionalData)
+        ]);
+
+        $payment->update([
+            'status_id' => CashAccountPayment::STATUS_VALIDATED
         ]);
 
         return $payment;

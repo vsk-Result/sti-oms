@@ -19,7 +19,7 @@ class ClosePeriodService
     public function createClosePeriod(CashAccount $cashAccount, array $requestDate): void
     {
         $validPayments = CashAccountPayment::where('cash_account_id', $cashAccount->id)
-            ->where('status_id', CashAccountPayment::STATUS_VALID)
+            ->whereIn('status_id', [CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_VALIDATED])
             ->where('date', 'LIKE', $requestDate['period'] . '-%')
             ->get();
 
@@ -52,7 +52,7 @@ class ClosePeriodService
 
     public function getPeriodsToClose(CashAccount $cashAccount): array
     {
-        $activeStatuses = [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID];
+        $activeStatuses = [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_VALIDATED];
         $activePayments = $cashAccount->payments()->whereIn('status_id', $activeStatuses)->orderBy('date')->get();
 
         if ($activePayments->count() === 0) {
@@ -77,7 +77,7 @@ class ClosePeriodService
             }
 
             $transferApprovedPayments = $payments->where('status_id', CashAccountPayment::STATUS_ACTIVE)->where('type_id', '!=', CashAccountPayment::TYPE_OBJECT);
-            $validPayments = $payments->where('status_id', CashAccountPayment::STATUS_VALID);
+            $validPayments = $payments->whereIn('status_id', [CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_VALIDATED]);
 
             if ($payments->count() !== ($validPayments->count() + $transferApprovedPayments->count())) {
                 continue;
@@ -98,7 +98,7 @@ class ClosePeriodService
     public function updateClosePeriod(ClosePeriod $closePeriod): void
     {
         $validPayments = CashAccountPayment::where('cash_account_id', $closePeriod->cash_account_id)
-            ->where('status_id', CashAccountPayment::STATUS_VALID)
+            ->whereIn('status_id', [CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_VALIDATED])
             ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')
             ->get();
 
