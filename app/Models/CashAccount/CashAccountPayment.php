@@ -230,6 +230,11 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         return $this->type_id === self::TYPE_OBJECT;
     }
 
+    public function isClosed(): bool
+    {
+        return $this->status_id === self::STATUS_CLOSED;
+    }
+
     public function getTransferStatus(): string
     {
         $requestData = $this->getAdditionalData('transfer_cash');

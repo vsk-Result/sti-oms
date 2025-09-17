@@ -31,6 +31,13 @@ class PaymentController extends Controller
     public function index(CashAccount $cashAccount, Request $request): View
     {
         $worktypes = WorkType::getWorkTypes();
+        $objects = $cashAccount->getObjects(true);
+        $statuses = [
+            CashAccountPayment::STATUS_ACTIVE => 'Активные',
+            CashAccountPayment::STATUS_VALID => 'Проверенные',
+            CashAccountPayment::STATUS_CLOSED => 'Закрытые',
+            CashAccountPayment::STATUS_WAITING => 'В ожидании трансфера',
+        ];
         $categories = CashAccountPayment::getCategories();
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
@@ -52,7 +59,7 @@ class PaymentController extends Controller
             compact(
                 'payments', 'worktypes', 'categories',
                'totalInfo', 'activeOrganizations', 'codes', 'currencies', 'cashAccount', 'transferCashAccounts',
-                'closePeriods', 'periodsToClose'
+                'closePeriods', 'periodsToClose', 'objects', 'statuses'
             )
         );
     }

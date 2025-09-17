@@ -21,8 +21,70 @@ class PaymentService
     {
         $paymentQuery = CashAccountPayment::query();
 
-        if (auth()->id() !== 1) {
+        if (! empty($requestData['period'])) {
+            $period = explode(' - ', $requestData['period']);
+            $paymentQuery->whereBetween('date', [Carbon::parse($period[0]), Carbon::parse($period[1])]);
+        }
+
+        if (! empty($requestData['year']) && ! empty($requestData['month'])) {
+            $paymentQuery->where('date', 'LIKE', $requestData['year'] . '-' . $requestData['month'] . '%');
+        }
+
+        if (! empty($requestData['description'])) {
+            $descriptionORTags = explode('%%', $requestData['description']);
+            $descriptionANDTags = explode('^^', $requestData['description']);
+
+            if (count($descriptionORTags) > 1) {
+                $paymentQuery->where(function($q) use ($descriptionORTags) {
+                    foreach ($descriptionORTags as $tag) {
+                        $q->orWhere('description', 'LIKE', '%' . $tag . '%');
+                    }
+                });
+            } else if (count($descriptionANDTags) > 1) {
+                $paymentQuery->where(function($q) use ($descriptionANDTags) {
+                    foreach ($descriptionANDTags as $tag) {
+                        $q->where('description', 'LIKE', '%' . $tag . '%');
+                    }
+                });
+            } else {
+                $paymentQuery->where('description', 'LIKE', '%' . $descriptionORTags[0] . '%');
+            }
+        }
+
+        if (! empty($requestData['organization_id'])) {
+            $paymentQuery->whereIn('organization_id',$requestData['organization_id']);
+        }
+
+        if (! empty($requestData['object_id'])) {
+            $paymentQuery->whereIn('object_id',$requestData['object_id']);
+        }
+
+        if (! empty($requestData['object_worktype_id'])) {
+            $paymentQuery->whereIn('object_worktype_id', $requestData['object_worktype_id']);
+        }
+
+        if (! empty($requestData['category'])) {
+            $paymentQuery->whereIn('category', $requestData['category']);
+        }
+
+        if (! empty($requestData['status_id'])) {
+            $paymentQuery->whereIn('status_id', $requestData['status_id']);
+        } else {
             $paymentQuery->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_WAITING]);
+        }
+
+        if (! empty($requestData['amount_expression_operator']) && isset($requestData['amount_expression'])) {
+            $expressionAmount = str_replace(',', '.', $requestData['amount_expression']);
+            $expressionAmount = preg_replace("/[^-.0-9]/", '', $expressionAmount);
+
+            $paymentQuery->where('amount', $requestData['amount_expression_operator'], $expressionAmount);
+        }
+
+        if (! empty($requestData['code'])) {
+            if (in_array('null', $requestData['code'])) {
+                array_push($requestData['code'], null, '');
+            }
+            $paymentQuery->whereIn('code', $requestData['code']);
         }
 
         if (! empty($requestData['cash_account_id'])) {

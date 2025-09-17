@@ -92,7 +92,7 @@ class CashAccount extends Model
         return $this->balance_amount + $this->payments()->where('status_id', CashAccountPayment::STATUS_WAITING)->sum('amount');
     }
 
-    public function getObjects(): array
+    public function getObjects($getObjects = false)
     {
         $result = [];
         $workTypes = WorkType::getWorkTypes();
@@ -100,6 +100,10 @@ class CashAccount extends Model
 
         if ($objects->count() === 0) {
             $objects = BObject::active(['27.1', '27.3', '288', '346'])->orderBy('code', 'desc')->get();
+        }
+
+        if ($getObjects) {
+            return $objects;
         }
 
         foreach ($objects as $object) {
