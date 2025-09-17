@@ -91,7 +91,7 @@
 
                         foreach ($contractorDebts['organizations'] as $organizationInfo) {
                             foreach ($organizationInfo['details'] as $detail) {
-                                $date = \Carbon\Carbon::parse($detail['date'])->format('F Y');
+                                $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
 
                                 if (! isset($periodPivotData['data'][$organizationInfo['organization_name']][$date])) {
                                     $periodPivotData['data'][$organizationInfo['organization_name']][$date] = 0;
@@ -126,7 +126,7 @@
                                 @endif
 
                                 @foreach($periodPivotData['dates'] as $date)
-                                    <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="contractors-periods" style="display: none;">{{ translate_year_month_word($date) }}</th>
+                                    <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="contractors-periods" style="display: none;">{{ translate_year_month($date) }}</th>
                                 @endforeach
                             </tr>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
