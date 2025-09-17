@@ -173,7 +173,7 @@ class UpdateGeneralCosts extends HandledCommand
                 'generalTotalAmount' => $generalTotalAmount,
             ];
 
-            Cache::put('general_costs', $info);
+            Cache::put('general_costs___1', $info);
 
         } catch (\Exception $e) {
             $this->sendErrorMessage('Ошибка в вычислениях: ' . $e->getMessage());
