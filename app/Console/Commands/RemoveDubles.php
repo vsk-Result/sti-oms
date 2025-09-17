@@ -23,18 +23,23 @@ class RemoveDubles extends HandledCommand
 
     public function handle()
     {
-        if ($this->isProcessRunning()) {
-            return 0;
-        }
-
-        $this->startProcess();
+//        if ($this->isProcessRunning()) {
+//            return 0;
+//        }
+//
+//        $this->startProcess();
 
         $payments = Payment::whereBetween('date', ['2025-07-01', '2025-09-30'])
                     ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->get();
 
+        $doubles = [];
         $logs = [];
 
         foreach ($payments as $payment) {
+            if (in_array($payment->id, $doubles)) {
+                continue;
+            }
+
             $doublePayments = Payment::whereBetween('date', ['2025-07-01', '2025-09-30'])
                 ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
                 ->where('id', '!=', $payment->id)
@@ -45,6 +50,10 @@ class RemoveDubles extends HandledCommand
 
            if ($doublePayments->count() > 0) {
                $logs[] = 'Для оплаты ' . $payment->id . ' найдено ' . $doublePayments->count() . ' дублей';
+           }
+
+           foreach ($doublePayments as $doublePayment) {
+               $doubles[] = $doublePayment->id;
            }
         }
 
