@@ -68,9 +68,9 @@ class ClosePeriodService
 
         foreach ($periods as $period) {
 
-//            if ($currentPeriod >= $period) {
-//                continue;
-//            }
+            if ($currentPeriod >= $period) {
+                continue;
+            }
             $payments = $cashAccount->payments()->whereIn('status_id', $activeStatuses)->where('date', 'LIKE', $period . '-%')->get();
             if ($payments->count() === 0) {
                 continue;
