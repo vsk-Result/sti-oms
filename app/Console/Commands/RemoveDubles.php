@@ -30,7 +30,7 @@ class RemoveDubles extends HandledCommand
 //        $this->startProcess();
 
         $payments = Payment::whereBetween('date', ['2025-07-01', '2025-09-30'])
-                    ->where('created_at', '>=', '2025-09-01')
+                    ->whereNull('created_by_user_id')
                     ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->get();
 
         $doubles = [];
