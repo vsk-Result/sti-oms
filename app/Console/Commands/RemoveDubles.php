@@ -34,7 +34,6 @@ class RemoveDubles extends HandledCommand
                     ->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)->get();
 
         $doubles = [];
-        $logs = [];
 
         foreach ($payments as $payment) {
             if (in_array($payment->id, $doubles)) {
@@ -50,18 +49,15 @@ class RemoveDubles extends HandledCommand
                 ->where('code', $payment->code)
                 ->get();
 
-           if ($doublePayments->count() > 0) {
-               $logs[] = 'Для оплаты ' . $payment->id . ' найдено ' . $doublePayments->count() . ' дублей';
-           }
-
            foreach ($doublePayments as $doublePayment) {
                $doubles[] = $doublePayment->id;
+               $doublePayment->delete();
            }
         }
 
 //        $this->endProcess();
 
-        dd($logs);
+        dd('done');
 
         return 0;
     }
