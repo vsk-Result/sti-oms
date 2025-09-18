@@ -207,6 +207,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-4 fv-row">
+                        <div class="mb-1" style="padding-top: 38px;">
+                            <label class="form-check form-check-custom form-check-solid form-check-inline gap-2">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="1c_itr_not_need_create"
+                                    {{ is_null($payment->getItrData()['id']) ? 'checked' : '' }}
+                                />
+
+                                Запись относится к списку ИТР
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">

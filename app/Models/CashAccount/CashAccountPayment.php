@@ -139,6 +139,10 @@ class CashAccountPayment extends Model implements Audit, HasMedia
             $description .= ', выплата зарплаты ' . $itrData['name'];
         }
 
+        if (! is_null($itrData['name']) && $this->code === '7.10') {
+            $description .= ', выплата премии ' . $itrData['name'];
+        }
+
         if ($this->isRequest()) {
             $requestData = $this->getAdditionalData('request_cash');
             $transferCashPayment = CashAccountPayment::find($requestData['transfer_payment_id']);
@@ -190,6 +194,7 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         $data = $this->getAdditionalData('itr');
         return [
             'id' => $data['id'] ?? null,
+            '1c_itr_not_need_create' => $data['1c_itr_not_need_create'] ?? false,
             'name' => $data['name'] ?? null,
         ];
     }

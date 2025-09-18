@@ -425,7 +425,7 @@
                             $('#create-itr').hide();
                             $('#create-organization').hide();
                             $('.organization-select').attr('required', false);
-                        } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
+                        } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1' || $(this).val() === '7.10') {
                             $('#create-itr').show();
                             $('#create-employee-crm').hide();
                             $('#create-organization').hide();
@@ -490,7 +490,7 @@
                                 $('#create-itr').hide();
                                 $('#create-organization').hide();
                                 $('.organization-select').attr('required', false);
-                            } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
+                            } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1' || $(this).val() === '7.10') {
                                 $('#create-itr').show();
                                 $('#create-employee-crm').hide();
                                 $('#create-organization').hide();
@@ -555,7 +555,7 @@
                             $('#edit-itr').hide();
                             $('#edit-organization').hide();
                             $('.organization-select').attr('required', false);
-                        } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1') {
+                        } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1' || $(this).val() === '7.10') {
                             $('#edit-itr').show();
                             $('#edit-employee-crm').hide();
                             $('#edit-organization').hide();

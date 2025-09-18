@@ -146,14 +146,16 @@ class PaymentService
         $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);
 
         $needCreateCrmAvans = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
-        $needCreateItr = $requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1';
+
+        $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
+        $needCreateItr = !$isNotNeedCreateItr && ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');;
 
         if ($needCreateCrmAvans) {
             $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
             $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
             $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
-        } elseif ($needCreateItr) {
-            $organizationId = null;
+        } elseif ($needCreateItr || $isNotNeedCreateItr) {
+            $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
         } else {
             $organizationId = $requestData['organization_id'];
         }
@@ -202,6 +204,7 @@ class PaymentService
                 $payment,
                 [
                     'id' => $requestData['itr_id'] ?? null,
+                    '1c_itr_not_need_create' => $isNotNeedCreateItr
                 ]
             );
         }
@@ -225,14 +228,16 @@ class PaymentService
         $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);
 
         $isCrmEmployee = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
-        $isItr = $requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1';
+
+        $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
+        $isItr = !$isNotNeedCreateItr && ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');
 
         if ($isCrmEmployee) {
             $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
             $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
             $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
-        } elseif ($isItr) {
-            $organizationId = null;
+        } elseif ($isItr || $isNotNeedCreateItr) {
+            $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
         } else {
             $organizationId = $requestData['organization_id'];
         }
@@ -241,7 +246,7 @@ class PaymentService
         $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
 
         $crmAvansData = $payment->getCrmAvansData();
-        $itrData = $payment->getCrmAvansData();
+        $itrData = $payment->getItrData();
 
         $needCrateCrmAvans = is_null($crmAvansData['id']) && $isCrmEmployee;
         $needUpdateCrmAvans = !is_null($crmAvansData['id']) && $isCrmEmployee;
@@ -250,6 +255,8 @@ class PaymentService
         $needCrateItr = is_null($itrData['id']) && $isItr;
         $needUpdateItr = !is_null($itrData['id']) && $isItr;
         $needDeleteItr = !is_null($itrData['id']) && !$isItr;
+
+//        dd($itrData, $isNotNeedCreateItr, $isItr, $needCrateItr, $needUpdateItr, $needDeleteItr);
 
         $payment->update([
             'object_id' => $objectId,
@@ -304,6 +311,7 @@ class PaymentService
                 $payment,
                 [
                     'id' => $requestData['itr_id'] ?? null,
+                    '1c_itr_not_need_create' => $isNotNeedCreateItr
                 ]
             );
         }
@@ -313,6 +321,7 @@ class PaymentService
                 $payment,
                 [
                     'id' => $requestData['itr_id'] ?? null,
+                    '1c_itr_not_need_create' => $isNotNeedCreateItr
                 ]
             );
         }
@@ -457,6 +466,7 @@ class PaymentService
 
         $currentAdditionalData['itr'] = [
             'id' => $additionalData['id'],
+            '1c_itr_not_need_create' => $additionalData['1c_itr_not_need_create'],
             'name' => $itrName,
         ];
 
@@ -482,6 +492,7 @@ class PaymentService
 
         $currentAdditionalData['itr'] = [
             'id' => $additionalData['id'],
+            '1c_itr_not_need_create' => $additionalData['1c_itr_not_need_create'],
             'name' => $itrName,
         ];
 
