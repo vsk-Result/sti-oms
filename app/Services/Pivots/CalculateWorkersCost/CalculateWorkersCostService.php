@@ -46,7 +46,8 @@ class CalculateWorkersCostService
         'Транспорт (перевозка сотрудников) + Авиабилеты' => '5.11;5.1.11;5.11.2;5.12',
         'Спецодежда и СИЗ' => '5.8',
         'Банковские расходы (ком.БГ, обсл.спец.сч)' => '7.6',
-        'Расходы офиса : 27,1+общ.расходы (ус.трансфера+банк.комис)' => 'general_costs_percent',
+        'Расходы офиса' => 'general_costs_percent',
+        'Трансферные расходы' => 'transfer',
         'Начисленные налоги, в т.ч.:' => 'accrued_taxes',
         '- НДС' => 'accrued_taxes_nds',
         '- налог на прибыль' => 'accrued_taxes_receive',
@@ -414,6 +415,11 @@ class CalculateWorkersCostService
                                         ->sum('amount');
                                 }
                             } elseif ($codes[0] === 'general_costs_percent') {
+                                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $month['period'])->whereIn('company_id', [1, 5]);
+                                $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5', '7.11', '7.11.1', '7.11.2'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                                    + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
+                                $amount = $generalAmount * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                            } elseif ($codes[0] === 'transfer') {
                                 $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $month['period'])->whereIn('company_id', [1, 5]);
                                 $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
                                     + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');

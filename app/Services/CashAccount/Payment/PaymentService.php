@@ -131,14 +131,17 @@ class PaymentService
         $paymentCurrency = 'RUB';
         $paymentCurrencyRate = 1;
 
-
-        $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
-        $amount = abs($this->sanitizer->set($requestData['amount'])->toAmount()->get());
-
         $isReceiveAmount = isset($requestData['is_receive_amount']);
+        $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
+        $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
 
-        if (!$isReceiveAmount) {
-            $amount = -$amount;
+        $typeId = $requestData['type_id'] ?? CashAccountPayment::TYPE_OBJECT;
+        if ($typeId === CashAccountPayment::TYPE_OBJECT) {
+            $amount = abs($amount);
+
+            if (!$isReceiveAmount) {
+                $amount = -$amount;
+            }
         }
 
         $crmAvansEmployeeId = null;
@@ -224,12 +227,15 @@ class PaymentService
     public function updatePayment(CashAccountPayment $payment, array $requestData): void
     {
         $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
-        $amount = abs($this->sanitizer->set($requestData['amount'])->toAmount()->get());
-
+        $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
         $isReceiveAmount = isset($requestData['is_receive_amount']);
 
-        if (!$isReceiveAmount) {
-            $amount = -$amount;
+        if ($payment->type_id === CashAccountPayment::TYPE_OBJECT) {
+            $amount = abs($amount);
+
+            if (!$isReceiveAmount) {
+                $amount = -$amount;
+            }
         }
 
         $crmAvansEmployeeId = null;
