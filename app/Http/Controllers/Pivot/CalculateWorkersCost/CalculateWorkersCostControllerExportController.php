@@ -20,7 +20,7 @@ class CalculateWorkersCostControllerExportController extends Controller
         $year = $request->get('year', date('Y'));
 
         if (count($objectIds) > 0) {
-            $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects($year, $objectIds);
+            $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects($objectIds);
 
             return Excel::download(
                 new ExportByObject($infoByObjects),

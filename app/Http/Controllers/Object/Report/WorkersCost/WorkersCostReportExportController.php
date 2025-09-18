@@ -15,7 +15,7 @@ class WorkersCostReportExportController extends Controller
 
     public function store(BObject $object): BinaryFileResponse
     {
-        $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects(date('Y'), [$object->id]);
+        $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects([$object->id]);
 
         return Excel::download(
             new ExportByObject($infoByObjects),

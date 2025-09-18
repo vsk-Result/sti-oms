@@ -13,7 +13,7 @@ class WorkersCostReportController extends Controller
 
     public function index(BObject $object): View
     {
-        $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects(date('Y'), [$object->id]);
+        $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects([$object->id]);
         return view('objects.tabs.reports.workers_cost', compact('infoByObjects', 'object'));
     }
 }

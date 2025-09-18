@@ -4,6 +4,7 @@ namespace App\Exports\Pivot\CalculateWorkersCost\Sheets;
 
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
@@ -32,27 +33,67 @@ class ObjectPivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $lastColumnIndex = 3 + count($this->years) * 8;
+        $lastColumnIndex = 3 + count($this->years) * 4 * 2 * 3 * 2;
 
         $sheet->setCellValue('A1', 'Раздел');
 
         $columnIndex = 2;
-        foreach ($this->years as $year => $quarts) {
+        foreach ($this->years as $year) {
             $column = $this->getColumnWord($columnIndex);
-            $sheet->setCellValue($column . '1', $year);
-            $yearColumn = $column;
+            $sheet->setCellValue($column . '1', $year['name']);
 
-            foreach ($quarts as $quart => $dates) {
+            $sheet->setCellValue($column . '2', 'Сумма');
+            $columnIndex++;
+
+            $columnTwo = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($columnTwo . '2', 'Расчет по часу');
+            $columnIndex++;
+
+            $sheet->mergeCells($column . '1:' . $columnTwo . '1');
+
+            foreach($year['quarts'] as $quart) {
                 $column = $this->getColumnWord($columnIndex);
-                $sheet->setCellValue($column . '2', $quart);
+                $sheet->setCellValue($column . '1', $quart['name']);
+
+                $sheet->setCellValue($column . '2', 'Сумма');
                 $columnIndex++;
 
-                $column = $this->getColumnWord($columnIndex);
-                $sheet->setCellValue($column . '2', 'Расчет по часу');
+                $columnTwo = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($columnTwo . '2', 'Расчет по часу');
                 $columnIndex++;
+
+                $sheet->mergeCells($column . '1:' . $columnTwo . '1');
+
+                $sheet->getColumnDimension($column)->setOutlineLevel(1)
+                    ->setVisible(false)
+                    ->setCollapsed(true);
+
+                $sheet->getColumnDimension($columnTwo)->setOutlineLevel(1)
+                    ->setVisible(false)
+                    ->setCollapsed(true);
+
+                foreach($quart['months'] as $month) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . '1', $month['name']);
+
+                    $sheet->setCellValue($column . '2', 'Сумма');
+                    $columnIndex++;
+
+                    $columnTwo = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($columnTwo . '2', 'Расчет по часу');
+                    $columnIndex++;
+
+                    $sheet->mergeCells($column . '1:' . $columnTwo . '1');
+
+                    $sheet->getColumnDimension($column)->setOutlineLevel(2)
+                        ->setVisible(false)
+                        ->setCollapsed(true);
+
+                    $sheet->getColumnDimension($columnTwo)->setOutlineLevel(2)
+                        ->setVisible(false)
+                        ->setCollapsed(true);
+                }
             }
-
-            $sheet->mergeCells($yearColumn . '1:' . $column . '1');
         }
 
         $columnTotalOne = $this->getColumnWord($columnIndex);
@@ -75,15 +116,33 @@ class ObjectPivotSheet implements
             }
 
             $columnIndex = 2;
-            foreach ($this->years as $year => $quarts) {
-                foreach ($quarts as $quart => $dates) {
+            foreach ($this->years as $year) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['amount'][$year['name']]['total']) ? $groupInfo['amount'][$year['name']]['total'] : '-');
+                $columnIndex++;
+
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['rate'][$year['name']]['total']) ? $groupInfo['rate'][$year['name']]['total'] : '-');
+                $columnIndex++;
+
+                foreach($year['quarts'] as $quart) {
                     $column = $this->getColumnWord($columnIndex);
-                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['amount'][$year][$quart]) ? $groupInfo['amount'][$year][$quart] : '-');
+                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['amount'][$year['name']][$quart['name']]['total']) ? $groupInfo['amount'][$year['name']][$quart['name']]['total'] : '-');
                     $columnIndex++;
 
                     $column = $this->getColumnWord($columnIndex);
-                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['rate'][$year][$quart]) ? $groupInfo['rate'][$year][$quart] : '-');
+                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['rate'][$year['name']][$quart['name']]['total']) ? $groupInfo['rate'][$year['name']][$quart['name']]['total'] : '-');
                     $columnIndex++;
+
+                    foreach($quart['months'] as $month) {
+                        $column = $this->getColumnWord($columnIndex);
+                        $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['amount'][$year['name']][$quart['name']][$month['name']]) ? $groupInfo['amount'][$year['name']][$quart['name']][$month['name']] : '-');
+                        $columnIndex++;
+
+                        $column = $this->getColumnWord($columnIndex);
+                        $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($groupInfo['rate'][$year['name']][$quart['name']][$month['name']]) ? $groupInfo['rate'][$year['name']][$quart['name']][$month['name']] : '-');
+                        $columnIndex++;
+                    }
                 }
             }
 
@@ -103,15 +162,33 @@ class ObjectPivotSheet implements
         $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
         $columnIndex = 2;
-        foreach ($this->years as $year => $quarts) {
-            foreach ($quarts as $quart => $dates) {
+        foreach ($this->years as $year) {
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['amount'][$year['name']]['total']) ? $this->info['total']['amount'][$year['name']]['total'] : '-');
+            $columnIndex++;
+
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['rate'][$year['name']]['total']) ? $this->info['total']['rate'][$year['name']]['total'] : '-');
+            $columnIndex++;
+
+            foreach ($year['quarts'] as $quart) {
                 $column = $this->getColumnWord($columnIndex);
-                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['amount'][$year][$quart]) ? $this->info['total']['amount'][$year][$quart] : '-');
+                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['amount'][$year['name']][$quart['name']]['total']) ? $this->info['total']['amount'][$year['name']][$quart['name']]['total'] : '-');
                 $columnIndex++;
 
                 $column = $this->getColumnWord($columnIndex);
-                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['rate'][$year][$quart]) ? $this->info['total']['rate'][$year][$quart] : '-');
+                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['rate'][$year['name']][$quart['name']]['total']) ? $this->info['total']['rate'][$year['name']][$quart['name']]['total'] : '-');
                 $columnIndex++;
+
+                foreach($quart['months'] as $month) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['amount'][$year['name']][$quart['name']][$month['name']]) ? $this->info['total']['amount'][$year['name']][$quart['name']][$month['name']] : '-');
+                    $columnIndex++;
+
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($this->info['total']['rate'][$year['name']][$quart['name']][$month['name']]) ? $this->info['total']['rate'][$year['name']][$quart['name']][$month['name']] : '-');
+                    $columnIndex++;
+                }
             }
         }
 
@@ -130,13 +207,27 @@ class ObjectPivotSheet implements
         $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
         $columnIndex = 2;
-        foreach ($this->years as $year => $quarts) {
-            foreach ($quarts as $quart => $dates) {
+        foreach ($this->years as $year) {
+            $columnOne = $this->getColumnWord($columnIndex);
+            $columnTwo = $this->getColumnWord($columnIndex + 1);
+            $sheet->setCellValue($columnOne . $rowIndex, is_valid_amount_in_range($this->info['hours'][$year['name']]['total']) ? $this->info['hours'][$year['name']]['total'] : '-');
+            $sheet->mergeCells($columnOne . $rowIndex . ':' . $columnTwo . $rowIndex);
+            $columnIndex += 2;
+
+            foreach ($year['quarts'] as $quart) {
                 $columnOne = $this->getColumnWord($columnIndex);
                 $columnTwo = $this->getColumnWord($columnIndex + 1);
-                $sheet->setCellValue($columnOne . $rowIndex, is_valid_amount_in_range($this->info['hours'][$year][$quart]) ? $this->info['hours'][$year][$quart] : '-');
+                $sheet->setCellValue($columnOne . $rowIndex, is_valid_amount_in_range($this->info['hours'][$year['name']][$quart['name']]['total']) ? $this->info['hours'][$year['name']][$quart['name']]['total'] : '-');
                 $sheet->mergeCells($columnOne . $rowIndex . ':' . $columnTwo . $rowIndex);
                 $columnIndex += 2;
+
+                foreach ($quart['months'] as $month) {
+                    $columnOne = $this->getColumnWord($columnIndex);
+                    $columnTwo = $this->getColumnWord($columnIndex + 1);
+                    $sheet->setCellValue($columnOne . $rowIndex, is_valid_amount_in_range($this->info['hours'][$year['name']][$quart['name']][$month['name']]) ? $this->info['hours'][$year['name']][$quart['name']][$month['name']] : '-');
+                    $sheet->mergeCells($columnOne . $rowIndex . ':' . $columnTwo . $rowIndex);
+                    $columnIndex += 2;
+                }
             }
         }
 
@@ -156,8 +247,16 @@ class ObjectPivotSheet implements
         $sheet->getColumnDimension('A')->setWidth(80);
 
         $columnIndex = 2;
-        foreach ($this->years as $quarts) {
-            foreach ($quarts as $dates) {
+        foreach ($this->years as $year) {
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->getColumnDimension($column)->setWidth(18);
+            $columnIndex++;
+
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->getColumnDimension($column)->setWidth(18);
+            $columnIndex++;
+
+            foreach ($year['quarts'] as $quart) {
                 $column = $this->getColumnWord($columnIndex);
                 $sheet->getColumnDimension($column)->setWidth(18);
                 $columnIndex++;
@@ -165,6 +264,16 @@ class ObjectPivotSheet implements
                 $column = $this->getColumnWord($columnIndex);
                 $sheet->getColumnDimension($column)->setWidth(18);
                 $columnIndex++;
+
+                foreach ($quart['months'] as $month) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->getColumnDimension($column)->setWidth(18);
+                    $columnIndex++;
+
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->getColumnDimension($column)->setWidth(18);
+                    $columnIndex++;
+                }
             }
         }
 
@@ -198,7 +307,6 @@ class ObjectPivotSheet implements
     }
 
     private function getColumnWord($n) {
-        $n--;
-        return ($n<26) ? chr(ord('A') + $n) : 'A' .  chr(ord('A') + $n % 26);
+        return Coordinate::stringFromColumnIndex($n);
     }
 }

@@ -143,6 +143,7 @@ class CalculateWorkersCostService
                         ->sum('amount');
                 } elseif ($codes[0] === 'workers_salary') {
                     $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
+//                    $amount = 0;
                 } elseif ($codes[0] === 'itr_salary') {
                     $amount = 0;
 
@@ -193,11 +194,9 @@ class CalculateWorkersCostService
         return $info;
     }
 
-    public function getPivotInfoByObjects($selectedYear, $objectIds): array
+    public function getPivotInfoByObjects($objectIds): array
     {
         $objects = BObject::whereIn('id', $objectIds)->orderBy('code')->get();
-
-        $years = [$selectedYear];
 
         $contractStartDate = '';
         $contractEndDate = '';
@@ -214,196 +213,318 @@ class CalculateWorkersCostService
             $contractEndDate = $contractLastEndDate->date;
         }
 
-        if (!empty($contractStartDate) && !empty($contractEndDate)) {
-            $years = [];
-            $startYear = Carbon::parse($contractStartDate)->year;
-            $endYear = Carbon::parse($contractEndDate)->year;
-
-            for ($i = $endYear; $i >= $startYear; $i--) {
-                $years[] = $i;
-            }
-        }
-
         $infoByObjects = [
             'years' => [],
             'objects' => [],
         ];
 
+        if (empty($contractStartDate) && empty($contractEndDate)) {
+            return $infoByObjects;
+        }
+
+        $years = [];
+        $startYear = Carbon::parse($contractStartDate)->year;
+        $endYear = Carbon::parse($contractEndDate)->year;
+
+        for ($i = $endYear; $i >= $startYear; $i--) {
+            $years[] = $i;
+        }
+
         foreach ($years as $year) {
-            $quarts = [
-                '1 квартал' => [$year . '-01-01', $year . '-03-31'],
-                '2 квартал' => [$year . '-04-01', $year . '-06-30'],
-                '3 квартал' => [$year . '-07-01', $year . '-09-30'],
-                '4 квартал' => [$year . '-10-01', $year . '-12-31'],
-            ];
-
-            $quartMonths = [
-                '1 квартал' => [$year . '-01', $year . '-02', $year . '-03'],
-                '2 квартал' => [$year . '-04', $year . '-05', $year . '-06'],
-                '3 квартал' => [$year . '-07', $year . '-08', $year . '-09'],
-                '4 квартал' => [$year . '-10', $year . '-11', $year . '-12'],
-            ];
-
-            $infoByObjects['years'][$year] = $quarts;
-
-            $quartsWorkhoursPercents = [];
-
-            $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
-
-            foreach ($quarts as $index => $quart) {
-                $objectIdsOnQuarts = [];
-                $workhours = Workhour::whereBetween('date', [$quart[0], $quart[1]])->get();
-                foreach ($workhours->groupBy('o_id') as $oIds => $wks) {
-                    $cObject = CObject::find($oIds);
-                    if (!$cObject) {
-                        $objectIdsOnQuarts['none'] = $wks->sum('hours');
-                    } else {
-                        $objectIdsOnQuarts[$cObject->code] = $wks->sum('hours');
-                    }
-                }
-
-                $wObjects = [];
-
-                foreach ($objectIdsOnQuarts as $oCode => $hours) {
-                    $mainCode = $oCode === '27.1' ? $oCode : substr($oCode, 0, strpos($oCode, '.'));
-
-                    if (!isset($wObjects[$mainCode])) {
-                        $wObjects[$mainCode] = 0;
-                    }
-
-                    $wObjects[$mainCode] += $hours;
-                }
-
-                $sum = array_sum($wObjects);
-                foreach ($wObjects as $oCode => $hours) {
-                    $quartsWorkhoursPercents[$index][$oCode] = $hours / $sum;
-                }
-            }
-
-            foreach ($objects as $object) {
-                $crmObjects = CObject::where('code', 'LIKE', $object->code . '.%')->pluck('id')->toArray();
-
-                if (!isset($infoByObjects['objects'][$object->getName()])) {
-                    $info = [
-                        'data' => [],
-                        'hours' => [],
-                        'total' => [
-                            'amount' => [
-                                'total' => 0
+            $infoByObjects['years'][] = [
+                'name' => $year,
+                'quarts' => [
+                    [
+                        'name' => '1 квартал',
+                        'period' => [$year . '-01-01', $year . '-03-31'],
+                        'months' => [
+                            [
+                                'name' => 'Январь',
+                                'date_name' => $year . '-01',
+                                'period' => [$year . '-01-01', $year . '-01-31']
                             ],
-                            'rate' => [
-                                'total' => 0
+                            [
+                                'name' => 'Февраль',
+                                'date_name' => $year . '-02',
+                                'period' => [$year . '-02-01', $year . '-02-' . Carbon::parse($year . '-02-01')->endOfMonth()->day]
                             ],
-                            'hours' => [
-                                'total' => 0
-                            ],
+                            [
+                                'name' => 'Март',
+                                'date_name' => $year . '-03',
+                                'period' => [$year . '-03-01', $year . '-03-31']
+                            ]
                         ]
-                    ];
-                } else {
-                    $info = $infoByObjects['objects'][$object->getName()];
-                }
+                    ],
+                    [
+                        'name' => '2 квартал',
+                        'period' => [$year . '-04-01', $year . '-06-30'],
+                        'months' => [
+                            [
+                                'name' => 'Апрель',
+                                'date_name' => $year . '-04',
+                                'period' => [$year . '-04-01', $year . '-04-30']
+                            ],
+                            [
+                                'name' => 'Май',
+                                'date_name' => $year . '-05',
+                                'period' => [$year . '-05-01', $year . '-05-31']
+                            ],
+                            [
+                                'name' => 'Июнь',
+                                'date_name' => $year . '-06',
+                                'period' => [$year . '-06-01', $year . '-06-30']
+                            ]
+                        ]
+                    ],
+                    [
+                        'name' => '3 квартал',
+                        'period' => [$year . '-07-01', $year . '-09-30'],
+                        'months' => [
+                            [
+                                'name' => 'Июль',
+                                'date_name' => $year . '-07',
+                                'period' => [$year . '-07-01', $year . '-07-31']
+                            ],
+                            [
+                                'name' => 'Август',
+                                'date_name' => $year . '-08',
+                                'period' => [$year . '-08-01', $year . '-08-31']
+                            ],
+                            [
+                                'name' => 'Сентябрь',
+                                'date_name' => $year . '-09',
+                                'period' => [$year . '-09-01', $year . '-09-30']
+                            ]
+                        ]
+                    ],
+                    [
+                        'name' => '4 квартал',
+                        'period' => [$year . '-10-01', $year . '-12-31'],
+                        'months' => [
+                            [
+                                'name' => 'Октябрь',
+                                'date_name' => $year . '-10',
+                                'period' => [$year . '-10-01', $year . '-10-31']
+                            ],
+                            [
+                                'name' => 'Ноябрь',
+                                'date_name' => $year . '-11',
+                                'period' => [$year . '-11-01', $year . '-11-30']
+                            ],
+                            [
+                                'name' => 'Декабрь',
+                                'date_name' => $year . '-12',
+                                'period' => [$year . '-12-01', $year . '-12-31']
+                            ]
+                        ]
+                    ]
+                ],
+            ];
+        }
 
-                foreach ($quarts as $index => $quart) {
-                    $hours = Workhour::whereBetween('date', [$quart[0], $quart[1]])->whereIn('o_id', $crmObjects)->sum('hours');
-                    $info['hours'][$year][$index] = $hours;
-                    $info['total']['hours']['total'] += $hours;
-                }
+        $object27_1 = BObject::where('code', '27.1')->first();
+        $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
 
-                $object27_1 = BObject::where('code', '27.1')->first();
+        foreach ($infoByObjects['years'] as $year) {
+            foreach ($year['quarts'] as $quart) {
+                foreach ($quart['months'] as $month) {
+                    $workhourPercents = [];
 
-                foreach (self::OBJECTS_GROUPS as $group => $codes) {
-                    $codes = explode(';', $codes);
+                    $objectHoursInfo = [];
+                    $workhours = Workhour::whereBetween('date', $month['period'])->get();
+                    foreach ($workhours->groupBy('o_id') as $oIds => $wks) {
+                        $cObject = CObject::find($oIds);
+                        if (!$cObject) {
+                            $objectHoursInfo['none'] = $wks->sum('hours');
+                        } else {
+                            $objectHoursInfo[$cObject->code] = $wks->sum('hours');
+                        }
+                    }
 
-                    foreach ($quarts as $index => $quart) {
-                        if ($codes[0] === 'ndfl') {
-                            $amount = 0;
-                            $months = $quartMonths[$index];
+                    $wObjects = [];
 
-                            foreach ($months as $month) {
-                                $ndflAmount = ($NDFLPivot['ndfl'][$month]['objects'][$object->code] ?? 0) + ($NDFLPivot['strah'][$month]['objects'][$object->code] ?? 0);
+                    foreach ($objectHoursInfo as $oCode => $hours) {
+                        $mainCode = $oCode === '27.1' ? $oCode : substr($oCode, 0, strpos($oCode, '.'));
+
+                        if (!isset($wObjects[$mainCode])) {
+                            $wObjects[$mainCode] = 0;
+                        }
+
+                        $wObjects[$mainCode] += $hours;
+                    }
+
+                    $sum = array_sum($wObjects);
+                    foreach ($wObjects as $oCode => $hours) {
+                        $workhourPercents[$month['name']][$oCode] = $hours / $sum;
+                    }
+
+                    foreach ($objects as $object) {
+                        $crmObjects = CObject::where('code', 'LIKE', $object->code . '.%')->pluck('id')->toArray();
+
+                        if (!isset($infoByObjects['objects'][$object->getName()])) {
+                            $info = [
+                                'data' => [],
+                                'hours' => [],
+                                'total' => [
+                                    'amount' => [
+                                        'total' => 0
+                                    ],
+                                    'rate' => [
+                                        'total' => 0
+                                    ],
+                                    'hours' => [
+                                        'total' => 0
+                                    ],
+                                ]
+                            ];
+                        } else {
+                            $info = $infoByObjects['objects'][$object->getName()];
+                        }
+
+                        if (!isset($info['hours'][$year['name']][$quart['name']]['total'])) {
+                            $info['hours'][$year['name']][$quart['name']]['total'] = 0;
+                        }
+
+                        if (!isset($info['hours'][$year['name']]['total'])) {
+                            $info['hours'][$year['name']]['total'] = 0;
+                        }
+
+                        $hours = Workhour::whereBetween('date', $month['period'])->whereIn('o_id', $crmObjects)->sum('hours');
+                        $info['hours'][$year['name']][$quart['name']][$month['name']] = $hours;
+                        $info['total']['hours']['total'] += $hours;
+
+                        $info['hours'][$year['name']][$quart['name']]['total'] += $hours;
+                        $info['hours'][$year['name']]['total'] += $hours;
+
+                        foreach (self::OBJECTS_GROUPS as $group => $codes) {
+                            $codes = explode(';', $codes);
+
+                            if ($codes[0] === 'ndfl') {
+                                $amount = 0;
+
+                                $ndflAmount = ($NDFLPivot['ndfl'][$month['date_name']]['objects'][$object->code] ?? 0) + ($NDFLPivot['strah'][$month['date_name']]['objects'][$object->code] ?? 0);
 
                                 if ($ndflAmount != 0) {
                                     $amount += $ndflAmount;
                                 } else {
-                                    $amount += $amount = (float) Payment::whereBetween('date', [$month . '-01', $month . '-31'])
+                                    $amount += $amount = (float) Payment::whereBetween('date', $month['period'])
                                         ->where('amount', '<', 0)
                                         ->whereIn('code', ['7.3', '7.3.1', '7.3.2'])
                                         ->where('object_id', $object->id)
                                         ->sum('amount');
                                 }
-                            }
-                        } elseif ($codes[0] === 'general_costs_percent') {
-                            $paymentQuery = \App\Models\Payment::query()->whereBetween('date', [$quart[0], $quart[1]])->whereIn('company_id', [1, 5]);
-                            $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
-                            $amount = $generalAmount * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
-                        } elseif ($codes[0] === 'accrued_taxes') {
-                            $amount = AccruedTax::whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
-                        } elseif ($codes[0] === 'accrued_taxes_nds') {
-                            $amount = AccruedTax::where('name', 'НДС')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
-                        } elseif ($codes[0] === 'accrued_taxes_receive') {
-                            $amount = AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
-                        } elseif ($codes[0] === 'accrued_taxes_transport') {
-                            $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount') * ($quartsWorkhoursPercents[$index][$object->code] ?? 0);
-                        } elseif ($codes[0] === 'workers_salary') {
-                            $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->where('code', $object->code)->sum('amount');
-                        } elseif ($codes[0] === 'itr_salary') {
-                            $amount = 0;
+                            } elseif ($codes[0] === 'general_costs_percent') {
+                                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $month['period'])->whereIn('company_id', [1, 5]);
+                                $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                                    + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
+                                $amount = $generalAmount * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                            } elseif ($codes[0] === 'accrued_taxes') {
+                                $amount = AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                            } elseif ($codes[0] === 'accrued_taxes_nds') {
+                                $amount = AccruedTax::where('name', 'НДС')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                            } elseif ($codes[0] === 'accrued_taxes_receive') {
+                                $amount = AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                            } elseif ($codes[0] === 'accrued_taxes_transport') {
+                                $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                            } elseif ($codes[0] === 'workers_salary') {
+//                                $amount = 0;
+                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                            } elseif ($codes[0] === 'itr_salary') {
+                                $amount = 0;
 
-                            foreach ($ITRSalaryPivot as $date => $pivot) {
-                                if ($date >= $quart[0] && $date <= $quart[1]) {
-                                    foreach ($pivot['objects'] as $code => $am) {
-                                        if ($code == $object->code) {
-                                            $amount += $am;
+                                foreach ($ITRSalaryPivot as $date => $pivot) {
+                                    if ($date >= $month['period'][0] && $date <= $month['period'][1]) {
+                                        foreach ($pivot['objects'] as $code => $am) {
+                                            if ($code == $object->code) {
+                                                $amount += $am;
+                                            }
                                         }
                                     }
                                 }
+                            } else {
+                                $amount = (float) Payment::whereBetween('date', $month['period'])
+                                    ->where('amount', '<', 0)
+                                    ->whereIn('code', $codes)
+                                    ->where('object_id', $object->id)
+                                    ->sum('amount');
                             }
-                        } else {
-                            $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
-                                ->where('amount', '<', 0)
-                                ->whereIn('code', $codes)
-                                ->where('object_id', $object->id)
-                                ->sum('amount');
+
+                            $amount = -abs($amount);
+
+                            $rate = $info['hours'][$year['name']][$quart['name']][$month['name']] != 0 ? $amount / $info['hours'][$year['name']][$quart['name']][$month['name']] : 0;
+
+                            $info['data'][$group]['amount'][$year['name']][$quart['name']][$month['name']] = $amount;
+                            $info['data'][$group]['rate'][$year['name']][$quart['name']][$month['name']] = $rate;
+
+                            if (!isset($info['data'][$group]['amount'][$year['name']]['total'])) {
+                                $info['data'][$group]['amount'][$year['name']]['total'] = 0;
+                                $info['data'][$group]['rate'][$year['name']]['total'] = 0;
+                            }
+
+                            if (!isset($info['data'][$group]['amount'][$year['name']][$quart['name']]['total'])) {
+                                $info['data'][$group]['amount'][$year['name']][$quart['name']]['total'] = 0;
+                                $info['data'][$group]['rate'][$year['name']][$quart['name']]['total'] = 0;
+                            }
+
+                            if (!isset($info['data'][$group]['total']['amount']['total'])) {
+                                $info['data'][$group]['total']['amount']['total'] = 0;
+                                $info['data'][$group]['total']['rate']['total'] = 0;
+                            }
+
+                            if (! isset($info['total']['amount'][$year['name']][$quart['name']][$month['name']])) {
+                                $info['total']['amount'][$year['name']][$quart['name']][$month['name']] = 0;
+                            }
+
+                            if (! isset($info['total']['rate'][$year['name']][$quart['name']][$month['name']])) {
+                                $info['total']['rate'][$year['name']][$quart['name']][$month['name']] = 0;
+                            }
+
+                            if (! isset($info['total']['amount'][$year['name']][$quart['name']]['total'])) {
+                                $info['total']['amount'][$year['name']][$quart['name']]['total'] = 0;
+                            }
+
+                            if (! isset($info['total']['rate'][$year['name']][$quart['name']]['total'])) {
+                                $info['total']['rate'][$year['name']][$quart['name']]['total'] = 0;
+                            }
+
+                            if (! isset($info['total']['amount'][$year['name']]['total'])) {
+                                $info['total']['amount'][$year['name']]['total'] = 0;
+                            }
+
+                            if (! isset($info['total']['rate'][$year['name']]['total'])) {
+                                $info['total']['rate'][$year['name']]['total'] = 0;
+                            }
+
+                            $info['data'][$group]['amount'][$year['name']]['total'] += $amount;
+                            $info['data'][$group]['rate'][$year['name']]['total'] += $rate;
+
+                            $info['data'][$group]['amount'][$year['name']][$quart['name']]['total'] += $amount;
+                            $info['data'][$group]['rate'][$year['name']][$quart['name']]['total']  += $rate;
+
+                            $info['data'][$group]['total']['amount']['total'] += $amount;
+                            $info['data'][$group]['total']['rate']['total'] += $rate;
+
+                            $info['total']['amount'][$year['name']][$quart['name']][$month['name']] += $amount;
+                            $info['total']['rate'][$year['name']][$quart['name']][$month['name']] += $rate;
+
+                            $info['total']['amount'][$year['name']][$quart['name']]['total'] += $amount;
+                            $info['total']['rate'][$year['name']][$quart['name']]['total'] += $rate;
+
+                            $info['total']['amount'][$year['name']]['total'] += $amount;
+                            $info['total']['rate'][$year['name']]['total'] += $rate;
+
+                            $info['total']['amount']['total'] += $amount;
+
+                            $info['data'][$group]['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['data'][$group]['total']['amount']['total'] / $info['total']['hours']['total'];
                         }
 
-                        $amount = -abs($amount);
+                        $info['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['total']['amount']['total'] / $info['total']['hours']['total'];
 
-                        $rate = $info['hours'][$year][$index] != 0 ? $amount / $info['hours'][$year][$index] : 0;
-
-                        $info['data'][$group]['amount'][$year][$index] = $amount;
-                        $info['data'][$group]['rate'][$year][$index] = $rate;
-
-                        if (!isset($info['data'][$group]['total']['amount']['total'])) {
-                            $info['data'][$group]['total']['amount']['total'] = 0;
-                            $info['data'][$group]['total']['rate']['total'] = 0;
-                        }
-
-                        if (! isset($info['total']['amount'][$year][$index])) {
-                            $info['total']['amount'][$year][$index] = 0;
-                        }
-
-                        if (! isset($info['total']['rate'][$year][$index])) {
-                            $info['total']['rate'][$year][$index] = 0;
-                        }
-
-                        $info['data'][$group]['total']['amount']['total'] += $amount;
-                        $info['data'][$group]['total']['rate']['total'] += $rate;
-
-                        $info['total']['amount'][$year][$index] += $amount;
-                        $info['total']['rate'][$year][$index] += $rate;
-
-                        $info['total']['amount']['total'] += $amount;
+                        $infoByObjects['objects'][$object->getName()] = $info;
                     }
-
-                    $info['data'][$group]['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['data'][$group]['total']['amount']['total'] / $info['total']['hours']['total'];
                 }
-
-                $info['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['total']['amount']['total'] / $info['total']['hours']['total'];
-                $infoByObjects['objects'][$object->getName()] = $info;
             }
         }
-
         return $infoByObjects;
     }
 }

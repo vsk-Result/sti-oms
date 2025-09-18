@@ -80,7 +80,7 @@
                             <thead>
                                 <tr class="fw-bolder">
 {{--                                    <th rowspan="2" valign="middle" class="min-w-50px ps-2 text-center">№</th>--}}
-                                    <th rowspan="2" valign="middle" class="min-w-500px ps-2 text-center">Раздел</th>
+                                    <th rowspan="2" valign="middle" class="min-w-300px ps-2 text-center">Раздел</th>
 
                                     @foreach($info['years'] as $year => $quarts)
                                         <th class="text-center" colspan="8">{{ $year }}</th>
@@ -176,7 +176,7 @@
 @push('scripts')
     <script>
         $(function() {
-            mainApp.initFreezeTable(1);
+            mainApp.initFreezeTable(2);
         });
     </script>
 @endpush

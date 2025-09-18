@@ -21,7 +21,7 @@ class CalculateWorkersCostController extends Controller
         $objects = BObject::active()->orderBy('code')->get();
 
         if (count($objectIds) > 0) {
-            $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects($year, $objectIds);
+            $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects($objectIds);
             return view('pivots.calculate-workers-cost.objects.index', compact('infoByObjects', 'years', 'objects'));
         }
 
