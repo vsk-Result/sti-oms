@@ -133,7 +133,14 @@ class PaymentService
 
 
         $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
-        $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
+        $amount = abs($this->sanitizer->set($requestData['amount'])->toAmount()->get());
+
+        $isReceiveAmount = isset($requestData['is_receive_amount']);
+
+        if (!$isReceiveAmount) {
+            $amount = -$amount;
+        }
+
         $crmAvansEmployeeId = null;
         $crmAvansDate = null;
         $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);
@@ -205,7 +212,14 @@ class PaymentService
     public function updatePayment(CashAccountPayment $payment, array $requestData): void
     {
         $description = $this->sanitizer->set($requestData['description'] ?? '')->upperCaseFirstWord()->get();
-        $amount = $this->sanitizer->set($requestData['amount'])->toAmount()->get();
+        $amount = abs($this->sanitizer->set($requestData['amount'])->toAmount()->get());
+
+        $isReceiveAmount = isset($requestData['is_receive_amount']);
+
+        if (!$isReceiveAmount) {
+            $amount = -$amount;
+        }
+
         $crmAvansEmployeeId = null;
         $crmAvansDate = null;
         $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);

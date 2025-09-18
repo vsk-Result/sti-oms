@@ -110,10 +110,21 @@
                                     class="amount-mask form-control form-control-lg form-control-solid"
                                     type="text"
                                     name="amount"
-                                    value="{{ old('amount', $payment->amount) }}"
+                                    value="{{ old('amount', abs($payment->amount)) }}"
                                     required
                                 />
                             </div>
+
+                            <label class="form-check form-check-custom form-check-solid form-check-inline gap-2 justify-content-end">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="is_receive_amount"
+                                    {{ $payment->amount > 0 ? 'checked' : '' }}
+                                />
+
+                                Приход
+                            </label>
                         </div>
                     </div>
 

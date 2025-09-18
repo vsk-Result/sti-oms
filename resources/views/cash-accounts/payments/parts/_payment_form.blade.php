@@ -109,10 +109,21 @@
                                 class="amount-mask form-control form-control-lg form-control-solid"
                                 type="text"
                                 name="amount"
-                                value="{{ old('amount', $copyPayment ? $copyPayment->amount : '') }}"
+                                value="{{ old('amount', $copyPayment ? abs($copyPayment->amount) : '') }}"
                                 required
                             />
                         </div>
+
+                        <label class="form-check form-check-custom form-check-solid form-check-inline gap-2 justify-content-end">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="is_receive_amount"
+                                {{ $copyPayment && $copyPayment->amount > 0 ? 'checked' : '' }}
+                            />
+
+                            Приход
+                        </label>
                     </div>
                 </div>
 
