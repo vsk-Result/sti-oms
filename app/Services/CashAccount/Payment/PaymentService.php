@@ -150,18 +150,27 @@ class PaymentService
         $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
         $needCreateItr = !$isNotNeedCreateItr && ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');;
 
+        $object27_3 = BObject::where('code', '27.3')->first();
+        $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
+        $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
+
         if ($needCreateCrmAvans) {
             $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
             $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
-            $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            if ($objectId === $object27_3->id) {
+                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
+            } else {
+                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            }
         } elseif ($needCreateItr || $isNotNeedCreateItr) {
-            $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            if ($objectId === $object27_3->id) {
+                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
+            } else {
+                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            }
         } else {
             $organizationId = $requestData['organization_id'];
         }
-
-        $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
-        $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
 
         $payment = CashAccountPayment::create([
             'cash_account_id' => $requestData['cash_account_id'],
@@ -232,18 +241,29 @@ class PaymentService
         $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
         $isItr = !$isNotNeedCreateItr && ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');
 
+        $object27_3 = BObject::where('code', '27.3')->first();
+        $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
+        $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
+
         if ($isCrmEmployee) {
             $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
             $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
-            $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            if ($objectId === $object27_3->id) {
+                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
+            } else {
+                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            }
         } elseif ($isItr || $isNotNeedCreateItr) {
-            $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            if ($objectId === $object27_3->id) {
+                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
+            } else {
+                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+            }
         } else {
             $organizationId = $requestData['organization_id'];
         }
 
-        $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
-        $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
+
 
         $crmAvansData = $payment->getCrmAvansData();
         $itrData = $payment->getItrData();
