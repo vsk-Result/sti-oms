@@ -4,6 +4,8 @@ namespace App\Services\CashAccount\Payment;
 
 use App\Helpers\Sanitizer;
 use App\Models\CashAccount\CashAccountPayment;
+use App\Models\CRM\Apartment;
+use App\Models\CRM\ApartmentPayment;
 use App\Models\CRM\Avans;
 use App\Models\CRM\Employee;
 use App\Models\Object\BObject;
@@ -144,34 +146,26 @@ class PaymentService
             }
         }
 
-        $crmAvansEmployeeId = null;
-        $crmAvansDate = null;
         $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);
 
         $needCreateCrmAvans = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
 
         $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
-        $needCreateItr = ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');;
+        $needCreateItr = ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');
+
+        $needCreateCrmApartment = $requestData['code'] === '5.14.1' || $requestData['code'] === '7.13';
 
         $object27_3 = BObject::where('code', '27.3')->first();
         $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
         $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
 
-        if ($needCreateCrmAvans) {
-            $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
-            $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
+        if ($needCreateCrmAvans || $needCreateItr || $needCreateCrmApartment) {
             if ($objectId === $object27_3->id) {
                 $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
             } else {
                 $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
             }
-        } elseif ($needCreateItr) {
-            if ($objectId === $object27_3->id) {
-                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
-            } else {
-                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
-            }
-        } else {
+         } else {
             $organizationId = $requestData['organization_id'];
         }
 
@@ -201,6 +195,9 @@ class PaymentService
         }
 
         if ($needCreateCrmAvans) {
+            $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
+            $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
+
             $this->createCRMAvans(
                 $payment,
                 [
@@ -217,6 +214,25 @@ class PaymentService
                 [
                     'id' => $requestData['itr_id'] ?? null,
                     '1c_itr_not_need_create' => $isNotNeedCreateItr
+                ]
+            );
+        }
+
+        if ($needCreateCrmApartment) {
+            $crmApartmentId = $requestData['crm_apartment_id'] ?? null;
+            $crmApartmentPaymentDate = $requestData['crm_payment_date'] ?? null;
+            $crmApartmentPaymentMonth = isset($requestData['crm_payment_month']) ? get_date_and_month_from_string($requestData['crm_payment_month'], true) : null;
+            $crmApartmentPaymentAmount = isset($requestData['crm_payment_amount']) ? $this->sanitizer->set($requestData['crm_payment_amount'])->toAmount()->get() : 0;
+            $crmApartmentPaymentCommunal = isset($requestData['crm_payment_communal']) ? $this->sanitizer->set($requestData['crm_payment_communal'])->toAmount()->get() : 0;
+
+            $this->createCRMApartment(
+                $payment,
+                [
+                    'crm_apartment_id' => $crmApartmentId,
+                    'crm_payment_date' => $crmApartmentPaymentDate,
+                    'crm_payment_month' => $crmApartmentPaymentMonth,
+                    'crm_payment_amount' => $crmApartmentPaymentAmount,
+                    'crm_payment_communal' => $crmApartmentPaymentCommunal
                 ]
             );
         }
@@ -238,8 +254,6 @@ class PaymentService
             }
         }
 
-        $crmAvansEmployeeId = null;
-        $crmAvansDate = null;
         $crmNotNeedAvans = isset($requestData['crm_not_need_avans']);
 
         $isCrmEmployee = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
@@ -247,19 +261,13 @@ class PaymentService
         $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
         $isItr = ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');
 
+        $isCrmApartment = $requestData['code'] === '5.14.1' || $requestData['code'] === '7.13';
+
         $object27_3 = BObject::where('code', '27.3')->first();
         $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
         $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
 
-        if ($isCrmEmployee) {
-            $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
-            $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
-            if ($objectId === $object27_3->id) {
-                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
-            } else {
-                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
-            }
-        } elseif ($isItr) {
+        if ($isCrmEmployee || $isItr || $isCrmApartment) {
             if ($objectId === $object27_3->id) {
                 $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
             } else {
@@ -269,18 +277,21 @@ class PaymentService
             $organizationId = $requestData['organization_id'];
         }
 
-
-
         $crmAvansData = $payment->getCrmAvansData();
         $itrData = $payment->getItrData();
+        $crmApartmentData = $payment->getCrmApartmentData();
 
-        $needCrateCrmAvans = is_null($crmAvansData['id']) && $isCrmEmployee;
+        $needCreateCrmAvans = is_null($crmAvansData['id']) && $isCrmEmployee;
         $needUpdateCrmAvans = !is_null($crmAvansData['id']) && $isCrmEmployee;
         $needDeleteCrmAvans = !is_null($crmAvansData['id']) && !$isCrmEmployee;
 
-        $needCrateItr = is_null($itrData['id']) && $isItr && !$isNotNeedCreateItr;
+        $needCreateItr = is_null($itrData['id']) && $isItr && !$isNotNeedCreateItr;
         $needUpdateItr = !is_null($itrData['id']) && $isItr && !$isNotNeedCreateItr;
         $needDeleteItr = !is_null($itrData['id']) && !($isItr && !$isNotNeedCreateItr);
+
+        $needCreateCrmApartment = is_null($crmApartmentData['payment_id']) && $isCrmApartment;
+        $needUpdateCrmApartment = !is_null($crmApartmentData['payment_id']) && $isCrmApartment;
+        $needDeleteCrmApartment = !is_null($crmApartmentData['payment_id']) && !$isCrmApartment;
 
         $payment->update([
             'object_id' => $objectId,
@@ -304,7 +315,10 @@ class PaymentService
             }
         }
 
-        if ($needCrateCrmAvans) {
+        $crmAvansDate = isset($requestData['crm_date']) ? get_date_and_month_from_string($requestData['crm_date'], true) : null;
+        $crmAvansEmployeeId = $requestData['crm_employee_id'] ?? null;
+
+        if ($needCreateCrmAvans) {
             $this->createCRMAvans(
                 $payment,
                 [
@@ -330,7 +344,7 @@ class PaymentService
             $this->deleteCRMAvans($payment);
         }
 
-        if ($needCrateItr) {
+        if ($needCreateItr) {
             $this->createItr(
                 $payment,
                 [
@@ -353,6 +367,42 @@ class PaymentService
         if ($needDeleteItr) {
             $this->deleteItr($payment);
         }
+
+        $crmApartmentId = $requestData['crm_apartment_id'] ?? null;
+        $crmApartmentPaymentDate = $requestData['crm_payment_date'] ?? null;
+        $crmApartmentPaymentMonth = isset($requestData['crm_payment_month']) ? get_date_and_month_from_string($requestData['crm_payment_month'], true) : null;
+        $crmApartmentPaymentAmount = isset($requestData['crm_payment_amount']) ? $this->sanitizer->set($requestData['crm_payment_amount'])->toAmount()->get() : 0;
+        $crmApartmentPaymentCommunal = isset($requestData['crm_payment_communal']) ? $this->sanitizer->set($requestData['crm_payment_communal'])->toAmount()->get() : 0;
+
+        if ($needCreateCrmApartment) {
+            $this->createCRMAvans(
+                $payment,
+                [
+                    'crm_apartment_id' => $crmApartmentId,
+                    'crm_payment_date' => $crmApartmentPaymentDate,
+                    'crm_payment_month' => $crmApartmentPaymentMonth,
+                    'crm_payment_amount' => $crmApartmentPaymentAmount,
+                    'crm_payment_communal' => $crmApartmentPaymentCommunal
+                ]
+            );
+        }
+
+        if ($needUpdateCrmApartment) {
+            $this->updateCRMApartment(
+                $payment,
+                [
+                    'crm_apartment_id' => $crmApartmentId,
+                    'crm_payment_date' => $crmApartmentPaymentDate,
+                    'crm_payment_month' => $crmApartmentPaymentMonth,
+                    'crm_payment_amount' => $crmApartmentPaymentAmount,
+                    'crm_payment_communal' => $crmApartmentPaymentCommunal
+                ]
+            );
+        }
+
+        if ($needDeleteCrmApartment) {
+            $this->deleteCRMApartment($payment);
+        }
     }
 
     public function destroyPayment(CashAccountPayment $payment): void
@@ -370,13 +420,13 @@ class PaymentService
             $avansId = null;
         } else {
             $avans = new Avans;
-            $avans->u_id = auth()->user()->crm_user_id;
+            $avans->u_id = auth()->user()->crm_user_id ?? 1;
             $avans->e_id = $additionalData['employee_id'];
             $avans->type = 'Затраты';
             $avans->date = $additionalData['date'];
             $avans->code = $payment->getObjectCode();
             $avans->issue_date = Carbon::now();
-            $avans->user_change_id = auth()->user()->crm_user_id;
+            $avans->user_change_id = auth()->user()->crm_user_id ?? 1;
             $avans->updated_at = Carbon::now();
             $avans->value = abs($payment->amount);
             $avans->save();
@@ -434,7 +484,7 @@ class PaymentService
         $avans->e_id = $additionalData['employee_id'];
         $avans->date = $additionalData['date'];
         $avans->code = $payment->getObjectCode();
-        $avans->user_change_id = auth()->user()->crm_user_id;
+        $avans->user_change_id = auth()->user()->crm_user_id ?? 1;
         $avans->updated_at = Carbon::now();
         $avans->value = abs($payment->amount);
         $avans->update();
@@ -554,5 +604,90 @@ class PaymentService
         ]);
 
         return $payment;
+    }
+
+    public function createCRMApartment(CashAccountPayment $payment, array $additionalData): CashAccountPayment
+    {
+        $aPayment = new ApartmentPayment;
+        $aPayment->date = $additionalData['crm_payment_date'];
+        $aPayment->month = $additionalData['crm_payment_month'];
+        $aPayment->sum = $additionalData['crm_payment_amount'];
+        $aPayment->communal = $additionalData['crm_payment_communal'];
+        $aPayment->a_id = $additionalData['crm_apartment_id'];
+        $aPayment->author_id = auth()->user()->crm_user_id ?? 1;
+        $aPayment->datetime = Carbon::now();
+        $aPayment->save();
+
+        $crmApartment = Apartment::find($additionalData['crm_apartment_id']);
+        $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+        $currentAdditionalData['crm_apartment'] = [
+            'payment_id' => $aPayment->id,
+            'apartment_id' => $additionalData['crm_apartment_id'],
+            'apartment_address' => $crmApartment ? $crmApartment->address : '',
+            'payment_date' => $additionalData['crm_payment_date'],
+            'payment_month' => $additionalData['crm_payment_month'],
+            'payment_amount' => $additionalData['crm_payment_amount'],
+            'payment_communal' => $additionalData['crm_payment_communal'],
+        ];
+
+        $payment->update([
+            'additional_data' => json_encode($currentAdditionalData)
+        ]);
+
+        return $payment;
+    }
+
+    public function updateCRMApartment(CashAccountPayment $payment, array $additionalData): CashAccountPayment
+    {
+        $crmApartmentData = $payment->getCrmApartmentData();
+        $aPayment = ApartmentPayment::find($crmApartmentData['payment_id']);
+
+        if (! $aPayment) {
+            return $payment;
+        }
+
+        $aPayment->a_id = $additionalData['crm_apartment_id'];
+        $aPayment->date = $additionalData['crm_payment_date'];
+        $aPayment->month = $additionalData['crm_payment_month'];
+        $aPayment->sum = $additionalData['crm_payment_amount'];
+        $aPayment->communal = $additionalData['crm_payment_communal'];
+        $aPayment->update();
+
+        $crmApartment = Apartment::find($additionalData['crm_apartment_id']);
+        $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
+
+        $currentAdditionalData['crm_apartment'] = [
+            'payment_id' => $aPayment->id,
+            'apartment_id' => $additionalData['crm_apartment_id'],
+            'apartment_address' => $crmApartment ? $crmApartment->address : '',
+            'payment_date' => $additionalData['crm_payment_date'],
+            'payment_month' => $additionalData['crm_payment_month'],
+            'payment_amount' => $additionalData['crm_payment_amount'],
+            'payment_communal' => $additionalData['crm_payment_communal'],
+        ];
+
+        $payment->update([
+            'additional_data' => json_encode($currentAdditionalData)
+        ]);
+
+        return $payment;
+    }
+
+    public function deleteCRMApartment(CashAccountPayment $payment): void
+    {
+        $crmApartmentData = $payment->getCrmApartmentData();
+        $aPayment = ApartmentPayment::find($crmApartmentData['payment_id']);
+
+        if ($aPayment) {
+            $aPayment->delete();
+
+            $additionalData = json_decode($payment->additional_data, true) ?? [];
+            $additionalData['crm_apartment'] = [];
+
+            $payment->update([
+                'additional_data' => json_encode($additionalData)
+            ]);
+        }
     }
 }

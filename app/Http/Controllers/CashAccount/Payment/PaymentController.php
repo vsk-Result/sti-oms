@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
 use App\Models\CashAccount\CashAccountPayment;
 use App\Models\CashAccount\ClosePeriod;
+use App\Models\CRM\Apartment;
 use App\Models\CRM\Employee;
 use App\Models\Currency;
 use App\Models\KostCode;
@@ -72,6 +73,7 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
         $crmEmployees = Employee::getEmployeeList();
+        $crmApartments = Apartment::orderBy('address', 'ASC')->pluck('address', 'id');
         $popularCodes = $cashAccount->getPopularPaymentCodes();
         $availableCodes = KostCode::getCodesForPayment();
         $itr = Cache::get('itr_list_1c_data', []);
@@ -87,7 +89,8 @@ class PaymentController extends Controller
                 'cash-accounts.payments.parts._payment_form',
                 compact(
                     'cashAccount', 'codes', 'copyPayment', 'categories',
-                    'objects', 'organizations', 'crmEmployees', 'popularCodes', 'availableCodes', 'itr'
+                    'objects', 'organizations', 'crmEmployees', 'popularCodes', 'availableCodes', 'itr',
+                    'crmApartments'
                 )
             )->render()
         ]);
@@ -110,6 +113,7 @@ class PaymentController extends Controller
         $organizations = Organization::orderBy('name')->get();
         $codes = KostCode::getCodes();
         $crmEmployees = Employee::getEmployeeList();
+        $crmApartments = Apartment::orderBy('address', 'ASC')->pluck('address', 'id');
         $popularCodes = $cashAccount->getPopularPaymentCodes();
         $availableCodes = KostCode::getCodesForPayment();
         $itr = Cache::get('itr_list_1c_data', []);
@@ -120,7 +124,8 @@ class PaymentController extends Controller
                 'cash-accounts.payments.parts._edit_payment_form',
                 compact(
                     'cashAccount', 'codes', 'payment', 'categories',
-                    'objects', 'organizations', 'crmEmployees', 'popularCodes', 'availableCodes', 'itr'
+                    'objects', 'organizations', 'crmEmployees', 'popularCodes', 'availableCodes', 'itr',
+                    'crmApartments'
                 )
             )->render()
         ]);

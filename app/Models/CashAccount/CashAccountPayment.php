@@ -121,6 +121,7 @@ class CashAccountPayment extends Model implements Audit, HasMedia
     {
         $description = $this->description;
         $crmAvansData = $this->getCrmAvansData();
+        $crmApartmentData = $this->getCrmApartmentData();
         $itrData = $this->getItrData();
 
         if (! is_null($crmAvansData['employee_name']) && $this->code === '7.8.2') {
@@ -141,6 +142,10 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
         if (! is_null($itrData['name']) && $this->code === '7.10') {
             $description .= ', выплата премии ' . $itrData['name'];
+        }
+
+        if (! is_null($crmApartmentData['apartment_address']) && ($this->code === '5.14.1' || $this->code === '7.13')) {
+            $description .= ', оплата квартиры ' . $crmApartmentData['apartment_address'] . ' на сумму ' . $crmApartmentData['payment_amount'] . ' за ' . $crmApartmentData['payment_month'];
         }
 
         if ($this->isRequest()) {
@@ -177,6 +182,21 @@ class CashAccountPayment extends Model implements Audit, HasMedia
             'employee_name' => $data['employee_name'] ?? null,
             'date' => $data['date'] ?? null,
             'crm_not_need_avans' => $data['crm_not_need_avans'] ?? false,
+        ];
+    }
+
+    public function getCrmApartmentData(): array
+    {
+        $data = $this->getAdditionalData('crm_apartment');
+
+        return [
+            'payment_id' => $data['payment_id'] ?? null,
+            'apartment_id' => $data['apartment_id'] ?? null,
+            'apartment_address' => $data['apartment_address'] ?? null,
+            'payment_date' => $data['payment_date'] ?? null,
+            'payment_month' => $data['payment_month'] ?? null,
+            'payment_amount' => $data['payment_amount'] ?? null,
+            'payment_communal' => $data['payment_communal'] ?? null,
         ];
     }
 

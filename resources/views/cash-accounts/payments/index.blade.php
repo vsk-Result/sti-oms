@@ -426,14 +426,19 @@
                             $('#create-organization').hide();
                             $('.organization-select').attr('required', false);
                             $('#create-category').val('Зарплата').trigger('change');
-                            $('#edit-category').val('Зарплата').trigger('change');
                         } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1' || $(this).val() === '7.10') {
                             $('#create-itr').show();
                             $('#create-employee-crm').hide();
                             $('#create-organization').hide();
                             $('.organization-select').attr('required', false);
                             $('#create-category').val('Зарплата').trigger('change');
-                            $('#edit-category').val('Зарплата').trigger('change');
+                        } else if ($(this).val() === '5.14.1' || $(this).val() === '7.13') {
+                            $('#create-apartment').show();
+                            $('#create-itr').hide();
+                            $('#create-employee-crm').hide();
+                            $('#create-organization').hide();
+                            $('.organization-select').attr('required', false);
+                            $('#create-category').val('Накладные/Услуги').trigger('change');
                         } else {
                             $('#create-employee-crm').hide();
                             $('#create-itr').hide();
@@ -495,14 +500,19 @@
                                 $('#create-organization').hide();
                                 $('.organization-select').attr('required', false);
                                 $('#create-category').val('Зарплата').trigger('change');
-                                $('#edit-category').val('Зарплата').trigger('change');
                             } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1' || $(this).val() === '7.10') {
                                 $('#create-itr').show();
                                 $('#create-employee-crm').hide();
                                 $('#create-organization').hide();
                                 $('.organization-select').attr('required', false);
                                 $('#create-category').val('Зарплата').trigger('change');
-                                $('#edit-category').val('Зарплата').trigger('change');
+                            } else if ($(this).val() === '5.14.1' || $(this).val() === '7.13') {
+                                $('#create-apartment').show();
+                                $('#create-itr').hide();
+                                $('#create-employee-crm').hide();
+                                $('#create-organization').hide();
+                                $('.organization-select').attr('required', false);
+                                $('#create-category').val('Накладные/Услуги').trigger('change');
                             } else {
                                 $('#create-employee-crm').hide();
                                 $('#create-itr').hide();
@@ -563,15 +573,20 @@
                             $('#edit-itr').hide();
                             $('#edit-organization').hide();
                             $('.organization-select').attr('required', false);
-                            $('#create-category').val('Зарплата').trigger('change');
                             $('#edit-category').val('Зарплата').trigger('change');
                         } else if ($(this).val() === '7.8.1' || $(this).val() === '7.9.1' || $(this).val() === '7.10') {
                             $('#edit-itr').show();
                             $('#edit-employee-crm').hide();
                             $('#edit-organization').hide();
                             $('.organization-select').attr('required', false);
-                            $('#create-category').val('Зарплата').trigger('change');
                             $('#edit-category').val('Зарплата').trigger('change');
+                        } else if ($(this).val() === '5.14.1' || $(this).val() === '7.13') {
+                            $('#edit-apartment').show();
+                            $('#edit-itr').hide();
+                            $('#edit-employee-crm').hide();
+                            $('#edit-organization').hide();
+                            $('.organization-select').attr('required', false);
+                            $('#edit-category').val('Накладные/Услуги').trigger('change');
                         } else {
                             $('#edit-employee-crm').hide();
                             $('#edit-itr').hide();

@@ -224,6 +224,86 @@
                     </div>
                 </div>
 
+                <div id="edit-apartment" class="row border-dashed border-warning p-3 mb-4" style="margin-top: -24px; display: none">
+                    <div class="col-md-3 fv-row">
+                        <div class="mb-1">
+                            <label class="form-label fw-bolder text-dark fs-6">Квартира</label>
+                            <div class="position-relative mb-3">
+                                <select name="crm_apartment_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#createPaymentModal">
+                                    @foreach($crmApartments as $apartmentId => $apartmentName)
+                                        <option value="{{ $apartmentId }}" {{ ($payment->getCrmApartmentData()['apartment_id'] == $apartmentId) ? 'selected' : '' }}>{{ $apartmentName }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 fv-row">
+                        <div class="mb-1">
+                            <label class="form-label fw-bolder text-dark fs-6">Дата оплаты</label>
+                            <div class="position-relative mb-3">
+                                <input
+                                    class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                    type="text"
+                                    name="crm_payment_date"
+                                    value="{{ $payment->getCrmApartmentData()['payment_date'] ? $payment->getCrmApartmentData()['payment_date'] : '' }}"
+                                    readonly
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 fv-row">
+                        <div class="mb-1">
+                            <label class="form-label fw-bolder text-dark fs-6">Месяц оплаты</label>
+                            <div class="position-relative mb-3">
+                                @php
+                                    $months = [];
+                                    foreach ([date('Y')] as $year) {
+                                        foreach (['Декабрь', 'Ноябрь', 'Октябрь', 'Сентябрь', 'Август', 'Июль', 'Июнь', 'Май', 'Апрель', 'Март', 'Февраль', 'Январь'] as $m) {
+                                            $months[] = $m . ' ' . $year;
+                                        }
+                                    }
+                                @endphp
+
+                                <select name="crm_payment_month" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                    @foreach($months as $month)
+                                        <option value="{{ $month }}" {{ (translate_year_month($payment->getCrmApartmentData()['payment_month']) === $month) ? 'selected' : '' }}>{{ $month }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 fv-row">
+                        <div class="mb-1">
+                            <label class="form-label fw-bolder text-dark fs-6">Сумма оплаты</label>
+                            <div class="position-relative mb-3">
+                                <input
+                                        class="amount-mask form-control form-control-lg form-control-solid"
+                                        type="text"
+                                        name="crm_payment_amount"
+                                        value="{{ $payment->getCrmApartmentData()['payment_amount'] ? $payment->getCrmApartmentData()['payment_amount'] : '' }}"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 fv-row">
+                        <div class="mb-1">
+                            <label class="form-label fw-bolder text-dark fs-6">Сумма коммуналки</label>
+                            <div class="position-relative mb-3">
+                                <input
+                                        class="amount-mask form-control form-control-lg form-control-solid"
+                                        type="text"
+                                        name="crm_payment_communal"
+                                        value="{{ $payment->getCrmApartmentData()['payment_communal'] ? $payment->getCrmApartmentData()['payment_communal'] : '' }}"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-12 mb-10 fv-row">
                         <div class="mb-1">
