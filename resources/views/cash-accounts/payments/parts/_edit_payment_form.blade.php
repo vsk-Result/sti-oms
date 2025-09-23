@@ -132,7 +132,7 @@
                         <div class="mb-1">
                             <label class="form-label fw-bolder text-dark fs-6">Категория</label>
                             <div class="position-relative mb-3">
-                                <select name="category" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
+                                <select id="edit-category"  name="category" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
                                     @foreach($categories as $category)
                                         <option value="{{ $category }}" {{ $category === $payment->category ? 'selected' : '' }}>{{ $category }}</option>
                                     @endforeach
