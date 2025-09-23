@@ -187,6 +187,21 @@
             $input .val($input.val() + '^^');
         });
 
+        $("#payment-filter-code").on("select2:selecting", function(evt) {
+            const code = evt.params.args.data.id;
+            const selectedItems = $(this).select2("val");
+
+            $(this).find(`[data-parent-1="${code}"]`).each(function() {
+                selectedItems.push($(this).attr('value'));
+            });
+
+            $(this).find(`[data-parent-2="${code}"]`).each(function() {
+                selectedItems.push($(this).attr('value'));
+            });
+
+            $(this).val(selectedItems).trigger('change');
+        });
+
         mainApp.initFreezeTable(1);
     </script>
 @endpush

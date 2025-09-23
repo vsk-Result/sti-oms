@@ -134,6 +134,7 @@
                             <div class="form-group mb-3">
                                 <label class="form-label">Статья затрат</label>
                                 <select
+                                    id="payment-filter-code"
                                     name="code[]"
                                     class="form-select form-select-solid"
                                     data-control="select2"
@@ -141,19 +142,36 @@
                                     multiple
                                 >
                                     <option value="null" {{ in_array("null", request()->input('code', []), true) ? 'selected' : '' }}>Не указана</option>
-                                @foreach($codes as $codeL1)
-                                        <option value="{{ $codeL1['code'] }}" {{ in_array($codeL1['code'], request()->input('code', []), true) ? 'selected' : '' }}>{{ $codeL1['code'] . ' - ' . $codeL1['title'] }}</option>
-                                    @if (count($codeL1['children']) > 0)
-                                            @foreach($codeL1['children'] as $codeL2)
-                                                <option value="{{ $codeL2['code'] }}" {{ in_array($codeL2['code'], request()->input('code', []), true) ? 'selected' : '' }}>{{ $codeL2['code'] . ' - ' . $codeL2['title'] }}</option>
-                                            @if (count($codeL2['children']) > 0)
-                                                    @foreach($codeL2['children'] as $codeL3)
-                                                        <option value="{{ $codeL3['code'] }}" {{ in_array($codeL3['code'], request()->input('code', []), true) ? 'selected' : '' }}>{{ $codeL3['code'] . ' - ' . $codeL3['title'] }}</option>
-                                                    @endforeach
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    @endforeach
+                                        @foreach($codes as $codeL1)
+                                            <option
+                                                value="{{ $codeL1['code'] }}" {{ in_array($codeL1['code'], request()->input('code', []), true) ? 'selected' : '' }}
+                                            >
+                                                {{ $codeL1['code'] . ' - ' . $codeL1['title'] }}
+                                            </option>
+
+                                            @if (count($codeL1['children']) > 0)
+                                                @foreach($codeL1['children'] as $codeL2)
+                                                    <option
+                                                        value="{{ $codeL2['code'] }}" {{ in_array($codeL2['code'], request()->input('code', []), true) ? 'selected' : '' }}
+                                                        data-parent-1="{{ $codeL1['code'] }}"
+                                                    >
+                                                        {{ $codeL2['code'] . ' - ' . $codeL2['title'] }}
+                                                    </option>
+
+                                                    @if (count($codeL2['children']) > 0)
+                                                        @foreach($codeL2['children'] as $codeL3)
+                                                            <option
+                                                                value="{{ $codeL3['code'] }}" {{ in_array($codeL3['code'], request()->input('code', []), true) ? 'selected' : '' }}
+                                                                data-parent-1="{{ $codeL1['code'] }}"
+                                                                data-parent-2="{{ $codeL2['code'] }}"
+                                                            >
+                                                                {{ $codeL3['code'] . ' - ' . $codeL3['title'] }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        @endforeach
                                 </select>
                             </div>
 
