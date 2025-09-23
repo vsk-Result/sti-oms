@@ -151,7 +151,7 @@ class PaymentService
         $needCreateCrmAvans = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
 
         $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
-        $needCreateItr = !$isNotNeedCreateItr && ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');;
+        $needCreateItr = ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');;
 
         $object27_3 = BObject::where('code', '27.3')->first();
         $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
@@ -165,7 +165,7 @@ class PaymentService
             } else {
                 $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
             }
-        } elseif ($needCreateItr || $isNotNeedCreateItr) {
+        } elseif ($needCreateItr) {
             if ($objectId === $object27_3->id) {
                 $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
             } else {
@@ -211,7 +211,7 @@ class PaymentService
             );
         }
 
-        if ($needCreateItr) {
+        if ($needCreateItr && !$isNotNeedCreateItr) {
             $this->createItr(
                 $payment,
                 [
@@ -245,7 +245,7 @@ class PaymentService
         $isCrmEmployee = $requestData['code'] === '7.8.2' || $requestData['code'] === '7.9.2';
 
         $isNotNeedCreateItr = isset($requestData['1c_itr_not_need_create']);
-        $isItr = !$isNotNeedCreateItr && ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');
+        $isItr = ($requestData['code'] === '7.8.1' || $requestData['code'] === '7.9.1' || $requestData['code'] === '7.10');
 
         $object27_3 = BObject::where('code', '27.3')->first();
         $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
@@ -259,7 +259,7 @@ class PaymentService
             } else {
                 $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
             }
-        } elseif ($isItr || $isNotNeedCreateItr) {
+        } elseif ($isItr) {
             if ($objectId === $object27_3->id) {
                 $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
             } else {
@@ -278,11 +278,9 @@ class PaymentService
         $needUpdateCrmAvans = !is_null($crmAvansData['id']) && $isCrmEmployee;
         $needDeleteCrmAvans = !is_null($crmAvansData['id']) && !$isCrmEmployee;
 
-        $needCrateItr = is_null($itrData['id']) && $isItr;
-        $needUpdateItr = !is_null($itrData['id']) && $isItr;
-        $needDeleteItr = !is_null($itrData['id']) && !$isItr;
-
-//        dd($itrData, $isNotNeedCreateItr, $isItr, $needCrateItr, $needUpdateItr, $needDeleteItr);
+        $needCrateItr = is_null($itrData['id']) && $isItr && !$isNotNeedCreateItr;
+        $needUpdateItr = !is_null($itrData['id']) && $isItr && !$isNotNeedCreateItr;
+        $needDeleteItr = !is_null($itrData['id']) && !($isItr && !$isNotNeedCreateItr);
 
         $payment->update([
             'object_id' => $objectId,
