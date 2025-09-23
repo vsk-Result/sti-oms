@@ -48,7 +48,8 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
 
                 $type = 'Судебные разбирательства';
                 $organizationName = trim($row[4] ?? '');
-                $inn = trim($row[5] ?? '');
+                $explodeInn = explode(' ', trim($row[5] ?? ''));
+                $inn = $explodeInn[count($explodeInn) - 1] ?? '';
                 $amount = $this->sanitizer->set($row[7] ?? 0)->toAmount()->get();
 
                 $info[] = compact('type', 'organizationName', 'inn', 'amount');
