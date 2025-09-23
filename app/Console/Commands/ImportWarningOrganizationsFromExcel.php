@@ -37,12 +37,10 @@ class ImportWarningOrganizationsFromExcel extends HandledCommand
 
             $info = [];
 
-            $filename = storage_path() . '/app/public/public/objects-debts-manuals/warning_organizations.xlsx';
-            $importData = Excel::toArray(new WarningOrganizationImport(), new UploadedFile($filename, 'warning_organizations.xlsx'));
-
+            $filename = storage_path() . '/app/public/public/objects-debts-manuals/warning_organizations.xls';
+            $importData = Excel::toArray(new WarningOrganizationImport(), new UploadedFile($filename, 'warning_organizations.xls'));
             $sudebnieData = $importData['судебные'];
             unset($sudebnieData[0], $sudebnieData[1]);
-
             foreach ($sudebnieData as $row) {
                 if (empty($row[0])) {
                     continue;

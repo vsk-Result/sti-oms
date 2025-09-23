@@ -15,7 +15,7 @@ class WarningOrganizationController extends Controller
         $file = $request->file('file');
 
         // Закинем в папку для ручных загрузок
-        Storage::putFileAs('public/objects-debts-manuals', $file, 'warning_organizations.xlsx');
+        Storage::putFileAs('public/objects-debts-manuals', $file, 'warning_organizations.xls');
 
         // Запустим крон задачу на импорт долгов по подрядчикам
         Artisan::call('oms:import-warning-organizations-data-from-1c-excel');
