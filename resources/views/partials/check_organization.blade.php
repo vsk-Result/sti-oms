@@ -25,7 +25,7 @@
             data-bs-placement="top"
             data-bs-html="true"
             data-bs-delay-hide="1000"
-            title="{{ $warningInfo['type'] . ' на сумму ' . \App\Models\CurrencyExchangeRate::format($warningInfo['amount']) }}, <a href='{{ route('files.download', ['file' => base64_encode('public/objects-debts-manuals/warning_organizations.xlsx')]) }}'>Скачать детали</a>"
+            title="{{ $warningInfo['type'] . ' на сумму ' . \App\Models\CurrencyExchangeRate::format($warningInfo['amount']) }}, <a href='{{ route('files.download', ['file' => base64_encode('public/objects-debts-manuals/warning_organizations.xls')]) }}'>Скачать детали</a>"
     >{{ $organizationName ?? '' }}</span>
 @else
     <span>{{ $organizationName ?? '' }}</span>
