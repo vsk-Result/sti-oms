@@ -6,10 +6,33 @@
         <input name="code" type="text" class="form-control form-control-sm form-control-solid db-field" value="{{ $payment->code }}" autocomplete="off" data-index="1"/>
     </td>
     <td>
-        @if ($payment->amount < 0)
-            {{ $payment->organizationReceiver?->name }}
+        @php
+            $organization = $payment->organizationSender;
+            if ($payment->amount < 0) {
+                $organization = $payment->organizationReceiver;
+            }
+
+            $hasMoreWithINN = false;
+            if ($organization && !empty($organization->inn)) {
+                $moreOrganizations = \App\Models\Organization::where('id', '!=', $organization->id)->where('inn', $organization->inn)->get();
+
+                if ($moreOrganizations->count() > 0) {
+                    $hasMoreWithINN = true;
+                }
+            }
+        @endphp
+
+        @if ($hasMoreWithINN)
+            <span
+                class="text-danger border-bottom-dashed"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                data-bs-html="true"
+                data-bs-delay-hide="1000"
+                title="С ИНН {{ $organization->inn }} в базе есть еще контрагенты: {{ implode(', ', $moreOrganizations->pluck('name')->toArray()) }}"
+            >{{ $organization?->name ?? '' }}</span>
         @else
-            {{ $payment->organizationSender?->name }}
+            <span>{{ $organization?->name ?? '' }}</span>
         @endif
     </td>
     <td>
