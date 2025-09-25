@@ -32,7 +32,7 @@
     }
 @endphp
 
-@if (!is_null($warningInfo))
+@if (!is_null($warningInfo) && $amount != 0)
     <span
             class="text-danger border-bottom-dashed"
             data-bs-toggle="tooltip"
