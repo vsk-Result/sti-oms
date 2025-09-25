@@ -12,7 +12,7 @@
                 $warningInfo = $warningOrganizationsInfo[$foundByInn];
 
                 foreach ($warningOrganizationsInfo as $info) {
-                    if ($info['inn'] == $organizationInn) {
+                    if (!empty($info['inn']) && $info['inn'] == $organizationInn) {
                         $amount += $info['amount'];
                     }
                 }
@@ -23,7 +23,7 @@
                 $warningInfo = $warningOrganizationsInfo[$foundByName];
 
                 foreach ($warningOrganizationsInfo as $info) {
-                    if ($info['organizationName'] == $organizationName) {
+                    if (!empty($info['organizationName']) && ($info['organizationName'] == $organizationName)) {
                         $amount += $info['amount'];
                     }
                 }
