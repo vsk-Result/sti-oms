@@ -4,10 +4,15 @@ use App\Http\Controllers\Contract\ContractController;
 use App\Http\Controllers\Contract\ImportController;
 use App\Http\Controllers\Contract\SubContractController;
 use App\Http\Controllers\Contract\ActController;
+use App\Http\Controllers\Contract\ExportController;
 
 // Загрузка договоров
 
 Route::post('contracts/import', [ImportController::class, 'store'])->name('contracts.import.store')->middleware('can:create contracts');
+// Экспорт банковских гарантий и депозитов
+
+Route::post('contracts/export', [ExportController::class, 'store'])->name('contracts.exports.store');
+
 
 // Договора
 

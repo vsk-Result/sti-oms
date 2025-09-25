@@ -66,10 +66,6 @@
             @else
                 {{ $contract->getName() }}
             @endif
-
-                @if(auth()->id() === 1)
-                    {{ $contract->createdBy->name . ' ' . \Carbon\Carbon::parse($contract->created_at)->format('d.m.Y H:s') }}
-                @endif
         </td>
         <td></td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAmount($currency), $currency) }}</td>

@@ -8,6 +8,7 @@ use App\Models\Contract\ContractAvans;
 use App\Models\Contract\ContractReceivedAvans;
 use App\Models\Status;
 use App\Services\CurrencyExchangeRateService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Currency;
 
@@ -22,7 +23,7 @@ class ContractService
         $this->currencyService = $currencyService;
     }
 
-    public function filterContracts(array $requestData, array &$total): LengthAwarePaginator
+    public function filterContracts(array $requestData, array &$total, bool $needPaginate = true): LengthAwarePaginator|Collection
     {
         $contractQuery = Contract::query();
 
@@ -144,7 +145,7 @@ class ContractService
             }
         }
 
-        return $contractQuery->paginate($perPage)->withQueryString();
+        return $needPaginate ? $contractQuery->paginate($perPage)->withQueryString() : $contractQuery->get();
     }
 
     public function createContract(array $requestData): Contract
