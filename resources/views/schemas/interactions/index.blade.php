@@ -5,13 +5,18 @@
 @section('breadcrumbs', Breadcrumbs::render('schemas.interactions.index'))
 
 @section('content')
-    <div class="interactions" data-get-interactions-url="{{ route('schemas.interactions.index') }}">
+    <button class="btn btn-primary" id="download-svg">Скачать в PDF</button>
+
+    <div style="width: fit-content;" id="svg-container" class="interactions" data-get-interactions-url="{{ route('schemas.interactions.index') }}">
         {!! file_get_contents('images/schemas/interactions.svg') !!}
     </div>
     <div class="update-interactions" data-get-interactions-table-url="{{ route('schemas.interactions.edit') }}" data-can-edit="{{ auth()->user()->can('edit schema-interactions') ? 'true' : 'false' }}"></div>
 @endsection
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+
     <script>
         const getInteractionsUrl = $('.interactions').data('get-interactions-url');
         const getInteractionsTableUrl = $('.update-interactions').data('get-interactions-table-url');
@@ -99,5 +104,25 @@
                 },
             )
         }
+
+        $(function() {
+            window.jsPDF = window.jspdf.jsPDF;
+
+            $('#download-svg').on('click', function () {
+                const element = document.getElementById('svg-container');
+                const options = { scale: 2 };
+
+                html2canvas(element, options).then(canvas => {
+                    var imgData = canvas.toDataURL('image/png'); // Конвертируем canvas в PNG
+                    let pdf = window.jsPDF({ orientation: 'l', unit: 'mm', format: 'a4'});
+
+                    const w = pdf.internal.pageSize.getWidth() - 20;
+                    const h = (w / canvas.width) * canvas.height;
+
+                    pdf.addImage(imgData, 'PNG', 10, 10, w, h);
+                    pdf.save("Схема взаимодействия.pdf");
+                });
+            })
+        })
     </script>
 @endpush
