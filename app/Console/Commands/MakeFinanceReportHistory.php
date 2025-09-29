@@ -468,6 +468,10 @@ class MakeFinanceReportHistory extends HandledCommand
                     $prognozTotalWithoutNDS = 0;
                     $prognozFields = FinanceReport::getPrognozFields();
                     foreach ($prognozFields as $field) {
+                        if ($field === 'prognoz_material') {
+                            continue;
+                        }
+
                         $prognozAmount = -$ostatokPoDogovoruSZakazchikom * FinanceReport::getPercentForField($field);
                         $prognozAmountWithoutNDS = -$ostatokPoDogovoruSZakazchikomWithoutNDS * FinanceReport::getPercentForField($field);
 

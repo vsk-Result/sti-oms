@@ -15,7 +15,11 @@
                     {{ \App\Models\FinanceReport::getNameForField($planPayment->field) }}
                 @endif
             </strong>
-            <span class="text-danger">{{ \App\Models\CurrencyExchangeRate::format($planPayment->amount, 'RUB') }}</span>
+            @if ($planPayment->field === 'prognoz_material')
+                <span class="text-danger">{{ \App\Models\CurrencyExchangeRate::format($object->planPayments->where('field', 'prognoz_material_fix')->first()->amount + $object->planPayments->where('field', 'prognoz_material_float')->first()->amount, 'RUB') }}</span>
+            @else
+                <span class="text-danger">{{ \App\Models\CurrencyExchangeRate::format($planPayment->amount, 'RUB') }}</span>
+            @endif
         </div>
 
         <div class="separator separator-dashed my-3"></div>
