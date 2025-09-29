@@ -568,9 +568,9 @@ class MakeFinanceReportHistory extends HandledCommand
                             $total[$year][$object->code][$field] = $prognozAmount;
                         }
 
-                        if (in_array($field, ['prognoz_material_fix', 'prognoz_material_float'])) {
-                            continue;
-                        }
+//                        if (in_array($field, ['prognoz_material_fix', 'prognoz_material_float'])) {
+//                            continue;
+//                        }
 
                         $prognozTotal += $prognozAmount;
                         $prognozTotalWithoutNDS += $prognozAmountWithoutNDS;
