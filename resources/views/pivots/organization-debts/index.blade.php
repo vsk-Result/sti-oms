@@ -50,7 +50,7 @@
                             <th class="min-w-200px hl" style="vertical-align: middle;">Итого</th>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px" style="vertical-align: middle;">@include('partials.check_organization', ['organizationName' => $organizationName])</th>
                             @endforeach
@@ -60,7 +60,7 @@
                             <th class="text-right hl">{{ \App\Models\CurrencyExchangeRate::format($pivot['total']['total']) }}</th>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right hl">
                                     <span class="">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['total']) }}</span>
@@ -77,7 +77,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['contractors']['total'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -90,7 +90,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['contractors']['unwork_avans'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -103,7 +103,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['contractors']['guarantee'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -116,7 +116,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['contractors']['guarantee_deadline'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -129,7 +129,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['contractors']['avans'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -142,7 +142,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['contractors']['amount'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -155,7 +155,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['providers']['total'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -168,7 +168,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['providers']['amount_fix'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -181,7 +181,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['providers']['amount_float'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -194,7 +194,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['service']['total'], 'RUB', 0, true) }}</th>
                             @endforeach
@@ -207,7 +207,7 @@
                             </td>
 
                             @foreach($pivot['organizations'] as $organizationName => $organizationInfo)
-                                @continue(!is_valid_amount_in_range($organizationInfo['total']))
+{{--                                @continue(!is_valid_amount_in_range($organizationInfo['total']))--}}
 
                                 <th class="min-w-150px text-right">{{ \App\Models\CurrencyExchangeRate::format($organizationInfo['service']['amount'], 'RUB', 0, true) }}</th>
                             @endforeach
