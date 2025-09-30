@@ -25,6 +25,7 @@ use App\Http\Controllers\Pivot\CalculateWorkersCost\CalculateWorkersCostControll
 use App\Http\Controllers\Pivot\CalculateWorkersCost\CalculateWorkersCostControllerExportController;
 use App\Http\Controllers\Pivot\CalculateWorkersCost\ITRSalaryController;
 use App\Http\Controllers\Pivot\CalculateWorkersCost\NDFLController;
+use App\Http\Controllers\Pivot\OrganizationDebt\OrganizationDebtController;
 
 // Сводная по долгам от СТИ
 Route::get('pivots/debts', [DebtController::class, 'index'])->name('pivots.debts.index');
@@ -89,3 +90,6 @@ Route::post('pivots/calculate-workers-cost/itr-salary', [ITRSalaryController::cl
 
 // Обновление расходов по НДФЛ и взносам
 Route::post('pivots/calculate-workers-cost/ndfl', [NDFLController::class, 'store'])->name('pivots.calculate_workers_cost.ndfl.store');
+
+// Отчет по долгам контрагентов
+Route::get('pivots/organization-debts', [OrganizationDebtController::class, 'index'])->name('pivots.organization_debts.index');

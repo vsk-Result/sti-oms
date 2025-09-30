@@ -1,0 +1,54 @@
+<div class="modal fade" tabindex="-1" id="filterOrganizationDebtsModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Настройте фильтр для получения более точной информации</h4>
+            </div>
+
+            <form action="{{ request()->url() }}" method="GET">
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Контрагенты</label>
+                                <select
+                                    name="organization_id[]"
+                                    class="organization-select form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterOrganizationDebtsModal"
+                                    multiple
+                                >
+                                    @foreach($activeOrganizations as $organization)
+                                        <option value="{{ $organization->id }}" selected>{{ $organization->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Использовать кеш</label>
+                                <select
+                                    name="need_cash"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterOrganizationDebtsModal"
+                                >
+                                    <option value="yes" selected>Да</option>
+                                    <option value="no">Нет</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light float-left" data-bs-dismiss="modal">Закрыть</button>
+                    <a href="{{ route('pivots.organization_debts.index') }}" class="btn btn-light">Сбросить</a>
+                    <button id="filter-taxPlan-submit" type="submit" class="btn btn-primary">Применить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

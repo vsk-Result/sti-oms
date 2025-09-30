@@ -48,3 +48,8 @@ Breadcrumbs::for('pivots.calculate_workers_cost.index', function (BreadcrumbTrai
     $trail->parent('home');
     $trail->push('Расчет стоимости рабочих', $route);
 });
+
+Breadcrumbs::for('pivots.organization_debts.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Отчет по долгам контрагентов');
+});

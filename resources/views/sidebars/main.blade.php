@@ -282,6 +282,15 @@
                             </a>
                         </div>
 
+                        <div class="menu-item">
+                            <a class="menu-link py-2 {{ request()->is('pivots/organization-debts*') ? 'active' : '' }}" href="{{ route('pivots.organization_debts.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">По контрагентам</span>
+                            </a>
+                        </div>
+
                         @can('index loans')
                             <div class="menu-item">
                                 <a class="menu-link py-2 {{ request()->is('loans*') ? 'active' : '' }}" href="{{ route('loans.index') }}">

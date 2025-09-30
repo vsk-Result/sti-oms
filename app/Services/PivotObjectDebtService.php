@@ -410,4 +410,208 @@ class PivotObjectDebtService
 
         return $result;
     }
+
+    public function getPivotDebtsForOrganizations(array $options): array
+    {
+        $pivot = [
+            'organizations' => [],
+            'total' => [
+                'total' => 0,
+                'contractors' => [
+                    'total' => 0,
+                    'unwork_avans' => 0,
+                    'guarantee' => 0,
+                    'guarantee_deadline' => 0,
+                    'avans' => 0,
+                    'amount' => 0,
+                ],
+                'providers' => [
+                    'total' => 0,
+                    'amount_fix' => 0,
+                    'amount_float' => 0,
+                ],
+                'service' => [
+                    'total' => 0,
+                    'amount' => 0,
+                ],
+            ],
+        ];
+
+        $objects = BObject::orderByDesc('code')->get();
+
+        foreach ($objects as $object) {
+            if ($object->code === '288') continue;
+
+            $contractorDebts = $this->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR);
+            $providerDebts = $this->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER);
+            $serviceDebts = $this->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE);
+
+            $contractorDebtsAmount = $contractorDebts['total']['total_amount'];
+            $providerDebtsAmount = $providerDebts['total']['amount'];
+            $serviceDebtsAmount = $serviceDebts['total']['amount'];
+
+            if (($contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount) == 0) {
+                continue;
+            }
+
+            foreach ($contractorDebts['organizations'] as $organizationInfo) {
+
+                $organizationName = $organizationInfo['organization_name'];
+
+                if (isset($options['organization_names']) && count($options['organization_names']) > 0) {
+                    if (! in_array($organizationName, $options['organization_names'])) {
+                        continue;
+                    }
+                }
+
+                if (isset($options['organization_ids']) && count($options['organization_ids']) > 0) {
+                    if (! in_array($organizationInfo['organization_id'], $options['organization_ids'])) {
+                        continue;
+                    }
+                }
+
+                if (!isset($pivot['organizations'][$organizationName])) {
+                    $pivot['organizations'][$organizationName] = [
+                        'total' => 0,
+                        'contractors' => [
+                            'total' => 0,
+                            'unwork_avans' => 0,
+                            'guarantee' => 0,
+                            'guarantee_deadline' => 0,
+                            'avans' => 0,
+                            'amount' => 0,
+                        ],
+                        'providers' => [
+                            'total' => 0,
+                            'amount_fix' => 0,
+                            'amount_float' => 0,
+                        ],
+                        'service' => [
+                            'total' => 0,
+                            'amount' => 0,
+                        ],
+                    ];
+                }
+
+                $pivot['organizations'][$organizationName]['contractors']['unwork_avans'] += $organizationInfo['unwork_avans'];
+                $pivot['organizations'][$organizationName]['contractors']['guarantee'] += $organizationInfo['guarantee'];
+                $pivot['organizations'][$organizationName]['contractors']['guarantee_deadline'] += $organizationInfo['guarantee_deadline'];
+                $pivot['organizations'][$organizationName]['contractors']['avans'] += $organizationInfo['avans'];
+                $pivot['organizations'][$organizationName]['contractors']['amount'] += $organizationInfo['amount'];
+                $pivot['organizations'][$organizationName]['contractors']['total'] += $organizationInfo['total_amount'];
+
+                $pivot['total']['contractors']['unwork_avans'] += $organizationInfo['unwork_avans'];
+                $pivot['total']['contractors']['guarantee'] += $organizationInfo['guarantee'];
+                $pivot['total']['contractors']['guarantee_deadline'] += $organizationInfo['guarantee_deadline'];
+                $pivot['total']['contractors']['avans'] += $organizationInfo['avans'];
+                $pivot['total']['contractors']['amount'] += $organizationInfo['amount'];
+                $pivot['total']['contractors']['total'] += $organizationInfo['total_amount'];
+
+                $pivot['total']['total'] += $organizationInfo['total_amount'];
+                $pivot['organizations'][$organizationName]['total'] += $organizationInfo['total_amount'];
+            }
+
+            foreach ($providerDebts['organizations'] as $organizationInfo) {
+
+                $organizationName = $organizationInfo['organization_name'];
+
+                if (isset($options['organization_names']) && count($options['organization_names']) > 0) {
+                    if (! in_array($organizationName, $options['organization_names'])) {
+                        continue;
+                    }
+                }
+
+                if (isset($options['organization_ids']) && count($options['organization_ids']) > 0) {
+                    if (! in_array($organizationInfo['organization_id'], $options['organization_ids'])) {
+                        continue;
+                    }
+                }
+
+                if (!isset($pivot['organizations'][$organizationName])) {
+                    $pivot['organizations'][$organizationName] = [
+                        'total' => 0,
+                        'contractors' => [
+                            'total' => 0,
+                            'unwork_avans' => 0,
+                            'guarantee' => 0,
+                            'guarantee_deadline' => 0,
+                            'avans' => 0,
+                            'amount' => 0,
+                        ],
+                        'providers' => [
+                            'total' => 0,
+                            'amount_fix' => 0,
+                            'amount_float' => 0,
+                        ],
+                        'service' => [
+                            'total' => 0,
+                            'amount' => 0,
+                        ],
+                    ];
+                }
+
+                $pivot['organizations'][$organizationName]['providers']['amount_fix'] += $organizationInfo['amount_fix'];
+                $pivot['organizations'][$organizationName]['providers']['amount_float'] += $organizationInfo['amount_float'];
+                $pivot['organizations'][$organizationName]['providers']['total'] += $organizationInfo['total_amount'];
+
+                $pivot['total']['providers']['amount_fix'] += $organizationInfo['amount_fix'];
+                $pivot['total']['providers']['amount_float'] += $organizationInfo['amount_float'];
+                $pivot['total']['providers']['total'] += $organizationInfo['total_amount'];
+
+                $pivot['total']['total'] += $organizationInfo['total_amount'];
+                $pivot['organizations'][$organizationName]['total'] += $organizationInfo['total_amount'];
+            }
+
+            foreach ($serviceDebts['organizations'] as $organizationInfo) {
+
+                $organizationName = $organizationInfo['organization_name'];
+
+                if (isset($options['organization_names']) && count($options['organization_names']) > 0) {
+                    if (! in_array($organizationName, $options['organization_names'])) {
+                        continue;
+                    }
+                }
+
+                if (isset($options['organization_ids']) && count($options['organization_ids']) > 0) {
+                    if (! in_array($organizationInfo['organization_id'], $options['organization_ids'])) {
+                        continue;
+                    }
+                }
+
+                if (!isset($pivot['organizations'][$organizationName])) {
+                    $pivot['organizations'][$organizationName] = [
+                        'total' => 0,
+                        'contractors' => [
+                            'total' => 0,
+                            'unwork_avans' => 0,
+                            'guarantee' => 0,
+                            'guarantee_deadline' => 0,
+                            'avans' => 0,
+                            'amount' => 0,
+                        ],
+                        'providers' => [
+                            'total' => 0,
+                            'amount_fix' => 0,
+                            'amount_float' => 0,
+                        ],
+                        'service' => [
+                            'total' => 0,
+                            'amount' => 0,
+                        ],
+                    ];
+                }
+
+                $pivot['organizations'][$organizationName]['service']['amount'] += $organizationInfo['amount'];
+                $pivot['organizations'][$organizationName]['service']['total'] += $organizationInfo['total_amount'];
+
+                $pivot['total']['service']['amount'] += $organizationInfo['amount'];
+                $pivot['total']['service']['total'] += $organizationInfo['total_amount'];
+
+                $pivot['total']['total'] += $organizationInfo['total_amount'];
+                $pivot['organizations'][$organizationName]['total'] += $organizationInfo['total_amount'];
+            }
+        }
+
+        return $pivot;
+    }
 }
