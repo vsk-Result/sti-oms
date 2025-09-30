@@ -59,6 +59,7 @@
                                             class="form-control form-control-lg form-control-solid {{ $errors->has('inn') ? 'is-invalid' : '' }}"
                                             type="text"
                                             name="inn"
+                                            required
                                         />
                                         @if ($errors->has('inn'))
                                             <div class="fv-plugins-message-container invalid-feedback">
@@ -73,6 +74,7 @@
                                             class="form-control form-control-lg form-control-solid {{ $errors->has('kpp') ? 'is-invalid' : '' }}"
                                             type="text"
                                             name="kpp"
+                                            required
                                         />
                                         @if ($errors->has('kpp'))
                                             <div class="fv-plugins-message-container invalid-feedback">
