@@ -10,6 +10,7 @@ use App\Models\Object\BObject;
 use App\Models\CRM\Payment as CRMPayment;
 use App\Models\Payment;
 use App\Models\SERVICE\WorkhourPivot;
+use App\Services\ObjectService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -420,10 +421,8 @@ class CalculateWorkersCostService
                                     + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
                                 $amount = $generalAmount * ($workhourPercents[$month['name']][$object->code] ?? 0);
                             } elseif ($codes[0] === 'transfer') {
-                                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $month['period'])->whereIn('company_id', [1, 5]);
-                                $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                                    + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
-                                $amount = $generalAmount * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                                $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
+                                $amount = $transferData * ($workhourPercents[$month['name']][$object->code] ?? 0);
                             } elseif ($codes[0] === 'accrued_taxes') {
                                 $amount = AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
                             } elseif ($codes[0] === 'accrued_taxes_nds') {

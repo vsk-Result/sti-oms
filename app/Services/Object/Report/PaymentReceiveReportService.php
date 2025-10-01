@@ -116,7 +116,7 @@ class PaymentReceiveReportService
             }
 
             $paymentQuery = Payment::query()->whereBetween('date', $period)->whereIn('company_id', [1, 5]);
-            $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount')
+            $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5', '7.11', '7.11.1', '7.11.2'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount')
                 + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
 
             $transferData = ObjectService::getDistributionTransferServiceByPeriod($period);
