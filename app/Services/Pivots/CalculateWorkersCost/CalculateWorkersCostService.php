@@ -422,7 +422,7 @@ class CalculateWorkersCostService
                                 $amount = $generalAmount * ($workhourPercents[$month['name']][$object->code] ?? 0);
                             } elseif ($codes[0] === 'transfer') {
                                 $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
-                                $amount = $transferData * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                                $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
                             } elseif ($codes[0] === 'accrued_taxes') {
                                 $amount = AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
                             } elseif ($codes[0] === 'accrued_taxes_nds') {
