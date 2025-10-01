@@ -494,7 +494,20 @@
 
                     <div class="d-flex flex-stack">
                         <div class="pivot-box position-relative w-100 d-flex flex-stack">
-                            <div class="text-gray-700 fw-semibold fs-7 me-2">Текущий Баланс объекта</div>
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Формула текущего баланса"
+                                        data-title="Формула текущего баланса"
+                                        data-bs-content='@include('objects.parts.debts-details.current_balance')'
+                                >
+                                    Текущий Баланс объекта
+                                </div>
+                            </div>
                             <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['objectBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['objectBalance_without_nds'], 'RUB') }}">
                                 {{ \App\Models\CurrencyExchangeRate::format($info['objectBalance'], 'RUB') }}
                             </div>
@@ -612,8 +625,21 @@
                     <div class="separator separator-dashed my-3"></div>
 
                     <div class="d-flex flex-stack">
-                        <a class="pivot-box position-relative w-100 d-flex flex-stack" href="{{ route('objects.contracts.index', $object) }}?object_id%5B%5D={{ $object->id }}">
-                            <div class="text-gray-700 fw-semibold fs-7 me-2">Прогнозируемый Баланс объекта</div>
+                        <div class="pivot-box position-relative w-100 d-flex flex-stack">
+                            <div class="text-gray-700 fw-semibold fs-7 me-2">
+                                <div
+                                        class="cursor-pointer pop-click"
+                                        data-bs-custom-class="plan-payments-detailing-popover"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        title="Формула прогнозируемого баланса"
+                                        data-title="Формула прогнозируемого баланса"
+                                        data-bs-content='@include('objects.parts.debts-details.prognoz_balance')'
+                                >
+                                    Прогнозируемый Баланс объекта
+                                </div>
+                            </div>
                             <div class="ms-3 d-flex align-items-senter fw-bold {{ $info['prognozBalance'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance_without_nds'], 'RUB') }}">
                                 {{ \App\Models\CurrencyExchangeRate::format($info['prognozBalance'], 'RUB') }}
                             </div>
@@ -625,7 +651,7 @@
                             {{--                                </svg>--}}
                             {{--                            </span>--}}
                             {{--                        </button>--}}
-                        </a>
+                        </div>
                     </div>
                 </div>
             @endif
