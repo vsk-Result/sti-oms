@@ -190,7 +190,7 @@ class AnalyticsSheet implements
 
             if ($percentField === $field) continue;
 
-            $value = $infoObj[$field];
+            $value = $infoObj[$field] ?? 0;
 
             $column = 'B';
             $sheet->getStyle($column . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
