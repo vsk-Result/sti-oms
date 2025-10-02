@@ -20,7 +20,7 @@ class OrganizationDebtController extends Controller
     public function index(Request $request): View
     {
         $options = [
-            'organization_ids' => $request->get('organization_id', [1]),
+            'organization_ids' => $request->get('organization_id', []),
             'need_cache' => $request->get('need_cash', 'yes') === 'yes'
         ];
 

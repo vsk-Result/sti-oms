@@ -437,7 +437,7 @@ class PivotObjectDebtService
             ],
         ];
 
-        $objects = BObject::orderByDesc('code')->get();
+        $objects = BObject::active()->get();
 
         foreach ($objects as $object) {
             if ($object->code === '288') continue;
