@@ -30,6 +30,7 @@ use App\Http\Controllers\API\Pivot\CashFlow\CashFlowController;
 use App\Http\Controllers\API\Pivot\CashFlow\CashFlowExportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CashCheck\CashCheckController;
+use App\Http\Controllers\API\CashAccount\CashAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,5 +88,7 @@ Route::get('/crm-cash-check/create', [CashCheckController::class, 'store'])->nam
 
 Route::get('pivots/money-movement/info', [InfoController::class, 'index']);
 Route::get('pivots/money-movement/export', [MMExportController::class, 'store']);
+
+Route::get('pivots/cash-accounts', [CashAccountController::class, 'index']);
 
 
