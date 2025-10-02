@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\CashAccount;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -25,10 +26,35 @@ class CashAccountController extends Controller
 
         $cashAccounts = CashAccount::active()->where('responsible_user_id', $request->get('user_id'))->get();
 
-        $data = [];
+        $data = [
+            'user_accounts' => [],
+            'shared_accounts' => [],
+        ];
 
         foreach ($cashAccounts as $cashAccount) {
-            $data[] = [
+            $data['user_accounts'][] = [
+                'name' => $cashAccount->name,
+                'responsible_id' => $cashAccount->responsible_user_id,
+                'responsible_name' => $cashAccount->responsible?->name,
+                'balance' => $cashAccount->getBalance(),
+                'last_closed_period' => $cashAccount->closePeriods()->orderBy('period', 'desc')->first()?->period ?? null,
+            ];
+        }
+
+        $user = User::find($request->get('user_id'));
+
+        if (! $user) {
+            return response()->json(compact('data'));
+        }
+
+        if ($user->hasRole('super-admin') || $user->can('index cash-accounts-all-view')) {
+            $sharedAccounts = CashAccount::active()->where('responsible_user_id', '!=', $user->id)->get();
+        } else {
+            $sharedAccounts = $user->sharedCashAccounts()->get();
+        }
+
+        foreach ($sharedAccounts as $cashAccount) {
+            $data['shared_accounts'][] = [
                 'name' => $cashAccount->name,
                 'responsible_id' => $cashAccount->responsible_user_id,
                 'responsible_name' => $cashAccount->responsible?->name,
