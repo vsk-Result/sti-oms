@@ -33,6 +33,7 @@ class CashAccountController extends Controller
 
         foreach ($cashAccounts as $cashAccount) {
             $data['user_accounts'][] = [
+                'id' => $cashAccount->id,
                 'name' => $cashAccount->name,
                 'responsible_id' => $cashAccount->responsible_user_id,
                 'responsible_name' => $cashAccount->responsible?->name,
@@ -55,6 +56,7 @@ class CashAccountController extends Controller
 
         foreach ($sharedAccounts as $cashAccount) {
             $data['shared_accounts'][] = [
+                'id' => $cashAccount->id,
                 'name' => $cashAccount->name,
                 'responsible_id' => $cashAccount->responsible_user_id,
                 'responsible_name' => $cashAccount->responsible?->name,
