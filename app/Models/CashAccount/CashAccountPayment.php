@@ -307,7 +307,10 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
     public function isValid(): bool
     {
-        return $this->status_id === self::STATUS_VALID;
+        $objectPaymentData = $this->getObjectPaymentData();
+        $isNullObjectPaymentId = is_null($objectPaymentData['object_payment_id']);
+
+        return $this->status_id === self::STATUS_VALID || !$isNullObjectPaymentId;
     }
 
     public function canValidate(): bool
