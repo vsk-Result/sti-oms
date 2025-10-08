@@ -5,11 +5,16 @@ namespace App\Http\Controllers\API\CashAccount;
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
 use App\Models\User;
+use App\Services\CashAccount\ClosePeriodService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CashAccountController extends Controller
 {
+    public function __construct(
+        private ClosePeriodService $closePeriodService
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         if (! $request->has('verify_hash')) {
@@ -32,14 +37,28 @@ class CashAccountController extends Controller
         ];
 
         foreach ($cashAccounts as $cashAccount) {
-            $data['user_accounts'][] = [
+            $account = [
                 'id' => $cashAccount->id,
                 'name' => $cashAccount->name,
                 'responsible_id' => $cashAccount->responsible_user_id,
                 'responsible_name' => $cashAccount->responsible?->name,
                 'balance' => $cashAccount->getBalance(),
                 'last_closed_period' => $cashAccount->closePeriods()->orderBy('period', 'desc')->first()?->period ?? null,
+                'close_periods' => [],
             ];
+
+            $closePeriods = $this->closePeriodService->getClosePeriods($cashAccount);
+
+            foreach ($closePeriods as $closePeriod) {
+                $account['close_periods'][] = [
+                    'id' => $closePeriod->id,
+                    'period' => $closePeriod->period,
+                    'payments_count' => $closePeriod->payments_count,
+                    'payments_amount' => $closePeriod->payments_amount,
+                ];
+            }
+
+            $data['user_accounts'][] = $account;
         }
 
         $user = User::find($request->get('user_id'));
@@ -55,14 +74,28 @@ class CashAccountController extends Controller
         }
 
         foreach ($sharedAccounts as $cashAccount) {
-            $data['shared_accounts'][] = [
+            $account = [
                 'id' => $cashAccount->id,
                 'name' => $cashAccount->name,
                 'responsible_id' => $cashAccount->responsible_user_id,
                 'responsible_name' => $cashAccount->responsible?->name,
                 'balance' => $cashAccount->getBalance(),
                 'last_closed_period' => $cashAccount->closePeriods()->orderBy('period', 'desc')->first()?->period ?? null,
+                'close_periods' => [],
             ];
+
+            $closePeriods = $this->closePeriodService->getClosePeriods($cashAccount);
+
+            foreach ($closePeriods as $closePeriod) {
+                $account['close_periods'][] = [
+                    'id' => $closePeriod->id,
+                    'period' => $closePeriod->period,
+                    'payments_count' => $closePeriod->payments_count,
+                    'payments_amount' => $closePeriod->payments_amount,
+                ];
+            }
+
+            $data['shared_accounts'][] = $account;
         }
 
         return response()->json(compact('data'));

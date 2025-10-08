@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CashCheck\CashCheckController;
 use App\Http\Controllers\API\CashAccount\CashAccountController;
 use App\Http\Controllers\API\CashAccount\CashAccountPaymentController;
+use App\Http\Controllers\API\CashAccount\CashAccountClosePeriodPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,5 +93,6 @@ Route::get('pivots/money-movement/export', [MMExportController::class, 'store'])
 
 Route::get('pivots/cash-accounts', [CashAccountController::class, 'index']);
 Route::get('pivots/cash-accounts/payments', [CashAccountPaymentController::class, 'index']);
+Route::get('pivots/cash-accounts/close-periods/payments', [CashAccountClosePeriodPaymentController::class, 'index']);
 
 
