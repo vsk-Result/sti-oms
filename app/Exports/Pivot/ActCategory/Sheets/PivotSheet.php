@@ -161,12 +161,17 @@ class PivotSheet implements
         $sheet->setCellValue('B2', $totalContractAmount);
         $sheet->setCellValue('C2', 1);
         $sheet->setCellValue('D2', $totalAmount);
-        $sheet->setCellValue('E2', $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
+
+        $this->setAndColorPercentCell($sheet, 'E2', $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
+
         $sheet->setCellValue('F2', $totalContractAmount - $totalAmount);
         $sheet->setCellValue('G2', $totalPaidAmount);
-        $sheet->setCellValue('H2', $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0);
+
+        $this->setAndColorPercentCell($sheet, 'H2', $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0);
+
         $sheet->setCellValue('I2', $totalLeftPaidAmount);
-        $sheet->setCellValue('J2', $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
+
+        $this->setAndColorPercentCell($sheet, 'J2', $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
 
         $sheet->setCellValue('B3', $totalMaterialContractAmount);
         $sheet->setCellValue('C3', $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
@@ -273,12 +278,17 @@ class PivotSheet implements
             $sheet->setCellValue('B' . $row, $totalContractAmount);
             $sheet->setCellValue('C' . $row, 1);
             $sheet->setCellValue('D' . $row, $totalAmount);
-            $sheet->setCellValue('E' . $row, $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
+
+            $this->setAndColorPercentCell($sheet, 'E' . $row, $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
+
             $sheet->setCellValue('F' . $row, $totalContractAmount - $totalAmount);
             $sheet->setCellValue('G' . $row, $totalPaidAmount);
-            $sheet->setCellValue('H' . $row, $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0);
+
+            $this->setAndColorPercentCell($sheet, 'H' . $row, $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0);
+
             $sheet->setCellValue('I' . $row, $totalLeftPaidAmount);
-            $sheet->setCellValue('J' . $row, $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
+
+            $this->setAndColorPercentCell($sheet, 'J' . $row, $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
 
             $row++;
             $sheet->getRowDimension($row)->setRowHeight(30);
@@ -363,5 +373,17 @@ class PivotSheet implements
         $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setFitToWidth(1);
         $sheet->getPageSetup()->setFitToHeight(1);
+    }
+
+    public function setAndColorPercentCell(&$sheet, $cell, $value)
+    {
+        $sheet->setCellValue($cell, $value);
+        if ($value > 1 || $value < -1) {
+            $sheet->getStyle($cell)->applyFromArray([
+                'font' => [
+                    'color' => ['rgb' => 'FF0000'],
+                ],
+            ]);
+        }
     }
 }
