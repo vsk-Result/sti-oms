@@ -78,9 +78,9 @@ class ServicePivotSheet implements
                 $sheet->setCellValue('A' . $row, '');
                 $sheet->setCellValue('B' . $row, $organizationData['organization_name']);
                 $sheet->setCellValue('C' . $row, '');
-                $sheet->setCellValue('D' . $row, $organizationData['amount']);
+                $sheet->setCellValue('D' . $row, $organizationData['total_amount']);
 
-                $total['amount'] += $organizationData['amount'];
+                $total['amount'] += $organizationData['total_amount'];
 
                 $sheet->getRowDimension($row)->setRowHeight(40);
                 $sheet->getStyle('A' . $row . ':D' . $row)->getFont()->setItalic(true);

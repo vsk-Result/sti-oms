@@ -41,13 +41,15 @@ class ServiceSheet implements
 
         $sheet->setCellValue('A1', 'Контрагент');
         $sheet->setCellValue('B1', 'ИНН');
-        $sheet->setCellValue('C1', 'Сумма долга');
+        $sheet->setCellValue('C1', 'Аванс к оплате');
+        $sheet->setCellValue('D1', 'Долг за оказанные услуги');
 
         $sheet->getColumnDimension('A')->setWidth(50);
         $sheet->getColumnDimension('B')->setWidth(20);
-        $sheet->getColumnDimension('C')->setWidth(18);
+        $sheet->getColumnDimension('C')->setWidth(20);
+        $sheet->getColumnDimension('D')->setWidth(20);
 
-        $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
 
 //        if(! auth()->user()->hasRole('finance-object-user-mini')) {
 //
@@ -59,17 +61,18 @@ class ServiceSheet implements
         foreach ($serviceDebts['organizations'] as $organizationData) {
             $sheet->setCellValue('A' . $row, $organizationData['organization_name']);
             $sheet->setCellValue('B' . $row, '');
-            $sheet->setCellValue('C' . $row, $organizationData['total_amount']);
+            $sheet->setCellValue('C' . $row, $organizationData['avans']);
+            $sheet->setCellValue('D' . $row, $organizationData['amount']);
 
             $sheet->getRowDimension($row)->setRowHeight(40);
             $row++;
         }
         $row--;
 
-        $sheet->getStyle('A1:C' . $row)->applyFromArray($THINStyleArray);
-        $sheet->getStyle('A1:C1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+        $sheet->getStyle('A1:D' . $row)->applyFromArray($THINStyleArray);
+        $sheet->getStyle('A1:D1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('C2:C' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
-        $sheet->getStyle('C2:C' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+        $sheet->getStyle('C2:D' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('C2:D' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }

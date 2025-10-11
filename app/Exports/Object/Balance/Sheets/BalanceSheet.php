@@ -480,7 +480,7 @@ class BalanceSheet implements
         }
 
         $this->setValueEndColor($sheet, 'W28', $otherSum);
-        $this->setValueEndColor($sheet, 'W29', $serviceDebts['total']['amount']);
+        $this->setValueEndColor($sheet, 'W29', $serviceDebts['total']['total_amount']);
         $sheet->getStyle('T17:X28')->applyFromArray([ 'borders' => ['horizontal' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => 'dddddd'],],],]);
         $sheet->getStyle('T17:X17')->applyFromArray([ 'borders' => ['bottom' => ['borderStyle' => Border::BORDER_MEDIUM, 'color' => ['argb' => 'f25a21'],],],]);
         $sheet->getStyle('T29:X29')->applyFromArray($titleStyleArray);

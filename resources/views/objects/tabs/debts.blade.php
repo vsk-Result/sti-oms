@@ -290,7 +290,7 @@
                         <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
                             <div class="d-flex align-items-center">
                                 <div class="fs-4 fw-bolder text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['total_amount']) }}
                                 </div>
                             </div>
                             <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
@@ -307,6 +307,10 @@
 
                         foreach ($serviceDebts['organizations'] as $organizationInfo) {
                             foreach ($organizationInfo['details'] as $detail) {
+                                if ($detail['type'] !== 'amount') {
+                                    continue;
+                                }
+
                                 $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
 
                                 if (! isset($periodPivotData['data'][$organizationInfo['organization_name']][$date])) {
@@ -327,12 +331,54 @@
                         $periodPivotData['dates'] = $sortedDates;
                     @endphp
 
+                    @php
+                        $periodPivotAvansData = [
+                            'dates' => [],
+                            'data' => [],
+                        ];
+
+                        foreach ($serviceDebts['organizations'] as $organizationInfo) {
+                            foreach ($organizationInfo['details'] as $detail) {
+                                if ($detail['type'] !== 'avans') {
+                                    continue;
+                                }
+
+                                $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
+
+                                if (! isset($periodPivotAvansData['data'][$organizationInfo['organization_name']][$date])) {
+                                    $periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] = 0;
+                                }
+
+                                $periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] += $detail['amount'];
+
+                                if (! in_array($date, $periodPivotAvansData['dates'])) {
+                                    $periodPivotAvansData['dates'][] = $date;
+                                }
+                            }
+                        }
+
+                        $sortedDates = $periodPivotAvansData['dates'];
+                        asort($sortedDates);
+
+                        $periodPivotAvansData['dates'] = $sortedDates;
+                    @endphp
+
                     <div class="table-responsive freeze-table">
                         <table class="table table-hover align-middle table-row-dashed fs-6">
                             <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2">Контрагент</th>
-                                    <th class="w-175px text-end pe-2">Сумма</th>
+                                    <th class="w-175px text-end">Аванс к оплате</th>
+
+                                    @if (count($periodPivotAvansData['dates']) > 0)
+                                        <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-avans-periods">+</th>
+                                    @endif
+
+                                    @foreach($periodPivotAvansData['dates'] as $date)
+                                        <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-avans-periods" style="display: none;">{{ translate_year_month($date) }}</th>
+                                    @endforeach
+
+                                    <th class="w-175px text-end pe-2">Долг за оказанные услуги</th>
 
                                     @if (count($periodPivotData['dates']) > 0)
                                         <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-periods">+</th>
@@ -344,6 +390,18 @@
                                 </tr>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2 hl">ИТОГО</th>
+                                    <th class="w-175px text-end hl text-danger">
+                                        {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['avans']) }}
+                                    </th>
+
+                                    @if (count($periodPivotAvansData['dates']) > 0)
+                                        <th></th>
+                                    @endif
+
+                                    @foreach($periodPivotAvansData['dates'] as $date)
+                                        <th class="collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-avans-periods" style="display: none;"></th>
+                                    @endforeach
+
                                     <th class="w-175px text-end pe-2 hl text-danger">
                                         {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
                                     </th>
@@ -364,7 +422,26 @@
 
                                         @php
                                             $periodSum = array_sum($periodPivotData['data'][$organizationInfo['organization_name']] ?? []);
+                                            $periodAvansSum = array_sum($periodPivotAvansData['data'][$organizationInfo['organization_name']] ?? []);
                                         @endphp
+                                        <td class="text-danger text-end {{ $periodAvansSum !== 0 && $periodAvansSum != $organizationInfo['avans'] ? 'period-warning' : '' }}">
+                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['avans']) }}
+                                        </td>
+
+                                        @if (count($periodPivotAvansData['dates']) > 0)
+                                            <th></th>
+                                        @endif
+
+                                        @foreach($periodPivotAvansData['dates'] as $date)
+                                            <td
+                                                    class="text-danger text-end pe-2 collapse-col period {{ $loop->last ? 'pe-2' : '' }}"
+                                                    data-trigger="service-avans-periods"
+                                                    style="display: none;"
+                                            >
+                                                {{ \App\Models\CurrencyExchangeRate::format($periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] ?? 0, 'RUB', 0, true) }}
+                                            </td>
+                                        @endforeach
+
                                         <td class="text-danger text-end pe-2 {{ $periodSum !== 0 && $periodSum != $organizationInfo['amount'] ? 'period-warning' : '' }}">
                                             {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
                                         </td>
@@ -383,7 +460,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2">
+                                        <td colspan="3">
                                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                                 Долги отсутствуют
                                             </p>

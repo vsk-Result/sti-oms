@@ -35,7 +35,7 @@ class DebtService
 
             $contractorDebtsAmount = $contractorDebts['total']['total_amount'];
             $providerDebtsAmount = $providerDebts['total']['amount'];
-            $serviceDebtsAmount = $serviceDebts['total']['amount'];
+            $serviceDebtsAmount = $serviceDebts['total']['total_amount'];
 
             if (($contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount) == 0) {
                 continue;
@@ -104,8 +104,8 @@ class DebtService
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount'] += $organizationInfo['amount'];
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['avans'] += $organizationInfo['avans'];
                 $pivot['entries'][$organizationInfo['organization_name']][$object->id]['amount_without_guarantee'] += $organizationInfo['amount'];
-                $pivot['total'][$object->id] += $organizationInfo['amount'];
-                $organizations[$organizationInfo['organization_name']] += $organizationInfo['amount'];
+                $pivot['total'][$object->id] += $organizationInfo['total_amount'];
+                $organizations[$organizationInfo['organization_name']] += $organizationInfo['total_amount'];
             }
         }
 

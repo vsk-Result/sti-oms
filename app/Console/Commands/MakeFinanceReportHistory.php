@@ -230,8 +230,8 @@ class MakeFinanceReportHistory extends HandledCommand
                     $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER);
                     $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE);
 
-                    $serviceDebtsAmount = $serviceDebts['total']['amount'];
-                    $serviceDebtsAmountWithoutNDS = $serviceDebts['total']['amount_without_nds'];
+                    $serviceDebtsAmount = $serviceDebts['total']['total_amount'];
+                    $serviceDebtsAmountWithoutNDS = $serviceDebts['total']['total_amount_without_nds'];
 
                     $contractorDebtsAmount = $contractorDebts['total']['total_amount'];
                     $contractorDebtsAmountWithoutNDS = $contractorDebts['total']['total_amount_without_nds'];

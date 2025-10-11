@@ -52,7 +52,7 @@ class DebtV2Controller extends Controller
             'object' => $object->__toString(),
             'contractors_amount' => $contractorDebts['total']['total_amount'],
             'providers_amount' => $providerDebts['total']['amount'],
-            'service_amount' => $serviceDebts['total']['amount'],
+            'service_amount' => $serviceDebts['total']['total_amount'],
             'salary_amount' => $salaryAmount
         ];
 

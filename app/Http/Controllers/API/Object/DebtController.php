@@ -89,8 +89,8 @@ class DebtController extends Controller
 
         $services = [];
         foreach ($serviceDebts['organizations'] as $organizationData) {
-            if (is_valid_amount_in_range($organizationData['amount'])) {
-                $services[$organizationData['organization_name']] = $organizationData['amount'];
+            if (is_valid_amount_in_range($organizationData['total_amount'])) {
+                $services[$organizationData['organization_name']] = $organizationData['total_amount'];
             }
         }
 

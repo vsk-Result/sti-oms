@@ -49,6 +49,7 @@ class ServiceImportFrom1C extends BaseImport
             $amountWithoutNDS = $row[21] ?? 0;
             $inn = trim($row[22] ?? '');
             $period = trim($row[23] ?? '');
+            $type = trim($row[24] ?? '');
 
             if ($organizationType !== 'НАКЛАДНЫЕ/УСЛУГИ') {
                 continue;
@@ -82,6 +83,7 @@ class ServiceImportFrom1C extends BaseImport
                 $importInfo['data'][$object->id] = [
                     'object_id' => $object->id,
                     'object_name' => $object->name,
+                    'total_avans' => 0,
                     'total_amount' => 0,
                     'total_amount_without_nds' => 0,
                     'organizations' => []
@@ -94,6 +96,7 @@ class ServiceImportFrom1C extends BaseImport
                 $importInfo['data'][$object->id]['organizations'][$organization->id] = [
                     'organization_id' => $organization->id,
                     'organization_name' => $organization->name,
+                    'avans' => 0,
                     'amount' => 0,
                     'amount_without_nds' => 0,
                     'details' => [],
@@ -102,14 +105,20 @@ class ServiceImportFrom1C extends BaseImport
                 $objectOrganizationExist[$object->id][$organization->id] = true;
             }
 
-            $importInfo['data'][$object->id]['organizations'][$organization->id]['amount'] += -$amount;
-            $importInfo['data'][$object->id]['organizations'][$organization->id]['amount_without_nds'] += -$amountWithoutNDS;
+            if ($type !== 'Аванс') {
+                $importInfo['data'][$object->id]['organizations'][$organization->id]['amount'] += -$amount;
+                $importInfo['data'][$object->id]['organizations'][$organization->id]['amount_without_nds'] += -$amountWithoutNDS;
 
-            $importInfo['data'][$object->id]['total_amount'] += -$amount;
-            $importInfo['data'][$object->id]['total_amount_without_nds'] += -$amountWithoutNDS;
+                $importInfo['data'][$object->id]['total_amount'] += -$amount;
+                $importInfo['data'][$object->id]['total_amount_without_nds'] += -$amountWithoutNDS;
+            } else {
+                $importInfo['data'][$object->id]['organizations'][$organization->id]['avans'] += -$amount;
+                $importInfo['data'][$object->id]['total_avans'] += -$amount;
+            }
 
             if (! empty($period)) {
                 $importInfo['data'][$object->id]['organizations'][$organization->id]['details'][] = [
+                    'type' => $type !== 'Аванс' ? 'amount' : 'avans',
                     'date' => Carbon::parse($period)->format('Y-m-d'),
                     'amount' => -$amount
                 ];

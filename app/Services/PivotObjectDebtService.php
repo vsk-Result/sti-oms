@@ -321,12 +321,14 @@ class PivotObjectDebtService
             $info[$objectId]['organizations']['Комиссия'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия',
-                'amount' => -$komissiyaServiceAmount,
-                'amount_without_nds' => -$komissiyaServiceAmount,
+                'amount' => 0,
+                'amount_without_nds' => 0,
+                'avans' => -$komissiyaServiceAmount,
                 'total_amount' => -$komissiyaServiceAmount,
             ];
-            $info[$objectId]['total']['amount'] += -$komissiyaServiceAmount;
-            $info[$objectId]['total']['amount_without_nds'] += -$komissiyaServiceAmount;
+            $info[$objectId]['total']['avans'] += -$komissiyaServiceAmount;
+            $info[$objectId]['total']['amount'] += 0;
+            $info[$objectId]['total']['amount_without_nds'] += 0;
             $info[$objectId]['total']['total_amount'] += -$komissiyaServiceAmount;
         }
 
@@ -334,12 +336,14 @@ class PivotObjectDebtService
             $info[$objectId]['organizations']['Комиссия за БГ'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия за БГ',
-                'amount' => -$komissiyaBGServiceAmount,
-                'amount_without_nds' => -$komissiyaBGServiceAmount,
+                'avans' => -$komissiyaBGServiceAmount,
+                'amount' => 0,
+                'amount_without_nds' => 0,
                 'total_amount' => -$komissiyaBGServiceAmount,
             ];
-            $info[$objectId]['total']['amount'] += -$komissiyaBGServiceAmount;
-            $info[$objectId]['total']['amount_without_nds'] += -$komissiyaBGServiceAmount;
+            $info[$objectId]['total']['avans'] += -$komissiyaBGServiceAmount;
+            $info[$objectId]['total']['amount'] += 0;
+            $info[$objectId]['total']['amount_without_nds'] += 0;
             $info[$objectId]['total']['total_amount'] += -$komissiyaBGServiceAmount;
         }
 
@@ -347,12 +351,14 @@ class PivotObjectDebtService
             $info[$objectId]['organizations']['Комиссия за БГ (г/у)'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия за БГ (г/у)',
-                'amount' => -$komissiyaBG_GU_ServiceAmount,
-                'amount_without_nds' => -$komissiyaBG_GU_ServiceAmount,
+                'avans' => -$komissiyaBG_GU_ServiceAmount,
+                'amount' => 0,
+                'amount_without_nds' => 0,
                 'total_amount' => -$komissiyaBG_GU_ServiceAmount,
             ];
-            $info[$objectId]['total']['amount'] += -$komissiyaBG_GU_ServiceAmount;
-            $info[$objectId]['total']['amount_without_nds'] += -$komissiyaBG_GU_ServiceAmount;
+            $info[$objectId]['total']['avans'] += -$komissiyaBG_GU_ServiceAmount;
+            $info[$objectId]['total']['amount'] += 0;
+            $info[$objectId]['total']['amount_without_nds'] += 0;
             $info[$objectId]['total']['total_amount'] += -$komissiyaBG_GU_ServiceAmount;
         }
 
@@ -448,7 +454,7 @@ class PivotObjectDebtService
 
             $contractorDebtsAmount = $contractorDebts['total']['total_amount'];
             $providerDebtsAmount = $providerDebts['total']['amount'];
-            $serviceDebtsAmount = $serviceDebts['total']['amount'];
+            $serviceDebtsAmount = $serviceDebts['total']['total_amount'];
 
             if (($contractorDebtsAmount + $providerDebtsAmount + $serviceDebtsAmount) == 0) {
                 continue;
