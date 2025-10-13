@@ -12,6 +12,12 @@ class Bank
             'visible' => true
         ],
         [
+            'id' => 23,
+            'name' => 'КУБ ЦОД',
+            'logo' => '/images/banks/kub.png',
+            'visible' => true
+        ],
+        [
             'id' => 13,
             'name' => 'ВТБ Тинькофф',
             'logo' => '/images/banks/vtb.png',
