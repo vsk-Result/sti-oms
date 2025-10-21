@@ -45,6 +45,7 @@ class ServiceImportFrom1C extends BaseImport
             $organizationName = trim($row[3] ?? '');
             $organizationType = trim($row[4] ?? '');
             $objectCode = trim($row[9] ?? '');
+            $code = trim($row[10] ?? '');
             $amount = $row[13] ?? 0;
             $amountWithoutNDS = $row[21] ?? 0;
             $inn = trim($row[22] ?? '');
@@ -120,7 +121,14 @@ class ServiceImportFrom1C extends BaseImport
                 $importInfo['data'][$object->id]['organizations'][$organization->id]['details'][] = [
                     'type' => $type !== 'Аванс' ? 'amount' : 'avans',
                     'date' => Carbon::parse($period)->format('Y-m-d'),
-                    'amount' => -$amount
+                    'amount' => -$amount,
+                    'code' => $code
+                ];
+            } else {
+                $importInfo['data'][$object->id]['organizations'][$organization->id]['details'][] = [
+                    'type' => 'other',
+                    'amount' => -$amount,
+                    'code' => $code
                 ];
             }
         }

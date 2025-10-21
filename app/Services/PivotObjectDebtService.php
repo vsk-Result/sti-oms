@@ -325,6 +325,13 @@ class PivotObjectDebtService
                 'amount_without_nds' => 0,
                 'avans' => -$komissiyaServiceAmount,
                 'total_amount' => -$komissiyaServiceAmount,
+                'details' => [
+                    [
+                        'type' => 'other',
+                        'code' => '7.6',
+                        'amount' => -$komissiyaServiceAmount,
+                    ]
+                ]
             ];
             $info[$objectId]['total']['avans'] += -$komissiyaServiceAmount;
             $info[$objectId]['total']['amount'] += 0;
@@ -340,6 +347,13 @@ class PivotObjectDebtService
                 'amount' => 0,
                 'amount_without_nds' => 0,
                 'total_amount' => -$komissiyaBGServiceAmount,
+                'details' => [
+                    [
+                        'type' => 'other',
+                        'code' => '7.6',
+                        'amount' => -$komissiyaBGServiceAmount,
+                    ]
+                ]
             ];
             $info[$objectId]['total']['avans'] += -$komissiyaBGServiceAmount;
             $info[$objectId]['total']['amount'] += 0;
@@ -355,6 +369,13 @@ class PivotObjectDebtService
                 'amount' => 0,
                 'amount_without_nds' => 0,
                 'total_amount' => -$komissiyaBG_GU_ServiceAmount,
+                'details' => [
+                    [
+                        'type' => 'other',
+                        'code' => '7.6',
+                        'amount' => -$komissiyaBG_GU_ServiceAmount,
+                    ]
+                ]
             ];
             $info[$objectId]['total']['avans'] += -$komissiyaBG_GU_ServiceAmount;
             $info[$objectId]['total']['amount'] += 0;
@@ -369,6 +390,13 @@ class PivotObjectDebtService
                 'amount' => -$konsaltingServiceAmount,
                 'amount_without_nds' => -$konsaltingServiceAmount,
                 'total_amount' => -$konsaltingServiceAmount,
+                'details' => [
+                    [
+                        'type' => 'other',
+                        'code' => '7.6',
+                        'amount' => -$konsaltingServiceAmount,
+                    ]
+                ]
             ];
             $info[$objectId]['total']['amount'] += -$konsaltingServiceAmount;
             $info[$objectId]['total']['amount_without_nds'] += -$konsaltingServiceAmount;

@@ -910,7 +910,7 @@ class KostCode
     public static function getTitleByCode(string | null $code): string
     {
         if (empty($code) || is_null($code)) {
-            return '';
+            return 'Не указана';
         }
 
         $code = str_replace(',', '.', $code);

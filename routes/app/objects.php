@@ -27,7 +27,11 @@ use App\Http\Controllers\Object\Report\ActCategory\ExportController as ActCatego
 use App\Http\Controllers\Object\Report\PaymentsReceive\PaymentsReceiveController;
 use App\Http\Controllers\Object\Report\WorkersCost\WorkersCostReportController;
 use App\Http\Controllers\Object\Report\WorkersCost\WorkersCostReportExportController;
+use App\Http\Controllers\Object\Report\PivotPayments\ExportController as PivotPaymentsExportController;
 
+// Экспорт отчета по своду расходов в Excel
+
+Route::get('objects/{object}/reports/pivot-payments/export', [PivotPaymentsExportController::class, 'store'])->name('objects.pivots.pivot_payments.exports.store');
 
 // Экспорт объекта в Excel
 

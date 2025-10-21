@@ -59,6 +59,9 @@
                             <th class="min-w-200px">% оплаты</th>
                             <th class="min-w-200px">Остаток к оплате</th>
                             <th class="min-w-200px">% остатка к оплате</th>
+                            <th class="min-w-200px">Бюджет</th>
+                            <th class="min-w-200px">Оплата</th>
+                            <th class="min-w-200px">% оплаты</th>
                         </tr>
                     </thead>
 
@@ -135,6 +138,75 @@
                          $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
                     @endphp
 
+                    @php
+                        $objectPaymentInfo = [];
+                        $totalPayments = 0;
+                        $totalMaterialPayments = 0;
+                        $totalRadPayments = 0;
+                        $totalRadOwnPayments = 0;
+                        $totalRadContractorPayments = 0;
+                        $totalServicePayments = 0;
+
+                        foreach ($activeObjects as $aobject) {
+                            $materialRadPayments = $aobject->payments()
+                                ->where('amount', '<', 0)
+                                ->whereIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
+                                ->where('category', \App\Models\Payment::CATEGORY_MATERIAL)
+                                ->sum('amount');
+
+                             $materialPayments = $aobject->payments()
+                                ->where('amount', '<', 0)
+                                ->whereNotIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
+                                ->where('category', \App\Models\Payment::CATEGORY_MATERIAL)
+                                ->sum('amount');
+
+                             $radPayments = $aobject->payments()
+                                ->where('amount', '<', 0)
+                                ->where('category', \App\Models\Payment::CATEGORY_RAD)
+                                ->sum('amount');
+
+                             $radOwnPayments = $aobject->payments()
+                                ->where('amount', '<', 0)
+                                ->whereIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
+                                ->where('category', \App\Models\Payment::CATEGORY_RAD)
+                                ->sum('amount');
+
+                             $serviceRadPayments = $aobject->payments()
+                                ->where('amount', '<', 0)
+                                ->whereIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
+                                ->whereNotIn('category', [\App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_MATERIAL])
+                                ->sum('amount');
+
+                             $servicePayments = $aobject->payments()
+                                ->where('amount', '<', 0)
+                                ->whereNotIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
+                                ->whereNotIn('category', [\App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_MATERIAL])
+                                ->sum('amount');
+
+
+                             $radPayments += $materialRadPayments + $serviceRadPayments;
+
+                             $radOwn = $materialRadPayments + $serviceRadPayments + $radOwnPayments;
+
+                             $objectPaymentInfo[$aobject->id] = [
+                                'rad' => $radPayments,
+                                'rad_own' => $radOwn,
+                                'rad_contractor' => $radPayments - $radOwn,
+                                'material' => $materialPayments,
+                                'service' => $servicePayments,
+                                'total' => $radPayments + $materialPayments + $servicePayments
+                            ];
+
+                             $totalPayments += $radPayments + $materialPayments + $servicePayments;
+                             $totalMaterialPayments += $materialPayments;
+                             $totalRadPayments += $radPayments;
+                             $totalRadOwnPayments += $radOwn;
+                             $totalServicePayments += $servicePayments;
+                         }
+
+                         $totalRadContractorPayments = $totalRadPayments - $totalRadOwnPayments;
+                    @endphp
+
                     <tbody class="text-gray-600 fw-bold fs-7">
                         <tr class="object-row fw-bolder">
                             <td class="ps-2 fw-bolder">Итого</td>
@@ -162,6 +234,15 @@
                             </td>
                             <td class="cell-center">
                                 {{ number_format($totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalPayments, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(100) . '%' }}
                             </td>
                         </tr>
                         <tr>
@@ -192,6 +273,15 @@
                             </td>
                             <td class="cell-center">
                                 {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalMaterialPayments, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalPayments != 0 ? $totalMaterialPayments / $totalPayments * 100 : 0) . '%' }}
                             </td>
                         </tr>
 
@@ -224,6 +314,95 @@
                             <td class="cell-center">
                                 {{ number_format($totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                             </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadPayments, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalPayments != 0 ? $totalRadPayments / $totalPayments * 100 : 0) . '%' }}
+                            </td>
+                        </tr>
+
+                        <tr class="fst-italic">
+                            <td class="ps-2 fw-bolder ps-8">Подрядчики</td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadOwnPayments, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalRadPayments != 0 ? $totalRadOwnPayments / $totalRadPayments * 100 : 0) . '%' }}
+                            </td>
+                        </tr>
+
+                        <tr class="fst-italic">
+                            <td class="ps-2 fw-bolder ps-8">Свои силы</td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format(0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalRadContractorPayments, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalRadPayments != 0 ? $totalRadContractorPayments / $totalRadPayments * 100 : 0) . '%' }}
+                            </td>
                         </tr>
 
                         <tr>
@@ -254,6 +433,15 @@
                             </td>
                             <td class="cell-center">
                                 {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ \App\Models\CurrencyExchangeRate::format($totalServicePayments, 'RUB', 0, true) }}
+                            </td>
+                            <td class="cell-center">
+                                {{ number_format($totalPayments != 0 ? $totalServicePayments / $totalPayments * 100 : 0) . '%' }}
                             </td>
                         </tr>
 
@@ -363,6 +551,15 @@
                                 <td class="cell-center">
                                     {{ number_format($totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount * 100 : 0) . '%' }}
                                 </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['total'], 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(100) . '%' }}
+                                </td>
                             </tr>
                             <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
                                 <td class="ps-2 fst-italic">Материалы</td>
@@ -392,6 +589,15 @@
                                 </td>
                                 <td class="cell-center">
                                     {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['material'], 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format($objectPaymentInfo[$object->id]['total'] != 0 ? $objectPaymentInfo[$object->id]['material'] / $objectPaymentInfo[$object->id]['total'] * 100 : 0) . '%' }}
                                 </td>
                             </tr>
 
@@ -424,6 +630,95 @@
                                 <td class="cell-center">
                                     {{ number_format($totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                                 </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['rad'], 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format($objectPaymentInfo[$object->id]['total'] != 0 ? $objectPaymentInfo[$object->id]['rad'] / $objectPaymentInfo[$object->id]['total'] * 100 : 0) . '%' }}
+                                </td>
+                            </tr>
+
+                            <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
+                                <td class="ps-8 fst-italic">Подрядчики</td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['rad_own'], 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format($objectPaymentInfo[$object->id]['rad'] != 0 ? $objectPaymentInfo[$object->id]['rad_own'] / $objectPaymentInfo[$object->id]['rad'] * 100 : 0) . '%' }}
+                                </td>
+                            </tr>
+
+                            <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
+                                <td class="ps-8 fst-italic">Свои силы</td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format(0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['rad_contractor'], 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format($objectPaymentInfo[$object->id]['rad'] != 0 ? $objectPaymentInfo[$object->id]['rad_contractor'] / $objectPaymentInfo[$object->id]['rad'] * 100 : 0) . '%' }}
+                                </td>
                             </tr>
 
                             <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
@@ -454,6 +749,15 @@
                                 </td>
                                 <td class="cell-center">
                                     {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['service'], 'RUB', 0, true) }}
+                                </td>
+                                <td class="cell-center">
+                                    {{ number_format($objectPaymentInfo[$object->id]['total'] != 0 ? $objectPaymentInfo[$object->id]['service'] / $objectPaymentInfo[$object->id]['total'] * 100 : 0) . '%' }}
                                 </td>
                             </tr>
                         @endforeach
