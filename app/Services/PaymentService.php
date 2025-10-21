@@ -287,12 +287,18 @@ class PaymentService
                                 ? $this->rateService->getExchangeRate($requestData['date'], $paymentCurrency)->rate ?? 0
                                 : 1;
 
+        $objectWorktypeId = $requestData['object_worktype_id'];
+
+        if (isset($requestData['code']) && !empty($requestData['code'])) {
+            $objectWorktypeId = $this->getObjectWorktypeByCode($requestData['code']);
+        }
+
         $payment = Payment::create([
             'import_id' => $requestData['import_id'] ?? null,
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
             'object_id' => $requestData['object_id'],
-            'object_worktype_id' => $requestData['object_worktype_id'],
+            'object_worktype_id' => $objectWorktypeId,
             'organization_sender_id' => $requestData['organization_sender_id'],
             'organization_receiver_id' => $requestData['organization_receiver_id'],
             'type_id' => $requestData['type_id'],
@@ -798,6 +804,10 @@ class PaymentService
                 $requestData['amount_without_nds'] = $requestData['amount'];
             }
         }
+
+        if (isset($requestData['code']) && !empty($requestData['code'])) {
+            $requestData['object_worktype_id'] = $this->getObjectWorktypeByCode($requestData['code']);
+        }
     }
 
     public function checkNeedNDS(string|null $description, int|null $organizationID): bool
@@ -870,5 +880,20 @@ class PaymentService
                 }
             }
         });
+    }
+
+    public function getObjectWorktypeByCode($code)
+    {
+        if (str_contains($code, '.')) {
+            $realCode = (int) substr($code, 0, strpos($code, '.'));
+        } else {
+            $realCode = (int) $code;
+        }
+
+        if ($realCode < 1 || $realCode > 10) {
+            return null;
+        }
+
+        return $realCode;
     }
 }
