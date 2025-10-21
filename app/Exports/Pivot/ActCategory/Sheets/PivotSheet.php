@@ -378,7 +378,7 @@ class PivotSheet implements
     public function setAndColorPercentCell(&$sheet, $cell, $value)
     {
         $sheet->setCellValue($cell, $value);
-        if ($value > 1 || $value < -1) {
+        if (round($value, 2) > 1 || round($value, 2) < -1) {
             $sheet->getStyle($cell)->applyFromArray([
                 'font' => [
                     'color' => ['rgb' => 'FF0000'],
