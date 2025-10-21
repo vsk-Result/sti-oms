@@ -49,6 +49,11 @@
                 <table class="table table-bordered align-middle table-row-dashed fs-6">
                     <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
+                            <th class="min-w-200px ps-2"></th>
+                            <th colspan="9">Доходы</th>
+                            <th colspan="3">Расходы</th>
+                        </tr>
+                        <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                             <th class="min-w-200px ps-2">Категория</th>
                             <th class="min-w-200px">Сумма по договору</th>
                             <th class="min-w-200px">% по договору</th>
