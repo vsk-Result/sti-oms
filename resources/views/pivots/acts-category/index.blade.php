@@ -516,15 +516,15 @@
                                 $totalPaidAmount = $totalMaterialPaidAmount + $totalRadPaidAmount + $totalOpstePaidAmount;
                                 $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
 
-                                $totalPaidAmountPercent = $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount * 100 : 0;
-                                $totalMaterialPaidAmountPercent = $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount * 100 : 0;
-                                $totalRadPaidAmountPercent = $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount * 100 : 0;
-                                $totalOpstePaidAmountPercent = $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount * 100 : 0;
+                                $totalPaidAmountPercent = round($totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount * 100 : 0);
+                                $totalMaterialPaidAmountPercent = round($totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount * 100 : 0);
+                                $totalRadPaidAmountPercent = round($totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount * 100 : 0);
+                                $totalOpstePaidAmountPercent = round($totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount * 100 : 0);
 
-                                $totalAmountPercent = $totalContractAmount != 0 ? $totalAmount / $totalContractAmount * 100 : 0;
-                                $totalMaterialAmountPercent = $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount * 100 : 0;
-                                $totalRadAmountPercent = $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount * 100 : 0;
-                                $totalOpsteAmountPercent = $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount * 100 : 0;
+                                $totalAmountPercent = round($totalContractAmount != 0 ? $totalAmount / $totalContractAmount * 100 : 0);
+                                $totalMaterialAmountPercent = round($totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount * 100 : 0);
+                                $totalRadAmountPercent = round($totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount * 100 : 0);
+                                $totalOpsteAmountPercent = round($totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount * 100 : 0);
                             @endphp
                             <tr class="object-row fw-bolder">
                                 <td class="ps-2 fw-bolder collapse-trigger cursor-pointer" data-trigger="collapse_{{ $object->id }}">
