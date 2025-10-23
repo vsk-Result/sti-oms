@@ -24,21 +24,6 @@
     </td>
 </tr>
 
-{{--                        <tr class="object-row plan-payment">--}}
-{{--                            <td class="ps-2 fw-bolder">Итого расходов по месяцам:</td>--}}
-{{--                            <td></td>--}}
-
-{{--                            @foreach($periods as $period)--}}
-{{--                                @php--}}
-{{--                                    //                                    $amount = $planPayments->whereBetween('due_date', [$period['start'], $period['end']])->sum('amount');--}}
-{{--                                @endphp--}}
-
-{{--                                <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}</td>--}}
-{{--                            @endforeach--}}
-
-{{--                            <td class="text-right pe-2"></td>--}}
-{{--                        </tr>--}}
-
 <tr class="object-row plan-payment">
     <td class="ps-2 fw-bolder">Сальдо (без учета целевых авансов) по неделям:</td>
     <td></td>

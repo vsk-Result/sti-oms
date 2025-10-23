@@ -583,10 +583,6 @@ class PivotSheet implements
         $sheet->setCellValue($lastColumn . $row, $total != 0 ? $total : '');
         $row++;
 
-        $sheet->setCellValue('A' . $row, 'Итого расходов по месяцам:');
-        $sheet->getRowDimension($row)->setRowHeight(30);
-
-        $row++;
         $sheet->setCellValue('A' . $row, 'Сальдо (без учета целевых авансов) по неделям:');
         $sheet->getRowDimension($row)->setRowHeight(30);
 

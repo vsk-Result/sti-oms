@@ -700,10 +700,9 @@
                             </td>
                         </tr>
 
-                        @foreach($cfPayments['objects'] as $objectId => $payment)
+                        @foreach($objects as $object) {
                             @php
                                 $total = 0;
-                                $object = \App\Models\Object\BObject::find($objectId);
                             @endphp
 
                             <tr class="object-row">
