@@ -703,6 +703,14 @@
                         @foreach($objects as $object) {
                             @php
                                 $total = 0;
+                                $totalPayment = 0;
+                                foreach($periods as $period) {
+                                    $totalPayment += $cfPayments['objects'][$object->id][$period['start']]['total'] ?? 0;
+                                }
+
+                                if ($totalPayment == 0) {
+                                    continue;
+                                }
                             @endphp
 
                             <tr class="object-row">
