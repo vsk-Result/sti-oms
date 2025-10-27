@@ -298,15 +298,14 @@ class CalculateWorkersCostService
                         $info['total']['amount']['total'] += $amount;
 
                         $info['data'][$group]['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['data'][$group]['total']['amount']['total'] / $info['total']['hours']['total'];
+
+                        $info['data'][$group]['rate'][$year['name']][$quart['name']]['total'] = $info['hours'][$year['name']][$quart['name']]['total'] === 0 ? 0 : $info['amount'][$group]['rate'][$year['name']][$quart['name']]['total'] / $info['hours'][$year['name']][$quart['name']]['total'];
+                        $info['data'][$group]['rate'][$year['name']]['total'] = $info['hours'][$year['name']]['total'] === 0 ? 0 : $info['amount'][$group]['rate'][$year['name']]['total'] / $info['hours'][$year['name']]['total'];
                     }
 
                     $info['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['total']['amount']['total'] / $info['total']['hours']['total'];
                 }
-
-                $info['data'][$group]['rate'][$year['name']][$quart['name']]['total'] = $info['hours'][$year['name']][$quart['name']]['total'] === 0 ? 0 : $info['amount'][$group]['rate'][$year['name']][$quart['name']]['total'] / $info['hours'][$year['name']][$quart['name']]['total'];
             }
-
-            $info['data'][$group]['rate'][$year['name']]['total'] = $info['hours'][$year['name']]['total'] === 0 ? 0 : $info['amount'][$group]['rate'][$year['name']]['total'] / $info['hours'][$year['name']]['total'];
         }
 
         return $info;
