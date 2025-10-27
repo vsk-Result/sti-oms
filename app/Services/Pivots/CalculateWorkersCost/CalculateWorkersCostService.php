@@ -231,6 +231,8 @@ class CalculateWorkersCostService
                             $amount = (float) Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
                         }
 
+                        $amount = -abs($amount);
+
                         $rate = $info['hours'][$year['name']][$quart['name']][$month['name']] != 0 ? $amount / $info['hours'][$year['name']][$quart['name']][$month['name']] : 0;
 
                         $info['data'][$group]['amount'][$year['name']][$quart['name']][$month['name']] = $amount;
