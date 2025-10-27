@@ -534,13 +534,13 @@ class CalculateWorkersCostService
                                 $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
                                 $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
                             } elseif ($codes[0] === 'accrued_taxes') {
-                                $amount = AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                                $amount = -1 * abs(AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'accrued_taxes_nds') {
-                                $amount = AccruedTax::where('name', 'НДС')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                                $amount = -1 * abs(AccruedTax::where('name', 'НДС')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'accrued_taxes_receive') {
-                                $amount = AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                                $amount = -1 * abs(AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'accrued_taxes_transport') {
-                                $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                                $amount = -1 * abs(AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'workers_salary') {
 //                                $amount = 0;
                                 $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
