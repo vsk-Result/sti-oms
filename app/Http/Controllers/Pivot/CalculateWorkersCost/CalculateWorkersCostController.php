@@ -14,18 +14,19 @@ class CalculateWorkersCostController extends Controller
 
     public function index(Request $request): View
     {
-        $year = $request->get('year', date('Y'));
+        $filterYears = ['2025', '2024'];
+
+        $years = $request->get('years', $filterYears);
         $objectIds = $request->get('object_id', []);
 
-        $years = ['2025', '2024', '2023', '2022'];
         $objects = BObject::active()->orderBy('code')->get();
 
         if (count($objectIds) > 0) {
             $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects($objectIds);
-            return view('pivots.calculate-workers-cost.objects.index', compact('infoByObjects', 'years', 'objects'));
+            return view('pivots.calculate-workers-cost.objects.index', compact('infoByObjects', 'filterYears', 'objects'));
         }
 
-        $info = $this->calculateWorkersCostService->getPivotInfoByCompany($year);
-        return view('pivots.calculate-workers-cost.company.index', compact('info', 'years', 'objects'));
+        $infoByCompany = $this->calculateWorkersCostService->getPivotInfoByCompany($years);
+        return view('pivots.calculate-workers-cost.company.index', compact('infoByCompany', 'filterYears', 'objects'));
     }
 }

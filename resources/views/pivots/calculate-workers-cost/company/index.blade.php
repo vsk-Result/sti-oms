@@ -13,14 +13,14 @@
         <div class="col-lg-12">
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-6">
-                    <div class="card-title">Расчет стоимости рабочих по компании за {{ request()->get('year', date('Y')) }} год</div>
+                    <div class="card-title">Расчет стоимости рабочих по компании на {{ now()->format('d.m.Y') }}</div>
 
                         <div class="card-toolbar">
                             <a
-                                    class="btn btn-light-primary me-3"
-                                    href="javascript:void(0);"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#updateNDFLModal"
+                                class="btn btn-light-primary me-3"
+                                href="javascript:void(0);"
+                                data-bs-toggle="modal"
+                                data-bs-target="#updateNDFLModal"
                             >
                                 Обновить НДФЛ и взносы
                             </a>
@@ -79,21 +79,44 @@
                         <table class="table table-bordered align-middle table-row-dashed fs-6 gy-3">
                             <thead>
                                 <tr class="fw-bolder">
-{{--                                    <th rowspan="2" valign="middle" class="min-w-50px ps-2 text-center">№</th>--}}
                                     <th rowspan="2" valign="middle" class="min-w-300px ps-2 text-center">Раздел</th>
 
-                                    @foreach($info['years'] as $year => $quarts)
-                                        <th class="text-center" colspan="8">{{ $year }}</th>
+                                    @foreach($infoByCompany['years'] as $year)
+                                        <th class="text-center" colspan="2" style="background-color: #d5dce0">
+                                            {{ $year['name'] }}
+                                            <span class="w-40px ps-3 fs-2 fw-bold collapse-trigger cursor-pointer" data-trigger="periods-year-{{ $year['name'] }}">+</span>
+                                        </th>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <th class="collapse-col text-center" colspan="2" data-trigger="periods-year-{{ $year['name'] }}" style="display: none; background-color: #ebeef0">
+                                                {{ $quart['name'] }}
+                                                <span class="w-40px ps-3 fs-2 fw-bold collapse-trigger cursor-pointer" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}">+</span>
+                                            </th>
+
+                                            @foreach($quart['months'] as $month)
+                                                <th class="collapse-col text-center" colspan="2" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">
+                                                    {{ $month['name'] }}
+                                                </th>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
                                     <th class="text-center total-cell fw-bolder" colspan="2">Итого</th>
                                 </tr>
 
                                 <tr class="fw-bolder">
-                                    @foreach($info['years'] as $year => $quarts)
-                                        @foreach($quarts as $quart => $dates)
-                                            <th class="text-center min-w-150px">{{ $quart }}</th>
-                                            <th class="text-center min-w-150px">Расчет по часу</th>
+                                    @foreach($infoByCompany['years'] as $year)
+                                        <th class="text-center min-w-150px" style="background-color: #d5dce0">Сумма</th>
+                                        <th class="text-center min-w-150px" style="background-color: #d5dce0">Расчет по часу</th>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <th class="collapse-col text-center min-w-150px" data-trigger="periods-year-{{ $year['name'] }}" style="display: none; background-color: #ebeef0">Сумма</th>
+                                            <th class="collapse-col text-center min-w-150px" data-trigger="periods-year-{{ $year['name'] }}" style="display: none; background-color: #ebeef0">Расчет по часу</th>
+
+                                            @foreach($quart['months'] as $month)
+                                                <th class="collapse-col text-center min-w-150px" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">Сумма</th>
+                                                <th class="collapse-col text-center min-w-150px" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">Расчет по часу</th>
+                                            @endforeach
                                         @endforeach
                                     @endforeach
 
@@ -103,46 +126,68 @@
                             </thead>
 
                             <tbody class="fw-bold fs-7">
-                                @foreach($info['data'] as $items)
-                                    @foreach($items as $item)
-                                        <tr>
-                                            <td class="ps-2 {{ str_starts_with($item['group'], '- ') ? 'ps-6' : '' }}">{{ $item['group'] }}</td>
+                                @foreach($infoByCompany['data'] as $group => $groupInfo)
+                                    <tr class="collapse-row">
+                                        <td class="{{ str_starts_with($group, '- ') ? 'ps-10' : 'ps-6' }}">{{ $group }}</td>
 
-                                            @foreach($item['quarts'] as $quart)
-                                                <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($quart['amount'], 'RUB', 0, true) }}</td>
-                                                <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($quart['rate'], 'RUB', 0, true) }}</td>
+                                        @foreach($infoByCompany['years'] as $year)
+                                            <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['amount'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+                                            <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['rate'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($year['quarts'] as $index => $quart)
+                                                <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['amount'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+                                                <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['rate'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                                @foreach($quart['months'] as $month)
+                                                    <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['amount'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                                    <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['rate'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                                @endforeach
                                             @endforeach
+                                        @endforeach
 
-                                            <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($item['total']['amount'], 'RUB', 0, true) }}</td>
-                                            <td class="text-end pe-2 total-cell">{{ \App\Models\CurrencyExchangeRate::format($item['total']['rate'], 'RUB', 0, true) }}</td>
-                                        </tr>
-                                    @endforeach
+                                        <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['total']['amount']['total'], 'RUB', 0, true) }}</td>
+                                        <td class="text-end pe-2 total-cell">{{ \App\Models\CurrencyExchangeRate::format($groupInfo['total']['rate']['total'], 'RUB', 0, true) }}</td>
+                                    </tr>
                                 @endforeach
 
-                                <tr style="background-color: #f7f7f7;">
-                                    <td class="ps-2 hl">Итого</td>
+                                <tr class="collapse-row">
+                                    <td class="ps-6 hl">Итого</td>
 
-                                    @foreach($info['total']['amount'] as $year => $quarts)
-                                        @foreach($quarts['quarts'] as $index => $amount)
-                                            <td class="text-end hl">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
-                                            <td class="text-end hl">{{ \App\Models\CurrencyExchangeRate::format($info['total']['rate'][$year]['quarts'][$index], 'RUB', 0, true) }}</td>
+                                    @foreach($infoByCompany['years'] as $year)
+                                        <td class="text-end hl">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['amount'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+                                        <td class="text-end hl">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['rate'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end hl" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['amount'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+                                            <td class="collapse-col text-end hl" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['rate'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end hl" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['amount'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                                <td class="collapse-col text-end hl" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['rate'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
                                         @endforeach
                                     @endforeach
 
-                                    <td class="text-end pe-2 total-cell fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($info['total']['total']['amount'], 'RUB', 0, true) }}</td>
-                                    <td class="text-end pe-2 total-cell fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($info['total']['total']['rate'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end pe-2 total-cell fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['amount']['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end pe-2 total-cell fw-bolder">{{ \App\Models\CurrencyExchangeRate::format($infoByCompany['total']['rate']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
-                                <tr style="background-color: #f7f7f7;">
-                                    <td class="ps-2 hl">Количество часов рабочих (по данным из CRM)</td>
+                                <tr class="collapse-row">
+                                    <td class="ps-6 hl">Количество часов рабочих (по данным из CRM)</td>
 
-                                    @foreach($info['rates'] as $quarts)
-                                        @foreach($quarts['quarts'] as $rate)
-                                            <td class="text-center hl" colspan="2">{{ number_format($rate, 0, '.', ' ') }}</td>
+                                    @foreach($infoByCompany['years'] as $year)
+                                        <td class="text-center hl" colspan="2">{{ number_format($infoByCompany['hours'][$year['name']]['total'], 0, '.', ' ') }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-center hl" colspan="2" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ number_format($infoByCompany['hours'][$year['name']][$quart['name']]['total'], 0, '.', ' ') }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-center hl" colspan="2" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ number_format($infoByCompany['hours'][$year['name']][$quart['name']][$month['name']], 0, '.', ' ') }}</td>
+                                            @endforeach
                                         @endforeach
                                     @endforeach
 
-                                    <td class="text-center pe-2 total-cell fw-bolder" colspan="2">{{ number_format($info['total']['total']['hours'], 0, '.', ' ') }}</td>
+                                    <td class="text-center pe-2 total-cell fw-bolder" colspan="2">{{ number_format($infoByCompany['total']['hours']['total'], 0, '.', ' ') }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -177,6 +222,42 @@
     <script>
         $(function() {
             mainApp.initFreezeTable(2);
+
+            $('.collapse-trigger-row').on('click', function() {
+                const $tr = $(this);
+                const trigger = $tr.data('trigger');
+                const isCollapsed = $tr.hasClass('collapsed');
+
+                if (isCollapsed) {
+                    $tr.text('+');
+                    $tr.removeClass('collapsed');
+                    $tr.closest('tr').removeClass('cpsd');
+                    $(`.collapse-row[data-trigger="${trigger}"]`).hide();
+                } else {
+                    $tr.text('-');
+                    $tr.addClass('collapsed');
+                    $tr.closest('tr').addClass('cpsd');
+                    $(`.collapse-row[data-trigger="${trigger}"]`).show();
+                }
+            });
+
+            $('.collapse-trigger').on('click', function() {
+                const $tr = $(this);
+                const trigger = $tr.data('trigger');
+                const isCollapsed = $tr.hasClass('collapsed');
+
+                if (isCollapsed) {
+                    $tr.text('+');
+                    $tr.removeClass('collapsed');
+                    $tr.closest('tr').removeClass('cpsd');
+                    $(`.collapse-col[data-trigger="${trigger}"]`).hide();
+                } else {
+                    $tr.text('-');
+                    $tr.addClass('collapsed');
+                    $tr.closest('tr').addClass('cpsd');
+                    $(`.collapse-col[data-trigger="${trigger}"]`).show();
+                }
+            });
         });
     </script>
 @endpush

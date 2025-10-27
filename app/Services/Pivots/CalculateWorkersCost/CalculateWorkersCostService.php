@@ -55,142 +55,252 @@ class CalculateWorkersCostService
         '- транспортный налог' => 'accrued_taxes_transport',
     ];
 
-    public function getPivotInfoByCompany($year): array
+    public function getPivotInfoByCompany($years): array
     {
-        $quarts = [
-            '1 квартал' => [$year . '-01-01', $year . '-03-31'],
-            '2 квартал' => [$year . '-04-01', $year . '-06-30'],
-            '3 квартал' => [$year . '-07-01', $year . '-09-30'],
-            '4 квартал' => [$year . '-10-01', $year . '-12-31'],
-        ];
-
-        $quartMonths = [
-            '1 квартал' => [$year . '-01', $year . '-02', $year . '-03'],
-            '2 квартал' => [$year . '-04', $year . '-05', $year . '-06'],
-            '3 квартал' => [$year . '-07', $year . '-08', $year . '-09'],
-            '4 квартал' => [$year . '-10', $year . '-11', $year . '-12'],
-        ];
-
         $info = [
-            'years' => [
-                $year => $quarts
-            ],
-            'data' => [
-                $year => []
-            ],
-            'rates' => [
-                $year => [],
-            ],
+            'years' => [],
+            'data' => [],
+            'hours' => [],
             'total' => [
-                'amount' => [$year => []],
-                'rate' => [$year => []],
-                'total' => [
-                    'amount' => 0,
-                    'rate' => 0,
-                    'hours' => 0,
-                ]
+                'amount' => [
+                    'total' => 0
+                ],
+                'rate' => [
+                    'total' => 0
+                ],
+                'hours' => [
+                    'total' => 0
+                ],
             ]
         ];
 
-        foreach ($quarts as $index => $quart) {
-            $hours = Workhour::whereBetween('date', [$quart[0], $quart[1]])->sum('hours');
-
-            $info['rates'][$year]['quarts'][$index] = $hours;
-            $info['total']['total']['hours'] += $hours;
+        foreach ($years as $year) {
+            $info['years'][] = [
+                'name' => $year,
+                'quarts' => [
+                    [
+                        'name' => '1 квартал',
+                        'period' => [$year . '-01-01', $year . '-03-31'],
+                        'months' => [
+                            [
+                                'name' => 'Январь',
+                                'date_name' => $year . '-01',
+                                'period' => [$year . '-01-01', $year . '-01-31']
+                            ],
+                            [
+                                'name' => 'Февраль',
+                                'date_name' => $year . '-02',
+                                'period' => [$year . '-02-01', $year . '-02-' . Carbon::parse($year . '-02-01')->endOfMonth()->day]
+                            ],
+                            [
+                                'name' => 'Март',
+                                'date_name' => $year . '-03',
+                                'period' => [$year . '-03-01', $year . '-03-31']
+                            ]
+                        ]
+                    ],
+                    [
+                        'name' => '2 квартал',
+                        'period' => [$year . '-04-01', $year . '-06-30'],
+                        'months' => [
+                            [
+                                'name' => 'Апрель',
+                                'date_name' => $year . '-04',
+                                'period' => [$year . '-04-01', $year . '-04-30']
+                            ],
+                            [
+                                'name' => 'Май',
+                                'date_name' => $year . '-05',
+                                'period' => [$year . '-05-01', $year . '-05-31']
+                            ],
+                            [
+                                'name' => 'Июнь',
+                                'date_name' => $year . '-06',
+                                'period' => [$year . '-06-01', $year . '-06-30']
+                            ]
+                        ]
+                    ],
+                    [
+                        'name' => '3 квартал',
+                        'period' => [$year . '-07-01', $year . '-09-30'],
+                        'months' => [
+                            [
+                                'name' => 'Июль',
+                                'date_name' => $year . '-07',
+                                'period' => [$year . '-07-01', $year . '-07-31']
+                            ],
+                            [
+                                'name' => 'Август',
+                                'date_name' => $year . '-08',
+                                'period' => [$year . '-08-01', $year . '-08-31']
+                            ],
+                            [
+                                'name' => 'Сентябрь',
+                                'date_name' => $year . '-09',
+                                'period' => [$year . '-09-01', $year . '-09-30']
+                            ]
+                        ]
+                    ],
+                    [
+                        'name' => '4 квартал',
+                        'period' => [$year . '-10-01', $year . '-12-31'],
+                        'months' => [
+                            [
+                                'name' => 'Октябрь',
+                                'date_name' => $year . '-10',
+                                'period' => [$year . '-10-01', $year . '-10-31']
+                            ],
+                            [
+                                'name' => 'Ноябрь',
+                                'date_name' => $year . '-11',
+                                'period' => [$year . '-11-01', $year . '-11-30']
+                            ],
+                            [
+                                'name' => 'Декабрь',
+                                'date_name' => $year . '-12',
+                                'period' => [$year . '-12-01', $year . '-12-31']
+                            ]
+                        ]
+                    ]
+                ],
+            ];
         }
 
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
         $NDFLPivot = Cache::get('ndfl_pivot_data_excel', []);
 
-        foreach (self::COMPANY_GROUPS as $group => $codes) {
-            $codes = explode(';', $codes);
+        foreach ($info['years'] as $year) {
+            foreach ($year['quarts'] as $quart) {
+                foreach ($quart['months'] as $month) {
 
-            $item = [
-                'group' => $group,
-                'quarts' => [],
-                'total' => [
-                    'amount' => 0,
-                    'rate' => 0,
-                ],
-            ];
+                    if (!isset($info['hours'][$year['name']][$quart['name']]['total'])) {
+                        $info['hours'][$year['name']][$quart['name']]['total'] = 0;
+                    }
 
-            foreach ($quarts as $index => $quart) {
-                if ($codes[0] === 'ndfl') {
-                    $amount = 0;
-                    $months = $quartMonths[$index];
+                    if (!isset($info['hours'][$year['name']]['total'])) {
+                        $info['hours'][$year['name']]['total'] = 0;
+                    }
 
-                    foreach ($months as $month) {
-                        $ndflAmount = ($NDFLPivot['ndfl'][$month]['total'] ?? 0) + ($NDFLPivot['strah'][$month]['total'] ?? 0);
+                    $hours = Workhour::whereBetween('date', $month['period'])->sum('hours');
+                    $info['hours'][$year['name']][$quart['name']][$month['name']] = $hours;
+                    $info['total']['hours']['total'] += $hours;
 
-                        if ($ndflAmount != 0) {
-                            $amount += $ndflAmount;
+                    $info['hours'][$year['name']][$quart['name']]['total'] += $hours;
+                    $info['hours'][$year['name']]['total'] += $hours;
+
+                    foreach (self::COMPANY_GROUPS as $group => $codes) {
+                        $codes = explode(';', $codes);
+
+                        if ($codes[0] === 'ndfl') {
+                            $amount = 0;
+
+                            $ndflAmount = ($NDFLPivot['ndfl'][$month['date_name']]['total'] ?? 0) + ($NDFLPivot['strah'][$month['date_name']]['total'] ?? 0);
+
+                            if ($ndflAmount != 0) {
+                                $amount += $ndflAmount;
+                            } else {
+                                $amount += (float) Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->whereIn('code', ['7.3', '7.3.1', '7.3.2'])->sum('amount');
+                            }
+                        } elseif ($codes[0] === 'accrued_taxes') {
+                            $amount = AccruedTax::whereBetween('date', $month['period'])->sum('amount');
+                            $amount += (float) Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->whereIn('code', ['7.5'])->sum('amount');
+                        } elseif ($codes[0] === 'accrued_taxes_nds') {
+                            $amount = AccruedTax::where('name', 'НДС')->whereBetween('date',$month['period'])->sum('amount');
+                        } elseif ($codes[0] === 'accrued_taxes_receive') {
+                            $amount = AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', $month['period'])->sum('amount');
+                        } elseif ($codes[0] === 'accrued_taxes_transport') {
+                            $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount');
+                        } elseif ($codes[0] === 'transfer') {
+                            $amount = (float) Payment::whereBetween('date', $month['period'])
+                                ->where('amount', '<', 0)
+                                ->where('code', '7.11.1')
+                                ->where('description', 'LIKE', '%transfer trosak%')
+                                ->sum('amount');
+                        } elseif ($codes[0] === 'workers_salary') {
+//                            $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('amount');
+                              $amount = 0;
+                        } elseif ($codes[0] === 'itr_salary') {
+                            $amount = 0;
+
+                            foreach ($ITRSalaryPivot as $date => $pivot) {
+                                if ($date >= $month['period'][0] && $date <= $month['period'][1]) {
+                                    $amount += $pivot['total'];
+                                }
+                            }
                         } else {
-                            $amount += (float) Payment::whereBetween('date', [$month . '-01', $month . '-31'])->where('amount', '<', 0)->whereIn('code', ['7.3', '7.3.1', '7.3.2'])->sum('amount');
+                            $amount = (float) Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
                         }
-                    }
-                } elseif ($codes[0] === 'accrued_taxes') {
-                    $amount = AccruedTax::whereBetween('date', [$quart[0], $quart[1]])->sum('amount');
-                    $amount += (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', ['7.5'])->sum('amount');
-                } elseif ($codes[0] === 'accrued_taxes_nds') {
-                    $amount = AccruedTax::where('name', 'НДС')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount');
-                } elseif ($codes[0] === 'accrued_taxes_receive') {
-                    $amount = AccruedTax::where('name', 'Налог на прибыль')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount');
-                } elseif ($codes[0] === 'accrued_taxes_transport') {
-                    $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', [$quart[0], $quart[1]])->sum('amount');
-                } elseif ($codes[0] === 'transfer') {
-                    $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])
-                        ->where('amount', '<', 0)
-                        ->where('code', '7.11.1')
-                        ->where('description', 'LIKE', '%transfer trosak%')
-                        ->sum('amount');
-                } elseif ($codes[0] === 'workers_salary') {
-                    $amount = (float) WorkhourPivot::whereBetween('date', [substr($quart[0], 0, 7), substr($quart[1], 0, 7)])->where('is_main', true)->sum('amount');
-//                    $amount = 0;
-                } elseif ($codes[0] === 'itr_salary') {
-                    $amount = 0;
 
-                    foreach ($ITRSalaryPivot as $date => $pivot) {
-                        if ($date >= $quart[0] && $date <= $quart[1]) {
-                            $amount += $pivot['total'];
+                        $rate = $info['hours'][$year['name']][$quart['name']][$month['name']] != 0 ? $amount / $info['hours'][$year['name']][$quart['name']][$month['name']] : 0;
+
+                        $info['data'][$group]['amount'][$year['name']][$quart['name']][$month['name']] = $amount;
+                        $info['data'][$group]['rate'][$year['name']][$quart['name']][$month['name']] = $rate;
+
+                        if (!isset($info['data'][$group]['amount'][$year['name']]['total'])) {
+                            $info['data'][$group]['amount'][$year['name']]['total'] = 0;
+                            $info['data'][$group]['rate'][$year['name']]['total'] = 0;
                         }
+
+                        if (!isset($info['data'][$group]['amount'][$year['name']][$quart['name']]['total'])) {
+                            $info['data'][$group]['amount'][$year['name']][$quart['name']]['total'] = 0;
+                            $info['data'][$group]['rate'][$year['name']][$quart['name']]['total'] = 0;
+                        }
+
+                        if (!isset($info['data'][$group]['total']['amount']['total'])) {
+                            $info['data'][$group]['total']['amount']['total'] = 0;
+                            $info['data'][$group]['total']['rate']['total'] = 0;
+                        }
+
+                        if (! isset($info['total']['amount'][$year['name']][$quart['name']][$month['name']])) {
+                            $info['total']['amount'][$year['name']][$quart['name']][$month['name']] = 0;
+                        }
+
+                        if (! isset($info['total']['rate'][$year['name']][$quart['name']][$month['name']])) {
+                            $info['total']['rate'][$year['name']][$quart['name']][$month['name']] = 0;
+                        }
+
+                        if (! isset($info['total']['amount'][$year['name']][$quart['name']]['total'])) {
+                            $info['total']['amount'][$year['name']][$quart['name']]['total'] = 0;
+                        }
+
+                        if (! isset($info['total']['rate'][$year['name']][$quart['name']]['total'])) {
+                            $info['total']['rate'][$year['name']][$quart['name']]['total'] = 0;
+                        }
+
+                        if (! isset($info['total']['amount'][$year['name']]['total'])) {
+                            $info['total']['amount'][$year['name']]['total'] = 0;
+                        }
+
+                        if (! isset($info['total']['rate'][$year['name']]['total'])) {
+                            $info['total']['rate'][$year['name']]['total'] = 0;
+                        }
+
+                        $info['data'][$group]['amount'][$year['name']]['total'] += $amount;
+                        $info['data'][$group]['rate'][$year['name']]['total'] += $rate;
+
+                        $info['data'][$group]['amount'][$year['name']][$quart['name']]['total'] += $amount;
+                        $info['data'][$group]['rate'][$year['name']][$quart['name']]['total']  += $rate;
+
+                        $info['data'][$group]['total']['amount']['total'] += $amount;
+                        $info['data'][$group]['total']['rate']['total'] += $rate;
+
+                        $info['total']['amount'][$year['name']][$quart['name']][$month['name']] += $amount;
+                        $info['total']['rate'][$year['name']][$quart['name']][$month['name']] += $rate;
+
+                        $info['total']['amount'][$year['name']][$quart['name']]['total'] += $amount;
+                        $info['total']['rate'][$year['name']][$quart['name']]['total'] += $rate;
+
+                        $info['total']['amount'][$year['name']]['total'] += $amount;
+                        $info['total']['rate'][$year['name']]['total'] += $rate;
+
+                        $info['total']['amount']['total'] += $amount;
+
+                        $info['data'][$group]['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['data'][$group]['total']['amount']['total'] / $info['total']['hours']['total'];
                     }
-                } else {
-                    $amount = (float) Payment::whereBetween('date', [$quart[0], $quart[1]])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
+
+                    $info['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['total']['amount']['total'] / $info['total']['hours']['total'];
                 }
-
-                $amount = -abs($amount);
-
-                $rate = $info['rates'][$year]['quarts'][$index] != 0 ? $amount / $info['rates'][$year]['quarts'][$index] : 0;
-
-                if (! is_valid_amount_in_range($rate)) {
-                    $rate = 0;
-                }
-
-                $item['quarts'][$index] = [
-                    'amount' => $amount,
-                    'rate' => $rate
-                ];
-
-                if (! isset($info['total']['amount'][$year]['quarts'][$index])) {
-                    $info['total']['amount'][$year]['quarts'][$index] = 0;
-                }
-
-                if (! isset($info['total']['rate'][$year]['quarts'][$index])) {
-                    $info['total']['rate'][$year]['quarts'][$index] = 0;
-                }
-
-                $info['total']['amount'][$year]['quarts'][$index] += $amount;
-                $info['total']['rate'][$year]['quarts'][$index] += $rate;
-
-                $item['total']['amount'] += $amount;
-
-                $info['total']['total']['amount'] += $amount;
             }
-
-            $item['total']['rate'] = $item['total']['amount'] / $info['total']['total']['hours'];
-            $info['total']['total']['rate'] += $item['total']['rate'];
-
-            $info['data'][$year][] = $item;
         }
 
         return $info;

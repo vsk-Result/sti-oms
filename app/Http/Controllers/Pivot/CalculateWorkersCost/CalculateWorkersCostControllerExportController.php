@@ -17,7 +17,6 @@ class CalculateWorkersCostControllerExportController extends Controller
     public function store(Request $request): BinaryFileResponse
     {
         $objectIds = $request->get('object_id', []);
-        $year = $request->get('year', date('Y'));
 
         if (count($objectIds) > 0) {
             $infoByObjects = $this->calculateWorkersCostService->getPivotInfoByObjects($objectIds);
@@ -28,11 +27,14 @@ class CalculateWorkersCostControllerExportController extends Controller
             );
         }
 
-        $info = $this->calculateWorkersCostService->getPivotInfoByCompany($year);
+        $filterYears = ['2025', '2024'];
+        $years = $request->get('years', $filterYears);
+
+        $info = $this->calculateWorkersCostService->getPivotInfoByCompany($years);
 
         return Excel::download(
-            new ExportByCompany($info, $year),
-            'Расчет стоимости рабочих по компании за ' . $year . ' год.xlsx'
+            new ExportByCompany($info),
+            'Расчет стоимости рабочих по компании на ' . now()->format('d_m_Y') . '.xlsx'
         );
     }
 }

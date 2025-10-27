@@ -8,18 +8,16 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class ExportByCompany implements WithMultipleSheets
 {
     private array $info;
-    private $year;
 
-    public function __construct(array $info, $year)
+    public function __construct(array $info)
     {
         $this->info = $info;
-        $this->year = $year;
     }
 
     public function sheets(): array
     {
         return [
-            new PivotSheet($this->year, $this->info, $this->year),
+            new PivotSheet($this->info),
         ];
     }
 }

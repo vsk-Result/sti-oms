@@ -18,7 +18,7 @@
                                     data-dropdown-parent="#filterCalculateWorkersCostModal"
                                     data-allow-clear="true"
                                 >
-                                    @foreach($years as $year)
+                                    @foreach($filterYears as $year)
                                         <option value="{{ $year }}" {{ $year === request()->get('year', date('Y')) ? 'selected' : '' }}>{{ $year }}</option>
                                     @endforeach
                                 </select>
