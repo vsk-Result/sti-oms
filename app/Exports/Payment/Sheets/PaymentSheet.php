@@ -2,6 +2,7 @@
 
 namespace App\Exports\Payment\Sheets;
 
+use App\Models\KostCode;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -47,6 +48,7 @@ class PaymentSheet implements
             'Тип оплаты',
             'Дата оплаты',
             'Код затрат',
+            'Статья затрат',
             'Сумма c НДС',
             'Сумма без НДС',
             'Контрагент',
@@ -69,39 +71,41 @@ class PaymentSheet implements
                 $sheet->setCellValue('C' . $row, $payment->getPaymentType());
                 $sheet->setCellValue('D' . $row, Date::dateTimeToExcel(Carbon::parse($payment->date)));
                 $sheet->setCellValue('E' . $row, $payment->code . ' ');
-                $sheet->setCellValue('F' . $row, $payment->amount);
-                $sheet->setCellValue('G' . $row, $payment->amount_without_nds);
-                $sheet->setCellValue('H' . $row, $payment->amount < 0 ? ($payment->organizationReceiver->name ?? '') : ($payment->organizationSender->name ?? ''));
-                $sheet->setCellValue('I' . $row, ($payment->amount < 0 ? ($payment->organizationReceiver->inn ?? '') : ($payment->organizationSender->inn ?? '')) . ' ');
-                $sheet->setCellValue('J' . $row, $payment->description);
-                $sheet->setCellValue('K' . $row, $payment->category);
-                $sheet->setCellValue('L' . $row, $payment->company->name ?? '');
-                $sheet->setCellValue('M' . $row, $payment->getBankName());
-                $sheet->setCellValue('N' . $row, $payment->id);
+                $sheet->setCellValue('F' . $row, KostCode::getTitleByCode($payment->code));
+                $sheet->setCellValue('G' . $row, $payment->amount);
+                $sheet->setCellValue('H' . $row, $payment->amount_without_nds);
+                $sheet->setCellValue('I' . $row, $payment->amount < 0 ? ($payment->organizationReceiver->name ?? '') : ($payment->organizationSender->name ?? ''));
+                $sheet->setCellValue('J' . $row, ($payment->amount < 0 ? ($payment->organizationReceiver->inn ?? '') : ($payment->organizationSender->inn ?? '')) . ' ');
+                $sheet->setCellValue('K' . $row, $payment->description);
+                $sheet->setCellValue('L' . $row, $payment->category);
+                $sheet->setCellValue('M' . $row, $payment->company->name ?? '');
+                $sheet->setCellValue('N' . $row, $payment->getBankName());
+                $sheet->setCellValue('O' . $row, $payment->id);
 
                 $row++;
             }
         });
 
-        $sheet->getStyle('A1:N' . ($this->paymentCount + 1))->applyFromArray([
+        $sheet->getStyle('A1:O' . ($this->paymentCount + 1))->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
 
         $sheet->getStyle('D2:D' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
-        $sheet->getStyle('F2:F' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
         $sheet->getStyle('G2:G' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('H2:H' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 
-        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:O1')->getFont()->setBold(true);
 
-        $sheet->setAutoFilter('A1:N' . ($this->paymentCount + 1));
+        $sheet->setAutoFilter('A1:O' . ($this->paymentCount + 1));
     }
 
     public function columnWidths(): array
     {
         return [
-            'H' => 50,
+            'F' => 50,
             'I' => 50,
+            'J' => 50,
         ];
     }
 }
