@@ -151,7 +151,7 @@
                                 {{ $payment->getType() }}
 
                                 @if (auth()->id() === 1)
-                                    {{ json_encode($payment->getAdditionalData('transfer_cash')) }}
+                                    {{ json_encode($payment->getAdditionalData('request_cash')) }}
                                 @endif
 
                                 @if (! is_null($payment->getCrmAvansData()['employee_id']))
