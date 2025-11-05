@@ -29,6 +29,7 @@
                             <label class="form-label fw-bolder text-dark fs-6">Объект</label>
                             <div class="position-relative mb-3">
                                 <select name="object_id" data-control="select2" class="form-select form-select-solid form-select-lg" data-dropdown-parent="#editPaymentModal">
+                                    <option value="{{ null }}" {{ $payment->isTransferObject() ? 'selected' : '' }}>Трансфер</option>
                                     @foreach($objects as $objectId => $objectName)
                                         <option value="{{ $objectId }}" {{ $payment->getObjectId() == $objectId ? 'selected' : '' }}>{{ $objectName }}</option>
                                     @endforeach

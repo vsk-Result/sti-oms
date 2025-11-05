@@ -159,6 +159,11 @@ class PaymentService
         $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
         $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
 
+        if (is_null($requestData['object_id'])) {
+            $objectId = null;
+            $objectWorktypeId = null;
+        }
+
         if ($needCreateCrmAvans || $needCreateItr || $needCreateCrmApartment) {
             if ($objectId === $object27_3->id) {
                 $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
@@ -266,6 +271,11 @@ class PaymentService
         $object27_3 = BObject::where('code', '27.3')->first();
         $objectId = (int) substr($requestData['object_id'], 0, strpos($requestData['object_id'], '::'));
         $objectWorktypeId = substr($requestData['object_id'], strpos($requestData['object_id'], '::') + 2);
+
+        if (is_null($requestData['object_id'])) {
+            $objectId = null;
+            $objectWorktypeId = null;
+        }
 
         if ($isCrmEmployee || $isItr || $isCrmApartment) {
             if ($objectId === $object27_3->id) {

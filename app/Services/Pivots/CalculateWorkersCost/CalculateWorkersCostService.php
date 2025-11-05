@@ -168,6 +168,7 @@ class CalculateWorkersCostService
 
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
         $NDFLPivot = Cache::get('ndfl_pivot_data_excel', []);
+        $pivotCodePaymentsByPeriod = Cache::get('GetBillSumByCodeReportingPeriod', []);
 
         foreach ($info['years'] as $year) {
             foreach ($year['quarts'] as $quart) {
@@ -228,7 +229,18 @@ class CalculateWorkersCostService
                                 }
                             }
                         } else {
-                            $amount = (float) Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
+                            if ($month['date_name'] >= '2025-10') {
+                                $amount = 0;
+
+                                if (isset($pivotCodePaymentsByPeriod[$month['date_name']])) {
+                                    $mInfo = $pivotCodePaymentsByPeriod[$month['date_name']];
+                                    foreach ($codes as $code) {
+                                        $amount += $mInfo[$code] ?? 0;
+                                    }
+                                }
+                            } else {
+                                $amount = (float) Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->whereIn('code', $codes)->sum('amount');
+                            }
                         }
 
                         $amount = -abs($amount);
@@ -564,11 +576,23 @@ class CalculateWorkersCostService
                                     }
                                 }
                             } else {
-                                $amount = (float) Payment::whereBetween('date', $month['period'])
-                                    ->where('amount', '<', 0)
-                                    ->whereIn('code', $codes)
-                                    ->where('object_id', $object->id)
-                                    ->sum('amount');
+
+                                if ($month['date_name'] >= '2025-10') {
+                                    $amount = 0;
+
+                                    if (isset($pivotCodePaymentsByPeriod[$month['date_name']][$object->code])) {
+                                        $mInfo = $pivotCodePaymentsByPeriod[$month['date_name']][$object->code];
+                                        foreach ($codes as $code) {
+                                            $amount += $mInfo[$code] ?? 0;
+                                        }
+                                    }
+                                } else {
+                                    $amount = (float)Payment::whereBetween('date', $month['period'])
+                                        ->where('amount', '<', 0)
+                                        ->whereIn('code', $codes)
+                                        ->where('object_id', $object->id)
+                                        ->sum('amount');
+                                }
                             }
 
                             $amount = -abs($amount);

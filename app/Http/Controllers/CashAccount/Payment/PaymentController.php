@@ -99,7 +99,6 @@ class PaymentController extends Controller
     public function store(CashAccount $cashAccount, Request $request): RedirectResponse
     {
         $requestData = array_merge(['cash_account_id' => $cashAccount->id], $request->toArray());
-
         $this->paymentService->createPayment($requestData);
         $this->cashAccountService->updateBalance($cashAccount);
 

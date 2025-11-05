@@ -75,6 +75,10 @@ class CashAccountPayment extends Model implements Audit, HasMedia
 
     public function getObjectCode(): string
     {
+        if ($this->isTransferObject()) {
+            return 'Трансфер';
+        }
+
         if ($this->type_id === static::TYPE_OBJECT) {
             if (! is_null($this->object_worktype_id)) {
                 return $this->object->isWithoutWorktype() || $this->code == '0' || $this->object_worktype_id == 0
@@ -88,18 +92,31 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         return 'Трансфер';
     }
 
-    public function getObjectId(): string
+    public function getObjectId(): string | null
     {
+        if ($this->isTransferObject()) {
+            return null;
+        }
+
         return $this->object_id . '::' . ($this->object->isWithoutWorktype() || $this->code == '0' ? null : $this->object_worktype_id);
     }
 
     public function getObjectName(): string
     {
+        if ($this->isTransferObject()) {
+            return 'Трансфер';
+        }
+
         if ($this->type_id === static::TYPE_OBJECT) {
             return $this->object->name ?? '';
         }
 
         return 'Трансфер';
+    }
+
+    public function isTransferObject(): bool
+    {
+        return is_null($this->object_id) && $this->type_id === static::TYPE_OBJECT;
     }
 
     public function getType()

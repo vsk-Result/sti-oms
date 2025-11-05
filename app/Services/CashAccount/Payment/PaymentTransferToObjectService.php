@@ -33,7 +33,7 @@ class PaymentTransferToObjectService
             'object_worktype_id' => $payment->object_worktype_id,
             'organization_sender_id' => $payment->amount > 0 ? $payment->organization_id : $companyOrganization->id,
             'organization_receiver_id' => $payment->amount > 0 ? $companyOrganization->id : $payment->organization_id,
-            'type_id' => Payment::TYPE_OBJECT,
+            'type_id' => is_null($payment->object_id) ? Payment::TYPE_TRANSFER : Payment::TYPE_OBJECT,
             'payment_type_id' => Payment::PAYMENT_TYPE_CASH,
             'category' => $payment->category,
             'code' => $payment->code,

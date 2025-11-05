@@ -150,6 +150,10 @@
                             <td class="ps-3">
                                 {{ $payment->getType() }}
 
+                                @if (auth()->id() === 1)
+                                    {{ json_encode($payment->getAdditionalData('transfer_cash')) }}
+                                @endif
+
                                 @if (! is_null($payment->getCrmAvansData()['employee_id']))
                                     <span class="text-warning">(CRM)</span>
                                 @endif
