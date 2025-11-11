@@ -104,7 +104,7 @@ class ClosePeriodService
 
         $activePayments = CashAccountPayment::where('cash_account_id', $closePeriod->cash_account_id)
             ->where('status_id', CashAccountPayment::STATUS_ACTIVE)
-            ->where('type_id', CashAccountPayment::TYPE_TRANSFER)
+            ->whereIn('type_id', [CashAccountPayment::TYPE_TRANSFER, CashAccountPayment::TYPE_REQUEST])
             ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')
             ->get();
 
