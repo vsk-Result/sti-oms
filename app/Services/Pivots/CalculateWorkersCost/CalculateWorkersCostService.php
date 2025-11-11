@@ -218,8 +218,8 @@ class CalculateWorkersCostService
                                 ->where('description', 'LIKE', '%transfer trosak%')
                                 ->sum('amount');
                         } elseif ($codes[0] === 'workers_salary') {
-                            $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('amount');
-//                              $amount = 0;
+//                            $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('amount');
+                              $amount = 0;
                         } elseif ($codes[0] === 'itr_salary') {
                             $amount = 0;
 
@@ -456,19 +456,41 @@ class CalculateWorkersCostService
         $object27_1 = BObject::where('code', '27.1')->first();
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
 
+        $generalCacheData = Cache::get('calc_workers_cost_general_data', []);
+        $transferCacheData = Cache::get('calc_workers_cost_transfer_data', []);
+        $workhoursCacheData = Cache::get('calc_workers_cost_workhours_data', []);
+        $workhoursHoursCacheData = Cache::get('calc_workers_cost_workhours_hours_data', []);
+
+        $generalCacheDataNewData = [];
+        $transferCacheDataNewData = [];
+        $workhoursCacheDataNewData = [];
+        $workhoursHoursCacheDataNewData = [];
+
         foreach ($infoByObjects['years'] as $year) {
             foreach ($year['quarts'] as $quart) {
                 foreach ($quart['months'] as $month) {
                     $workhourPercents = [];
 
                     $objectHoursInfo = [];
-                    $workhours = Workhour::whereBetween('date', $month['period'])->get();
-                    foreach ($workhours->groupBy('o_id') as $oIds => $wks) {
-                        $cObject = CObject::find($oIds);
+
+                    if (isset($workhoursCacheData[$month['date_name']])) {
+                        $groupedWorkhours = $workhoursCacheData[$month['date_name']];
+                    } else {
+                        $groupedWorkhours = Workhour::selectRaw('o_id, SUM(hours) AS total_hours')
+                            ->whereBetween('date', $month['period'])
+                            ->groupBy('o_id')
+                            ->get()
+                            ->toArray();
+
+                        $workhoursCacheDataNewData[$month['date_name']] = $groupedWorkhours;
+                    }
+
+                    foreach ($groupedWorkhours as $groupedWorkhour) {
+                        $cObject = CObject::find($groupedWorkhour['o_id']);
                         if (!$cObject) {
-                            $objectHoursInfo['none'] = $wks->sum('hours');
+                            $objectHoursInfo['none'] = (int) $groupedWorkhour['total_hours'];
                         } else {
-                            $objectHoursInfo[$cObject->code] = $wks->sum('hours');
+                            $objectHoursInfo[$cObject->code] = (int) $groupedWorkhour['total_hours'];
                         }
                     }
 
@@ -488,6 +510,9 @@ class CalculateWorkersCostService
                     foreach ($wObjects as $oCode => $hours) {
                         $workhourPercents[$month['name']][$oCode] = $hours / $sum;
                     }
+
+                    $generalPayments = Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->get();
+
 
                     foreach ($objects as $object) {
                         $crmObjects = CObject::where('code', 'LIKE', $object->code . '.%')->pluck('id')->toArray();
@@ -520,12 +545,20 @@ class CalculateWorkersCostService
                             $info['hours'][$year['name']]['total'] = 0;
                         }
 
-                        $hours = Workhour::whereBetween('date', $month['period'])->whereIn('o_id', $crmObjects)->sum('hours');
+                        if (isset($workhoursHoursCacheData[$month['date_name']])) {
+                            $hours = $workhoursHoursCacheData[$month['date_name']];
+                        } else {
+                            $hours = Workhour::whereBetween('date', $month['period'])->whereIn('o_id', $crmObjects)->sum('hours');
+                            $workhoursHoursCacheDataNewData[$month['date_name']] = $hours;
+                        }
+
                         $info['hours'][$year['name']][$quart['name']][$month['name']] = $hours;
                         $info['total']['hours']['total'] += $hours;
 
                         $info['hours'][$year['name']][$quart['name']]['total'] += $hours;
                         $info['hours'][$year['name']]['total'] += $hours;
+
+                        $objectPayments = $generalPayments->where('object_id', $object->id);
 
                         foreach (self::OBJECTS_GROUPS as $group => $codes) {
                             $codes = explode(';', $codes);
@@ -538,20 +571,29 @@ class CalculateWorkersCostService
                                 if ($ndflAmount != 0) {
                                     $amount += $ndflAmount;
                                 } else {
-                                    $amount += $amount = (float) Payment::whereBetween('date', $month['period'])
-                                        ->where('amount', '<', 0)
-                                        ->whereIn('code', ['7.3', '7.3.1', '7.3.2'])
-                                        ->where('object_id', $object->id)
-                                        ->sum('amount');
+                                    $amount += $amount = (float) $objectPayments->whereIn('code', ['7.3', '7.3.1', '7.3.2'])->sum('amount');
                                 }
                             } elseif ($codes[0] === 'general_costs_percent') {
-                                $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $month['period'])->whereIn('company_id', [1, 5]);
-                                $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5', '7.11', '7.11.1', '7.11.2'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                                    + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
-                                $amount = $generalAmount * ($workhourPercents[$month['name']][$object->code] ?? 0);
+                                if (isset($generalCacheData[$object->id][$month['date_name']])) {
+                                    $amount = $generalCacheData[$object->id][$month['date_name']];
+                                } else {
+                                    $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $month['period'])->whereIn('company_id', [1, 5]);
+                                    $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5', '7.11', '7.11.1', '7.11.2'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                                        + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
+                                    $amount = -abs($generalAmount * ($workhourPercents[$month['name']][$object->code] ?? 0));
+
+                                    $generalCacheDataNewData[$object->id][$month['date_name']] = $amount;
+                                }
+
                             } elseif ($codes[0] === 'transfer') {
-                                $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
-                                $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
+                                if (isset($transferCacheData[$object->id][$month['date_name']])) {
+                                    $amount = $transferCacheData[$object->id][$month['date_name']];
+                                } else {
+                                    $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
+                                    $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
+
+                                    $transferCacheDataNewData[$object->id][$month['date_name']] = $amount;
+                                }
                             } elseif ($codes[0] === 'accrued_taxes') {
                                 $amount = -1 * abs(AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'accrued_taxes_nds') {
@@ -561,8 +603,8 @@ class CalculateWorkersCostService
                             } elseif ($codes[0] === 'accrued_taxes_transport') {
                                 $amount = -1 * abs(AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'workers_salary') {
-//                                $amount = 0;
-                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                                $amount = 0;
+//                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
                             } elseif ($codes[0] === 'itr_salary') {
                                 $amount = 0;
 
@@ -587,11 +629,7 @@ class CalculateWorkersCostService
                                         }
                                     }
                                 } else {
-                                    $amount = (float)Payment::whereBetween('date', $month['period'])
-                                        ->where('amount', '<', 0)
-                                        ->whereIn('code', $codes)
-                                        ->where('object_id', $object->id)
-                                        ->sum('amount');
+                                    $amount = (float) $objectPayments->whereIn('code', $codes)->sum('amount');
                                 }
                             }
 
@@ -673,6 +711,23 @@ class CalculateWorkersCostService
                 }
             }
         }
+
+        if (count($generalCacheDataNewData) > 0) {
+            Cache::put('calc_workers_cost_general_data', $generalCacheDataNewData, now()->addDay());
+        }
+
+        if (count($transferCacheDataNewData) > 0) {
+            Cache::put('calc_workers_cost_transfer_data', $transferCacheDataNewData, now()->addDay());
+        }
+
+        if (count($workhoursCacheDataNewData) > 0) {
+            Cache::put('calc_workers_cost_workhours_data', $workhoursCacheDataNewData, now()->addDay());
+        }
+
+        if (count($workhoursHoursCacheDataNewData) > 0) {
+            Cache::put('calc_workers_cost_workhours_hours_data', $workhoursHoursCacheDataNewData, now()->addDay());
+        }
+
         return $infoByObjects;
     }
 }
