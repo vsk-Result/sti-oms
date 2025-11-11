@@ -41,19 +41,28 @@ class PivotSheet implements
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Номер');
-        $sheet->setCellValue('B1', 'Валюта');
-        $sheet->setCellValue('C1', 'Сумма');
-        $sheet->setCellValue('D1', 'Сумма аванса');
-        $sheet->setCellValue('E1', 'Сумма получ. аванса');
-        $sheet->setCellValue('F1', 'Сумма аванса к получению');
-        $sheet->setCellValue('G1', 'Выполнено по актам');
-        $sheet->setCellValue('H1', 'Аванс удержан по актам');
-        $sheet->setCellValue('I1', 'Депозит удержан по актам');
-        $sheet->setCellValue('J1', 'К оплате по актам');
-        $sheet->setCellValue('K1', 'Оплачено по актам');
-        $sheet->setCellValue('L1', 'Сумма неоплаченных работ по актам');
-        $sheet->setCellValue('M1', 'Остаток неотработанного аванса');
+        $sheet->setCellValue('A' . 1, 'Справка объекта ' . $this->object->getName() . ' на ' . now()->format('d.m.Y'));
+        $sheet->mergeCells('A1:M1');
+
+        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:M1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getRowDimension(1)->setRowHeight(45);
+
+        $row = 3;
+
+        $sheet->setCellValue('A' . $row, 'Номер');
+        $sheet->setCellValue('B' . $row, 'Валюта');
+        $sheet->setCellValue('C' . $row, 'Сумма');
+        $sheet->setCellValue('D' . $row, 'Сумма аванса');
+        $sheet->setCellValue('E' . $row, 'Сумма получ. аванса');
+        $sheet->setCellValue('F' . $row, 'Сумма аванса к получению');
+        $sheet->setCellValue('G' . $row, 'Выполнено по актам');
+        $sheet->setCellValue('H' . $row, 'Аванс удержан по актам');
+        $sheet->setCellValue('I' . $row, 'Депозит удержан по актам');
+        $sheet->setCellValue('J' . $row, 'К оплате по актам');
+        $sheet->setCellValue('K' . $row, 'Оплачено по актам');
+        $sheet->setCellValue('L' . $row, 'Сумма неоплаченных работ по актам');
+        $sheet->setCellValue('M' . $row, 'Остаток неотработанного аванса');
 
         $sheet->getColumnDimension('A')->setWidth(60);
         $sheet->getColumnDimension('B')->setWidth(10);
@@ -69,11 +78,11 @@ class PivotSheet implements
         $sheet->getColumnDimension('L')->setWidth(25);
         $sheet->getColumnDimension('M')->setWidth(25);
 
-        $sheet->getStyle('A1:M1')->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setBold(true);
 
-        $sheet->getRowDimension(1)->setRowHeight(45);
+        $sheet->getRowDimension($row)->setRowHeight(45);
 
-        $row = 2;
+        $row++;
         $currencies = ['RUB', 'EUR'];
         foreach ($currencies as $currency) {
             foreach ($this->contracts as $contract) {
