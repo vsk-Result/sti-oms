@@ -99,7 +99,7 @@ class CashAccount extends Model
         $objects = $this->objects;
 
         if ($objects->count() === 0) {
-            $objects = BObject::active(['27.1', '27.3', '288', '346', '349'])->orderBy('code', 'desc')->get();
+            $objects = BObject::active(['27.1', '27.3', '288', '346', '349', '374'])->orderBy('code', 'desc')->get();
         }
 
         if ($getObjects) {
