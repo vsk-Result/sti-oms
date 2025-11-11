@@ -108,6 +108,8 @@ class ClosePeriodService
             ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')
             ->get();
 
+        dd($activePayments, $closePeriod);
+
         if ($validPayments->count() > 0) {
             foreach ($validPayments as $payment) {
                 $payment->update([
