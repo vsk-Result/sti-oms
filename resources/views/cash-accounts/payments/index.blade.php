@@ -150,10 +150,6 @@
                             <td class="ps-3">
                                 {{ $payment->getType() }}
 
-                                @if (auth()->id() === 1)
-                                    {{ json_encode($payment->getAdditionalData('request_cash')) }}
-                                @endif
-
                                 @if (! is_null($payment->getCrmAvansData()['employee_id']))
                                     <span class="text-warning">(CRM)</span>
                                 @endif
@@ -164,10 +160,6 @@
 
                                 @if ($payment->isTransfer())
                                     <span class="text-{{ $payment->getTransferStatusColor() }}">({{ $payment->getTransferStatus() }})</span>
-                                @endif
-
-                                @if (auth()->id() === 1)
-                                    {{ $payment->status_id }}
                                 @endif
                             </td>
                             <td class="position-relative">
