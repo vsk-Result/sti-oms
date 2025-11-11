@@ -56,6 +56,8 @@ class PaymentController extends Controller
             $activeOrganizations = Organization::whereIn('id', $request->get('organization_id'))->orderBy('name')->get();
         }
 
+        dd($payments);
+
         return view(
             'cash-accounts.payments.index',
             compact(
