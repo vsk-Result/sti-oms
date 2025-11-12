@@ -360,7 +360,10 @@ class ObjectService
         $closingDates = [];
         $finalObjects = new Collection();
         foreach ($objects as $object) {
-            if ($object->payments->sum('amount') < 0) {
+            if ($object->payments()->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
+                    ->where('amount', '<=', 0)
+                    ->whereIn('company_id', [1, 5])
+                    ->whereBetween('date', [$startDate, $endDate])->sum('amount') < 0) {
                 if (! empty($object->closing_date)) {
                     if ($object->closing_date < $startDate) {
                         continue;
