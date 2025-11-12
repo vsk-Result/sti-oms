@@ -31,7 +31,7 @@
             }
         }
 
-        if (isset($organizationInn) && isset($organizationName)) {
+        if (isset($organizationInn) && isset($organizationName) && $organizationInn != 0) {
             $moreOrganizations = \App\Models\Organization::where('name', '!=', $organizationName)->where('inn', $organizationInn)->get();
 
             if ($moreOrganizations->count() > 0) {
