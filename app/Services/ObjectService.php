@@ -357,8 +357,6 @@ class ObjectService
                 ->whereBetween('date', [$startDate, $endDate]);
         })->get();
 
-        dd($objects);
-
         $closingDates = [];
         $finalObjects = new Collection();
         foreach ($objects as $object) {
