@@ -397,7 +397,7 @@ class ObjectService
             $transferAmount = Payment::query()
                 ->whereBetween('date', [$startDate, $endDate])
                 ->whereIn('company_id', [1, 5])
-                ->whereIn('code', ['7.11', '7.11.1', '.7.11.2'])
+                ->whereIn('code', ['7.11', '7.11.1', '7.11.2'])
                 ->where('type_id', Payment::TYPE_GENERAL)
                 ->sum('amount');
 
