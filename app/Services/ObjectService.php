@@ -352,7 +352,7 @@ class ObjectService
         $objects = $objectsQuery->with(['payments' => function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
                 ->where('amount', '<=', 0)
-                ->whereNotIn('code', ['27.1'])
+                ->whereNotIn('code', ['27.3'])
                 ->whereIn('company_id', [1, 5])
                 ->whereBetween('date', [$startDate, $endDate]);
         }])->get();
