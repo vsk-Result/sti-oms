@@ -586,7 +586,7 @@ class CalculateWorkersCostService
                                 }
 
                             } elseif ($codes[0] === 'transfer') {
-                                if ($object->code === '382' && $month['date_name'] === '2025-10') {
+                                if ($object->code === '382' && $month['date_name'] === '2025-11') {
                                     dd($transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']));
                                 }
                                 if (isset($transferCacheData[$object->id][$month['date_name']])) {
