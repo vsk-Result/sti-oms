@@ -401,6 +401,8 @@ class ObjectService
                 ->where('type_id', Payment::TYPE_GENERAL)
                 ->sum('amount');
 
+            dd($periods, $startDate, $endDate, $transferAmount);
+
             $sumCash = 0;
             $cashes = [];
             foreach ($finalObjects as $object) {
