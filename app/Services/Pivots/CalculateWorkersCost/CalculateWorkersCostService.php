@@ -586,14 +586,14 @@ class CalculateWorkersCostService
                                 }
 
                             } elseif ($codes[0] === 'transfer') {
-                                if (isset($transferCacheData[$object->id][$month['date_name']])) {
-                                    $amount = $transferCacheData[$object->id][$month['date_name']];
-                                } else {
+//                                if (isset($transferCacheData[$object->id][$month['date_name']])) {
+//                                    $amount = $transferCacheData[$object->id][$month['date_name']];
+//                                } else {
                                     $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
                                     $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
 
                                     $transferCacheDataNewData[$object->id][$month['date_name']] = $amount;
-                                }
+//                                }
                             } elseif ($codes[0] === 'accrued_taxes') {
                                 $amount = -1 * abs(AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'accrued_taxes_nds') {
