@@ -349,13 +349,13 @@ class ObjectService
             $objectsQuery->where('code', '!=', '349');
         }
 
-        $objects = $objectsQuery->with(['payments' => function($q) use ($startDate, $endDate) {
+        $objects = $objectsQuery->whereHas('payments', function($q) use ($startDate, $endDate) {
             $q->where('payment_type_id', Payment::PAYMENT_TYPE_CASH)
                 ->where('amount', '<=', 0)
                 ->whereNotIn('code', ['27.3'])
                 ->whereIn('company_id', [1, 5])
                 ->whereBetween('date', [$startDate, $endDate]);
-        }])->get();
+        })->get();
 
         dd($objects);
 
