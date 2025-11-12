@@ -1,5 +1,6 @@
 @php
     $warningInfo = null;
+    $hasMoreWithINN = false;
 
     if (isset($organizationInn) || isset($organizationName)) {
 
@@ -29,6 +30,14 @@
                 }
             }
         }
+
+        if (isset($organizationInn) && isset($organizationName)) {
+            $moreOrganizations = \App\Models\Organization::where('name', '!=', $organizationName)->where('inn', $organizationInn)->get();
+
+            if ($moreOrganizations->count() > 0) {
+                $hasMoreWithINN = true;
+            }
+        }
     }
 @endphp
 
@@ -40,6 +49,15 @@
             data-bs-html="true"
             data-bs-delay-hide="1000"
             title="{{ $warningInfo['type'] . ' на сумму ' . \App\Models\CurrencyExchangeRate::format($amount) }}, <a href='{{ route('files.download', ['file' => base64_encode('public/objects-debts-manuals/warning_organizations.xls')]) }}'>Скачать детали</a>"
+    >{{ $organizationName ?? '' }}</span>
+@elseif($hasMoreWithINN)
+    <span
+        class="text-danger border-bottom-dashed"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        data-bs-html="true"
+        data-bs-delay-hide="1000"
+        title="С ИНН {{ $organizationInn ?? '' }} в базе есть еще контрагенты: {{ implode(', ', $moreOrganizations->pluck('name')->toArray()) }}"
     >{{ $organizationName ?? '' }}</span>
 @else
     <span>{{ $organizationName ?? '' }}</span>
