@@ -822,6 +822,10 @@ class PaymentService
 
         $organization = Organization::find($organizationID);
 
+        if (!$organization) {
+            return $this->checkHasNDSFromDescription($description);
+        }
+
         return $organization->isNDSAuto()
             ? $this->checkHasNDSFromDescription($description)
             : $organization->isNDSAlways();
