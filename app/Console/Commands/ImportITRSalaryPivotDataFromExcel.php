@@ -108,6 +108,8 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
             'Офис Велесстрой' => '378',
             'ТМХ' => '375',
             'Левенсон' => '380',
+            'Шишкино' => '383',
+            'ЦОД' => '382',
         ][$name] ?? null;
     }
 }
