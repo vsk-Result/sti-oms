@@ -92,6 +92,7 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
             'Малый Сухаревский' => '353',
             'Октафарма' => '346',
             'Офис' => '27.1',
+            'Офис Трехпрудный переулок' => '27.1',
             'Тинькофф' => '360',
             'Mono Space' => '369',
             'Веспер' => '372',
