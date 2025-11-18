@@ -72,7 +72,7 @@ class SplitResidenceExcelController extends Controller
             $objectInfo = $isOther ? $row[4] : $row[3];
             $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, $isOther ? ' ' : ' -'));
 
-            if (empty($objectCode)) {
+            if (empty($objectCode) || $objectCode === '27.7') {
                 $objectCode = '27.1';
             }
 
