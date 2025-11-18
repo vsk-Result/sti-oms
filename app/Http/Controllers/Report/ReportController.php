@@ -14,7 +14,8 @@ class ReportController extends Controller
         $splitResidenceOrganizationsNames = [
             'ИП Кадинова Елена Николаевна',
             'Общество с ограниченной ответственностью "АРТИСТ ПЛЮС"',
-            'АО "ИНТЕРМЕТСЕРВИС"'
+            'АО "ИНТЕРМЕТСЕРВИС"',
+            'АРТИСТ ПЛЮС ООО'
         ];
         $splitResidenceOrganizations = Organization::whereIn('name', $splitResidenceOrganizationsNames)->get();
 
