@@ -82,7 +82,7 @@ class DetailedPivotObjectSheet implements
                 'period' => $period,
             ]);
 
-            $row += 3;
+            $row += 4;
         }
 
         $row++;
@@ -96,10 +96,16 @@ class DetailedPivotObjectSheet implements
             'period' => $period,
         ]);
 
-        $row++;
+        $row += 5;
 
-        $row++;
-        $sheet->setCellValue('A' . $row, 'Общие затраты');
+        $this->fillObjectInfo($sheet, $row, [
+            'title' => 'Общие затраты',
+            'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '>=', 0)->sum('amount'),
+            'payment' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '<', 0)->sum('amount'),
+            'period' => $period,
+        ]);
+
+        $row += 4;
 
         $sheet->getStyle('B3:B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
     }
