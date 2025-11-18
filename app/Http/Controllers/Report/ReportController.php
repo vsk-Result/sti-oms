@@ -15,7 +15,8 @@ class ReportController extends Controller
             'ИП Кадинова Елена Николаевна',
             'Общество с ограниченной ответственностью "АРТИСТ ПЛЮС"',
             'АО "ИНТЕРМЕТСЕРВИС"',
-            'АРТИСТ ПЛЮС ООО'
+            'АРТИСТ ПЛЮС ООО',
+            'ВЕКТОР ООО'
         ];
         $splitResidenceOrganizations = Organization::whereIn('name', $splitResidenceOrganizationsNames)->get();
 

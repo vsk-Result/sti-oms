@@ -32,7 +32,7 @@ class SplitResidenceExcelController extends Controller
         $organization = Organization::find($requestData['organization_id']);
         $isKadinova = $organization->name === 'ИП Кадинова Елена Николаевна';
         $isArtist = $organization->name === 'АРТИСТ ПЛЮС ООО';
-        $isVector = $organization->name === 'ВЕКТОР ООО.';
+        $isVector = $organization->name === 'ВЕКТОР ООО';
         $isElift = $organization->name === 'ЕЛИВТ ООО';
 
         $isOther = $isKadinova || $isArtist || $isElift || $isVector;
