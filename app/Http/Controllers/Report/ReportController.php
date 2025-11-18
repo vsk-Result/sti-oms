@@ -16,7 +16,8 @@ class ReportController extends Controller
             'Общество с ограниченной ответственностью "АРТИСТ ПЛЮС"',
             'АО "ИНТЕРМЕТСЕРВИС"',
             'АРТИСТ ПЛЮС ООО',
-            'ВЕКТОР ООО'
+            'ВЕКТОР ООО',
+            'ЕЛИВТ ООО'
         ];
         $splitResidenceOrganizations = Organization::whereIn('name', $splitResidenceOrganizationsNames)->get();
 
