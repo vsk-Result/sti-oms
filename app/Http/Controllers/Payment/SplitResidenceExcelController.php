@@ -31,6 +31,11 @@ class SplitResidenceExcelController extends Controller
         $requestData = $request->toArray();
         $organization = Organization::find($requestData['organization_id']);
         $isKadinova = $organization->name === 'ИП Кадинова Елена Николаевна';
+        $isArtist = $organization->name === 'АРТИСТ ПЛЮС ООО';
+        $isVector = $organization->name === 'ВЕКТОР ООО.';
+        $isElift = $organization->name === 'ЕЛИВТ ООО';
+
+        $isOther = $isKadinova || $isArtist || $isElift || $isVector;
 
         $payments = Payment::where('organization_receiver_id', $requestData['organization_id'])->where('was_split', false)->get();
 
@@ -48,7 +53,13 @@ class SplitResidenceExcelController extends Controller
 
         $totalAmount = 0;
         $groupedObjectAmount = [];
-        $dataStartIndex = $isKadinova ? 4 : 7;
+
+        $dataStartIndex = 7;
+
+        if ($isOther) {
+            $dataStartIndex = 4;
+        }
+
         foreach ($importData['Отчет'] as $rowIndex => $row) {
             if ($rowIndex < $dataStartIndex) {
                 continue;
@@ -58,8 +69,8 @@ class SplitResidenceExcelController extends Controller
                 break;
             }
 
-            $objectInfo = $isKadinova ? $row[4] : $row[3];
-            $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, $isKadinova ? ' ' : ' -'));
+            $objectInfo = $isOther ? $row[4] : $row[3];
+            $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, $isOther ? ' ' : ' -'));
 
             if (empty($objectCode)) {
                 $objectCode = '27.1';
@@ -82,7 +93,15 @@ class SplitResidenceExcelController extends Controller
                 $groupedObjectAmount[$objectMainCode][$worktype] = 0;
             }
 
-            $amount = $isKadinova ? $row[45] : $row[44];
+            $amount = $row[44] ?? 0;
+
+            if ($isKadinova) {
+                $amount = $row[45] ?? 0;
+            }
+
+            if ($isArtist || $isElift || $isVector) {
+                $amount = $row[46] ?? 0;
+            }
 
             $groupedObjectAmount[$objectMainCode][$worktype] += $amount;
             $totalAmount += $amount;
