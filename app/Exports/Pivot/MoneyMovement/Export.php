@@ -2,6 +2,7 @@
 
 namespace App\Exports\Pivot\MoneyMovement;
 
+use App\Exports\Pivot\MoneyMovement\Sheets\DetailedPivotObjectSheet;
 use App\Exports\Pivot\MoneyMovement\Sheets\PaymentSheet;
 use App\Exports\Pivot\MoneyMovement\Sheets\PivotObjectSheet;
 use App\Exports\Pivot\MoneyMovement\Sheets\PivotOrganizationReceiveSheet;
@@ -58,18 +59,19 @@ class Export implements WithMultipleSheets
         ini_set('max_execution_time', 3000);
 
         $baseSheets = [
-            new PivotObjectSheet((clone $this->payments)),
-            new PaymentSheet((clone $this->payments)),
+            new DetailedPivotObjectSheet((clone $this->payments)),
+//            new PivotObjectSheet((clone $this->payments)),
+//            new PaymentSheet((clone $this->payments)),
         ];
 
         $additionalSheets = $this->needGroupByObjects
             ? [
-                new PivotOrganizationReceiveWithObjectSheet((clone $this->payments)),
-                new PivotOrganizationPaymentWithObjectSheet((clone $this->payments)),
+//                new PivotOrganizationReceiveWithObjectSheet((clone $this->payments)),
+//                new PivotOrganizationPaymentWithObjectSheet((clone $this->payments)),
             ]
             : [
-                new PivotOrganizationReceiveSheet((clone $this->payments)),
-                new PivotOrganizationPaymentSheet((clone $this->payments)),
+//                new PivotOrganizationReceiveSheet((clone $this->payments)),
+//                new PivotOrganizationPaymentSheet((clone $this->payments)),
 
             ];
 
