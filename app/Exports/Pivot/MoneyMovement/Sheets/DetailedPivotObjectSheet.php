@@ -75,8 +75,8 @@ class DetailedPivotObjectSheet implements
                 continue;
             }
 
-            $receive = $object->payments()->where('amount', '>=', 0)->sum('amount');
-            $payment = $object->payments()->where('amount', '<', 0)->sum('amount');
+            $receive = $object->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '>=', 0)->sum('amount');
+            $payment = $object->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '<', 0)->sum('amount');
 
             $totals['receive'] += $receive;
             $totals['payment'] += $payment;
