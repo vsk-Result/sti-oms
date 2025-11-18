@@ -37,7 +37,7 @@ class DetailedPivotObjectSheet implements
         $minDate = (clone $this->payments)->min('date');
         $maxDate = (clone $this->payments)->max('date');
 
-        $sheet->setCellValue('2', 'Период с ' . Carbon::parse($minDate)->format('d.m.Y') . ' по ' . Carbon::parse($maxDate)->format('d.m.Y'));
+        $sheet->setCellValue('A2', 'Период с ' . Carbon::parse($minDate)->format('d.m.Y') . ' по ' . Carbon::parse($maxDate)->format('d.m.Y'));
 
         $sheet->setCellValue('A3', 'Остаток на начало ' . Carbon::parse($minDate)->format('d.m'));
         $sheet->setCellValue('B3', Payment::where('date', '<=', $minDate)->sum('amount'));
