@@ -51,10 +51,11 @@ class DetailedPivotObjectSheet implements
         $sheet->setCellValue('A6', 'Остаток на конец ' . Carbon::parse($maxDate)->format('d.m'));
         $sheet->setCellValue('B6', Payment::where('date', '<=', $maxDate)->sum('amount'));
 
+        $sheet->getStyle('A1:D1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getRowDimension(2)->setRowHeight(30);
 
         $sheet->getColumnDimension('A')->setWidth(26);
-        $sheet->getColumnDimension('B')->setWidth(12);
+        $sheet->getColumnDimension('B')->setWidth(17);
         $sheet->getColumnDimension('C')->setWidth(12);
         $sheet->getColumnDimension('D')->setWidth(12);
 
@@ -75,6 +76,10 @@ class DetailedPivotObjectSheet implements
                 continue;
             }
 
+            $sheet->getStyle('A' . $row . ':B' . ($row + 3))->applyFromArray([
+                'borders' => ['outline' => ['borderStyle' => Border::BORDER_THICK]]
+            ]);
+
             $receive = $object->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '>=', 0)->sum('amount');
             $payment = $object->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '<', 0)->sum('amount');
 
@@ -82,6 +87,9 @@ class DetailedPivotObjectSheet implements
             $totals['payment'] += $payment;
 
             $sheet->setCellValue('A' . $row, $object->getName());
+
+            $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+
             $row++;
             $sheet->setCellValue('A' . $row, 'Приход');
             $sheet->setCellValue('B' . $row, $receive);
@@ -101,5 +109,7 @@ class DetailedPivotObjectSheet implements
 
         $row++;
         $sheet->setCellValue('A' . $row, 'Общие затраты');
+
+        $sheet->getStyle('B3:B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
     }
 }
