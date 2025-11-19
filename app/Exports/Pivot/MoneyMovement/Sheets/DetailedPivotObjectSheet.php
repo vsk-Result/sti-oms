@@ -123,9 +123,11 @@ class DetailedPivotObjectSheet implements
 
     public function fillObjectInfo(&$sheet, $row, array $info)
     {
-        $sheet->getStyle('A' . $row . ':B' . ($row + 3))->applyFromArray([
+        $sheet->getStyle('A' . $row . ':B' . ($row + 3 + count($info['groupInfo'] ?? [])))->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_MEDIUM]]
         ]);
+
+        $sheet->getStyle('A' . $row . ':B' . ($row + 3 + count($info['groupInfo'] ?? [])))->getFont()->setName('Calibri')->setSize(10);
 
         $sheet->setCellValue('A' . $row, $info['title']);
 
@@ -141,7 +143,7 @@ class DetailedPivotObjectSheet implements
 
         if (isset($info['groupInfo'])) {
             foreach ($info['groupInfo'] as $groupInfo) {
-                $sheet->setCellValue('A' . $row, $groupInfo['name']);
+                $sheet->setCellValue('A' . $row, '    ' . $groupInfo['name']);
                 $sheet->setCellValue('B' . $row, $groupInfo['amount']);
 
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
