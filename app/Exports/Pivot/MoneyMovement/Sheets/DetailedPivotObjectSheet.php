@@ -3,6 +3,7 @@
 namespace App\Exports\Pivot\MoneyMovement\Sheets;
 
 use App\Models\Object\BObject;
+use App\Models\Organization;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,6 +72,9 @@ class DetailedPivotObjectSheet implements
 
         $row = 9;
 
+        $organizationIds = (clone $this->payments)->where('amount', '<', 0)->select('organization_receiver_id')->groupBy('organization_receiver_id')->pluck('organization_receiver_id')->toArray();
+        $organizations = Organization::whereIn('id', $organizationIds)->pluck('name', 'id')->toArray();
+
         foreach ($objects as $object) {
             if ($object->code === '27.1') {
                 continue;
@@ -78,11 +82,25 @@ class DetailedPivotObjectSheet implements
 
             $groupInfo = [];
 
+            $addToRow = 1;
             foreach ($object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
-                $groupInfo[] = [
+                $groupInfoItem = [
                     'name' => $payment->category,
-                    'amount' => $payment->sum_amount
+                    'amount' => $payment->sum_amount,
+                    'groupInfo' => [],
                 ];
+
+                $addToRow++;
+
+                foreach ($object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+                    $groupInfoItem['groupInfo'][] = [
+                        'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
+                        'amount' => $payment->sum_amount,
+                    ];
+                    $addToRow++;
+                }
+
+                $groupInfo[] = $groupInfoItem;
             }
 
             $this->fillObjectInfo($sheet, $row, [
@@ -93,7 +111,7 @@ class DetailedPivotObjectSheet implements
                 'groupInfo' => $groupInfo
             ]);
 
-            $row += 4 + count($groupInfo);
+            $row += 4 + $addToRow;
         }
 
         $row++;
@@ -123,11 +141,7 @@ class DetailedPivotObjectSheet implements
 
     public function fillObjectInfo(&$sheet, $row, array $info)
     {
-        $sheet->getStyle('A' . $row . ':B' . ($row + 3 + count($info['groupInfo'] ?? [])))->applyFromArray([
-            'borders' => ['outline' => ['borderStyle' => Border::BORDER_MEDIUM]]
-        ]);
-
-        $sheet->getStyle('A' . $row . ':B' . ($row + 3 + count($info['groupInfo'] ?? [])))->getFont()->setName('Calibri')->setSize(10);
+        $addToRow = 1;
 
         $sheet->setCellValue('A' . $row, $info['title']);
 
@@ -147,16 +161,42 @@ class DetailedPivotObjectSheet implements
                 $sheet->setCellValue('B' . $row, $groupInfo['amount']);
 
                 $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setName('Calibri')->setSize(10);
+
 
                 $sheet->getRowDimension($row)->setOutlineLevel(1)
                     ->setVisible(false)
                     ->setCollapsed(true);
 
                 $row++;
+
+                $addToRow++;
+
+                if (isset($groupInfo['groupInfo'])) {
+                    foreach ($groupInfo['groupInfo'] as $groupInfoSub) {
+                        $sheet->setCellValue('A' . $row, '        ' . $groupInfoSub['name']);
+                        $sheet->setCellValue('B' . $row, $groupInfoSub['amount']);
+
+                        $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
+                        $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setName('Calibri')->setSize(9);
+
+                        $sheet->getRowDimension($row)->setOutlineLevel(1)
+                            ->setVisible(false)
+                            ->setCollapsed(true);
+
+                        $row++;
+
+                        $addToRow++;
+                    }
+                }
             }
         }
 
         $sheet->setCellValue('A' . $row, 'Сальдо');
         $sheet->setCellValue('B' . $row, $info['receive'] + $info['payment']);
+
+        $sheet->getStyle('A' . $row . ':B' . ($row + 3 + $addToRow))->applyFromArray([
+            'borders' => ['outline' => ['borderStyle' => Border::BORDER_MEDIUM]]
+        ]);
     }
 }
