@@ -75,6 +75,16 @@ class DetailedPivotObjectSheet implements
         $organizationIds = (clone $this->payments)->where('amount', '<', 0)->select('organization_receiver_id')->groupBy('organization_receiver_id')->pluck('organization_receiver_id')->toArray();
         $organizations = Organization::whereIn('id', $organizationIds)->pluck('name', 'id')->toArray();
 
+        $categoryTotal = [
+            Payment::CATEGORY_RAD => 0,
+            Payment::CATEGORY_MATERIAL => 0,
+            Payment::CATEGORY_OPSTE => 0,
+            Payment::CATEGORY_SALARY => 0,
+            Payment::CATEGORY_TAX => 0,
+            Payment::CATEGORY_CUSTOMERS => 0,
+            Payment::CATEGORY_TRANSFER => 0,
+        ];
+
         foreach ($objects as $object) {
             if ($object->code === '27.1') {
                 continue;
@@ -89,6 +99,8 @@ class DetailedPivotObjectSheet implements
                     'amount' => $payment->sum_amount,
                     'groupInfo' => [],
                 ];
+
+                $categoryTotal[$payment->category] += $payment->sum_amount;
 
                 $addToRow++;
 
@@ -137,6 +149,43 @@ class DetailedPivotObjectSheet implements
         $row += 4;
 
         $sheet->getStyle('B3:B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+
+
+        $sheet->setCellValue('D2', 'Свод итогов по категориям по расходам');
+
+        $sheet->setCellValue('D3', 'Работы');
+        $sheet->setCellValue('E3', $categoryTotal[Payment::CATEGORY_RAD]);
+
+        $sheet->setCellValue('D4', 'Материалы');
+        $sheet->setCellValue('E4', $categoryTotal[Payment::CATEGORY_MATERIAL]);
+
+        $sheet->setCellValue('D5', 'Накладные/Услуги');
+        $sheet->setCellValue('E5', $categoryTotal[Payment::CATEGORY_OPSTE]);
+
+        $sheet->setCellValue('D6', 'Зарплата');
+        $sheet->setCellValue('E6', $categoryTotal[Payment::CATEGORY_SALARY]);
+
+        $sheet->setCellValue('D7', 'Налоги');
+        $sheet->setCellValue('E7', $categoryTotal[Payment::CATEGORY_TAX]);
+
+        $sheet->setCellValue('D8', 'Заказчики');
+        $sheet->setCellValue('E8', $categoryTotal[Payment::CATEGORY_CUSTOMERS]);
+
+        $sheet->getStyle('D2:E2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getRowDimension(2)->setRowHeight(30);
+
+        $sheet->getColumnDimension('D')->setWidth(26);
+        $sheet->getColumnDimension('E')->setWidth(17);
+
+        $sheet->getStyle('D1:E10')->getFont()->setBold(true);
+        $sheet->mergeCells('D2:E2');
+
+        $sheet->getStyle('D2:E2')->applyFromArray([
+            'borders' => ['outline' => ['borderStyle' => Border::BORDER_MEDIUM]]
+        ]);
+
+        $sheet->getStyle('E3:E10')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
     }
 
     public function fillObjectInfo(&$sheet, $row, array $info)
