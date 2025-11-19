@@ -59,6 +59,12 @@ class UpdatePaymentController extends Controller
                     continue;
                 }
 
+                if ($field === 'was_split') {
+                    $fieldsToUpdate['was_split'] = true;
+
+                    continue;
+                }
+
                 $fieldsToUpdate[$field] = $row[$index];
             }
 
