@@ -93,7 +93,7 @@ class DetailedPivotObjectSheet implements
                 'groupInfo' => $groupInfo
             ]);
 
-            $row += 4;
+            $row += 4 + count($groupInfo);
         }
 
         $row++;
