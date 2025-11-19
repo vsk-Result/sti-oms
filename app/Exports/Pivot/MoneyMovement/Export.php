@@ -58,20 +58,23 @@ class Export implements WithMultipleSheets
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', 3000);
 
+        if (auth()->id() === 1) {
+            return [new DetailedPivotObjectSheet((clone $this->payments))];
+        }
+
         $baseSheets = [
-            new DetailedPivotObjectSheet((clone $this->payments)),
-//            new PivotObjectSheet((clone $this->payments)),
-//            new PaymentSheet((clone $this->payments)),
+            new PivotObjectSheet((clone $this->payments)),
+            new PaymentSheet((clone $this->payments)),
         ];
 
         $additionalSheets = $this->needGroupByObjects
             ? [
-//                new PivotOrganizationReceiveWithObjectSheet((clone $this->payments)),
-//                new PivotOrganizationPaymentWithObjectSheet((clone $this->payments)),
+                new PivotOrganizationReceiveWithObjectSheet((clone $this->payments)),
+                new PivotOrganizationPaymentWithObjectSheet((clone $this->payments)),
             ]
             : [
-//                new PivotOrganizationReceiveSheet((clone $this->payments)),
-//                new PivotOrganizationPaymentSheet((clone $this->payments)),
+                new PivotOrganizationReceiveSheet((clone $this->payments)),
+                new PivotOrganizationPaymentSheet((clone $this->payments)),
 
             ];
 
