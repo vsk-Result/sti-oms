@@ -6,6 +6,7 @@ use App\Models\Object\BObject;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -75,11 +76,21 @@ class DetailedPivotObjectSheet implements
                 continue;
             }
 
+            $groupInfo = [];
+
+            foreach ($object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+                $groupInfo[] = [
+                    'name' => $payment->category,
+                    'amount' => $payment->sum_amount
+                ];
+            }
+
             $this->fillObjectInfo($sheet, $row, [
                 'title' => $object->getName(),
-                'receive' => $object->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '>=', 0)->sum('amount'),
-                'payment' => $object->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '<', 0)->sum('amount'),
+                'receive' => $object->payments()->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
+                'payment' => $object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
                 'period' => $period,
+                'groupInfo' => $groupInfo
             ]);
 
             $row += 4;
@@ -91,8 +102,8 @@ class DetailedPivotObjectSheet implements
 
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Офис',
-            'receive' => $office->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '>=', 0)->sum('amount'),
-            'payment' => $office->payments()->whereBetween('date', [$minDate, $maxDate])->where('amount', '<', 0)->sum('amount'),
+            'receive' => $office->payments()->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
+            'payment' => $office->payments()->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
             'period' => $period,
         ]);
 
@@ -127,6 +138,22 @@ class DetailedPivotObjectSheet implements
         $sheet->setCellValue('A' . $row, 'Расход');
         $sheet->setCellValue('B' . $row, $info['payment']);
         $row++;
+
+        if (isset($info['groupInfo'])) {
+            foreach ($info['groupInfo'] as $groupInfo) {
+                $sheet->setCellValue('A' . $row, $groupInfo['name']);
+                $sheet->setCellValue('B' . $row, $groupInfo['amount']);
+
+                $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
+
+                $sheet->getRowDimension($row)->setOutlineLevel(1)
+                    ->setVisible(false)
+                    ->setCollapsed(true);
+
+                $row++;
+            }
+        }
+
         $sheet->setCellValue('A' . $row, 'Сальдо');
         $sheet->setCellValue('B' . $row, $info['receive'] + $info['payment']);
     }
