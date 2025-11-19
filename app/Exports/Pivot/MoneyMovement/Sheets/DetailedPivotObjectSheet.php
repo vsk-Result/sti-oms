@@ -82,7 +82,7 @@ class DetailedPivotObjectSheet implements
 
             $groupInfo = [];
 
-            $addToRow = 1;
+            $addToRow = 0;
             foreach ($object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
                 $groupInfoItem = [
                     'name' => $payment->category,
@@ -141,7 +141,7 @@ class DetailedPivotObjectSheet implements
 
     public function fillObjectInfo(&$sheet, $row, array $info)
     {
-        $addToRow = 1;
+        $addToRow = 0;
         $startRow = $row;
 
         $sheet->setCellValue('A' . $row, $info['title']);
@@ -181,7 +181,7 @@ class DetailedPivotObjectSheet implements
                         $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setItalic(true);
                         $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setName('Calibri')->setSize(9);
 
-                        $sheet->getRowDimension($row)->setOutlineLevel(1)
+                        $sheet->getRowDimension($row)->setOutlineLevel(2)
                             ->setVisible(false)
                             ->setCollapsed(true);
 
