@@ -142,6 +142,7 @@ class DetailedPivotObjectSheet implements
     public function fillObjectInfo(&$sheet, $row, array $info)
     {
         $addToRow = 1;
+        $startRow = $row;
 
         $sheet->setCellValue('A' . $row, $info['title']);
 
@@ -195,7 +196,7 @@ class DetailedPivotObjectSheet implements
         $sheet->setCellValue('A' . $row, 'Сальдо');
         $sheet->setCellValue('B' . $row, $info['receive'] + $info['payment']);
 
-        $sheet->getStyle('A' . $row . ':B' . ($row + 3 + $addToRow))->applyFromArray([
+        $sheet->getStyle('A' . $startRow . ':B' . ($startRow + 3 + $addToRow))->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_MEDIUM]]
         ]);
     }
