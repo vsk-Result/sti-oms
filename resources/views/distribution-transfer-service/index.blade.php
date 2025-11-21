@@ -28,7 +28,7 @@
                 $transferAmount = \App\Models\Payment::query()
                                         ->whereBetween('date', $datesBetween)
                                         ->whereIn('company_id', [1, 5])
-                                        ->whereIn('code', ['7.11', '7.11.1', '.7.11.2'])
+                                        ->whereIn('code', ['7.11.1'])
                                         ->where('type_id', \App\Models\Payment::TYPE_GENERAL)
                                         ->sum('amount');
 
