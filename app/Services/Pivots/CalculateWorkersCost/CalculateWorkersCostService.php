@@ -10,6 +10,8 @@ use App\Models\Object\BObject;
 use App\Models\CRM\Payment as CRMPayment;
 use App\Models\Payment;
 use App\Models\SERVICE\WorkhourPivot;
+use App\Services\CashAccount\CashAccountService;
+use App\Services\CashAccount\ClosePeriodService;
 use App\Services\ObjectService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -54,6 +56,8 @@ class CalculateWorkersCostService
         '- налог на прибыль' => 'accrued_taxes_receive',
         '- транспортный налог' => 'accrued_taxes_transport',
     ];
+
+    public function __construct(private ClosePeriodService $closePeriodService, private CashAccountService $cashAccountService) {}
 
     public function getPivotInfoByCompany($years): array
     {
@@ -170,6 +174,8 @@ class CalculateWorkersCostService
         $NDFLPivot = Cache::get('ndfl_pivot_data_excel', []);
         $pivotCodePaymentsByPeriod = Cache::get('GetBillSumByCodeReportingPeriod', []);
 
+        $activeCashAccounts = $this->cashAccountService->getAllActiveCashAccounts();
+
         foreach ($info['years'] as $year) {
             foreach ($year['quarts'] as $quart) {
                 foreach ($quart['months'] as $month) {
@@ -188,6 +194,8 @@ class CalculateWorkersCostService
 
                     $info['hours'][$year['name']][$quart['name']]['total'] += $hours;
                     $info['hours'][$year['name']]['total'] += $hours;
+
+                    $allPeriodsClosed = $this->closePeriodService->isCashAccountsClosedByPeriod($activeCashAccounts, $month['date_name']);
 
                     foreach (self::COMPANY_GROUPS as $group => $codes) {
                         $codes = explode(';', $codes);
@@ -212,11 +220,25 @@ class CalculateWorkersCostService
                         } elseif ($codes[0] === 'accrued_taxes_transport') {
                             $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount');
                         } elseif ($codes[0] === 'transfer') {
-                            $amount = (float) Payment::whereBetween('date', $month['period'])
-                                ->where('amount', '<', 0)
-                                ->where('code', '7.11.1')
-                                ->where('description', 'LIKE', '%transfer trosak%')
-                                ->sum('amount');
+                            if ($month['date_name'] >= '2025-10') {
+                                if ($allPeriodsClosed) {
+                                    $amount = (float) Payment::whereBetween('date', $month['period'])
+                                        ->where('amount', '<', 0)
+                                        ->where('code', '7.11.1')
+                                        ->where('type_id', Payment::TYPE_GENERAL)
+                                        ->where('description', 'LIKE', '%transfer trosak%')
+                                        ->sum('amount');
+                                } else {
+                                    $amount = 0;
+                                }
+                            } else {
+                                $amount = (float) Payment::whereBetween('date', $month['period'])
+                                    ->where('amount', '<', 0)
+                                    ->where('code', '7.11.1')
+                                    ->where('type_id', Payment::TYPE_GENERAL)
+                                    ->where('description', 'LIKE', '%transfer trosak%')
+                                    ->sum('amount');
+                            }
                         } elseif ($codes[0] === 'workers_salary') {
                             $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('amount');
 //                              $amount = 0;
@@ -466,9 +488,14 @@ class CalculateWorkersCostService
         $workhoursCacheDataNewData = [];
         $workhoursHoursCacheDataNewData = [];
 
+        $activeCashAccounts = $this->cashAccountService->getAllActiveCashAccounts();
+
         foreach ($infoByObjects['years'] as $year) {
             foreach ($year['quarts'] as $quart) {
                 foreach ($quart['months'] as $month) {
+
+                    $allPeriodsClosed = $this->closePeriodService->isCashAccountsClosedByPeriod($activeCashAccounts, $month['date_name']);
+
                     $workhourPercents = [];
 
                     $objectHoursInfo = [];
@@ -586,14 +613,27 @@ class CalculateWorkersCostService
                                 }
 
                             } elseif ($codes[0] === 'transfer') {
+                                if ($month['date_name'] >= '2025-10') {
+                                    if ($allPeriodsClosed) {
+                                        if (isset($transferCacheData[$object->id][$month['date_name']])) {
+                                            $amount = $transferCacheData[$object->id][$month['date_name']];
+                                        } else {
+                                            $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
+                                            $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
 
-                                if (isset($transferCacheData[$object->id][$month['date_name']])) {
-                                    $amount = $transferCacheData[$object->id][$month['date_name']];
+                                            $transferCacheDataNewData[$object->id][$month['date_name']] = $amount;
+                                        }
+                                    } else {
+                                        $amount = 0;
+                                    }
                                 } else {
-                                    $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
-                                    $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
-
-                                    $transferCacheDataNewData[$object->id][$month['date_name']] = $amount;
+                                    if (isset($transferCacheData[$object->id][$month['date_name']])) {
+                                        $amount = $transferCacheData[$object->id][$month['date_name']];
+                                    } else {
+                                        $transferData = ObjectService::getDistributionTransferServiceByPeriod($month['period']);
+                                        $amount = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
+                                        $transferCacheDataNewData[$object->id][$month['date_name']] = $amount;
+                                    }
                                 }
                             } elseif ($codes[0] === 'accrued_taxes') {
                                 $amount = -1 * abs(AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
@@ -714,19 +754,44 @@ class CalculateWorkersCostService
         }
 
         if (count($generalCacheDataNewData) > 0) {
-            Cache::put('calc_workers_cost_general_data', $generalCacheDataNewData, now()->addDay());
+            $newData = $generalCacheData;
+
+            foreach ($generalCacheDataNewData as $oId => $data) {
+                $newData[$oId] = $data;
+            }
+
+            Cache::put('calc_workers_cost_general_data', $newData, now()->addDay());
         }
 
         if (count($transferCacheDataNewData) > 0) {
-            Cache::put('calc_workers_cost_transfer_data', $transferCacheDataNewData, now()->addDay());
+            dd($transferCacheDataNewData);
+            $newData = $transferCacheData;
+
+            foreach ($transferCacheDataNewData as $oId => $data) {
+                $newData[$oId] = $data;
+            }
+
+            Cache::put('calc_workers_cost_transfer_data', $newData, now()->addDay());
         }
 
         if (count($workhoursCacheDataNewData) > 0) {
-            Cache::put('calc_workers_cost_workhours_data', $workhoursCacheDataNewData, now()->addDay());
+            $newData = $workhoursCacheData;
+
+            foreach ($workhoursCacheDataNewData as $oId => $data) {
+                $newData[$oId] = $data;
+            }
+
+            Cache::put('calc_workers_cost_workhours_data', $newData, now()->addDay());
         }
 
         if (count($workhoursHoursCacheDataNewData) > 0) {
-            Cache::put('calc_workers_cost_workhours_hours_data', $workhoursHoursCacheDataNewData, now()->addDay());
+            $newData = $workhoursHoursCacheData;
+
+            foreach ($workhoursHoursCacheDataNewData as $oId => $data) {
+                $newData[$oId] = $data;
+            }
+
+            Cache::put('calc_workers_cost_workhours_hours_data', $newData, now()->addDay());
         }
 
         return $infoByObjects;

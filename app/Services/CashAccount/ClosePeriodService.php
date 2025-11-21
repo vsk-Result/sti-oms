@@ -16,6 +16,21 @@ class ClosePeriodService
         return ClosePeriod::where('cash_account_id', $cashAccount->id)->orderByDesc('period')->get();
     }
 
+    public function isCashAccountsClosedByPeriod($cashAccounts, $period): bool
+    {
+        $closedPeriods = 0;
+
+        foreach ($cashAccounts as $cashAccount) {
+            $existPeriod = ClosePeriod::where('cash_account_id', $cashAccount->id)->where('period', $period . '-01')->first();
+
+            if ($existPeriod) {
+                $closedPeriods++;
+            }
+        }
+
+        return $closedPeriods === $cashAccounts->count();
+    }
+
     public function createClosePeriod(CashAccount $cashAccount, array $requestDate): void
     {
         $validPayments = CashAccountPayment::where('cash_account_id', $cashAccount->id)

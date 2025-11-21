@@ -17,6 +17,11 @@ class CashAccountService
         return CashAccount::active()->where('responsible_user_id', auth()->id())->get();
     }
 
+    public function getAllActiveCashAccounts(): Collection
+    {
+        return CashAccount::active()->get();
+    }
+
     public function getSharedCashAccounts(): Collection
     {
         if (auth()->user()->hasRole('super-admin') || auth()->user()->can('index cash-accounts-all-view')) {
