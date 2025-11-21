@@ -293,8 +293,14 @@ class PaymentService
             $objectWorktypeId = $this->getObjectWorktypeByCode($requestData['code']);
         }
 
+        $importId = $requestData['import_id'] ?? null;
+
+        if (isset($requestData['remove_import'])) {
+            $importId = null;
+        }
+
         $payment = Payment::create([
-            'import_id' => $requestData['import_id'] ?? null,
+            'import_id' => $importId,
             'company_id' => $requestData['company_id'],
             'bank_id' => $requestData['bank_id'],
             'object_id' => $requestData['object_id'],

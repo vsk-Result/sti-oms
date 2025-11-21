@@ -213,6 +213,23 @@
                     </div>
                 </div>
             </div>
+
+            @if ($copyPayment)
+                <div class="row">
+                    <div class="col-md-3 mb-10 fv-row">
+                        <label class="form-check form-check-solid form-check-inline gap-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="remove_import"
+                            />
+
+                            Не учитывать в выписке
+                        </label>
+                    </div>
+                </div>
+            @endif
+
         </div>
     </div>
 
