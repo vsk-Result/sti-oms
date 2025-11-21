@@ -21,16 +21,31 @@ class ActCategoryController extends Controller
     {
         $total = [];
 
-        $objects = BObject::active()->whereNotIn('code', ['353', '346', '362', '368', '359'])->orderBy('code')->get();
+        $filterObjectsStatuses = [
+            'active' => 'Активные',
+            'closed' => 'Закрытые',
+            'all' => 'Все',
+        ];
+        $filterObjectsStatus = $request->get('objects_status', 'active');
+
+        if ($filterObjectsStatus === 'active') {
+            $objects = BObject::active()->orderBy('code')->get();
+        } elseif ($filterObjectsStatus === 'closed') {
+            $objects = BObject::closed()->orderBy('code')->get();
+        } else {
+            $objects = BObject::activeAndClosed()->orderBy('code')->get();
+        }
+
+//        $objects = BObject::active()->whereNotIn('code', ['353', '346', '362', '368', '359'])->orderBy('code')->get();
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
-            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+            $objects = $objects->whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
         }
 
         $filteredObjects = $objects;
-
-        if ($request->has('object_id')) {
-            $filteredObjects = BObject::whereIn('id', $request->get('object_id'))->orderBy('code')->get();
-        }
+//
+//        if ($request->has('object_id')) {
+//            $filteredObjects = BObject::whereIn('id', $request->get('object_id'))->orderBy('code')->get();
+//        }
 
         $activeObjectIds = $filteredObjects->pluck('id')->toArray();
         $activeObjects = BObject::whereIn('id', $activeObjectIds)->orderByDesc('code')->get();
@@ -40,7 +55,7 @@ class ActCategoryController extends Controller
         return view(
             'pivots.acts-category.index',
             compact(
-                'acts', 'activeObjectIds', 'objects', 'activeObjects', 'actsEUR'
+                'acts', 'activeObjectIds', 'objects', 'activeObjects', 'actsEUR', 'filterObjectsStatuses'
             )
         );
     }

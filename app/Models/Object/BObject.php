@@ -346,6 +346,58 @@ class BObject extends Model implements Audit
         })->whereNotIn('code', $realExceptCodes);
     }
 
+    public function scopeClosed($query, $withCodes = null)
+    {
+        $realExceptCodes = [];
+        $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());
+
+        if ($withCodes) {
+            foreach ($exceptObjectsWithCodes as $ecode) {
+                if (in_array($ecode, $withCodes)) {
+                    continue;
+                }
+
+                $realExceptCodes[] = $ecode;
+            }
+        } else {
+            $realExceptCodes = $exceptObjectsWithCodes;
+        }
+
+
+        return $query->where(function($q) use($withCodes) {
+            $q->where('status_id', Status::STATUS_BLOCKED);
+            if ($withCodes) {
+                $q->orWhereIn('code', $withCodes);
+            }
+        })->whereNotIn('code', $realExceptCodes);
+    }
+
+    public function scopeActiveAndClosed($query, $withCodes = null)
+    {
+        $realExceptCodes = [];
+        $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());
+
+        if ($withCodes) {
+            foreach ($exceptObjectsWithCodes as $ecode) {
+                if (in_array($ecode, $withCodes)) {
+                    continue;
+                }
+
+                $realExceptCodes[] = $ecode;
+            }
+        } else {
+            $realExceptCodes = $exceptObjectsWithCodes;
+        }
+
+
+        return $query->where(function($q) use($withCodes) {
+            $q->whereIn('status_id', [Status::STATUS_ACTIVE, Status::STATUS_BLOCKED]);
+            if ($withCodes) {
+                $q->orWhereIn('code', $withCodes);
+            }
+        })->whereNotIn('code', $realExceptCodes);
+    }
+
     public function scopeWithoutGeneral($query)
     {
         $exceptObjectsWithCodes = array_keys(self::getCodesWithoutWorktype());

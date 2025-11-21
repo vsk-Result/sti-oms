@@ -13,16 +13,15 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label class="form-label">Объект</label>
+                                <label class="form-label">Объекты</label>
                                 <select
-                                        name="object_id[]"
+                                        name="objects_status"
                                         class="form-select form-select-solid"
                                         data-control="select2"
                                         data-dropdown-parent="#filterActCategoryModal"
-                                        multiple
                                 >
-                                    @foreach($objects as $obj)
-                                        <option value="{{ $obj->id }}" {{ (in_array($obj->id, request()->input('object_id', [])) || (isset($object) && $obj->id === $object->id)) ? 'selected' : '' }}>{{ $obj->code . ' ' . $obj->name }}</option>
+                                    @foreach($filterObjectsStatuses as $status => $statusName)
+                                        <option value="{{ $status }}" {{ $status === request()->input('objects_status', 'active') ? 'selected' : '' }}>{{ $statusName }}</option>
                                     @endforeach
                                 </select>
                             </div>
