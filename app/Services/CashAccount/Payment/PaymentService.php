@@ -12,6 +12,7 @@ use App\Models\Object\BObject;
 use App\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
@@ -699,5 +700,12 @@ class PaymentService
                 'additional_data' => json_encode($additionalData)
             ]);
         }
+    }
+
+    public function getPaymentsToAutoValid(): Collection
+    {
+        return CashAccountPayment::where('status_id', CashAccountPayment::STATUS_ACTIVE)
+                ->where('type_id', CashAccountPayment::TYPE_OBJECT)
+                ->whereIn('code', ['7.8.1', '7.8.2', '7.9.1', '7.9.2', '7.10'])->get();
     }
 }
