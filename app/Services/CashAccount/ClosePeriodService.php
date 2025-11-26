@@ -112,6 +112,23 @@ class ClosePeriodService
 
     public function updateClosePeriod(ClosePeriod $closePeriod): void
     {
+        if (auth()->id() === 1) {
+            $closedPayments = CashAccountPayment::where('cash_account_id', $closePeriod->cash_account_id)
+                ->whereIn('status_id', [CashAccountPayment::STATUS_CLOSED])
+                ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')
+                ->get();
+
+            $valid = 0;
+            foreach ($closedPayments as $payment) {
+                $data = $payment->getObjectPaymentData();
+
+                if (! is_null($data['object_payment_id'])) {
+                    $valid++;
+                }
+            }
+
+            dd($valid, $closedPayments->count());
+        }
         $validPayments = CashAccountPayment::where('cash_account_id', $closePeriod->cash_account_id)
             ->whereIn('status_id', [CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_VALIDATED])
             ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')
