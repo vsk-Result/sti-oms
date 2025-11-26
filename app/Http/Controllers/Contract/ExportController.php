@@ -21,10 +21,11 @@ class ExportController extends Controller
 
     public function store(Request $request): BinaryFileResponse
     {
+        $splitContracts = $request->has('split_contracts');
         $total = [];
         $object = BObject::where('id', $request->get('object_id'))->first();
         $contracts = $this->contractService->filterContracts($request->toArray(), $total, false);
 
-        return Excel::download(new Export($object, $contracts, $total), 'Справка объекта ' . $object->getName() . ' на ' . now()->format('d.m.Y') . '.xlsx');
+        return Excel::download(new Export($object, $contracts, $total, $splitContracts), 'Справка объекта ' . $object->getName() . ' на ' . now()->format('d.m.Y') . '.xlsx');
     }
 }
