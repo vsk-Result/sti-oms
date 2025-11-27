@@ -23,11 +23,11 @@ class UpdateTranferCosts extends HandledCommand
 
     public function handle()
     {
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $years = [
             2021,
@@ -149,8 +149,6 @@ class UpdateTranferCosts extends HandledCommand
                 }
             }
         }
-
-        dd($transferCacheData);
 
         Cache::put('calc_workers_cost_transfer_data', $transferCacheData);
 

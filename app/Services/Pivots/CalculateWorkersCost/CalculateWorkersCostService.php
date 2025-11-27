@@ -615,12 +615,12 @@ class CalculateWorkersCostService
                             } elseif ($codes[0] === 'transfer') {
                                 if ($month['date_name'] >= '2025-10') {
                                     if ($allPeriodsClosed) {
-                                        $amount = -abs($transferData[$month['date_name']][$object->id]['transfer_amount'] ?? 0);
+                                        $amount = -abs($transferCacheData[$month['date_name']][$object->id]['transfer_amount'] ?? 0);
                                     } else {
                                         $amount = 0;
                                     }
                                 } else {
-                                    $amount = -abs($transferData[$month['date_name']][$object->id]['transfer_amount'] ?? 0);
+                                    $amount = -abs($transferCacheData[$month['date_name']][$object->id]['transfer_amount'] ?? 0);
                                 }
                             } elseif ($codes[0] === 'accrued_taxes') {
                                 $amount = -1 * abs(AccruedTax::whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
