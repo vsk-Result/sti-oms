@@ -66,11 +66,9 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
 
                     foreach ($receivers as $receiver) {
                         $m->to($receiver);
-                        $m->to('result007@yandex.ru');
                     }
                 });
             } catch(Exception $e) {
-                dd($e);
                 $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
             }
         }
@@ -91,7 +89,6 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
                 }
             });
         } catch(Exception $e){
-            dd($e);
             $this->sendErrorMessage('Не удалось отправить общее уведомление на email: "' . $e->getMessage());
         }
 
