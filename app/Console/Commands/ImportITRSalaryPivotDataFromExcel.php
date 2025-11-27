@@ -19,11 +19,11 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
 
     public function handle()
     {
-        if ($this->isProcessRunning()) {
-            return 0;
-        }
-
-        $this->startProcess();
+//        if ($this->isProcessRunning()) {
+//            return 0;
+//        }
+//
+//        $this->startProcess();
 
         try {
 
@@ -75,7 +75,7 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
 
         $this->sendInfoMessage('Файл успешно загружен');
 
-        $this->endProcess();
+//        $this->endProcess();
 
         return 0;
     }
