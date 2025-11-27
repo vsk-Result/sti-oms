@@ -25,15 +25,15 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
 
     public function handle()
     {
-//        if (Carbon::now()->isSaturday() || Carbon::now()->isSunday()) {
-//            return 0;
-//        }
-//
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if (Carbon::now()->isSaturday() || Carbon::now()->isSunday()) {
+            return 0;
+        }
+
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         $alwaysInCopy = ['oksana.dashenko@st-ing.com', 'enes@st-ing.com'];
 
@@ -51,8 +51,6 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
                 $notificationConfig[$object->code] = array_unique($notificationConfig[$object->code]);
             }
         }
-
-        dd($notificationConfig);
 
         $now = Carbon::now()->format('d.m.Y');
 
@@ -72,6 +70,7 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
                     }
                 });
             } catch(Exception $e) {
+                dd($e);
                 $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
             }
         }
@@ -92,6 +91,7 @@ class NotifyToEmailAboutObjectBalance extends HandledCommand
                 }
             });
         } catch(Exception $e){
+            dd($e);
             $this->sendErrorMessage('Не удалось отправить общее уведомление на email: "' . $e->getMessage());
         }
 
