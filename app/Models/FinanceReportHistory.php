@@ -37,4 +37,10 @@ class FinanceReportHistory extends Model
 
         return $info;
     }
+
+    public static function getCurrentFinanceReport()
+    {
+        $lastDate = self::select('date')->latest('date')->first()->date ?? now()->format('Y-m-d');
+        return self::where('date', $lastDate)->first();
+    }
 }
