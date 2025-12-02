@@ -900,6 +900,7 @@ class MakeFinanceReportHistory extends HandledCommand
         } catch (\Exception $e) {
             $this->sendErrorMessage('Ошибка в расчете: ' . $e->getMessage());
             $this->endProcess();
+            dd($e);
             return 0;
         }
 
