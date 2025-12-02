@@ -176,7 +176,7 @@ class WorkerSalaryController extends Controller
         $info['total']['credits_total'] = 0;
         $info['total']['loans_total'] = 0;
 
-        $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
+        $financeReportHistory = FinanceReportHistory::getCurrentFinanceReport();
 
         if (!$financeReportHistory) {
             return response()->json(compact('info'));

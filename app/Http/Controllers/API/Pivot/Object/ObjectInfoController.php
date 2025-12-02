@@ -28,7 +28,7 @@ class ObjectInfoController extends Controller
             return response()->json(['error' => 'Отсутствует access_objects'], 403);
         }
 
-        $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
+        $financeReportHistory = FinanceReportHistory::getCurrentFinanceReport();
 
         $creditsInfo = json_decode($financeReportHistory->credits);
         $loansInfo = json_decode($financeReportHistory->loans);

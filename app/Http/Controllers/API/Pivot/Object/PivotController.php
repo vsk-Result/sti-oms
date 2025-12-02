@@ -34,7 +34,7 @@ class PivotController extends Controller
             return response()->json([], 404);
         }
 
-        $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
+        $financeReportHistory = FinanceReportHistory::getCurrentFinanceReport();
 
         $objectsInfo = json_decode($financeReportHistory->objects_new);
         $years = collect($objectsInfo->years)->toArray();

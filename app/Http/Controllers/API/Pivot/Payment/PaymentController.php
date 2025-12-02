@@ -49,7 +49,7 @@ class PaymentController extends Controller
             'objects' => [],
             'total' => [],
         ];
-        $financeReportHistory = FinanceReportHistory::where('date', now()->format('Y-m-d'))->first();
+        $financeReportHistory = FinanceReportHistory::getCurrentFinanceReport();
 
         if (!$financeReportHistory) {
             return response()->json(compact('response'));
