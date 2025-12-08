@@ -18,6 +18,12 @@ class NotificationService
             $notifyData[$cashAccount->id][$sharedUser->id] = 'unread';
         }
 
+        foreach (User::all() as $user) {
+            if ($user->can('index cash-accounts-all-view')) {
+                $notifyData[$cashAccount->id][$user->id] = 'unread';
+            }
+        }
+
         Cache::put(self::CACHE_KEY, $notifyData);
     }
 
