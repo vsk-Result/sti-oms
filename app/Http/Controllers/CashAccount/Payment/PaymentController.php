@@ -14,6 +14,7 @@ use App\Models\Object\WorkType;
 use App\Models\Organization;
 use App\Services\CashAccount\CashAccountService;
 use App\Services\CashAccount\ClosePeriodService;
+use App\Services\CashAccount\NotificationService;
 use App\Services\CashAccount\Payment\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -26,7 +27,8 @@ class PaymentController extends Controller
     public function __construct(
         private CashAccountService $cashAccountService,
         private PaymentService $paymentService,
-        private ClosePeriodService $closePeriodService
+        private ClosePeriodService $closePeriodService,
+        private NotificationService $notificationService,
     ) {}
 
     public function index(CashAccount $cashAccount, Request $request): View
@@ -101,6 +103,7 @@ class PaymentController extends Controller
         $requestData = array_merge(['cash_account_id' => $cashAccount->id], $request->toArray());
         $this->paymentService->createPayment($requestData);
         $this->cashAccountService->updateBalance($cashAccount);
+        $this->notificationService->notify($cashAccount);
 
         return redirect()->back();
     }

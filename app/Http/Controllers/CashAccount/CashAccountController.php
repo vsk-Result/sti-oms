@@ -7,13 +7,17 @@ use App\Models\CashAccount\CashAccount;
 use App\Models\Object\BObject;
 use App\Models\User;
 use App\Services\CashAccount\CashAccountService;
+use App\Services\CashAccount\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CashAccountController extends Controller
 {
-    public function __construct(private CashAccountService $cashAccountService) {}
+    public function __construct(
+        private CashAccountService $cashAccountService,
+        private NotificationService $notificationService
+    ) {}
 
     public function index(): View
     {
@@ -44,6 +48,7 @@ class CashAccountController extends Controller
 
     public function show(CashAccount $cashAccount): RedirectResponse
     {
+        $this->notificationService->markAsRead($cashAccount, auth()->user());
         return redirect()->route('cash_accounts.payments.index', $cashAccount);
     }
 

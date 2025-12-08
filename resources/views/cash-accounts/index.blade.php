@@ -1,3 +1,5 @@
+@inject('cashAccountNotificationService', 'App\Services\CashAccount\NotificationService')
+
 @extends('layouts.app')
 
 @section('title', 'Кассы')
@@ -41,7 +43,13 @@
 
                             <div class="d-flex flex-stack flex-grow-1 card-p">
                                 <div class="d-flex flex-column me-2">
-                                    <div class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</div>
+                                    <div class="text-gray-900 text-hover-primary fw-bold fs-3">
+                                        {{ $cashAccount->name }}
+
+                                        @if($cashAccountNotificationService->hasUnreadNotifications(auth()->user(), $cashAccount))
+                                            <i class="ms-3 fa fa-info-circle text-danger"></i>
+                                        @endif
+                                    </div>
 
                                     <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
 
@@ -82,7 +90,13 @@
                             <div class="card-body d-flex flex-column p-0">
                                 <div class="d-flex flex-stack flex-grow-1 card-p">
                                     <div class="d-flex flex-column me-2">
-                                        <div class="text-gray-900 text-hover-primary fw-bold fs-3">{{ $cashAccount->name }}</div>
+                                        <div class="text-gray-900 text-hover-primary fw-bold fs-3">
+                                            {{ $cashAccount->name }}
+
+                                            @if($cashAccountNotificationService->hasUnreadNotifications(auth()->user(), $cashAccount))
+                                                <i class="ms-3 fa fa-info-circle text-danger"></i>
+                                            @endif
+                                        </div>
 
                                         <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
 
