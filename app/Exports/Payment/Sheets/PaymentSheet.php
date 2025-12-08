@@ -93,7 +93,8 @@ class PaymentSheet implements
         $sheet->getStyle('D2:D' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
         $sheet->getStyle('G2:G' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
         $sheet->getStyle('H2:H' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
+        $sheet->getStyle('K2:K' . $row)->getAlignment()->setWrapText(true);
+        $sheet->getStyle('A2:O' . $row)->getAlignment()->setVertical('center');
 
         $sheet->getStyle('A1:O1')->getFont()->setBold(true);
 
@@ -106,6 +107,7 @@ class PaymentSheet implements
             'F' => 50,
             'I' => 50,
             'J' => 50,
+            'K' => 100,
         ];
     }
 }
