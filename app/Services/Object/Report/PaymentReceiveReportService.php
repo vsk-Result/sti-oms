@@ -81,6 +81,8 @@ class PaymentReceiveReportService
 
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
         $paymentPeriodData = Cache::get('p_and_l_payments_period_1c_data', []);
+        $transferCacheData = Cache::get('calc_workers_cost_transfer_data', []);
+
         $object27_1 = BObject::where('code', '27.1')->first();
         $financeReportHistory = FinanceReportHistory::getCurrentFinanceReportForObject($object);
 
@@ -116,10 +118,8 @@ class PaymentReceiveReportService
             }
 
             $paymentQuery = Payment::query()->whereBetween('date', $period)->whereIn('company_id', [1, 5]);
-            $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5', '7.11', '7.11.1', '7.11.2'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount')
+            $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.1', '7.2', '7.5', '7.11'])->where('type_id', Payment::TYPE_GENERAL)->sum('amount')
                 + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount');
-
-            $transferData = ObjectService::getDistributionTransferServiceByPeriod($period);
 
             $contractorsMaterial = 0;
             $contractorsRad = 0;
@@ -148,14 +148,16 @@ class PaymentReceiveReportService
                 }
             }
 
-            $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
-                ->where('is_main', true)
-                ->where('code', $object->code)
-                ->sum('amount'));
+//            $salaryWorkers = -abs((float) WorkhourPivot::where('date', $year . '-' . $month)
+//                ->where('is_main', true)
+//                ->where('code', $object->code)
+//                ->sum('amount'));
+
+            $salaryWorkers = 0;
 
             $salaryItr = -abs($itrAmount);
             $salaryTaxes = -abs(0);
-            $transfer = -abs($transferData[$object->id]['transfer_amount'] ?? 0);
+            $transfer = -abs($transferCacheData[$year . '-' . $month][$object->id]['transfer_amount'] ?? 0);
             $generalCosts = -abs($generalAmount * ($financeReportHistory['general_balance_to_receive_percentage'] ?? 0) / 100);
             $accruedTaxes = -abs(AccruedTax::whereBetween('date', $period)->sum('amount') * ($receivePercents[$year . '-' . $month][$object->id] ?? 0));
 
