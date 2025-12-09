@@ -51,7 +51,7 @@ class PivotSheet implements
             }
         }
 
-        $columns = ['D', 'E', 'F', 'G'];
+        $columns = ['D', 'E', 'F', 'G', 'H', 'I'];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
