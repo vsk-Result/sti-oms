@@ -103,6 +103,38 @@
             </div>
         </div>
 
+        @php
+            $uploadDebtStatusService = new App\Services\UploadDebtStatusService();
+            $lastUploadDebt = $uploadDebtStatusService->getLastUpdatedDate('public/objects-debts/', 'Raboty(XLSX).xlsx');
+            $lastUploadDebtObject = $uploadDebtStatusService->getLastUpdatedDate('public/objects-debts/', $object->code . '.xlsx');
+
+            $hasUploadDebtProblem = false;
+
+            if ($lastUploadDebt !== '-') {
+                $diffInDays = Carbon\Carbon::parse($lastUploadDebt)->diffInDays(now());
+
+                if ($diffInDays > 2) {
+                    $hasUploadDebtProblem = true;
+                }
+            }
+
+            if ($lastUploadDebtObject !== '-') {
+                $diffInDays = Carbon\Carbon::parse($lastUploadDebtObject)->diffInDays(now());
+
+                if ($diffInDays > 2) {
+                    $hasUploadDebtProblem = true;
+                }
+            }
+        @endphp
+
+        @if ($hasUploadDebtProblem)
+            <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-4">
+                <div class="d-flex flex-column pe-0 pe-sm-10">
+                    <p class="mb-0">Информация о долгах может быть не актуальной, проверьте дату последней загрузки</p>
+                </div>
+            </div>
+        @endif
+
         <div class="d-flex flex-wrap justify-content-start">
             @php
                 $workSalaryDebtDetails = $object->getWorkSalaryDebtDetails();
