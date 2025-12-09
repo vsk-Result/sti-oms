@@ -9,3 +9,9 @@ Breadcrumbs::for('reports.index', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Отчеты', $route);
 });
+
+Breadcrumbs::for('reports.all_reports.index', function (BreadcrumbTrail $trail) {
+    $route = null;
+    $trail->parent('home');
+    $trail->push('Свот отчетов', $route);
+});

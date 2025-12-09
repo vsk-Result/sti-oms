@@ -60,7 +60,7 @@
                     </div>
                 @endcan
 
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('finance-report*') || request()->is('pivots**')) ? 'hover show' : '' }}">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (request()->is('finance-report*') || request()->is('pivots**') || request()->is('reports**')) ? 'hover show' : '' }}">
                     <span class="menu-link py-2">
                         <span class="menu-title {{ (request()->is('finance-report*') || request()->is('pivots**')) ? 'fw-boldest' : '' }}">
                             Отчеты
@@ -71,6 +71,17 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion" kt-hidden-height="65">
+                        @can('index all-reports')
+                            <div class="menu-item">
+                                <a href="{{ route('reports.all_reports.index') }}" class="menu-link py-2 {{ request()->is('reports/all-reports') ? 'active' : '' }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Свод отчетов</span>
+                                </a>
+                            </div>
+                        @endcan
+
                         @can('index finance-report')
                             <div class="menu-item">
                                 <a href="{{ route('finance_report.index') }}" class="menu-link py-2 {{ request()->is('finance-report*') ? 'active' : '' }}">
