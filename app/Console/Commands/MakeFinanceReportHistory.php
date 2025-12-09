@@ -363,13 +363,13 @@ class MakeFinanceReportHistory extends HandledCommand
                         $actsTotalAmount += $customerDebtInfo['acts_amount']['EUR'] * $EURExchangeRate->rate;
                     }
 
-                    if ($object->code === '361') {
+//                    if ($object->code === '361') {
                         $avansesFixReceived = $object->payments()->where('amount', '>', 0)->where('code', '10.2')->sum('amount');
                         $avansesFixReceivedWithoutNDS = $object->payments()->where('amount', '>', 0)->where('code', '10.2')->sum('amount_without_nds');
 
                         $avansesFloatReceived = $object->payments()->where('amount', '>', 0)->where('code', '10.1')->sum('amount');
                         $avansesFloatReceivedWithoutNDS = $object->payments()->where('amount', '>', 0)->where('code', '10.1')->sum('amount_without_nds');
-                    }
+//                    }
 
                     $receiveFromCustomers = $object->payments()
                         ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
