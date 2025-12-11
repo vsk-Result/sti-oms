@@ -24,6 +24,11 @@ class PaymentService
     {
         $paymentQuery = CashAccountPayment::query();
 
+        if (isset($requestData['all'])) {
+            return $paymentQuery->whereIn('cash_account_id', $requestData['cash_account_id'])->orderByDesc('date')
+                ->orderByDesc('id');
+        }
+
         if (! empty($requestData['period'])) {
             $period = explode(' - ', $requestData['period']);
             $paymentQuery->whereBetween('date', [Carbon::parse($period[0]), Carbon::parse($period[1])]);
