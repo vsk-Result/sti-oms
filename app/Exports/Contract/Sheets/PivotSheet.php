@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PivotSheet implements
@@ -45,7 +46,7 @@ class PivotSheet implements
         $sheet->mergeCells('A1:M1');
 
         $sheet->getStyle('A1:M1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:M1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('A1:M3')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getRowDimension(1)->setRowHeight(45);
 
         $row = 3;
@@ -66,17 +67,17 @@ class PivotSheet implements
 
         $sheet->getColumnDimension('A')->setWidth(60);
         $sheet->getColumnDimension('B')->setWidth(10);
-        $sheet->getColumnDimension('C')->setWidth(25);
-        $sheet->getColumnDimension('D')->setWidth(25);
-        $sheet->getColumnDimension('E')->setWidth(25);
-        $sheet->getColumnDimension('F')->setWidth(25);
-        $sheet->getColumnDimension('G')->setWidth(25);
-        $sheet->getColumnDimension('H')->setWidth(25);
-        $sheet->getColumnDimension('I')->setWidth(25);
-        $sheet->getColumnDimension('J')->setWidth(25);
-        $sheet->getColumnDimension('K')->setWidth(25);
-        $sheet->getColumnDimension('L')->setWidth(25);
-        $sheet->getColumnDimension('M')->setWidth(25);
+        $sheet->getColumnDimension('C')->setWidth(18);
+        $sheet->getColumnDimension('D')->setWidth(18);
+        $sheet->getColumnDimension('E')->setWidth(18);
+        $sheet->getColumnDimension('F')->setWidth(18);
+        $sheet->getColumnDimension('G')->setWidth(18);
+        $sheet->getColumnDimension('H')->setWidth(18);
+        $sheet->getColumnDimension('I')->setWidth(18);
+        $sheet->getColumnDimension('J')->setWidth(18);
+        $sheet->getColumnDimension('K')->setWidth(18);
+        $sheet->getColumnDimension('L')->setWidth(18);
+        $sheet->getColumnDimension('M')->setWidth(18);
 
         $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setBold(true);
 
@@ -193,10 +194,16 @@ class PivotSheet implements
         $sheet->getStyle('A1:M1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('B2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('C2:M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
-        $sheet->getStyle('C2:M' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('C4:M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('C4:M' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
         $sheet->getRowDimension($row)->setRowHeight(20);
+
+        $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, 13, $row);
+        $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+        $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(0);
     }
 
     public function formatAmount($amount)
