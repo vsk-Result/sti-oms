@@ -2,7 +2,7 @@
     $total = $payment->entries->where('date', '<=', last($periods)['end'])->sum('amount');
 @endphp
 
-<tr class="collapse-row plan-payment {{ !is_valid_amount_in_range($total) && (auth()->id() !== 12 && auth()->id() !== 31) ? 'd-none' : '' }}" data-trigger="{{ $gr }}" data-group="{{ $gr }}">
+<tr class="collapse-row plan-payment {{ !is_valid_amount_in_range($total) && (auth()->id() !== 30 && auth()->id() !== 12 && auth()->id() !== 31) ? 'd-none' : '' }}" data-trigger="{{ $gr }}" data-group="{{ $gr }}">
     <td class="ps-8">
         <span class="{{ auth()->user()->can('index cash-flow-plan-payments') && !$payment->from_tax_plan ? 'cursor-pointer plan-payment-name' : '' }}">{{ $payment->name }}</span>
         @if (!$payment->from_tax_plan)
