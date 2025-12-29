@@ -302,7 +302,14 @@ class BObject extends Model implements Audit
                 $detail['amount'] = $predictAmount + abs((clone $salaryQuery)->sum('card'));
             }
 
+            $limit = 50000;
+            if ((float) $detail['amount'] < $limit && (float) $detail['amount'] > -$limit ) {
+                $lastNotPaidMonth = Carbon::parse($lastNotPaidMonth . '-01')->addMonthNoOverflow()->format('Y-m');
+                continue;
+            }
+
             $details[] = $detail;
+
             $lastNotPaidMonth = Carbon::parse($lastNotPaidMonth . '-01')->addMonthNoOverflow()->format('Y-m');
         }
 
