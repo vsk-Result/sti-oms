@@ -26,7 +26,7 @@ class Act extends Model implements Audit, HasMedia
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
         'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id',
         'currency', 'currency_rate', 'number', 'planned_payment_date', 'manual_left_paid_amount',
-        'rad_amount', 'opste_amount', 'other_deduction_amount', 'amount_avans_float'
+        'rad_amount', 'opste_amount', 'other_deduction_amount', 'amount_avans_float', 'period'
     ];
 
     public function contract(): BelongsTo
@@ -105,5 +105,27 @@ class Act extends Model implements Audit, HasMedia
         }
 
         return $this->getNeedPaidAmount() - $this->getPaidAmount();
+    }
+
+    public function getPeriod(): array
+    {
+        $parsedPeriod = ['', ''];
+
+        if (! is_null($this->period)) {
+            $parsedPeriod = explode('::', $this->period);
+        }
+
+        return $parsedPeriod;
+    }
+
+    public function getPeriodFormatted(): string
+    {
+        $parsedPeriod = $this->getPeriod();
+
+        if ($parsedPeriod[0] === $parsedPeriod[1]) {
+            return $parsedPeriod[0];
+        }
+
+        return str_replace('::', ' - ', $this->period);
     }
 }

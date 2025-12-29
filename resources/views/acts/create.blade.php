@@ -20,7 +20,7 @@
                         <input type="hidden" name="return_url" value="{{ url()->previous() }}">
 
                         <div class="row mb-5">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="mb-1">
                                     <label class="form-label fw-bolder text-dark fs-6">Номер</label>
                                     <div class="position-relative mb-3">
@@ -36,6 +36,40 @@
                                             <div>{{ implode(' ', $errors->get('number')) }}</div>
                                         </div>
                                     @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-1">
+                                    <label class="form-label fw-bolder text-dark fs-6">Отчетный период</label>
+                                    <div class="position-relative mb-3">
+                                        <div class="row">
+                                            @php
+                                                $months = [];
+                                                foreach (['2025', '2024', '2023', '2022', '2021'] as $year) {
+                                                    foreach (['Декабрь', 'Ноябрь', 'Октябрь', 'Сентябрь', 'Август', 'Июль', 'Июнь', 'Май', 'Апрель', 'Март', 'Февраль', 'Январь'] as $m) {
+                                                        $months[] = $m . ' ' . $year;
+                                                    }
+                                                }
+                                            @endphp
+                                            <div class="col-md-6">
+                                                <select name="period_start" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($months as $month)
+                                                        <option value="{{ $month }}">{{ $month }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <p class="text-muted">Начало периода</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <select name="period_end" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($months as $month)
+                                                        <option value="{{ $month }}">{{ $month }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <p class="text-muted">Конец периода</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

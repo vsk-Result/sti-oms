@@ -74,6 +74,7 @@
                         <th data-sort-by="contract_id" class="min-w-150px sortable-row">Договор</th>
                         <th data-sort-by="number" class="min-w-75px sortable-row">Номер акта</th>
                         <th class="min-w-25px"></th>
+                        <th data-sort-by="period" class="min-w-150px sortable-row">Отчетный период</th>
                         <th data-sort-by="date" class="min-w-150px sortable-row">Дата акта</th>
                         <th data-sort-by="amount" class="min-w-150px sortable-row">Выполнено</th>
                         <th data-sort-by="amount_avans" class="min-w-175px sortable-row">Аванс удержан</th>
@@ -85,7 +86,7 @@
                         <th class="min-w-150px">Действие</th>
                     </tr>
                     <tr class="fw-bolder" style="background-color: #f7f7f7;">
-                        <th colspan="6" class="ps-4" style="vertical-align: middle;">Итого</th>
+                        <th colspan="7" class="ps-4" style="vertical-align: middle;">Итого</th>
                         <th>
                             {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
                             <br>
@@ -123,7 +124,7 @@
                 <tbody class="text-gray-600 fw-bold">
                     <tr class="fw-bolder" style="background-color: #fbfbfb; color: #737373;">
                         <td class="ps-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="fix-acts">+</td>
-                        <td colspan="5" class="ps-4" style="vertical-align: middle;">Итого (неизменяемая часть)</td>
+                        <td colspan="6" class="ps-4" style="vertical-align: middle;">Итого (неизменяемая часть)</td>
                         <td>
                             {{ \App\Models\CurrencyExchangeRate::format($total['amount_fix']['RUB'], 'RUB') }}
                         </td>
@@ -167,6 +168,9 @@
                                 @if ($act->hasMedia())
                                     <a target="_blank" href="{{ $act->getFirstMediaUrl() }}" download="Акт {{ $act->number }} от {{ $act->getDateFormatted() }}" class="menu-link px-3"><i class="fa fa-download"></i></a>
                                 @endif
+                            </td>
+                            <td>
+                                {{ $act->getPeriodFormatted() }}
                             </td>
                             <td>
                                 @if(auth()->user()->can('edit acts'))
@@ -215,7 +219,7 @@
                         </tr>
                     @empty
                         <tr class="collapse-row" data-trigger="fix-acts" style="display: none;">
-                            <td colspan="14">
+                            <td colspan="15">
                                 <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                     Акты отсутствуют
                                 </p>
@@ -226,7 +230,7 @@
                     <tr class="fw-bolder" style="background-color: #fbfbfb; color: #737373;">
                         <td class="ps-2 fs-2 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="float-acts">+</td>
 
-                        <td colspan="5" class="ps-4" style="vertical-align: middle;">Итого (изменяемая часть)</td>
+                        <td colspan="6" class="ps-4" style="vertical-align: middle;">Итого (изменяемая часть)</td>
                         <td>
                             {{ \App\Models\CurrencyExchangeRate::format($total['amount_float']['RUB'], 'RUB') }}
                         </td>
@@ -272,6 +276,7 @@
                                     <a target="_blank" href="{{ $act->getFirstMediaUrl() }}" download="Акт {{ $act->number }} от {{ $act->getDateFormatted() }}" class="menu-link px-3"><i class="fa fa-download"></i></a>
                                 @endif
                             </td>
+                            <td>{{ $act->getPeriodFormatted() }}</td>
                             <td>
                                 @if(auth()->user()->can('edit acts'))
                                     <a href="{{ route('acts.edit', $act) }}" class="show-link">{{ $act->getDateFormatted() }}</a>
@@ -319,7 +324,7 @@
                         </tr>
                     @empty
                         <tr class="collapse-row" data-trigger="float-acts" style="display: none;">
-                            <td colspan="14">
+                            <td colspan="15">
                                 <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                     Акты отсутствуют
                                 </p>
