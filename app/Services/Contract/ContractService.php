@@ -71,14 +71,14 @@ class ContractService
                 $total['amount'][$currency] += $contract->getAmount($currency);
                 $total['avanses_amount'][$currency] += $contract->getAvansesAmount($currency);
 
-                $total['avanses_received_amount_float'][$currency] += $contract->getAvansesReceivedAmount($currency, 'float');
-                $total['avanses_received_amount_fix'][$currency] += $contract->getAvansesReceivedAmount($currency, 'fix');
+                $total['avanses_received_amount_float'][$currency] += $contract->getAvansesReceivedFloatAmount($currency);
+                $total['avanses_received_amount_fix'][$currency] += $contract->getAvansesReceivedFixAmount($currency);
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
 
                 $avansesLeftAmount = $contract->getAvansesLeftAmount($currency);
                 $total['avanses_left_amount'][$currency] += $avansesLeftAmount;
-                $total['avanses_left_amount_float'][$currency] += $contract->getAvansesLeftAmount($currency, 'float');
-                $total['avanses_left_amount_fix'][$currency] += $contract->getAvansesLeftAmount($currency, 'fix');
+                $total['avanses_left_amount_float'][$currency] += $contract->getAvansesLeftFloatAmount($currency);
+                $total['avanses_left_amount_fix'][$currency] += $contract->getAvansesLeftFixAmount($currency);
 
                 $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount($currency);
@@ -87,28 +87,24 @@ class ContractService
                 $total['avanses_acts_avanses_amount'][$currency] += $contract->getActsAvasesAmount($currency);
                 $total['avanses_notwork_left_amount'][$currency] += $contract->getNotworkLeftAmount($currency);
 
-                $total['avanses_notwork_left_amount_float'][$currency] += $contract->getNotworkLeftAmount($currency, 'float');
-                $total['avanses_notwork_left_amount_fix'][$currency] += $contract->getNotworkLeftAmount($currency, 'fix');
+                $total['avanses_notwork_left_amount_float'][$currency] += $contract->getNotworkLeftFloatAmount($currency);
+                $total['avanses_notwork_left_amount_fix'][$currency] += $contract->getNotworkLeftFixAmount($currency);
             }
 
             foreach ((clone $contractQuery)->where('object_id', 16)->get() as $contract) {
                 $total['amount'][$currency] += $contract->getAmount($currency);
                 $total['avanses_amount'][$currency] += $contract->getAvansesAmount($currency);
 
-                if ($contract->isFloat()) {
-                    $total['avanses_received_amount_float'][$currency] += $contract->getAvansesReceivedAmount($currency);
-                } else {
-                    $total['avanses_received_amount_fix'][$currency] += $contract->getAvansesReceivedAmount($currency);
-                }
+                $total['avanses_received_amount_float'][$currency] += $contract->getAvansesReceivedFloatAmount($currency);
+                $total['avanses_received_amount_fix'][$currency] += $contract->getAvansesReceivedFixAmount($currency);
 
                 $total['avanses_received_amount'][$currency] += $contract->getAvansesReceivedAmount($currency);
                 $avansesLeftAmount =  $contract->getAvansesLeftAmount($currency);
                 $total['avanses_left_amount'][$currency] += $avansesLeftAmount;
-                if ($contract->isFloat()) {
-                    $total['avanses_left_amount_float'][$currency] += $avansesLeftAmount;
-                } else {
-                    $total['avanses_left_amount_fix'][$currency] += $avansesLeftAmount;
-                }
+
+                $total['avanses_left_amount_float'][$currency] += $contract->getAvansesLeftFloatAmount($currency);
+                $total['avanses_left_amount_fix'][$currency] += $contract->getAvansesLeftFixAmount($currency);
+
                 $total['acts_amount'][$currency] += $contract->getActsAmount($currency);
                 $total['avanses_acts_paid_amount'][$currency] += $contract->getActsPaidAmount($currency);
                 $total['avanses_acts_left_paid_amount'][$currency] += $contract->getActsLeftPaidAmount($currency);
@@ -116,11 +112,8 @@ class ContractService
                 $total['avanses_acts_avanses_amount'][$currency] += $contract->getActsAvasesAmount($currency);
                 $total['avanses_notwork_left_amount'][$currency] += $contract->getNotworkLeftAmount($currency);
 
-                if ($contract->isFloat()) {
-                    $total['avanses_notwork_left_amount_float'][$currency] += $contract->getNotworkLeftAmount($currency);
-                } else {
-                    $total['avanses_notwork_left_amount_fix'][$currency] += $contract->getNotworkLeftAmount($currency);
-                }
+                $total['avanses_notwork_left_amount_float'][$currency] += $contract->getNotworkLeftFloatAmount($currency);
+                $total['avanses_notwork_left_amount_fix'][$currency] += $contract->getNotworkLeftFixAmount($currency);
             }
 
             $total['avanses_non_closes_amount'][$currency] = $total['amount'][$currency] - $total['avanses_received_amount'][$currency] - $total['avanses_acts_paid_amount'][$currency] - $total['avanses_acts_left_paid_amount'][$currency];
@@ -144,8 +137,9 @@ class ContractService
             'parent_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? $requestData['parent_id'] : null,
             'type_id' => $requestData['type_id'],
             'amount_type_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? $requestData['amount_type_id'] : null,
-            'company_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? Contract::find($requestData['parent_id'])->company_id : $requestData['company_id'],
+            'company_id' => 1,
             'object_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? Contract::find($requestData['parent_id'])->object_id : $requestData['object_id'],
+            'organization_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? Contract::find($requestData['parent_id'])->organization_id : $requestData['organization_id'],
             'name' => $this->sanitizer->set($requestData['name'])->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'start_date' => $requestData['start_date'],
@@ -170,9 +164,11 @@ class ContractService
             foreach ($requestData['avanses'] as $index => $avansAmount) {
                 if ((float) $avansAmount > 0) {
                     $avansPlannedPaymentDate = $requestData['avanses_planned_payment_date'][$index];
+                    $avansType = $requestData['avanses_type_id'][$index];
                     ContractAvans::create([
                         'contract_id' => $contract->id,
-                        'company_id' => $requestData['company_id'],
+                        'company_id' => 1,
+                        'type_id' => $avansType,
                         'object_id' => $requestData['object_id'],
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                         'planned_payment_date' => $avansPlannedPaymentDate,
@@ -188,10 +184,12 @@ class ContractService
             foreach ($requestData['received_avanses_date'] as $index => $avansDate) {
                 $avansAmount = $this->sanitizer->set($requestData['received_avanses_amount'][$index])->toAmount()->get();
                 $description = $requestData['received_avanses_description'][$index];
+                $avansType = $requestData['received_avanses_type_id'][$index];
                 if ($avansAmount > 0) {
                     ContractReceivedAvans::create([
                         'contract_id' => $contract->id,
-                        'company_id' => $requestData['company_id'],
+                        'type_id' => $avansType,
+                        'company_id' => 1,
                         'object_id' => $requestData['object_id'],
                         'date' => $avansDate,
                         'amount' => $avansAmount,
@@ -215,8 +213,9 @@ class ContractService
             'parent_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? $requestData['parent_id'] : null,
             'type_id' => $requestData['type_id'],
             'amount_type_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? $requestData['amount_type_id'] : null,
-            'company_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? Contract::find($requestData['parent_id'])->company_id : $requestData['company_id'],
+            'company_id' => 1,
             'object_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? Contract::find($requestData['parent_id'])->object_id : $requestData['object_id'],
+            'organization_id' => (int) $requestData['type_id'] !== Contract::TYPE_MAIN ? Contract::find($requestData['parent_id'])->organization_id : $requestData['organization_id'],
             'name' => $this->sanitizer->set($requestData['name'])->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
             'start_date' => $requestData['start_date'],
@@ -243,7 +242,9 @@ class ContractService
             foreach ($requestData['isset_avanses'] as $avansId => $avansAmount) {
                 $avans = ContractAvans::find($avansId);
                 $avansPlannedPaymentDate = $requestData['isset_avanses_planned_payment_date'][$avansId];
+                $avansTypeId = $requestData['isset_avanses_type_id'][$avansId];
                 $avans->update([
+                    'type_id' => $avansTypeId,
                     'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                     'planned_payment_date' => $avansPlannedPaymentDate,
                     'currency' => $contract->currency,
@@ -261,9 +262,11 @@ class ContractService
             foreach ($requestData['avanses'] as $index => $avansAmount) {
                 if ((float) $avansAmount > 0) {
                     $avansPlannedPaymentDate = $requestData['avanses_planned_payment_date'][$index];
+                    $avansTypeId = $requestData['avanses_type_id'][$avansId];
                     ContractAvans::create([
                         'contract_id' => $contract->id,
-                        'company_id' => $requestData['company_id'],
+                        'type_id' => $avansTypeId,
+                        'company_id' => 1,
                         'object_id' => $requestData['object_id'],
                         'amount' => $this->sanitizer->set($avansAmount)->toAmount()->get(),
                         'planned_payment_date' => $avansPlannedPaymentDate,
@@ -282,8 +285,10 @@ class ContractService
                 $avans = ContractReceivedAvans::find($avansId);
                 $avansAmount = $this->sanitizer->set($requestData['isset_received_avanses_amount'][$avansId])->toAmount()->get();
                 $description = $requestData['isset_received_avanses_description'][$avansId];
+                $avansTypeId = $requestData['isset_received_avanses_type_id'][$avansId];
 
                 $avans->update([
+                    'type_id' => $avansTypeId,
                     'date' => $avansDate,
                     'amount' => $avansAmount,
                     'currency' => $contract->currency,
@@ -305,10 +310,13 @@ class ContractService
             foreach ($requestData['received_avanses_date'] as $index => $avansDate) {
                 $avansAmount = $this->sanitizer->set($requestData['received_avanses_amount'][$index])->toAmount()->get();
                 $description = $requestData['received_avanses_description'][$index];
+                $avansTypeId = $requestData['received_avanses_type_id'][$index];
+
                 if ($avansAmount > 0) {
                     ContractReceivedAvans::create([
                         'contract_id' => $contract->id,
-                        'company_id' => $requestData['company_id'],
+                        'type_id' => $avansTypeId,
+                        'company_id' => 1,
                         'object_id' => $requestData['object_id'],
                         'date' => $avansDate,
                         'description' => $this->sanitizer->set($description)->get(),

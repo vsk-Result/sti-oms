@@ -91,7 +91,7 @@ class BankGuarantee extends Model implements Audit, HasMedia
     public function getAvansesLeftAmount(): string
     {
         $avansesReceived = $this->contract?->avansesReceived->sum('amount');
-        $avansesWithheld = $this->contract?->acts->sum('amount_avans');
+        $avansesWithheld = $this->contract?->acts->sum('amount_avans') + $this->contract?->acts->sum('amount_avans_float');
 
         return $avansesReceived - $avansesWithheld;
     }

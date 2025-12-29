@@ -27,7 +27,7 @@ class Contract extends Model implements HasMedia, Audit
     protected $fillable = [
         'parent_id', 'type_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id',
         'name', 'start_date', 'end_date', 'amount', 'amount_type_id', 'description', 'stage_id', 'status_id',
-        'currency', 'currency_rate', 'params', 'rad_amount', 'opste_amount'
+        'currency', 'currency_rate', 'params', 'rad_amount', 'opste_amount', 'organization_id'
     ];
 
     const TYPE_MAIN = 0;
@@ -265,51 +265,93 @@ class Contract extends Model implements HasMedia, Audit
         return $amount;
     }
 
-    public function getAvansesReceivedAmount(string $currency = null, string $avansType = null): string|array
+    public function getAvansesFixAmount(string $currency = null): string|array
     {
-        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avansesReceived->sum('amount') : 0;
-
-        if ($avansType === 'float' && !$this->isFloat()) {
-            $amount = 0;
-        }
-
-        if ($avansType === 'fix' && $this->isFloat()) {
-            $amount = 0;
-        }
-
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avanses->where('type_id', ContractAvans::TYPE_FIX)->sum('amount') : 0;
         if ($this->isMain()) {
-            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[9])) {
-                return json_decode($this->params)[9] ?? 0;
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(8, json_decode($this->params) ?? [])) {
+                return 0;
             }
 
             foreach ($this->children->where('currency', $currency) as $subContract) {
-                $subAmount = $subContract->avansesReceived->sum('amount');
-
-                if ($avansType === 'float') {
-                    $amount += $subContract->isFloat() ? $subAmount : 0;
-                } elseif ($avansType === 'fix') {
-                    $amount += $subContract->isFloat() ? 0 : $subAmount;
-                } else {
-                    $amount += $subAmount;
-                }
+                $amount += $subContract->avanses->where('type_id', ContractAvans::TYPE_FIX)->sum('amount');
             }
         }
 
         return $amount;
     }
 
-    public function getAvansesLeftAmount(string $currency = null, string $avansType = null): string|array
+    public function getAvansesFloatAmount(string $currency = null): string|array
+    {
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avanses->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount') : 0;
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(8, json_decode($this->params) ?? [])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->avanses->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount');
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getAvansesReceivedAmount(string $currency = null): string|array
+    {
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avansesReceived->sum('amount') : 0;
+
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[9])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->avansesReceived->sum('amount');
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getAvansesReceivedFixAmount(string $currency = null): string|array
+    {
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avansesReceived->where('type_id', ContractAvans::TYPE_FIX)->sum('amount') : 0;
+
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[9])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->avansesReceived->where('type_id', ContractAvans::TYPE_FIX)->sum('amount');
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getAvansesReceivedFloatAmount(string $currency = null): string|array
+    {
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $this->avansesReceived->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount') : 0;
+
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[9])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->avansesReceived->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount');
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getAvansesLeftAmount(string $currency = null): string|array
     {
         $amount = $this->avanses->sum('amount') - $this->avansesReceived->sum('amount');
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
-
-        if ($avansType === 'float' && !$this->isFloat()) {
-            $amount = 0;
-        }
-
-        if ($avansType === 'fix' && $this->isFloat()) {
-            $amount = 0;
-        }
 
         if ($this->isMain()) {
             if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(10, json_decode($this->params) ?? [])) {
@@ -318,14 +360,43 @@ class Contract extends Model implements HasMedia, Audit
 
             foreach ($this->children->where('currency', $currency) as $subContract) {
                 $subAmount = $subContract->avanses->sum('amount') - $subContract->avansesReceived->sum('amount');
+                $amount += $subAmount;
+            }
+        }
 
-                if ($avansType === 'float') {
-                    $amount += $subContract->isFloat() ? $subAmount : 0;
-                } elseif ($avansType === 'fix') {
-                    $amount += $subContract->isFloat() ? 0 : $subAmount;
-                } else {
-                    $amount += $subAmount;
-                }
+        return $amount;
+    }
+
+    public function getAvansesLeftFixAmount(string $currency = null): string|array
+    {
+        $amount = $this->avanses->where('type_id', ContractAvans::TYPE_FIX)->sum('amount') - $this->avansesReceived->where('type_id', ContractAvans::TYPE_FIX)->sum('amount');
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
+
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(10, json_decode($this->params) ?? [])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->avanses->where('type_id', ContractAvans::TYPE_FIX)->sum('amount') - $subContract->avansesReceived->where('type_id', ContractAvans::TYPE_FIX)->sum('amount');
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getAvansesLeftFloatAmount(string $currency = null): string|array
+    {
+        $amount = $this->avanses->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount') - $this->avansesReceived->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount');
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
+
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && array_key_exists(10, json_decode($this->params) ?? [])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->avanses->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount') - $subContract->avansesReceived->where('type_id', ContractAvans::TYPE_FLOAT)->sum('amount');
             }
         }
 
@@ -355,18 +426,10 @@ class Contract extends Model implements HasMedia, Audit
         return $amount;
     }
 
-    public function getActsAvasesAmount(string $currency = null, string $avansType = null): string|array
+    public function getActsAvasesAmount(string $currency = null): string|array
     {
-        $amount = $this->acts->sum('amount_avans');
+        $amount = $this->acts->sum('amount_avans') + $this->acts->sum('amount_avans_float');
         $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
-
-        if ($avansType === 'float' && !$this->isFloat()) {
-            $amount = 0;
-        }
-
-        if ($avansType === 'fix' && $this->isFloat()) {
-            $amount = 0;
-        }
 
         if ($this->isMain()) {
             if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[13])) {
@@ -374,15 +437,44 @@ class Contract extends Model implements HasMedia, Audit
             }
 
             foreach ($this->children->where('currency', $currency) as $subContract) {
-                $subAmount = $subContract->acts->sum('amount_avans');
+                $subAmount = $subContract->acts->sum('amount_avans') + $subContract->acts->sum('amount_avans_float');
+                $amount += $subAmount;
+            }
+        }
 
-                if ($avansType === 'float') {
-                    $amount += $subContract->isFloat() ? $subAmount : 0;
-                } elseif ($avansType === 'fix') {
-                    $amount += $subContract->isFloat() ? 0 : $subAmount;
-                } else {
-                    $amount += $subAmount;
-                }
+        return $amount;
+    }
+
+    public function getActsAvasesFixAmount(string $currency = null): string|array
+    {
+        $amount = $this->acts->sum('amount_avans');
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
+
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[13])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->acts->sum('amount_avans');
+            }
+        }
+
+        return $amount;
+    }
+
+    public function getActsAvasesFloatAmount(string $currency = null): string|array
+    {
+        $amount = $this->acts->sum('amount_avans_float');
+        $amount = ($currency === null || ($currency !== null && $this->currency === $currency)) ? $amount : 0;
+
+        if ($this->isMain()) {
+            if ($this->object_id === 5 && $currency === 'RUB' && isset(json_decode($this->params)[13])) {
+                return 0;
+            }
+
+            foreach ($this->children->where('currency', $currency) as $subContract) {
+                $amount += $subContract->acts->sum('amount_avans_float');
             }
         }
 
@@ -703,6 +795,40 @@ class Contract extends Model implements HasMedia, Audit
         }
 
         return $this->getAvansesReceivedAmount($currency, $avansType) - $this->getActsAvasesAmount($currency, $avansType);
+    }
+
+    public function getNotworkLeftFixAmount(string $currency = null): string|array
+    {
+        $manualReplaceConfigForGES2 = [];
+
+        if ($this->object_id === 5) {
+            foreach ($manualReplaceConfigForGES2 as $contractName => $amount) {
+                if ($this->name === $contractName) {
+                    return $amount;
+                }
+            }
+
+            return 0;
+        }
+
+        return $this->getAvansesReceivedFixAmount($currency) - $this->getActsAvasesFixAmount($currency);
+    }
+
+    public function getNotworkLeftFloatAmount(string $currency = null): string|array
+    {
+        $manualReplaceConfigForGES2 = [];
+
+        if ($this->object_id === 5) {
+            foreach ($manualReplaceConfigForGES2 as $contractName => $amount) {
+                if ($this->name === $contractName) {
+                    return $amount;
+                }
+            }
+
+            return 0;
+        }
+
+        return $this->getAvansesReceivedFloatAmount($currency) - $this->getActsAvasesFloatAmount($currency);
     }
 
     public static function getTypes(): array

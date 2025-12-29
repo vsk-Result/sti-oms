@@ -114,75 +114,75 @@
                     <th class="min-w-75px ps-4">Объект</th>
                     <th class="min-w-200px">Номер</th>
                     <th class="min-w-100px"></th>
-                    <th class="min-w-150px">Сумма</th>
-                    <th class="min-w-150px">Сумма аванса</th>
-                    <th class="min-w-150px">Сумма получ. аванса</th>
-                    <th class="min-w-150px">Сумма аванса к получению</th>
-                    <th class="min-w-150px">Выполнено по актам</th>
-                    <th class="min-w-150px">Аванс удержан по актам</th>
-                    <th class="min-w-150px">Депозит удержан по актам</th>
-                    <th class="min-w-150px">К оплате по актам</th>
-                    <th class="min-w-150px">Оплачено по актам</th>
-                    <th class="min-w-150px">Сумма неоплаченных работ по актам</th>
-                    <th class="min-w-150px">Остаток неотработанного аванса</th>
+                    <th class="min-w-175px">Сумма договора</th>
+                    <th class="min-w-175px">Аванс по договору</th>
+                    <th class="min-w-175px">Полученный аванс</th>
+                    <th class="min-w-175px">Аванс к получению</th>
+                    <th class="min-w-175px">Выполнено по актам</th>
+                    <th class="min-w-175px">Аванс удержан по актам</th>
+                    <th class="min-w-175px">Депозит удержан по актам</th>
+                    <th class="min-w-175px">К оплате по актам</th>
+                    <th class="min-w-175px">Оплачено по актам</th>
+                    <th class="min-w-175px">Сумма неоплаченных работ по актам</th>
+                    <th class="min-w-175px">Остаток неотработанного аванса</th>
                     <th class="min-w-125px rounded-end pe-4">Действия</th>
                 </tr>
                 <tr class="fw-bolder" style="background-color: #f7f7f7;">
                     <th colspan="3" class="ps-4" style="vertical-align: middle;">Итого</th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_received_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_left_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_left_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_left_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['acts_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['acts_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['acts_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_avanses_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_avanses_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_avanses_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_deposites_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_deposites_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_deposites_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['RUB'] + $total['avanses_acts_left_paid_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['EUR'] + $total['avanses_acts_left_paid_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['EUR'] + $total['avanses_acts_left_paid_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_paid_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_left_paid_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_left_paid_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_acts_left_paid_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th>
                         {{ \App\Models\CurrencyExchangeRate::format($total['avanses_notwork_left_amount']['RUB'], 'RUB') }}
-                        <br>
-                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_notwork_left_amount']['EUR'], 'EUR') }}
+{{--                        <br>--}}
+{{--                        {{ \App\Models\CurrencyExchangeRate::format($total['avanses_notwork_left_amount']['EUR'], 'EUR') }}--}}
                     </th>
                     <th></th>
                 </tr>
@@ -240,67 +240,67 @@
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAmount($currency), $currency) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAmount($currency), $currency, 0, true) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount($currency), $currency) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesAmount($currency), $currency, 0, true) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency), $currency) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedAmount($currency), $currency, 0, true) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftAmount($currency), $currency) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftAmount($currency), $currency, 0, true) }}
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount($currency), $currency) }}</a>
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAmount($currency), $currency, 0, true) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount($currency), $currency) }}</a>
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesAmount($currency), $currency, 0, true) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount($currency), $currency) }}</a>
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsDepositesAmount($currency), $currency, 0, true) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency) }}</a>
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsNeedPaidAmount($currency), $currency, 0, true) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency) }}</a>
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsPaidAmount($currency), $currency, 0, true) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency) }}</a>
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsLeftPaidAmount($currency), $currency, 0, true) }}</a>
                                 <br>
                             @endforeach
                         </td>
                         <td>
                             @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftAmount($currency), $currency) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftAmount($currency), $currency, 0, true) }}
                                 <br>
                             @endforeach
                         </td>
@@ -334,6 +334,90 @@
                                 @endcan
                             </div>
                         </td>
+                    </tr>
+
+                    <tr class="fs-8">
+                        <td></td>
+                        <td class="ps-8 fst-italic" colspan="2">Фиксированная часть</td>
+                        <td></td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesFixAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedFixAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftFixAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td></td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesFixAmount($currency), $currency, 0, true) }}</a>
+                                <br>
+                            @endforeach
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftFixAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td></td>
+                    </tr>
+
+                    <tr class="border-bottom-2 fs-8">
+                        <td></td>
+                        <td class="ps-8 fst-italic" colspan="2">Изменяемая часть</td>
+                        <td></td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesFloatAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedFloatAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftFloatAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td></td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesFloatAmount($currency), $currency, 0, true) }}</a>
+                                <br>
+                            @endforeach
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            @foreach($showCurrencies as $currency)
+                                {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftFloatAmount($currency), $currency, 0, true) }}
+                                <br>
+                            @endforeach
+                        </td>
+                        <td></td>
                     </tr>
                 @empty
                     <tr>

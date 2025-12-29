@@ -174,14 +174,31 @@
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Сумма удержания аванса</label>
                                             <div class="position-relative mb-3">
-                                                <input
-                                                    class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_avans') ? 'is-invalid' : '' }}"
-                                                    type="text"
-                                                    name="amount_avans"
-                                                    value="{{ old('amount_avans', $act->amount_avans) }}"
-                                                    required
-                                                    autocomplete="off"
-                                                />
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <input
+                                                                class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_avans') ? 'is-invalid' : '' }}"
+                                                                type="text"
+                                                                name="amount_avans"
+                                                                value="{{ old('amount_avans', $act->amount_avans) }}"
+                                                                required
+                                                                autocomplete="off"
+                                                        />
+                                                        <p class="text-muted">Фиксированный аванс</p>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <input
+                                                                class="amount-mask form-control form-control-lg form-control-solid {{ $errors->has('amount_avans_float') ? 'is-invalid' : '' }}"
+                                                                type="text"
+                                                                name="amount_avans_float"
+                                                                value="{{ old('amount_avans_float', $act->amount_avans_float) }}"
+                                                                required
+                                                                autocomplete="off"
+                                                        />
+                                                        <p class="text-muted">Изменяемый аванс</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                             @if ($errors->has('amount_avans'))
                                                 <div class="fv-plugins-message-container invalid-feedback">

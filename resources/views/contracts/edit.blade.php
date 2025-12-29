@@ -25,11 +25,11 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-10 fv-row">
                                         <div class="mb-1">
-                                            <label class="form-label fw-bolder text-dark fs-6">Компания</label>
+                                            <label class="form-label fw-bolder text-dark fs-6">Контрагент</label>
                                             <div class="position-relative mb-3">
-                                                <select name="company_id" data-control="select2" class="form-select form-select-solid form-select-lg">
-                                                    @foreach($companies as $company)
-                                                        <option value="{{ $company->id }}" {{ $company->id === $contract->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
+                                                <select name="organization_id" required data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($organizations as $organization)
+                                                        <option value="{{ $organization->id }}" {{ $organization->id === $contract->organization_id ? 'selected' : '' }}>{{ $organization->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -307,6 +307,12 @@
                                     <tbody>
                                     <tr>
                                         <td>
+                                            <select name="avanses_type_id[]" class="form-select form-select-solid form-select-lg">
+                                                <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FIX }}" selected>Фиксированный</option>
+                                                <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FLOAT }}">Целевой</option>
+                                            </select>
+                                        </td>
+                                        <td>
                                             <input
                                                 class="amount-mask form-control form-control-lg form-control-solid"
                                                 type="text"
@@ -352,6 +358,7 @@
                                     <table id="avanses-table" class="table align-middle table-row-dashed fs-6">
                                         <thead>
                                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-150px">Тип аванса</th>
                                             <th class="min-w-150px">Сумма аванса</th>
                                             <th class="min-w-150px">Планируемая дата оплаты</th>
                                             <th class="min-w-150px rounded-end pe-4">Действие</th>
@@ -360,6 +367,12 @@
                                         <tbody class="text-gray-600 fw-bold">
                                             @foreach($contract->avanses as $avans)
                                                 <tr>
+                                                    <td>
+                                                        <select data-control="select2" name="isset_avanses_type_id[{{ $avans->id }}]" class="form-select form-select-solid form-select-lg">
+                                                            <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FIX }}" {{ $avans->isFix() ? 'selected' : '' }}>Фиксированный</option>
+                                                            <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FLOAT }}" {{ $avans->isFloat() ? 'selected' : '' }}>Целевой</option>
+                                                        </select>
+                                                    </td>
                                                     <td>
                                                         <input
                                                             class="amount-mask form-control form-control-lg form-control-solid"
@@ -401,6 +414,12 @@
                                 <table>
                                     <tbody>
                                     <tr>
+                                        <td>
+                                            <select name="received_avanses_type_id[]" class="form-select form-select-solid form-select-lg">
+                                                <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FIX }}" selected>Фиксированный</option>
+                                                <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FLOAT }}">Целевой</option>
+                                            </select>
+                                        </td>
                                         <td>
                                             <input
                                                 class="date-range-picker-single form-control form-control-lg form-control-solid"
@@ -455,6 +474,7 @@
                                 <table id="avanses-received-table" class="table align-middle table-row-dashed fs-6">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-150px">Тип аванса</th>
                                         <th class="min-w-150px">Дата аванса</th>
                                         <th class="min-w-150px">Сумма аванса</th>
                                         <th class="min-w-150px">Описание</th>
@@ -464,6 +484,12 @@
                                     <tbody class="text-gray-600 fw-bold">
                                         @foreach($contract->avansesReceived as $avans)
                                             <tr>
+                                                <td>
+                                                    <select data-control="select2" name="isset_received_avanses_type_id[{{ $avans->id }}]" class="form-select form-select-solid form-select-lg">
+                                                        <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FIX }}" {{ $avans->isFix() ? 'selected' : '' }}>Фиксированный</option>
+                                                        <option value="{{ \App\Models\Contract\ContractAvans::TYPE_FLOAT }}" {{ $avans->isFloat() ? 'selected' : '' }}>Целевой</option>
+                                                    </select>
+                                                </td>
                                                 <td>
                                                     <input
                                                         class="date-range-picker-single form-control form-control-lg form-control-solid"
@@ -557,9 +583,11 @@
 
             $('#create-avans').on('click', function () {
                 const $avans = $('#avans-template').clone();
+                $avans.find('select').attr('data-control', 'select2');
                 $('#avanses-table tbody').append($avans.find('tr'));
 
                 mainApp.init();
+                KTApp.initSelect2();
             });
 
             $(document).on('click', '.destroy-avans', function() {
@@ -568,9 +596,11 @@
 
             $('#create-received-avans').on('click', function () {
                 const $avans = $('#received-avans-template').clone();
+                $avans.find('select').attr('data-control', 'select2');
                 $('#avanses-received-table tbody').append($avans.find('tr'));
 
                 mainApp.init();
+                KTApp.initSelect2();
             });
         });
     </script>

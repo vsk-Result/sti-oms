@@ -21,8 +21,11 @@ class ContractAvans extends Model implements Audit
 
     protected $fillable = [
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'amount', 'status_id',
-        'currency', 'currency_rate', 'planned_payment_date'
+        'currency', 'currency_rate', 'planned_payment_date', 'type_id'
     ];
+
+    const TYPE_FIX = 0;
+    const TYPE_FLOAT = 1;
 
     public function contract(): BelongsTo
     {
@@ -42,5 +45,15 @@ class ContractAvans extends Model implements Audit
     public function getAmount(): string
     {
         return $this->amount;
+    }
+
+    public function isFix(): bool
+    {
+        return $this->type_id === self::TYPE_FIX;
+    }
+
+    public function isFloat(): bool
+    {
+        return $this->type_id === self::TYPE_FLOAT;
     }
 }

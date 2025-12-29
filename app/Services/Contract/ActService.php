@@ -179,16 +179,17 @@ class ActService
                 $total['paid_amount'][$currency] += $act->getPaidAmount();
                 $total['left_paid_amount'][$currency] += $act->getLeftPaidAmount();
 
+                $total['avanses_amount_fix'][$currency] += $act->getAvansFixAmount();
+                $total['avanses_amount_float'][$currency] += $act->getAvansFloatAmount();
+
                 if ($act->contract->isFloat()) {
                     $total['amount_float'][$currency] += $act->getAmount();
-                    $total['avanses_amount_float'][$currency] += $act->getAvansAmount();
                     $total['deposites_amount_float'][$currency] += $act->getDepositAmount();
                     $total['need_paid_amount_float'][$currency] += $act->getNeedPaidAmount();
                     $total['paid_amount_float'][$currency] += $act->getPaidAmount();
                     $total['left_paid_amount_float'][$currency] += $act->getLeftPaidAmount();
                 } else {
                     $total['amount_fix'][$currency] += $act->getAmount();
-                    $total['avanses_amount_fix'][$currency] += $act->getAvansAmount();
                     $total['deposites_amount_fix'][$currency] += $act->getDepositAmount();
                     $total['need_paid_amount_fix'][$currency] += $act->getNeedPaidAmount();
                     $total['paid_amount_fix'][$currency] += $act->getPaidAmount();
@@ -220,6 +221,7 @@ class ActService
             'rad_amount' => $this->sanitizer->set($requestData['rad_amount'])->toAmount()->get(),
             'opste_amount' => $this->sanitizer->set($requestData['opste_amount'])->toAmount()->get(),
             'amount_avans' => $this->sanitizer->set($requestData['amount_avans'])->toAmount()->get(),
+            'amount_avans_float' => $this->sanitizer->set($requestData['amount_avans_float'])->toAmount()->get(),
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'other_deduction_amount' => $this->sanitizer->set($requestData['other_deduction_amount'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
@@ -230,7 +232,7 @@ class ActService
         ]);
 
         $act->update([
-            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit - $act->other_deduction_amount
+            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_avans_float - $act->amount_deposit - $act->other_deduction_amount
         ]);
 
         if (! empty($requestData['payments_date'])) {
@@ -277,6 +279,7 @@ class ActService
             'rad_amount' => $this->sanitizer->set($requestData['rad_amount'])->toAmount()->get(),
             'opste_amount' => $this->sanitizer->set($requestData['opste_amount'])->toAmount()->get(),
             'amount_avans' => $this->sanitizer->set($requestData['amount_avans'])->toAmount()->get(),
+            'amount_avans_float' => $this->sanitizer->set($requestData['amount_avans_float'])->toAmount()->get(),
             'amount_deposit' => $this->sanitizer->set($requestData['amount_deposit'])->toAmount()->get(),
             'other_deduction_amount' => $this->sanitizer->set($requestData['other_deduction_amount'])->toAmount()->get(),
             'description' => $this->sanitizer->set($requestData['description'])->get(),
@@ -287,7 +290,7 @@ class ActService
         ]);
 
         $act->update([
-            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_deposit - $act->other_deduction_amount
+            'amount_need_paid' => $act->getAmount() - $act->amount_avans - $act->amount_avans_float - $act->amount_deposit - $act->other_deduction_amount
         ]);
 
         $currentPaymentsIds = $act->payments()->pluck('id', 'id')->toArray();

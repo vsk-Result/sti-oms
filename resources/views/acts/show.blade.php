@@ -25,8 +25,8 @@
                             <div class="row mb-7">
                                 <label class="col-lg-2 fw-bold text-muted">Договор</label>
                                 <div class="col-lg-10 fv-row">
-                                    @if(auth()->user()->can('show contracts'))
-                                        <a class="fw-bold fs-6" href="{{ route('contracts.show', $act->contract) }}">{{ $act->contract->getName() }}</a>
+                                    @if(auth()->user()->can('index contracts'))
+                                        <a class="fw-bold fs-6" href="{{ route('contracts.index') }}?name={{ urlencode($act->contract->parent ? $act->contract->parent->name : $act->contract->name) }}">{{ $act->contract->getName() }}</a>
                                     @else
                                         <span class="fw-bold text-gray-800 fs-6">{{ $act->contract->getName() }}</span>
                                     @endif

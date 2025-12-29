@@ -26,7 +26,7 @@ class Act extends Model implements Audit, HasMedia
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date',
         'amount', 'amount_avans', 'amount_deposit', 'amount_need_paid', 'description', 'status_id',
         'currency', 'currency_rate', 'number', 'planned_payment_date', 'manual_left_paid_amount',
-        'rad_amount', 'opste_amount', 'other_deduction_amount'
+        'rad_amount', 'opste_amount', 'other_deduction_amount', 'amount_avans_float'
     ];
 
     public function contract(): BelongsTo
@@ -66,7 +66,17 @@ class Act extends Model implements Audit, HasMedia
 
     public function getAvansAmount(): string
     {
+        return $this->amount_avans + $this->amount_avans_float;
+    }
+
+    public function getAvansFixAmount(): string
+    {
         return $this->amount_avans;
+    }
+
+    public function getAvansFloatAmount(): string
+    {
+        return $this->amount_avans_float;
     }
 
     public function getDepositAmount(): string

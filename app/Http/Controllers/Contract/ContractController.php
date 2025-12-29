@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
+use App\Models\Organization;
 use App\Models\Status;
 use App\Services\Contract\ActService;
 use App\Services\Contract\ContractService;
@@ -45,8 +46,9 @@ class ContractController extends Controller
         $objects = BObject::orderBy('code')->get();
         $companies = Company::orderBy('id')->get();
         $currencies = Currency::getCurrencies();
+        $organizations = Organization::orderBy('name')->get();
 
-        return view('contracts.create', compact('objects', 'companies', 'objectId', 'types', 'mainContracts', 'amountTypes', 'currencies'));
+        return view('contracts.create', compact('objects', 'companies', 'objectId', 'types', 'mainContracts', 'amountTypes', 'currencies', 'organizations'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -69,8 +71,9 @@ class ContractController extends Controller
         $companies = Company::orderBy('id')->get();
         $statuses = Status::getStatuses();
         $currencies = Currency::getCurrencies();
+        $organizations = Organization::orderBy('name')->get();
 
-        return view('contracts.edit', compact('contract', 'objects', 'companies', 'statuses', 'types', 'amountTypes', 'mainContracts', 'currencies'));
+        return view('contracts.edit', compact('contract', 'objects', 'companies', 'statuses', 'types', 'amountTypes', 'mainContracts', 'currencies', 'organizations'));
     }
 
     public function update(Contract $contract, Request $request): RedirectResponse

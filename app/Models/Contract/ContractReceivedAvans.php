@@ -22,8 +22,11 @@ class ContractReceivedAvans extends Model implements Audit
 
     protected $fillable = [
         'contract_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id', 'date', 'amount',
-        'status_id', 'currency', 'currency_rate', 'description'
+        'status_id', 'currency', 'currency_rate', 'description', 'type_id'
     ];
+
+    const TYPE_FIX = 0;
+    const TYPE_FLOAT = 1;
 
     public function contract(): BelongsTo
     {
@@ -53,5 +56,15 @@ class ContractReceivedAvans extends Model implements Audit
     public function getAmountInRUB(): string
     {
         return $this->amount * $this->currency_rate;
+    }
+
+    public function isFix(): bool
+    {
+        return $this->type_id === self::TYPE_FIX;
+    }
+
+    public function isFloat(): bool
+    {
+        return $this->type_id === self::TYPE_FLOAT;
     }
 }
