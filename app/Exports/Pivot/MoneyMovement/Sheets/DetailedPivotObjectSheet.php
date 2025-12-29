@@ -208,44 +208,54 @@ class DetailedPivotObjectSheet implements
 
         $sheet->getStyle('B3:B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
+        $totalCategorySum = array_sum($categoryTotal);
 
         $sheet->setCellValue('D2', 'Свод итогов по категориям по расходам');
+        $sheet->setCellValue('F2', '%');
 
         $sheet->setCellValue('D3', 'Работы');
         $sheet->setCellValue('E3', $categoryTotal[Payment::CATEGORY_RAD]);
+        $sheet->setCellValue('F3', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_RAD] / $totalCategorySum : 0);
 
         $sheet->setCellValue('D4', 'Материалы');
         $sheet->setCellValue('E4', $categoryTotal[Payment::CATEGORY_MATERIAL]);
+        $sheet->setCellValue('F4', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_MATERIAL] : 0);
 
         $sheet->setCellValue('D5', 'Накладные/Услуги');
         $sheet->setCellValue('E5', $categoryTotal[Payment::CATEGORY_OPSTE]);
+        $sheet->setCellValue('F5', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_OPSTE] : 0);
 
         $sheet->setCellValue('D6', 'Зарплата');
         $sheet->setCellValue('E6', $categoryTotal[Payment::CATEGORY_SALARY]);
+        $sheet->setCellValue('F6', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_SALARY] : 0);
 
         $sheet->setCellValue('D7', 'Налоги');
         $sheet->setCellValue('E7', $categoryTotal[Payment::CATEGORY_TAX]);
+        $sheet->setCellValue('F7', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TAX] : 0);
 
         $sheet->setCellValue('D8', 'Заказчики');
         $sheet->setCellValue('E8', $categoryTotal[Payment::CATEGORY_CUSTOMERS]);
+        $sheet->setCellValue('F8', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_CUSTOMERS] : 0);
 
         $sheet->setCellValue('D9', 'Трансфер');
         $sheet->setCellValue('E9', $categoryTotal[Payment::CATEGORY_TRANSFER]);
+        $sheet->setCellValue('F9', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TRANSFER] : 0);
 
-        $sheet->getStyle('D2:E2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('D2:F2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getRowDimension(2)->setRowHeight(30);
 
         $sheet->getColumnDimension('D')->setWidth(26);
         $sheet->getColumnDimension('E')->setWidth(17);
 
-        $sheet->getStyle('D1:E10')->getFont()->setBold(true);
+        $sheet->getStyle('D1:F10')->getFont()->setBold(true);
         $sheet->mergeCells('D2:E2');
 
-        $sheet->getStyle('D2:E2')->applyFromArray([
+        $sheet->getStyle('D2:F2')->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_MEDIUM]]
         ]);
 
         $sheet->getStyle('E3:E10')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('F3:F10')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE);
     }
 
     public function fillObjectInfo(&$sheet, $row, array $info)
