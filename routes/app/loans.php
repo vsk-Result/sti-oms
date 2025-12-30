@@ -2,6 +2,11 @@
 
 use App\Http\Controllers\Loan\LoanController;
 use App\Http\Controllers\Loan\LoanHistoryController;
+use App\Http\Controllers\Loan\ExportController;
+
+// Экспорт в Excel Займов / Кредитов
+
+Route::post('loans/export', [ExportController::class, 'store'])->name('loans.exports.store');
 
 // Займы / Кредиты
 
@@ -24,3 +29,4 @@ Route::delete('loans/{loan}/history/{history}', [LoanHistoryController::class, '
 // Обновление Истории Займов / Кредитов
 
 Route::get('loans/{loan}/history/reload', [LoanHistoryController::class, 'reload'])->name('loans.history.reload')->middleware('can:edit loans');
+

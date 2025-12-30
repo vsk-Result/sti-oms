@@ -6,8 +6,11 @@ use App\Helpers\Sanitizer;
 use App\Models\Company;
 use App\Models\Loan;
 use App\Models\LoanNotifyTag;
+use App\Models\Organization;
 use App\Models\Status;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class LoanService
 {
@@ -18,7 +21,7 @@ class LoanService
         $this->sanitizer = $sanitizer;
     }
 
-    public function filterLoans(array $requestData, array &$total): LengthAwarePaginator
+    public function filterLoans(array $requestData, array &$total, bool $needPaginate = true): LengthAwarePaginator|Collection
     {
         $query = Loan::query();
 
@@ -44,7 +47,8 @@ class LoanService
         }
 
         $query->with('company', 'organization');
-        $query->orderByDesc('amount');
+
+
 
         $companyDT = Company::getDT();
 
@@ -57,7 +61,31 @@ class LoanService
         $total['amount_credit_from_dt'] = (clone $query)->where('company_id', $companyDT->id)->where('type_id', Loan::TYPE_CREDIT)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
         $total['amount_loan_from_dt'] = (clone $query)->where('company_id', $companyDT->id)->where('type_id', Loan::TYPE_LOAN)->where('organization_type_id', Loan::ORGANIZATION_TYPE_LENDER)->sum('amount');
 
-        return $query->paginate($perPage)->withQueryString();
+        if (! empty($requestData['sort_by'])) {
+            if ($requestData['sort_by'] == 'creditor') {
+                $query->select([
+                    'loans.*',
+                    DB::raw("(CASE WHEN loans.organization_type_id = 0 THEN organizations.name ELSE companies.name END) AS borrower")
+                ])
+                    ->leftJoin('companies', 'loans.company_id', '=', 'companies.id')
+                    ->leftJoin('organizations', 'loans.organization_id', '=', 'organizations.id')
+                    ->orderBy('borrower', $requestData['sort_direction'] ?? 'asc');
+            } else if ($requestData['sort_by'] == 'zaemshik') {
+                $query->select([
+                    'loans.*',
+                    DB::raw("(CASE WHEN loans.organization_type_id = 0 THEN companies.name ELSE organizations.name END) AS borrower")
+                ])
+                    ->leftJoin('companies', 'loans.company_id', '=', 'companies.id')
+                    ->leftJoin('organizations', 'loans.organization_id', '=', 'organizations.id')
+                    ->orderBy('borrower', $requestData['sort_direction'] ?? 'asc');
+            } else {
+                $query->orderBy($requestData['sort_by'], $requestData['sort_direction'] ?? 'asc');
+            }
+        } else {
+            $query->orderByDesc('amount');
+        }
+
+        return $needPaginate ? $query->paginate($perPage)->withQueryString() : $query->get();
     }
 
     public function createLoan(array $requestData): void
