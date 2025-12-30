@@ -23,7 +23,7 @@ class AvansImportController extends Controller
                 }
             }
 
-            if ((string) $sum === (string) $paymentAmount) {
+            if ((string) round($sum) === (string) round($paymentAmount)) {
                 $imports[$import->id] = Carbon::parse($import->date)->format('d.m.Y') . ' | ' . number_format($sum, 2, '.', ' ') . ' | ' . $import->type;
             }
         }

@@ -143,6 +143,12 @@ class Bank
             'logo' => '/images/banks/vtb.png',
             'visible' => true
         ],
+        [
+            'id' => 24,
+            'name' => 'РосДорБанк',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
     ];
 
     public static function getBanks(): array
