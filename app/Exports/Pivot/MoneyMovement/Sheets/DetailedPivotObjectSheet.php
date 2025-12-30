@@ -219,27 +219,27 @@ class DetailedPivotObjectSheet implements
 
         $sheet->setCellValue('D4', 'Материалы');
         $sheet->setCellValue('E4', $categoryTotal[Payment::CATEGORY_MATERIAL]);
-        $sheet->setCellValue('F4', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_MATERIAL] : 0);
+        $sheet->setCellValue('F4', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_MATERIAL] / $totalCategorySum : 0);
 
         $sheet->setCellValue('D5', 'Накладные/Услуги');
         $sheet->setCellValue('E5', $categoryTotal[Payment::CATEGORY_OPSTE]);
-        $sheet->setCellValue('F5', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_OPSTE] : 0);
+        $sheet->setCellValue('F5', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_OPSTE] / $totalCategorySum : 0);
 
         $sheet->setCellValue('D6', 'Зарплата');
         $sheet->setCellValue('E6', $categoryTotal[Payment::CATEGORY_SALARY]);
-        $sheet->setCellValue('F6', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_SALARY] : 0);
+        $sheet->setCellValue('F6', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_SALARY] / $totalCategorySum : 0);
 
         $sheet->setCellValue('D7', 'Налоги');
         $sheet->setCellValue('E7', $categoryTotal[Payment::CATEGORY_TAX]);
-        $sheet->setCellValue('F7', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TAX] : 0);
+        $sheet->setCellValue('F7', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TAX] / $totalCategorySum : 0);
 
         $sheet->setCellValue('D8', 'Заказчики');
         $sheet->setCellValue('E8', $categoryTotal[Payment::CATEGORY_CUSTOMERS]);
-        $sheet->setCellValue('F8', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_CUSTOMERS] : 0);
+        $sheet->setCellValue('F8', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_CUSTOMERS] / $totalCategorySum : 0);
 
         $sheet->setCellValue('D9', 'Трансфер');
         $sheet->setCellValue('E9', $categoryTotal[Payment::CATEGORY_TRANSFER]);
-        $sheet->setCellValue('F9', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TRANSFER] : 0);
+        $sheet->setCellValue('F9', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TRANSFER] / $totalCategorySum : 0);
 
         $sheet->getStyle('D2:F2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getRowDimension(2)->setRowHeight(30);
