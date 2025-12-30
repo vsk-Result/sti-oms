@@ -156,7 +156,7 @@
                                         </td>
                                         <td>
                                             <input
-                                                    class="form-control form-control-lg form-control-solid"
+                                                    class="form-control form-control-lg form-control-solid phone-input"
                                                     type="text"
                                                     value=""
                                                     name="person_phone[]"
@@ -215,8 +215,10 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script>
         $(function() {
+            $('.phone-input').mask('+7 (000) 000-00-00');
 
             $('#create-responsible-person').on('click', function () {
                 const $person = $('#responsible-person-template').clone();
@@ -224,6 +226,7 @@
                 $('#responsible-persons-table tbody').append($person.find('tr'));
 
                 KTApp.initSelect2();
+                $('.phone-input').mask('+7 (000) 000-00-00');
             });
 
             $(document).on('click', '.destroy-person', function() {
