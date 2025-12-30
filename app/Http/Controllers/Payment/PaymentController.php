@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
+use App\Models\CashAccount\CashAccount;
 use App\Models\Company;
 use App\Models\KostCode;
 use App\Models\Object\BObject;
@@ -78,6 +79,7 @@ class PaymentController extends Controller
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
         $crmCostAuthors = PaymentImport::getCrmCostAuthors();
+        $cashAccountAuthors = CashAccount::orderBy('name')->get();
 
         $totalInfo = [];
         $payments = $this->paymentService->filterPayments($request->toArray(), true, $totalInfo);
@@ -98,7 +100,7 @@ class PaymentController extends Controller
             compact(
                 'payments', 'companies', 'objects', 'worktypes', 'categories',
                 'importTypes', 'banks', 'totalInfo', 'activeOrganizations', 'paymentTypes', 'codes', 'currencies',
-                'crmCostAuthors'
+                'crmCostAuthors', 'cashAccountAuthors'
             )
         );
     }

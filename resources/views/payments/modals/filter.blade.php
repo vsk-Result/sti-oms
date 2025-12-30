@@ -381,7 +381,11 @@
                                         multiple
                                 >
                                     @foreach($crmCostAuthors as $author)
-                                        <option value="{{ $author }}" {{ in_array($author, request()->input('crm_cost_author', [])) ? 'selected' : '' }}>{{ $author }}</option>
+                                        <option value="{{ 'crm_' . $author }}" {{ in_array('crm_' . $author, request()->input('crm_cost_author', [])) ? 'selected' : '' }}>{{ 'CRM: ' . $author }}</option>
+                                    @endforeach
+
+                                    @foreach($cashAccountAuthors as $cashAccount)
+                                        <option value="{{ 'oms_' . $cashAccount->id }}" {{ in_array('oms_' . $cashAccount->id, request()->input('crm_cost_author', [])) ? 'selected' : '' }}>{{ 'ОМС: ' . $cashAccount->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

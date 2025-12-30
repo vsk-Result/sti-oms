@@ -142,6 +142,10 @@ class Payment extends Model implements Audit
     public function getObject(): string
     {
         if ($this->type_id === static::TYPE_OBJECT) {
+            if (! $this->object) {
+                return '';
+            }
+
             if (! is_null($this->object_worktype_id)) {
                     return $this->object->isWithoutWorktype() || $this->code == '0' || $this->object_worktype_id == 0
                     ? $this->object->code

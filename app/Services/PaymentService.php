@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Helpers\Sanitizer;
+use App\Models\CashAccount\CashAccount;
+use App\Models\CashAccount\CashAccountPayment;
 use App\Models\Company;
 use App\Models\CRM\AvansImport;
 use App\Models\KostCode;
@@ -216,12 +218,32 @@ class PaymentService
 
         if (! empty($requestData['crm_cost_author'])) {
             $importIds = [];
+            $importOMSIds = [];
             foreach ($requestData['crm_cost_author'] as $author) {
-                $importIds = array_merge($importIds, PaymentImport::where('description', 'LIKE', '%' . $author . '%')->pluck('id')->toArray());
-            }
+                if (str_contains($author, 'crm_')) {
+                    $parsedAuthor = explode('crm_ ', $author);
+                    $importIds = array_merge($importIds, PaymentImport::where('description', 'LIKE', '%' . $parsedAuthor[1] . '%')->pluck('id')->toArray());
+                }
 
+                if (str_contains($author, 'oms_')) {
+                    $parsedAuthor = explode('oms_', $author);
+                    $cashAccountPayments = CashAccountPayment::where('cash_account_id', $parsedAuthor[1])->get();
+
+                    foreach ($cashAccountPayments as $pp) {
+                        $currentAdditionalData = json_decode($pp->additional_data, true) ?? [];
+
+                        if (isset($currentAdditionalData['object_payment']['object_payment_id'])) {
+                            $importOMSIds[] = $currentAdditionalData['object_payment']['object_payment_id'];
+                        }
+                    }
+                }
+            }
             if (count($importIds) > 0) {
                 $paymentQuery->whereIn('import_id', $importIds);
+            }
+
+            if (count($importOMSIds) > 0) {
+                $paymentQuery->whereIn('id', $importOMSIds);
             }
         }
 

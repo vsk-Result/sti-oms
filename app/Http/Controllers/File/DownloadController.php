@@ -11,6 +11,10 @@ class DownloadController extends Controller
 {
     public function index(Request $request): StreamedResponse
     {
+        if ($request->has('name')) {
+            return Storage::disk('public')->download(base64_decode($request->file), $request->name);
+        }
+
         return Storage::disk('public')->download(base64_decode($request->file));
     }
 }
