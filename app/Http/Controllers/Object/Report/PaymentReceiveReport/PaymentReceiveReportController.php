@@ -14,7 +14,7 @@ class PaymentReceiveReportController extends Controller
 
     public function index(BObject $object, Request $request): View
     {
-        $years = ['2025', '2024', '2023', '2022'];
+        $years = ['2026', '2025', '2024', '2023', '2022'];
         $year = $request->get('year', date('Y'));
         $reportInfo = $this->paymentReceiveReportService->getReportInfo($object, ['year' => $year]);
 

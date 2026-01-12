@@ -20,7 +20,7 @@ class ExportController extends Controller
 
     public function store(): BinaryFileResponse
     {
-        $years = ['2025', '2024', '2023', '2022', '2021'];
+        $years = ['2026', '2025', '2024', '2023', '2022', '2021'];
         $items = $this->generalReportService->getItems($years);
 
         return Excel::download(

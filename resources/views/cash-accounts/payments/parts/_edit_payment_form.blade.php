@@ -163,7 +163,7 @@
                             <div class="position-relative mb-3">
                                 @php
                                     $months = [];
-                                    foreach ([date('Y')] as $year) {
+                                    foreach ([date('Y'), '2025'] as $year) {
                                         foreach (['Декабрь', 'Ноябрь', 'Октябрь', 'Сентябрь', 'Август', 'Июль', 'Июнь', 'Май', 'Апрель', 'Март', 'Февраль', 'Январь'] as $m) {
                                             $months[] = $m . ' ' . $year;
                                         }
@@ -260,7 +260,7 @@
                             <div class="position-relative mb-3">
                                 @php
                                     $months = [];
-                                    foreach ([date('Y')] as $year) {
+                                    foreach ([date('Y'), '2025'] as $year) {
                                         foreach (['Декабрь', 'Ноябрь', 'Октябрь', 'Сентябрь', 'Август', 'Июль', 'Июнь', 'Май', 'Апрель', 'Март', 'Февраль', 'Январь'] as $m) {
                                             $months[] = $m . ' ' . $year;
                                         }

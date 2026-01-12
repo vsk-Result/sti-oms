@@ -14,7 +14,7 @@ class CalculateWorkersCostController extends Controller
 
     public function index(Request $request): View
     {
-        $filterYears = ['2025', '2024'];
+        $filterYears = ['2026', '2025', '2024'];
 
         $years = $request->get('years', $filterYears);
         $objectIds = $request->get('object_id', []);

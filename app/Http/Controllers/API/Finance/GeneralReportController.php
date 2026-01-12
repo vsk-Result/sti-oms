@@ -26,7 +26,7 @@ class GeneralReportController extends Controller
             return response()->json(['error' => 'Запрос не прошел валидацию'], 403);
         }
 
-        $years = ['2025', '2024', '2023', '2022', '2021'];
+        $years = ['2026', '2025', '2024', '2023', '2022', '2021'];
         $items = $this->generalReportService->getItems($years);
 
         $data = [];

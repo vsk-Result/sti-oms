@@ -28,6 +28,7 @@
                                     <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2023</span>
                                     <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2024</span>
                                     <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2025</span>
+                                    <span class="period-quick badge badge-light cursor-pointer bg-hover-secondary">2026</span>
                                 </div>
                             </div>
                         </div>

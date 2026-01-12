@@ -112,6 +112,13 @@ class UpdateGeneralCosts extends HandledCommand
                         'bonus' => 0,
                     ],
                 ],
+                '2026' => [
+                    [
+                        'start_date' => '2026-01-01',
+                        'end_date' => '2026-12-31',
+                        'bonus' => 0,
+                    ],
+                ],
             ];
 
 

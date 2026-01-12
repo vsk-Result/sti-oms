@@ -27,7 +27,7 @@ class CalculateWorkersCostControllerExportController extends Controller
             );
         }
 
-        $filterYears = ['2025', '2024'];
+        $filterYears = ['2026', '2025', '2024'];
         $years = $request->get('years', $filterYears);
 
         $info = $this->calculateWorkersCostService->getPivotInfoByCompany($years);
