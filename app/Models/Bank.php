@@ -149,6 +149,12 @@ class Bank
             'logo' => '/images/banks/vtb.png',
             'visible' => true
         ],
+        [
+            'id' => 25,
+            'name' => 'Сбербанк Спецсчёт',
+            'logo' => '/images/banks/vtb.png',
+            'visible' => true
+        ],
     ];
 
     public static function getBanks(): array
