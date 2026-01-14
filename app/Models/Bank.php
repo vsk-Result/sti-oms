@@ -152,7 +152,7 @@ class Bank
         [
             'id' => 25,
             'name' => 'Сбербанк Спецсчёт',
-            'logo' => '/images/banks/vtb.png',
+            'logo' => '/images/banks/sber.png',
             'visible' => true
         ],
     ];
