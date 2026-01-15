@@ -14,7 +14,7 @@ class CostStatusController extends Controller
     {
         $closures = [];
         $notShowAccounts = ['Э.С.'];
-        $nowMonth = Carbon::now()->format('Y-m');
+        $nowMonth = Carbon::now()->format('Y-m') . '-01';
         $cashAccounts = CashAccount::where('status_id', CashAccount::STATUS_ACTIVE)->with('closePeriods')->get();
 
         foreach ($cashAccounts as $cashAccount) {
@@ -31,11 +31,13 @@ class CostStatusController extends Controller
             $periods = $this->getMonthsBetween('2025-10', $nowMonth);
 
             foreach ($periods as $period) {
-                if ($period === $nowMonth) {
+                $fp = $period . '-01';
+
+                if ($fp === $nowMonth) {
                     continue;
                 }
-                if (! in_array($period, $closePeriodMonths)) {
-                    $closures[$cashAccount->id]['not_close'][] = Carbon::parse($period . '-01')->format('F Y');
+                if (! in_array($fp, $closePeriodMonths)) {
+                    $closures[$cashAccount->id]['not_close'][] = Carbon::parse($fp)->format('F Y');
                 }
             }
         }
