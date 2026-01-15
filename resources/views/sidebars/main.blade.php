@@ -424,7 +424,7 @@
                 @can('index crm-costs')
                     <div class="menu-item">
                         <a href="{{ route('crm_costs.index') }}" class="menu-link {{ request()->is('crm-costs*') ? 'active' : '' }}">
-                            <span class="menu-title">Статус касс CRM</span>
+                            <span class="menu-title">Статус касс</span>
                         </a>
                     </div>
                 @endcan

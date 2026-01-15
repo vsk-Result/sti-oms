@@ -22,20 +22,18 @@ class CostStatusController extends Controller
                 continue;
             }
 
-            $closePeriods = $cashAccount->closePeriods->sortByDesc('period');
+            $closePeriodMonths = $cashAccount->closePeriods->sortByDesc('period')->pluck('period')->toArray();
 
             $closures[$cashAccount->id]['name'] = $cashAccount->name;
             $closures[$cashAccount->id]['not_close'] = [];
             $closures[$cashAccount->id]['not_split'] = [];
 
             $periods = $this->getMonthsBetween('2025-10', $nowMonth);
-            $closePeriodMonths = $closePeriods->pluck('period')->toArray();
 
             foreach ($periods as $period) {
                 if ($period === $nowMonth) {
                     continue;
                 }
-
                 if (! in_array($period, $closePeriodMonths)) {
                     $closures[$cashAccount->id]['not_close'][] = Carbon::parse($period . '-01')->format('F Y');
                 }
