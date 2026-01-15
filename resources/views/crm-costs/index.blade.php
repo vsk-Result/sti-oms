@@ -28,7 +28,7 @@
                                 @continue(count($closure['not_split']) === 0 && count($closure['not_close']) === 0)
                                 <tr>
                                     <td>
-                                        <a target="_blank" href="http://crm.local/costs/{{ $closureId }}">{{ $closure['name'] }}</a>
+                                        <a target="_blank" href="{{ route('cash_accounts.show', $closureId) }}">{{ $closure['name'] }}</a>
                                     </td>
                                     <td>
                                         @foreach($closure['not_close'] as $date)
