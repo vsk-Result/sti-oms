@@ -322,6 +322,15 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         return $this->cashAccount->isCurrentResponsible();
     }
 
+    public function canCopy(): bool
+    {
+        if ($this->isTransfer() || $this->isRequest()) {
+            return false;
+        }
+
+        return $this->cashAccount->isCurrentResponsible();
+    }
+
     public function isValid(): bool
     {
         $objectPaymentData = $this->getObjectPaymentData();
