@@ -245,8 +245,7 @@
     <script>
         $(function() {
             mainApp.initFreezeTable(2);
-
-            $('.collapse-trigger-row').on('click', function() {
+            $(document).on('click', '.collapse-trigger-row', function() {
                 const $tr = $(this);
                 const trigger = $tr.data('trigger');
                 const isCollapsed = $tr.hasClass('collapsed');
@@ -264,7 +263,7 @@
                 }
             });
 
-            $('.collapse-trigger').on('click', function() {
+            $(document).on('click', '.collapse-trigger', function() {
                 const $tr = $(this);
                 const trigger = $tr.data('trigger');
                 const isCollapsed = $tr.hasClass('collapsed');

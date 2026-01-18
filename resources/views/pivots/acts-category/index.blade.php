@@ -854,7 +854,7 @@
             mainApp.initFreezeTable(1);
         });
 
-        $('.collapse-trigger').on('click', function() {
+        $(document).on('click', '.collapse-trigger', function() {
             const trigger = $(this).data('trigger');
             const isCollapsed = $(this).hasClass('collapsed');
 

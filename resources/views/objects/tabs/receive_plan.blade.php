@@ -286,7 +286,7 @@
             }
         });
 
-        $('.collapse-trigger').on('click', function() {
+        $(document).on('click','.collapse-trigger', function() {
             const $tr = $(this);
             const trigger = $tr.data('trigger');
             const isCollapsed = $tr.hasClass('collapsed');

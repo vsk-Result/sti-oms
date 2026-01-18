@@ -631,8 +631,8 @@ class CalculateWorkersCostService
                             } elseif ($codes[0] === 'accrued_taxes_transport') {
                                 $amount = -1 * abs(AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'workers_salary') {
-//                                $amount = 0;
-                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                                $amount = 0;
+//                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
                             } elseif ($codes[0] === 'itr_salary') {
                                 $amount = 0;
 
