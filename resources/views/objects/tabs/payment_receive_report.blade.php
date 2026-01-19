@@ -3,8 +3,6 @@
 @section('object-tab-title', 'Отчет доходов и расходов')
 
 @section('object-tab-content')
-    @include('objects.modals.payment_receive_report_filter')
-
     <div class="row">
         <div class="col-lg-12">
             <div class="card mb-5 mb-xl-8">
@@ -13,15 +11,6 @@
 
                     <div class="card-toolbar">
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#paymentReceiveReportFilterModal">
-                                <span class="svg-icon svg-icon-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z" fill="black"></path>
-                                    </svg>
-                                </span>
-                                Фильтр
-                            </button>
-
                             <form action="{{ route('objects.payment_receive_report.export.store', $object) . (strpos(request()->fullUrl(), '?') !== false ? substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) : '') }}" method="POST" class="hidden">
                                 @csrf
                                 <a
@@ -49,18 +38,47 @@
                             <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                                     <th class="ps-2" colspan="2">Отчет доходов и расходов</th>
-                                    @foreach($reportInfo['monthsFull'] as $month)
-                                        <th class="min-w-200px">{{ $month }}</th>
+
+                                    @foreach($info['years'] as $year)
+                                        <th class="text-center min-w-200px" style="background-color: #d5dce0">
+                                            {{ $year['name'] }}
+                                            <span class="w-40px ps-3 fs-2 fw-bold collapse-trigger cursor-pointer" data-trigger="periods-year-{{ $year['name'] }}">+</span>
+                                        </th>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <th class="collapse-col text-center min-w-200px" colspan="2" data-trigger="periods-year-{{ $year['name'] }}" style="display: none; background-color: #ebeef0">
+                                                {{ $quart['name'] }}
+                                                <span class="w-40px ps-3 fs-2 fw-bold collapse-trigger cursor-pointer" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}">+</span>
+                                            </th>
+
+                                            @foreach($quart['months'] as $month)
+                                                <th class="collapse-col text-center min-w-200px" colspan="2" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">
+                                                    {{ $month['name'] }}
+                                                </th>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
-                                    <th class="min-w-200px">Накопительные</th>
+
+                                    <th class="min-w-200px total-cell">Накопительные</th>
                                 </tr>
+
                                 <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                                     <th class="min-w-250px ps-2">Доходная часть</th>
                                     <th class="min-w-250px ps-2">Категория</th>
-                                    @foreach($reportInfo['monthsFull'] as $month)
-                                        <th class="min-w-200px">Сумма</th>
+
+                                    @foreach($info['years'] as $year)
+                                        <th class="text-center min-w-200px" style="background-color: #d5dce0">Сумма</th>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <th class="collapse-col text-center min-w-200px" data-trigger="periods-year-{{ $year['name'] }}" style="display: none; background-color: #ebeef0">Сумма</th>
+
+                                            @foreach($quart['months'] as $month)
+                                                <th class="collapse-col text-center min-w-200px" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">Сумма</th>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
-                                    <th class="min-w-200px">Сумма</th>
+
+                                    <th class="min-w-200px total-cell">Сумма</th>
                                 </tr>
                             </thead>
 
@@ -69,187 +87,323 @@
                                     <td class="ps-5 fw-bolder">КС 2</td>
                                     <td>Материал</td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['material'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['material'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['material'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['material'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['material'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['material']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5"></td>
                                     <td>Работы</td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['rad'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['rad'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['rad'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['rad'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['rad'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['rad']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5"></td>
                                     <td>Накладные</td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['service'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['service'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['service'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['service'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['service'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['service']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr class="total-row">
                                     <td class="ps-5"></td>
                                     <td>Итого доходы: </td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['total'][$year][$month], 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['receive'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['total'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-right total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5 fw-bolder">Расходная часть</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right"></td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end"></td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;"></td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;"></td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right"></td>
+                                    <td class="text-end total-cell"></td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Подрядчики</td>
                                     <td>Материал</td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['contractors']['material'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['material'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['material'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['material'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['contractors']['material'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['material']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5"></td>
                                     <td>Работы</td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['contractors']['rad'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['rad'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['rad'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['rad'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['contractors']['rad'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['contractors']['rad']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Поставщики</td>
                                     <td>Материал</td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['providers']['material'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['providers']['material'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['providers']['material'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['providers']['material'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['providers']['material'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['providers']['material']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Услуги/накладные</td>
                                     <td>Содержание стройплащадки</td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['service']['service'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['service']['service'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['service']['service'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['service']['service'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['service']['service'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['service']['service']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Зарплата рабочие</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_workers'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_workers'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_workers'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_workers'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_workers'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_workers']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Зарплата ИТР</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_itr'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_itr'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_itr'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_itr'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_itr'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_itr']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Налоги с зп</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_taxes'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_taxes'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_taxes'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_taxes'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['salary_taxes'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['salary_taxes']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Услуги трансфера</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['transfer'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['transfer'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['transfer'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['transfer'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['transfer'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['transfer']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Общие затраты (в т.ч офис)</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['general_costs'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['general_costs'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['general_costs'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['general_costs'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['general_costs'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['general_costs']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="ps-5">Налоги (НДС,прибыль)</td>
                                     <td></td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['accrued_taxes'][$year][$month] ?? 0, 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['accrued_taxes'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['accrued_taxes'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['accrued_taxes'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['accrued_taxes'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['accrued_taxes']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr class="total-row">
                                     <td class="ps-5"></td>
                                     <td>Итого расходы: </td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['total'][$year][$month], 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['payment'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['payment'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['paymentInfo']['total'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['payment']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
 
                                 <tr class="total-row" style="background-color: #333">
                                     <td class="ps-5"></td>
                                     <td>Маржа: </td>
 
-                                    @foreach($reportInfo['months'] as $month)
-                                        <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['total'][$year][$month] + $reportInfo['paymentInfo']['total'][$year][$month], 'RUB', 0, true) }}</td>
+                                    @foreach($info['years'] as $year)
+                                        <td class="text-end">{{ \App\Models\CurrencyExchangeRate::format($info['receive'][$year['name']]['total'] + $info['payment'][$year['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                        @foreach($year['quarts'] as $index => $quart)
+                                            <td class="collapse-col text-end" data-trigger="periods-year-{{ $year['name'] }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive'][$year['name']][$quart['name']]['total'] + $info['payment'][$year['name']][$quart['name']]['total'], 'RUB', 0, true) }}</td>
+
+                                            @foreach($quart['months'] as $month)
+                                                <td class="collapse-col text-end" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">{{ \App\Models\CurrencyExchangeRate::format($info['receive'][$year['name']][$quart['name']][$month['name']] + $info['payment'][$year['name']][$quart['name']][$month['name']], 'RUB', 0, true) }}</td>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
 
-                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($reportInfo['receiveInfo']['total'][$year]['total'] + $reportInfo['paymentInfo']['total'][$year]['total'], 'RUB', 0, true) }}</td>
+                                    <td class="text-end total-cell">{{ \App\Models\CurrencyExchangeRate::format($info['receive']['total'] + $info['payment']['total'], 'RUB', 0, true) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -279,6 +433,11 @@
         .total-row {
             background-color: #f7f7f7 !important;
             font-weight: bold !important;
+        }
+
+        .table th.total-cell, .table td.total-cell {
+            border: 1px solid #c8c8c8 !important;
+            background-color: #eee !important;
         }
     </style>
 @endpush
@@ -321,13 +480,13 @@
             if (isCollapsed) {
                 $tr.text('+');
                 $tr.removeClass('collapsed');
-                $(`.collapse-row[data-trigger="${trigger}"]`).hide();
+                $(`.collapse-col[data-trigger="${trigger}"]`).hide();
             } else {
-                $tr.text('-');
+                $tr.text('>');
                 $tr.addClass('collapsed');
-                $(`.collapse-row[data-trigger="${trigger}"]`).show();
+                $(`.collapse-col[data-trigger="${trigger}"]`).show();
             }
-        });
+        })
 
         $('#organization-select').select2({
             sorter: function(data) {

@@ -5,9 +5,10 @@ namespace App\Exports\Object\Report\PaymentReceiveReport\Sheets;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PaymentReceiveSheet implements
@@ -15,28 +16,17 @@ class PaymentReceiveSheet implements
     WithStyles,
     ShouldAutoSize
 {
-    public function __construct(private array $reportInfo, private $year) {}
+    public function __construct(private array $reportInfo) {}
 
     public function title(): string
     {
-        return $this->year;
+        return 'Отчет';
     }
 
     public function styles(Worksheet $sheet): void
     {
-        $year = $this->year;
         $reportInfo = $this->reportInfo;
-
-        $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
-
-        $sheet->getRowDimension(1)->setRowHeight(30);
-        $sheet->getRowDimension(2)->setRowHeight(30);
-
-        $sheet->getColumnDimension('A')->setWidth(40);
-        $sheet->getColumnDimension('B')->setWidth(40);
-
-        $sheet->getStyle('A1:O2')->getFont()->setBold(true);
-        $sheet->getStyle('A1:O2')->getAlignment()->setVertical('center')->setHorizontal('center');
+        $lastColumnIndex = 3 + count($reportInfo['years']) * 17;
 
         $sheet->setCellValue('A1', 'Отчет доходов и расходов');
         $sheet->setCellValue('A2', 'Доходная часть');
@@ -44,388 +34,173 @@ class PaymentReceiveSheet implements
 
         $sheet->mergeCells('A1:B1');
 
-        $row = 1;
         $columnIndex = 3;
-        foreach($this->reportInfo['monthsFull'] as $month) {
+        foreach ($reportInfo['years'] as $year) {
             $column = $this->getColumnWord($columnIndex);
-            $sheet->setCellValue($column . $row, $month);
-            $sheet->setCellValue($column . $row + 1, 'Сумма');
-            $sheet->getColumnDimension($column)->setWidth(30);
+            $sheet->setCellValue($column . '1', $year['name']);
+
+            $sheet->setCellValue($column . '2', 'Сумма');
             $columnIndex++;
+
+            foreach($year['quarts'] as $quart) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . '1', $quart['name']);
+
+                $sheet->setCellValue($column . '2', 'Сумма');
+                $columnIndex++;
+
+                $sheet->getColumnDimension($column)->setOutlineLevel(1)
+                    ->setVisible(false)
+                    ->setCollapsed(true);
+
+                foreach($quart['months'] as $month) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . '1', $month['name']);
+
+                    $sheet->setCellValue($column . '2', 'Сумма');
+                    $columnIndex++;
+
+                    $sheet->getColumnDimension($column)->setOutlineLevel(2)
+                        ->setVisible(false)
+                        ->setCollapsed(true);
+                }
+            }
         }
 
         $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, 'Накопительные');
-        $sheet->setCellValue($column . $row + 1, 'Сумма');
+        $sheet->setCellValue($column . '1', 'Накопительные');
+        $sheet->setCellValue($column . '2', 'Сумма');
+
+        $rowIndex = 3;
+        $this->fillRow($sheet, $rowIndex, 'КС 2', 'Материал', $reportInfo['years'], $reportInfo['receive']['material']);
+        $this->fillRow($sheet, $rowIndex, '', 'Работы', $reportInfo['years'], $reportInfo['receive']['rad']);
+        $this->fillRow($sheet, $rowIndex, '', 'Накладные', $reportInfo['years'], $reportInfo['receive']['service']);
+        $this->fillRow($sheet, $rowIndex, '', 'Итого доходы: ', $reportInfo['years'], $reportInfo['receive']);
+
+        $sheet->setCellValue('A' . $rowIndex, 'Расходная часть');
+        $sheet->getRowDimension($rowIndex)->setRowHeight(30);
+        $rowIndex++;
+
+        $this->fillRow($sheet, $rowIndex, 'Подрядчики', 'Материал', $reportInfo['years'], $reportInfo['payment']['contractors']['material']);
+        $this->fillRow($sheet, $rowIndex, '', 'Работы', $reportInfo['years'], $reportInfo['payment']['contractors']['rad']);
+        $this->fillRow($sheet, $rowIndex, 'Поставщики', 'Материал', $reportInfo['years'], $reportInfo['payment']['providers']['material']);
+        $this->fillRow($sheet, $rowIndex, 'Услуги/накладные', 'Содержание стройплащадки', $reportInfo['years'], $reportInfo['payment']['service']['service']);
+        $this->fillRow($sheet, $rowIndex, 'Зарплата рабочие', '', $reportInfo['years'], $reportInfo['payment']['salary_workers']);
+        $this->fillRow($sheet, $rowIndex, 'Зарплата ИТР', '', $reportInfo['years'], $reportInfo['payment']['salary_itr']);
+        $this->fillRow($sheet, $rowIndex, 'Налоги с зп', '', $reportInfo['years'], $reportInfo['payment']['salary_taxes']);
+        $this->fillRow($sheet, $rowIndex, 'Услуги трансфера', '', $reportInfo['years'], $reportInfo['payment']['transfer']);
+        $this->fillRow($sheet, $rowIndex, 'Общие затраты (в т.ч офис)', '', $reportInfo['years'], $reportInfo['payment']['general_costs']);
+        $this->fillRow($sheet, $rowIndex, 'Налоги (НДС,прибыль)', '', $reportInfo['years'], $reportInfo['payment']['accrued_taxes']);
+        $this->fillRow($sheet, $rowIndex, '', 'Итого расходы: ', $reportInfo['years'], $reportInfo['payment']);
+
+        $sheet->setCellValue('A' . $rowIndex, '');
+        $sheet->setCellValue('B' . $rowIndex, 'Маржа: ');
+
+        $columnIndex = 3;
+        foreach ($reportInfo['years'] as $year) {
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($column . $rowIndex, $reportInfo['receive'][$year['name']]['total'] + $reportInfo['payment'][$year['name']]['total']);
+            $columnIndex++;
+
+            foreach($year['quarts'] as $quart) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . $rowIndex, $reportInfo['receive'][$year['name']][$quart['name']]['total'] + $reportInfo['payment'][$year['name']][$quart['name']]['total']);
+                $columnIndex++;
+
+                foreach($quart['months'] as $month) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . $rowIndex, $reportInfo['receive'][$year['name']][$quart['name']][$month['name']] + $reportInfo['payment'][$year['name']][$quart['name']][$month['name']]);
+                    $columnIndex++;
+                }
+            }
+        }
+
+        $column = $this->getColumnWord($columnIndex);
+        $sheet->setCellValue($column . $rowIndex, $reportInfo['receive']['total'] + $reportInfo['payment']['total']);
+
+        $sheet->getRowDimension($rowIndex)->setRowHeight(30);
+
+        $lastColumn = $this->getColumnWord($lastColumnIndex);
+        $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
+
+        $sheet->getRowDimension(1)->setRowHeight(30);
+        $sheet->getRowDimension(2)->setRowHeight(30);
+        $sheet->getColumnDimension('A')->setWidth(30);
+        $sheet->getColumnDimension('B')->setWidth(30);
+
+        $columnIndex = 3;
+        foreach ($reportInfo['years'] as $year) {
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->getColumnDimension($column)->setWidth(22);
+            $columnIndex++;
+
+            foreach ($year['quarts'] as $quart) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->getColumnDimension($column)->setWidth(22);
+                $columnIndex++;
+
+                foreach ($quart['months'] as $month) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->getColumnDimension($column)->setWidth(22);
+                    $columnIndex++;
+                }
+            }
+        }
+
+        $column = $this->getColumnWord($columnIndex);
         $sheet->getColumnDimension($column)->setWidth(30);
 
-        $row += 2;
-        $sheet->setCellValue('A' . $row, 'КС 2');
-        $sheet->setCellValue('B' . $row, 'Материал');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A1:' . $lastColumn . '2')->getFont()->setBold(true);
+        $sheet->getStyle('A6:' . $lastColumn . '6')->getFont()->setBold(true);
+        $sheet->getStyle('A' . ($rowIndex - 2) . ':' . $lastColumn . $rowIndex)->getFont()->setBold(true);
 
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['material'][$year][$month] ?? 0;
+        $sheet->getStyle('A1:' . $lastColumn . '2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('A3:B' . $rowIndex)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
+        $sheet->getStyle('C3:' . $lastColumn . $rowIndex)->getAlignment()->setVertical('center')->setHorizontal('right')->setWrapText(false);
 
-            if ($amount == 0) {
-                $amount = '';
-            }
+        $sheet->getStyle('C3:' . $lastColumn . $rowIndex)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['material'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, '');
-        $sheet->setCellValue('B' . $row, 'Работы');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['rad'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['rad'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, '');
-        $sheet->setCellValue('B' . $row, 'Накладные');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['service'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['service'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, '');
-        $sheet->setCellValue('B' . $row, 'Итого доходы:');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-        $sheet->getStyle('A' . $row . ':' . $column . $row)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $row . ':' . $column . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['total'][$year][$month];
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['total'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Расходная часть	');
-        $sheet->setCellValue('B' . $row, '');
-        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
-        $sheet->getRowDimension($row)->setRowHeight(50);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Подрядчики');
-        $sheet->setCellValue('B' . $row, 'Материал');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['contractors']['material'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['contractors']['material'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, '');
-        $sheet->setCellValue('B' . $row, 'Работы');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['contractors']['rad'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['contractors']['rad'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Поставщики');
-        $sheet->setCellValue('B' . $row, 'Материал');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['providers']['material'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['providers']['material'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Услуги/накладные');
-        $sheet->setCellValue('B' . $row, 'Содержание стройплащадки');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['service']['service'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['service']['service'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Зарплата рабочие');
-        $sheet->setCellValue('B' . $row, '');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['salary_workers'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_workers'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Зарплата ИТР');
-        $sheet->setCellValue('B' . $row, '');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['salary_itr'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_itr'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Налоги с зп');
-        $sheet->setCellValue('B' . $row, '');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['salary_taxes'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['salary_taxes'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Услуги трансфера');
-        $sheet->setCellValue('B' . $row, '');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['transfer'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['transfer'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Общие затраты (в т.ч офис)');
-        $sheet->setCellValue('B' . $row, '');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['general_costs'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['general_costs'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, 'Налоги (НДС,прибыль)');
-        $sheet->setCellValue('B' . $row, '');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['accrued_taxes'][$year][$month] ?? 0;
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['accrued_taxes'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, '');
-        $sheet->setCellValue('B' . $row, 'Итого расходы:');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-        $sheet->getStyle('A' . $row . ':' . $column . $row)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $row . ':' . $column . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['paymentInfo']['total'][$year][$month];
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['paymentInfo']['total'][$year]['total']);
-        $row++;
-
-        $sheet->setCellValue('A' . $row, '');
-        $sheet->setCellValue('B' . $row, 'Маржа:');
-        $sheet->getRowDimension($row)->setRowHeight(50);
-        $sheet->getStyle('A' . $row . ':' . $column . $row)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $row . ':' . $column . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-
-        $columnIndex = 3;
-        foreach($reportInfo['months'] as $month) {
-            $column = $this->getColumnWord($columnIndex);
-            $amount = $reportInfo['receiveInfo']['total'][$year][$month] + $reportInfo['paymentInfo']['total'][$year][$month];
-
-            if ($amount == 0) {
-                $amount = '';
-            }
-
-            $sheet->setCellValue($column . $row, $amount);
-            $columnIndex++;
-        }
-
-        $column = $this->getColumnWord($columnIndex);
-        $sheet->setCellValue($column . $row, $reportInfo['receiveInfo']['total'][$year]['total'] + $reportInfo['paymentInfo']['total'][$year]['total']);
-        $sheet->getStyle('A' . $row . ':' . $column . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
-
-        $sheet->getStyle('C3:' . $column . $row)->getNumberFormat()->setFormatCode('#,##0');
-
-        $sheet->getStyle('A1:' . $column . $row)->applyFromArray([
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]]
+        $sheet->getStyle('A1:' . $lastColumn . $rowIndex)->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'aaaaaa']]]
         ]);
-        $sheet->getStyle('A1:' . $column . $row)->getAlignment()->setVertical('center');
 
-
-//        $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, $column, $row);
-//        $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
-//        $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
-//        $sheet->getPageSetup()->setFitToWidth(1);
-//        $sheet->getPageSetup()->setFitToHeight(1);
+        $sheet->getStyle('A' . ($rowIndex - 2) . ':' . $lastColumn . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('A6:' . $lastColumn . '6')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle($lastColumn . '1:' . $lastColumn . $rowIndex)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
     }
 
     private function getColumnWord($n) {
-        $n--;
-        return ($n<26) ? chr(ord('A') + $n) : 'A' .  chr(ord('A') + $n % 26);
+        return Coordinate::stringFromColumnIndex($n);
+    }
+
+    public function fillRow(&$sheet, &$rowIndex, $titleOne, $titleTwo, $years, $value): void
+    {
+        $sheet->setCellValue('A' . $rowIndex, $titleOne);
+        $sheet->setCellValue('B' . $rowIndex, $titleTwo);
+
+        $columnIndex = 3;
+        foreach ($years as $year) {
+            $column = $this->getColumnWord($columnIndex);
+            $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($value[$year['name']]['total']) ? $value[$year['name']]['total'] : '-');
+            $columnIndex++;
+
+            foreach($year['quarts'] as $quart) {
+                $column = $this->getColumnWord($columnIndex);
+                $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($value[$year['name']][$quart['name']]['total']) ? $value[$year['name']][$quart['name']]['total'] : '-');
+                $columnIndex++;
+
+                foreach($quart['months'] as $month) {
+                    $column = $this->getColumnWord($columnIndex);
+                    $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($value[$year['name']][$quart['name']][$month['name']]) ? $value[$year['name']][$quart['name']][$month['name']] : '-');
+                    $columnIndex++;
+                }
+            }
+        }
+
+        $column = $this->getColumnWord($columnIndex);
+        $sheet->setCellValue($column . $rowIndex, is_valid_amount_in_range($value['total']) ? $value['total'] : '-');
+
+        $sheet->getRowDimension($rowIndex)->setRowHeight(30);
+        $rowIndex++;
     }
 }
