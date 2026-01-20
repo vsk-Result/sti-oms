@@ -46,13 +46,13 @@
                                         </th>
 
                                         @foreach($year['quarts'] as $index => $quart)
-                                            <th class="collapse-col text-center min-w-200px" colspan="2" data-trigger="periods-year-{{ $year['name'] }}" style="display: none; background-color: #ebeef0">
+                                            <th class="collapse-col text-center min-w-200px" data-trigger="periods-year-{{ $year['name'] }}" style="display: none; background-color: #ebeef0">
                                                 {{ $quart['name'] }}
                                                 <span class="w-40px ps-3 fs-2 fw-bold collapse-trigger cursor-pointer" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}">+</span>
                                             </th>
 
                                             @foreach($quart['months'] as $month)
-                                                <th class="collapse-col text-center min-w-200px" colspan="2" data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">
+                                                <th class="collapse-col text-center min-w-200px"  data-trigger="periods-quart-{{ $year['name'] }}-{{ $index }}" style="display: none;">
                                                     {{ $month['name'] }}
                                                 </th>
                                             @endforeach
