@@ -65,9 +65,12 @@ class PaymentController extends Controller
         }
 
         $objects = BObject::orderBy('code')->get();
+        $objectsExceptionUsers = ['mariya.serebryakova@st-ing.com'];
 
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
-            $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+            if (!in_array(auth()->user()->email, $objectsExceptionUsers)) {
+                $objects = BObject::whereIn('id', auth()->user()->objects->pluck('id'))->orderBy('code')->get();
+            }
         }
 
         $companies = Company::orderBy('id')->get();
