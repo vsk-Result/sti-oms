@@ -44,7 +44,7 @@ class CalculateWorkersCostService
         'Административные' => '5.1;5.2;5.3;5.4;5.5;5.6;5.7;5.15;5.17;7.20;7.21;7.25;7.26;7.30;7.31;7.32',
         'Питание' => '5.13;5.13.1;5.13.2',
         'Проживание' => '5.14;5.14.1;5.14.2',
-        'Инстр&оргтех' => '9.1;9.2;9.3;9.4;9.5;9.7;5.16 ',
+        'Инстр&оргтех' => '9.1;9.2;9.3;9.4;9.5;9.7;5.16',
         'Миграционные/ Регистрация рабочих / патенты + Медобслуживание + Аттестация' => '5.10',
         'Транспорт (перевозка сотрудников) + Авиабилеты' => '5.11;5.1.11;5.11.2;5.12',
         'Спецодежда и СИЗ' => '5.8',
@@ -631,8 +631,8 @@ class CalculateWorkersCostService
                             } elseif ($codes[0] === 'accrued_taxes_transport') {
                                 $amount = -1 * abs(AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'workers_salary') {
-                                $amount = 0;
-//                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
+//                                $amount = 0;
+                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
                             } elseif ($codes[0] === 'itr_salary') {
                                 $amount = 0;
 

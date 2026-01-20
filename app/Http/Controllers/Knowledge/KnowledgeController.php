@@ -9,13 +9,28 @@ class KnowledgeController extends Controller
 {
     public function index(): View
     {
-        $instructions = [
+        $explanations = [
             [
-                'name' => 'Детализация сводных данных в карточке объекта',
+                'name' => 'Сводная информация карточки объекта',
                 'ext' => 'doc',
                 'size' => '16 Кб',
-                'file' => 'Детализация_сводных_данных_в_карточке_объекта.docx'
+                'file' => 'Сводная_информация_карточки_объекта.docx'
             ],
+            [
+                'name' => 'Отчет доходов и расходов объекта',
+                'ext' => 'doc',
+                'size' => '113 Кб',
+                'file' => 'Отчет_доходов_и_расходов_объекта.docx'
+            ],
+            [
+                'name' => 'Отчет стоимости рабочих объекта',
+                'ext' => 'doc',
+                'size' => '113 Кб',
+                'file' => 'Отчет_стоимости_рабочих_объекта.docx'
+            ]
+        ];
+
+        $instructions = [
             [
                 'name' => 'Загрузка долгов объекта по подрядчикам',
                 'ext' => 'pdf',
@@ -66,6 +81,6 @@ class KnowledgeController extends Controller
             ],
         ];
 
-        return view('knowledge.index', compact('instructions'));
+        return view('knowledge.index', compact('instructions', 'explanations'));
     }
 }
