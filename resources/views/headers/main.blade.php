@@ -42,15 +42,13 @@
                                 </span>
                             </div>
 
-                            @if (auth()->user()->hasRole('super-admin'))
-                                <div class="menu-item menu-lg-down-accordion me-lg-1">
-                                    <span class="menu-link py-3">
-                                        <a class="menu-title position-relative" href="{{ route('knowledge.index') }}">
-                                            База знаний
-                                        </a>
-                                    </span>
-                                </div>
-                            @endif
+                            <div class="menu-item menu-lg-down-accordion me-lg-1">
+                                <span class="menu-link py-3">
+                                    <a class="menu-title position-relative" href="{{ route('knowledge.index') }}">
+                                        База знаний
+                                    </a>
+                                </span>
+                            </div>
                         @endif
                     </div>
                 </div>
