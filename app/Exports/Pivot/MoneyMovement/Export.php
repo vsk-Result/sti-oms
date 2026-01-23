@@ -22,6 +22,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class Export implements WithMultipleSheets
 {
     private Builder $payments;
+    private Builder $paymentsNotFiltered;
 
     private bool $needGroupByObjects;
 
@@ -51,6 +52,7 @@ class Export implements WithMultipleSheets
         })->pluck('id')->toArray();
 
         $this->payments = $payments->whereNotIn('id', $exceptPaymentIds)->where('company_id', Company::getSTI()->id);
+        $this->paymentsNotFiltered = $payments->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH);
     }
 
     public function sheets(): array
@@ -59,7 +61,7 @@ class Export implements WithMultipleSheets
         ini_set('max_execution_time', 3000);
 
         $baseSheets = [
-            new DetailedPivotObjectSheet((clone $this->payments)),
+            new DetailedPivotObjectSheet((clone $this->paymentsNotFiltered)),
             new PivotObjectSheet((clone $this->payments)),
             new PaymentSheet((clone $this->payments)),
         ];

@@ -6,6 +6,7 @@ use App\Exports\Pivot\MoneyMovement\Export;
 use App\Http\Controllers\Controller;
 use App\Models\Object\BObject;
 use App\Services\ScheduleExportService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -22,7 +23,10 @@ class ExportController extends Controller
 
     public function store(Request $request): RedirectResponse | BinaryFileResponse
     {
+        $periodSplit = explode(' - ', $request->get('period'));
+        $periodDiff = Carbon::parse($periodSplit[0])->diffInDays($periodSplit[1]);
         $exportName = 'Отчет о движении денежных средств';
+
         $requestData = [
             'period' => $request->get('period', ''),
             'object_id' => $request->get('object_id', []),
@@ -33,8 +37,9 @@ class ExportController extends Controller
             'need_transfers' => $request->has('need_transfers')
         ];
 
-        return Excel::download(new Export($requestData), $exportName . '.xlsx');
-
+        if ($periodDiff <= 180) {
+            return Excel::download(new Export($requestData), $exportName . '.xlsx');
+        }
 
         if (count($requestData['object_id']) === 0) {
             if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {

@@ -2,6 +2,8 @@
 
 namespace App\Exports\Pivot\MoneyMovement\Sheets;
 
+use App\Models\Company;
+use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
 use App\Models\Organization;
 use App\Models\Payment;
@@ -43,16 +45,16 @@ class DetailedPivotObjectSheet implements
         $sheet->setCellValue('A2', 'Период с ' . Carbon::parse($minDate)->format('d.m.Y') . ' по ' . Carbon::parse($maxDate)->format('d.m.Y'));
 
         $sheet->setCellValue('A3', 'Остаток на начало ' . Carbon::parse($minDate)->format('d.m'));
-        $sheet->setCellValue('B3', Payment::where('date', '<=', $minDate)->sum('amount'));
+        $sheet->setCellValue('B3', FinanceReportHistory::getBalanceForFinanceReportByDate($minDate));
 
         $sheet->setCellValue('A4', 'Итого приход');
-        $sheet->setCellValue('B4', Payment::whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'));
+        $sheet->setCellValue('B4', Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('company_id', Company::getSTI()->id)->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'));
 
         $sheet->setCellValue('A5', 'Итого расход');
-        $sheet->setCellValue('B5', Payment::whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'));
+        $sheet->setCellValue('B5', Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('company_id', Company::getSTI()->id)->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'));
 
         $sheet->setCellValue('A6', 'Остаток на конец ' . Carbon::parse($maxDate)->format('d.m'));
-        $sheet->setCellValue('B6', Payment::where('date', '<=', $maxDate)->sum('amount'));
+        $sheet->setCellValue('B6', FinanceReportHistory::getBalanceForFinanceReportByDate($maxDate));
 
         $sheet->getStyle('A2:B2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getRowDimension(2)->setRowHeight(30);
@@ -93,7 +95,7 @@ class DetailedPivotObjectSheet implements
             $groupInfo = [];
 
             $addToRow = 0;
-            foreach ($object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+            foreach ($object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
                 $groupInfoItem = [
                     'name' => $payment->category,
                     'amount' => $payment->sum_amount,
@@ -106,7 +108,7 @@ class DetailedPivotObjectSheet implements
 
                 $addToRow++;
 
-                foreach ($object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+                foreach ($object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
                     $groupInfoItem['groupInfo'][] = [
                         'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
                         'amount' => $payment->sum_amount,
@@ -119,13 +121,13 @@ class DetailedPivotObjectSheet implements
 
             $this->fillObjectInfo($sheet, $row, [
                 'title' => $object->getName(),
-                'receive' => $object->payments()->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
-                'payment' => $object->payments()->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
+                'receive' => $object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
+                'payment' => $object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
                 'period' => $period,
                 'groupInfo' => $groupInfo
             ]);
 
-            $row += 4 + $addToRow;
+            $row += 5 + $addToRow;
         }
 
         $row++;
@@ -135,7 +137,7 @@ class DetailedPivotObjectSheet implements
         $groupInfo = [];
 
         $addToRow = 0;
-        foreach ($office->payments()->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+        foreach ($office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
             $groupInfoItem = [
                 'name' => $payment->category,
                 'amount' => $payment->sum_amount,
@@ -148,7 +150,7 @@ class DetailedPivotObjectSheet implements
 
             $addToRow++;
 
-            foreach ($office->payments()->whereBetween('date', $period)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+            foreach ($office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
                 $groupInfoItem['groupInfo'][] = [
                     'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
                     'amount' => $payment->sum_amount,
@@ -161,13 +163,13 @@ class DetailedPivotObjectSheet implements
 
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Офис',
-            'receive' => $office->payments()->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
-            'payment' => $office->payments()->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
+            'receive' => $office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
+            'payment' => $office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
             'period' => $period,
             'groupInfo' => $groupInfo
         ]);
 
-        $row += $addToRow + 2;
+        $row += $addToRow + 5;
 
         $groupInfo = [];
 
@@ -204,7 +206,44 @@ class DetailedPivotObjectSheet implements
             'groupInfo' => $groupInfo
         ]);
 
-        $row += $addToRow + 1;
+        $row += $addToRow + 5;
+
+        $groupInfo = [];
+
+        $addToRow = 0;
+        foreach ((clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+            $groupInfoItem = [
+                'name' => $payment->category,
+                'amount' => $payment->sum_amount,
+                'groupInfo' => [],
+            ];
+
+            $category = isset($categoryTotal[$payment->category]) ? $payment->category : Payment::CATEGORY_MATERIAL;
+
+            $categoryTotal[$category] += $payment->sum_amount;
+
+            $addToRow++;
+
+            foreach ((clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+                $groupInfoItem['groupInfo'][] = [
+                    'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
+                    'amount' => $payment->sum_amount,
+                ];
+                $addToRow++;
+            }
+
+            $groupInfo[] = $groupInfoItem;
+        }
+
+        $this->fillObjectInfo($sheet, $row, [
+            'title' => 'Трансфер',
+            'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '>=', 0)->sum('amount'),
+            'payment' => (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '<', 0)->sum('amount'),
+            'period' => $period,
+            'groupInfo' => $groupInfo
+        ]);
+
+        $row += $addToRow + 5;
 
         $sheet->getStyle('B3:B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
@@ -213,33 +252,18 @@ class DetailedPivotObjectSheet implements
         $sheet->setCellValue('D2', 'Свод итогов по категориям по расходам');
         $sheet->setCellValue('F2', '%');
 
-        $sheet->setCellValue('D3', 'Работы');
-        $sheet->setCellValue('E3', $categoryTotal[Payment::CATEGORY_RAD]);
-        $sheet->setCellValue('F3', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_RAD] / $totalCategorySum : 0);
+        $totalRow = 2;
+        foreach ($categoryTotal as $catName => $catAmount) {
+            if (!is_valid_amount_in_range($catAmount)) {
+                continue;
+            }
 
-        $sheet->setCellValue('D4', 'Материалы');
-        $sheet->setCellValue('E4', $categoryTotal[Payment::CATEGORY_MATERIAL]);
-        $sheet->setCellValue('F4', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_MATERIAL] / $totalCategorySum : 0);
+            $totalRow++;
 
-        $sheet->setCellValue('D5', 'Накладные/Услуги');
-        $sheet->setCellValue('E5', $categoryTotal[Payment::CATEGORY_OPSTE]);
-        $sheet->setCellValue('F5', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_OPSTE] / $totalCategorySum : 0);
-
-        $sheet->setCellValue('D6', 'Зарплата');
-        $sheet->setCellValue('E6', $categoryTotal[Payment::CATEGORY_SALARY]);
-        $sheet->setCellValue('F6', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_SALARY] / $totalCategorySum : 0);
-
-        $sheet->setCellValue('D7', 'Налоги');
-        $sheet->setCellValue('E7', $categoryTotal[Payment::CATEGORY_TAX]);
-        $sheet->setCellValue('F7', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TAX] / $totalCategorySum : 0);
-
-        $sheet->setCellValue('D8', 'Заказчики');
-        $sheet->setCellValue('E8', $categoryTotal[Payment::CATEGORY_CUSTOMERS]);
-        $sheet->setCellValue('F8', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_CUSTOMERS] / $totalCategorySum : 0);
-
-        $sheet->setCellValue('D9', 'Трансфер');
-        $sheet->setCellValue('E9', $categoryTotal[Payment::CATEGORY_TRANSFER]);
-        $sheet->setCellValue('F9', $totalCategorySum != 0 ? $categoryTotal[Payment::CATEGORY_TRANSFER] / $totalCategorySum : 0);
+            $sheet->setCellValue('D' . $totalRow, $catName);
+            $sheet->setCellValue('E' . $totalRow, $catAmount);
+            $sheet->setCellValue('F' . $totalRow, $totalCategorySum != 0 ? $catAmount / $totalCategorySum : 0);
+        }
 
         $sheet->getStyle('D2:F2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getRowDimension(2)->setRowHeight(30);
@@ -247,15 +271,15 @@ class DetailedPivotObjectSheet implements
         $sheet->getColumnDimension('D')->setWidth(26);
         $sheet->getColumnDimension('E')->setWidth(17);
 
-        $sheet->getStyle('D1:F10')->getFont()->setBold(true);
+        $sheet->getStyle('D1:F' . $totalRow)->getFont()->setBold(true);
         $sheet->mergeCells('D2:E2');
 
         $sheet->getStyle('D2:F2')->applyFromArray([
             'borders' => ['outline' => ['borderStyle' => Border::BORDER_MEDIUM]]
         ]);
 
-        $sheet->getStyle('E3:E10')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-        $sheet->getStyle('F3:F10')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE);
+        $sheet->getStyle('E3:E' . $totalRow)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+        $sheet->getStyle('F3:F' . $totalRow)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE);
     }
 
     public function fillObjectInfo(&$sheet, $row, array $info)

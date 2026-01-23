@@ -43,4 +43,17 @@ class FinanceReportHistory extends Model
         $lastDate = self::select('date')->latest('date')->first()->date ?? now()->format('Y-m-d');
         return self::where('date', $lastDate)->first();
     }
+
+    public static function getBalanceForFinanceReportByDate($date)
+    {
+        $report = self::where('date', $date)->first();
+
+        if (!$report) {
+            return 0;
+        }
+
+        $balancesInfo = json_decode($report->balances);
+
+        return $balancesInfo?->balances?->total?->RUB ?? 0;
+    }
 }
