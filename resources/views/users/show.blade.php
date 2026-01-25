@@ -49,6 +49,15 @@
                         </div>
 
                         <div class="row mb-6">
+                            <label class="col-lg-4 col-form-label fw-bold fs-6">Доступ к объектам</label>
+                            <div class="col-lg-8 fv-row">
+                                @foreach($user->objects()->orderBy('code', 'desc')->get() as $object)
+                                    <span class="badge badge-light m-2">{{ $object->getName() }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="row mb-6">
                             <label class="col-lg-4 col-form-label fw-bold fs-6">Статус</label>
                             <div class="col-lg-8 fv-row">
                                 @include('partials.status', ['status' => $user->getStatus()])

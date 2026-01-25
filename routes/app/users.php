@@ -9,6 +9,7 @@ use App\Http\Controllers\User\{
     PermissionController,
     EmailConfirmController,
     EmailConfirmResetController,
+    ObjectController
 };
 
 // Пользователи
@@ -44,3 +45,7 @@ Route::post('users/{user}/permissions', [PermissionController::class, 'update'])
 // Войти под пользователем в систему
 
 Route::post('users/{user}/login', [UserController::class, 'login'])->name('users.login')->middleware('can:edit admin-users');
+
+// Обновление доступов к объектам
+
+Route::post('users/{user}/objects', [ObjectController::class, 'update'])->name('users.objects.update')->middleware('can:edit admin-users');

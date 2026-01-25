@@ -97,6 +97,11 @@ class UserService
         $user->syncRoles($requestData['user_role'] ?? []);
     }
 
+    public function updateObjects(User $user, array $requestData): void
+    {
+        $user->objects()->sync($requestData['object_id'] ?? []);
+    }
+
     public function updatePermissions(User $user, array $requestData): void
     {
         $user->syncPermissions($requestData['permissions'] ?? []);

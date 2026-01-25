@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Models\Object\BObject;
 use App\Models\Status;
 use App\Models\User;
 use App\Http\Controllers\Controller;
@@ -61,7 +62,9 @@ class UserController extends Controller
         $roles = Role::all();
         $permissionCategories = Permission::all()->groupBy('category');
         $statuses = Status::getStatuses();
-        return view('users.edit', compact('user', 'statuses', 'roles', 'permissionCategories'));
+        $objects = BObject::orderBy('code', 'desc')->get();
+
+        return view('users.edit', compact('user', 'statuses', 'roles', 'permissionCategories', 'objects'));
     }
 
     public function update(User $user, UpdateUserRequest $request): RedirectResponse

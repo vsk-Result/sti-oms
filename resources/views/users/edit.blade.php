@@ -9,6 +9,7 @@
         <div id="kt_content_container" class="container">
             @include('users.edit-blocks.general')
             @can('edit admin-users')
+                @include('users.edit-blocks.object_access')
                 @include('users.edit-blocks.roles')
                 @include('users.edit-blocks.permissions')
             @endcan
