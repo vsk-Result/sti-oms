@@ -195,7 +195,7 @@ class PaymentReceiveReportService
 
                     $contractorsMaterial = 0;
                     $contractorsRad = 0;
-                    $providersMaterial = 0;
+                    $providersMaterial = Payment::whereBetween('date', $month['period'])->where('amount', '<', 0)->where('object_id', $object->id)->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
                     $serviceService = 0;
 
                     foreach ($paymentPeriodData as $paymentPeriodInfo) {
@@ -224,7 +224,6 @@ class PaymentReceiveReportService
                             ->where('is_main', true)
                             ->where('code', $object->code)
                             ->sum('amount'));
-
 
                         $salaryItr = -abs($itrAmount);
                         $salaryTaxes = -abs(0);
