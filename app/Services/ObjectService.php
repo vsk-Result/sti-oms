@@ -66,6 +66,11 @@ class ObjectService
         return $object;
     }
 
+    public function destroyObject(BObject $object): void
+    {
+        $object->payments()->delete();
+    }
+
     public function updateObject(BObject $object, array $requestData): void
     {
         if (array_key_exists('photo', $requestData)) {

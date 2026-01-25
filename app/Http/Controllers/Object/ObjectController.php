@@ -104,4 +104,10 @@ class ObjectController extends Controller
         $this->objectService->updateObject($object, $request->toArray());
         return redirect()->route('objects.show', $object);
     }
+
+    public function destroy(BObject $object): RedirectResponse
+    {
+        $this->objectService->destroyObject($object);
+        return redirect()->route('objects.index');
+    }
 }

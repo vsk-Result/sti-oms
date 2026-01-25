@@ -81,6 +81,10 @@
             <div class="d-flex mb-4">
                 @can('edit objects')
                     <a href="{{ route('objects.edit', $object) }}" class="btn btn-light btn-active-light-primary btn-sm me-3">Изменить</a>
+                    @if (auth()->id() === 1)
+                        <a href="{{ route('objects.destroy', $object) }}" class="btn btn-danger btn-sm me-3">Удалить</a>
+                    @endif
+
 
                     <form action="{{ route('objects.exports.store', $object) }}" method="POST" class="hidden">
                         @csrf
