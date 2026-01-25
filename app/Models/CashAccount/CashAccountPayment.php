@@ -98,7 +98,15 @@ class CashAccountPayment extends Model implements Audit, HasMedia
             return null;
         }
 
-        return $this->object_id . '::' . ($this->object->isWithoutWorktype() || $this->code == '0' ? null : $this->object_worktype_id);
+        $workType = '';
+
+        if (! is_null($this->object_worktype_id) && ! ($this->object->isWithoutWorktype() || $this->code == '0')) {
+            if ($this->object_worktype_id != 0) {
+                $workType = $this->object_worktype_id;
+            }
+        }
+
+        return $this->object_id . '::' . $workType;
     }
 
     public function getObjectName(): string
