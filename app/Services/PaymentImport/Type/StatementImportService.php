@@ -236,6 +236,8 @@ class StatementImportService
         $returnData['incoming_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][0]);
         $returnData['outgoing_balance'] = (float) preg_replace("/[^-.0-9]/", '', $importData[2][1]);
 
+        $objectsForCustomersAnalisys = BObject::get();
+
         $additionInfo = [];
         if (isset($statementData[1]) && count($statementData[1]) > 1) {
             foreach ($statementData[1] as $rowNum => $rowData) {
@@ -314,13 +316,26 @@ class StatementImportService
                 $inn = $this->cleanValue($rowData[6]);
             }
 
+            $organizationName = $this->cleanValue($rowData[3]);
+
+            if (empty($object) && $receiveAmount > 0) {
+                foreach ($objectsForCustomersAnalisys as $obj) {
+                    foreach ($obj->customers as $customer) {
+                        if ($customer->name === $organizationName || $customer->inn == $inn) {
+                            $object = $obj->code . '.10';
+                            break 2;
+                        }
+                    }
+                }
+            }
+
             $returnData['payments'][] = [
                 'object' => $object,
                 'code' => $code,
                 'date' => $date,
                 'pay_amount' => $payAmount,
                 'receive_amount' => $receiveAmount,
-                'organization_name' => $this->cleanValue($rowData[3]),
+                'organization_name' => $organizationName,
                 'organization_inn' => $inn,
                 'description' => $description,
                 'category' => $category,
