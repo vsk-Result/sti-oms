@@ -336,89 +336,92 @@
                         </td>
                     </tr>
 
-                    <tr class="fs-8">
-                        <td></td>
-                        <td class="ps-8 fst-italic" colspan="2">Фиксированная часть</td>
-                        <td></td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesFixAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedFixAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftFixAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td></td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesFixAmount($currency), $currency, 0, true) }}</a>
-                                <br>
-                            @endforeach
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftFixAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td></td>
-                    </tr>
+                    @if (count(array_unique($contract->avanses->pluck('type_id')->toArray())) > 1 || count(array_unique($contract->avansesReceived->pluck('type_id')->toArray())) > 1)
 
-                    <tr class="border-bottom-2 fs-8">
-                        <td></td>
-                        <td class="ps-8 fst-italic" colspan="2">Изменяемая часть</td>
-                        <td></td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesFloatAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedFloatAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftFloatAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td></td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesFloatAmount($currency), $currency, 0, true) }}</a>
-                                <br>
-                            @endforeach
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            @foreach($showCurrencies as $currency)
-                                {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftFloatAmount($currency), $currency, 0, true) }}
-                                <br>
-                            @endforeach
-                        </td>
-                        <td></td>
-                    </tr>
+                        <tr class="fs-8">
+                            <td></td>
+                            <td class="ps-8 fst-italic" colspan="2">Фиксированный аванс</td>
+                            <td></td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesFixAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedFixAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftFixAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td></td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesFixAmount($currency), $currency, 0, true) }}</a>
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftFixAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <tr class="border-bottom-2 fs-8">
+                            <td></td>
+                            <td class="ps-8 fst-italic" colspan="2">Целевой аванс</td>
+                            <td></td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesFloatAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesReceivedFloatAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getAvansesLeftFloatAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td></td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    <a href="{{ route('acts.index') }}?{{ $actsUrl }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($contract->getActsAvasesFloatAmount($currency), $currency, 0, true) }}</a>
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                @foreach($showCurrencies as $currency)
+                                    {{ \App\Models\CurrencyExchangeRate::format($contract->getNotworkLeftFloatAmount($currency), $currency, 0, true) }}
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td></td>
+                        </tr>
+                    @endif
                 @empty
                     <tr>
                         <td colspan="14">

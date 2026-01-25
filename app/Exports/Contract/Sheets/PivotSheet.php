@@ -108,41 +108,44 @@ class PivotSheet implements
                 $sheet->getRowDimension($row)->setRowHeight(40);
                 $row++;
 
-                $sheet->setCellValue('A' . $row, '        Фиксированная часть');
-                $sheet->setCellValue('B' . $row, '');
-                $sheet->setCellValue('C' . $row, '');
-                $sheet->setCellValue('D' . $row, $this->formatAmount($contract->getAvansesFixAmount($currency)));
-                $sheet->setCellValue('E' . $row, $this->formatAmount($contract->getAvansesReceivedFixAmount($currency)));
-                $sheet->setCellValue('F' . $row, $this->formatAmount($contract->getAvansesLeftFixAmount($currency)));
-                $sheet->setCellValue('G' . $row, '');
-                $sheet->setCellValue('H' . $row, $this->formatAmount($contract->getActsAvasesFixAmount($currency)));
-                $sheet->setCellValue('I' . $row, '');
-                $sheet->setCellValue('J' . $row, '');
-                $sheet->setCellValue('K' . $row, '');
-                $sheet->setCellValue('L' . $row, '');
-                $sheet->setCellValue('M' . $row, $this->formatAmount($contract->getNotworkLeftFixAmount($currency)));
+                if (count(array_unique($contract->avanses->pluck('type_id')->toArray())) > 1 || count(array_unique($contract->avansesReceived->pluck('type_id')->toArray())) > 1) {
+                    $sheet->setCellValue('A' . $row, '        Фиксированный аванс');
+                    $sheet->setCellValue('B' . $row, '');
+                    $sheet->setCellValue('C' . $row, '');
+                    $sheet->setCellValue('D' . $row, $this->formatAmount($contract->getAvansesFixAmount($currency)));
+                    $sheet->setCellValue('E' . $row, $this->formatAmount($contract->getAvansesReceivedFixAmount($currency)));
+                    $sheet->setCellValue('F' . $row, $this->formatAmount($contract->getAvansesLeftFixAmount($currency)));
+                    $sheet->setCellValue('G' . $row, '');
+                    $sheet->setCellValue('H' . $row, $this->formatAmount($contract->getActsAvasesFixAmount($currency)));
+                    $sheet->setCellValue('I' . $row, '');
+                    $sheet->setCellValue('J' . $row, '');
+                    $sheet->setCellValue('K' . $row, '');
+                    $sheet->setCellValue('L' . $row, '');
+                    $sheet->setCellValue('M' . $row, $this->formatAmount($contract->getNotworkLeftFixAmount($currency)));
 
-                $sheet->getRowDimension($row)->setRowHeight(20);
-                $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setItalic(true);
-                $row++;
+                    $sheet->getRowDimension($row)->setRowHeight(20);
+                    $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setItalic(true);
+                    $row++;
 
-                $sheet->setCellValue('A' . $row, '        Изменяемая часть');
-                $sheet->setCellValue('B' . $row, '');
-                $sheet->setCellValue('C' . $row, '');
-                $sheet->setCellValue('D' . $row, $this->formatAmount($contract->getAvansesFloatAmount($currency)));
-                $sheet->setCellValue('E' . $row, $this->formatAmount($contract->getAvansesReceivedFloatAmount($currency)));
-                $sheet->setCellValue('F' . $row, $this->formatAmount($contract->getAvansesLeftFloatAmount($currency)));
-                $sheet->setCellValue('G' . $row, '');
-                $sheet->setCellValue('H' . $row, $this->formatAmount($contract->getActsAvasesFloatAmount($currency)));
-                $sheet->setCellValue('I' . $row, '');
-                $sheet->setCellValue('J' . $row, '');
-                $sheet->setCellValue('K' . $row, '');
-                $sheet->setCellValue('L' . $row, '');
-                $sheet->setCellValue('M' . $row, $this->formatAmount($contract->getNotworkLeftFloatAmount($currency)));
+                    $sheet->setCellValue('A' . $row, '        Целевой аванс');
+                    $sheet->setCellValue('B' . $row, '');
+                    $sheet->setCellValue('C' . $row, '');
+                    $sheet->setCellValue('D' . $row, $this->formatAmount($contract->getAvansesFloatAmount($currency)));
+                    $sheet->setCellValue('E' . $row, $this->formatAmount($contract->getAvansesReceivedFloatAmount($currency)));
+                    $sheet->setCellValue('F' . $row, $this->formatAmount($contract->getAvansesLeftFloatAmount($currency)));
+                    $sheet->setCellValue('G' . $row, '');
+                    $sheet->setCellValue('H' . $row, $this->formatAmount($contract->getActsAvasesFloatAmount($currency)));
+                    $sheet->setCellValue('I' . $row, '');
+                    $sheet->setCellValue('J' . $row, '');
+                    $sheet->setCellValue('K' . $row, '');
+                    $sheet->setCellValue('L' . $row, '');
+                    $sheet->setCellValue('M' . $row, $this->formatAmount($contract->getNotworkLeftFloatAmount($currency)));
 
-                $sheet->getRowDimension($row)->setRowHeight(20);
-                $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setItalic(true);
-                $row++;
+                    $sheet->getRowDimension($row)->setRowHeight(20);
+                    $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setItalic(true);
+                    $row++;
+                }
+
 
                 $subContracts = $contract->children->where('currency', $currency);
 
