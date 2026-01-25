@@ -54,6 +54,7 @@
                                             @endphp
                                             <div class="col-md-6">
                                                 <select name="period_start" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    <option value="{{ null }}">Не указано</option>
                                                     @foreach($months as $month)
                                                         <option value="{{ $month }}">{{ $month }}</option>
                                                     @endforeach
@@ -62,6 +63,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <select name="period_end" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    <option value="{{ null }}">Не указано</option>
                                                     @foreach($months as $month)
                                                         <option value="{{ $month }}">{{ $month }}</option>
                                                     @endforeach

@@ -209,6 +209,20 @@ class ActService
 
     public function createAct(array $requestData): void
     {
+        $period = null;
+
+        if (! is_null($requestData['period_start'])) {
+            $period = $requestData['period_start'] . '::' . $requestData['period_start'];
+
+            if (! is_null($requestData['period_end'])) {
+                $period = $requestData['period_start'] . '::' . $requestData['period_end'];
+            }
+        } else {
+            if (! is_null($requestData['period_end'])) {
+                $period = $requestData['period_end'] . '::' . $requestData['period_end'];
+            }
+        }
+
         $contract = Contract::find($requestData['contract_id']);
         $act = Act::create([
             'contract_id' => $contract->id,
@@ -216,7 +230,7 @@ class ActService
             'object_id' => $contract->object_id,
             'number' => $requestData['number'],
             'date' => $requestData['date'],
-            'period' => $requestData['period_start'] . '::' . $requestData['period_end'],
+            'period' => $period,
             'planned_payment_date' => $requestData['planned_payment_date'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
             'rad_amount' => $this->sanitizer->set($requestData['rad_amount'])->toAmount()->get(),
@@ -268,13 +282,27 @@ class ActService
 
     public function updateAct(Act $act, array $requestData): void
     {
+        $period = null;
+
+        if (! is_null($requestData['period_start'])) {
+            $period = $requestData['period_start'] . '::' . $requestData['period_start'];
+
+            if (! is_null($requestData['period_end'])) {
+                $period = $requestData['period_start'] . '::' . $requestData['period_end'];
+            }
+        } else {
+            if (! is_null($requestData['period_end'])) {
+                $period = $requestData['period_end'] . '::' . $requestData['period_end'];
+            }
+        }
+
         $contract = Contract::find($requestData['contract_id']);
         $act->update([
             'contract_id' => $contract->id,
             'company_id' => $contract->company_id,
             'object_id' => $contract->object_id,
             'date' => $requestData['date'],
-            'period' => $requestData['period_start'] . '::' . $requestData['period_end'],
+            'period' => $period,
             'planned_payment_date' => $requestData['planned_payment_date'],
             'number' => $requestData['number'],
             'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
