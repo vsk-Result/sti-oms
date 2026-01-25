@@ -485,6 +485,11 @@ class MakeFinanceReportHistory extends HandledCommand
                             $prognozAmountWithoutNDS = 0;
                         }
 
+                        if ($ostatokPoDogovoruSZakazchikom < 0) {
+                            $prognozAmount = 0;
+                            $prognozAmountWithoutNDS = 0;
+                        }
+
                         if ($field === 'prognoz_podryad') {
                             $prognozAmount = $contractorDebts['total']['balance_contract'];
                             $prognozAmountWithoutNDS = $contractorDebts['total']['balance_contract'];
