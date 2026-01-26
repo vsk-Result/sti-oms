@@ -118,6 +118,50 @@
             @endforeach
         </div>
     @endif
+
+    @if ($archivedCashAccounts->count() > 0)
+        <h1 class="d-flex align-items-center mb-7">
+            <span class="text-gray-900 fw-bold fs-2">
+                Архивные кассы
+            </span>
+        </h1>
+
+        <div class="row g-5 g-xl-8">
+            @foreach($archivedCashAccounts as $cashAccount)
+                <div class="col-xl-4">
+                    <div class="card card-xl-stretch mb-xl-8">
+                        <a href="{{ route('cash_accounts.show', $cashAccount) }}">
+                            <div class="card-body d-flex flex-column p-0">
+                                <div class="d-flex flex-stack flex-grow-1 card-p">
+                                    <div class="d-flex flex-column me-2">
+                                        <div class="text-gray-900 text-hover-primary fw-bold fs-3">
+                                            {{ $cashAccount->name }}
+
+                                            @if($cashAccountNotificationService->hasUnreadNotifications(auth()->user(), $cashAccount))
+                                                <i class="ms-3 fa fa-info-circle text-danger"></i>
+                                            @endif
+                                        </div>
+
+                                        <span class="text-muted fw-semibold mt-1">{{ $cashAccount->responsible?->name }}</span>
+
+                                        <div class="d-flex gap-1 flex-row mt-4">
+                                            @foreach($cashAccount->objects->sortBy('code') as $object)
+                                               <span class="badge badge-light">{{ $object->code }}</span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <span class="symbol symbol-50px">
+                                        <span style="width: 100px" class="symbol-label fs-5 fw-bold {{ $cashAccount->getBalance() < 0 ? 'bg-light-danger text-danger' : 'bg-light-success text-success' }}">{{ \App\Models\CurrencyExchangeRate::format($cashAccount->getBalance()) }}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 @endsection
 
 @push('scripts')

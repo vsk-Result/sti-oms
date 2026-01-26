@@ -5,7 +5,6 @@ namespace App\Services\CashAccount;
 use App\Helpers\Sanitizer;
 use App\Models\CashAccount\CashAccount;
 use App\Models\CashAccount\CashAccountPayment;
-use App\Models\Status;
 use Illuminate\Database\Eloquent\Collection;
 
 class CashAccountService
@@ -28,7 +27,16 @@ class CashAccountService
             return CashAccount::active()->where('responsible_user_id', '!=', auth()->id())->get();
         }
 
-        return auth()->user()->sharedCashAccounts()->get();
+        return auth()->user()->sharedCashAccounts()->where('status_id', CashAccount::STATUS_ACTIVE)->get();
+    }
+
+    public function getArchivedCashAccounts(): Collection
+    {
+        if (auth()->user()->hasRole('super-admin') || auth()->user()->can('index cash-accounts-all-view')) {
+            return CashAccount::archive()->get();
+        }
+
+        return auth()->user()->sharedCashAccounts()->where('status_id', CashAccount::STATUS_ARCHIVED)->get();
     }
 
     public function createCashAccount(array $requestData): CashAccount
@@ -56,6 +64,7 @@ class CashAccountService
             'name' => $requestData['name'],
             'start_balance_amount' => $balance,
             'responsible_user_id' => $requestData['responsible_user_id'],
+            'status_id' => $requestData['status_id'] ?? CashAccount::STATUS_ACTIVE,
         ]);
 
         $cashAccount->objects()->sync($requestData['object_id'] ?? []);

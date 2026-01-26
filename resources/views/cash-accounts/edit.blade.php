@@ -86,6 +86,19 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6 mb-10 fv-row">
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bolder text-dark fs-6">Статус</label>
+                                            <div class="position-relative mb-3">
+                                                <select name="status_id" data-control="select2" class="form-select form-select-solid form-select-lg">
+                                                    @foreach($statuses as $statusId => $status)
+                                                        <option value="{{ $statusId }}" {{ $statusId === $cashAccount->status_id ? 'selected' : '' }}>{{ $status }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

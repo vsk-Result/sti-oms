@@ -23,8 +23,9 @@ class CashAccountController extends Controller
     {
         $responsibleCashAccounts = $this->cashAccountService->getResponsibleCashAccounts();
         $sharedCashAccounts = $this->cashAccountService->getSharedCashAccounts();
+        $archivedCashAccounts = $this->cashAccountService->getArchivedCashAccounts();
 
-        return view('cash-accounts.index', compact('responsibleCashAccounts', 'sharedCashAccounts'));
+        return view('cash-accounts.index', compact('responsibleCashAccounts', 'sharedCashAccounts', 'archivedCashAccounts'));
     }
 
     public function create(): View
@@ -57,12 +58,13 @@ class CashAccountController extends Controller
         $responsibleUsers = User::orderBy('name')->get();
         $objects = BObject::getObjectCodes();
         $sharedUsers = User::where('id', '!=', $cashAccount->responsible_user_id)->orderBy('name')->get();
+        $statuses = $cashAccount->getStatuses();
 
         if (!auth()->user()->hasRole('super-admin')) {
             $responsibleUsers = User::where('id', auth()->id())->get();
         }
 
-        return view('cash-accounts.edit', compact('cashAccount', 'objects', 'sharedUsers', 'responsibleUsers'));
+        return view('cash-accounts.edit', compact('cashAccount', 'objects', 'sharedUsers', 'responsibleUsers', 'statuses'));
     }
 
     public function update(CashAccount $cashAccount, Request $request): RedirectResponse

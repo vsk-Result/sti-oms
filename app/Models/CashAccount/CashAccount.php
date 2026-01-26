@@ -125,6 +125,11 @@ class CashAccount extends Model
         return $query->whereIn('status_id', [self::STATUS_ACTIVE]);
     }
 
+    public function scopeArchive($query)
+    {
+        return $query->whereIn('status_id', [self::STATUS_ARCHIVED]);
+    }
+
     public function getPopularPaymentCodes(): array
     {
         $codes = [];
