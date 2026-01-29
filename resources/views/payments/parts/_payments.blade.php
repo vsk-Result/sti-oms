@@ -107,7 +107,7 @@
                     </a>
                 @endcan
 
-                @if (isset($object) && $object->code === '363')
+                @if (isset($object))
                     <button type="button"
                         class="btn btn-bg-light btn-color-info"
                         data-kt-menu-trigger="click"
