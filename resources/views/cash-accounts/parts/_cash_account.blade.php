@@ -27,7 +27,7 @@
         <div class="card-body p-9">
             <div class="d-flex flex-wrap mb-5">
                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-7 mb-3">
-                    <div class="fs-6 text-gray-800 fw-bold">{{ $cashAccount->closePeriods()->orderBy('period')->first() ? translate_year_month_word(\Carbon\Carbon::parse($cashAccount->closePeriods()->orderBy('period')->first()->period)->format('F Y')) : '-' }}</div>
+                    <div class="fs-6 text-gray-800 fw-bold">{{ $cashAccount->closePeriods()->orderBy('period', 'desc')->first() ? translate_year_month_word(\Carbon\Carbon::parse($cashAccount->closePeriods()->orderBy('period')->first()->period)->format('F Y')) : '-' }}</div>
                     <div class="fw-semibold text-gray-500">Последний закрытый месяц</div>
                 </div>
 
