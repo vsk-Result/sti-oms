@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Object;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
+use App\Models\CashAccount\CashAccount;
 use App\Models\Company;
 use App\Models\KostCode;
 use App\Models\Object\BObject;
@@ -74,6 +75,7 @@ class CashPaymentController extends Controller
         $codes = KostCode::getCodes();
         $currencies = Currency::getCurrencies();
         $crmCostAuthors = PaymentImport::getCrmCostAuthors();
+        $cashAccountAuthors = CashAccount::orderBy('name')->get();
 
         $activeOrganizations = [];
         if (! empty($request->get('organization_id'))) {
@@ -111,7 +113,7 @@ class CashPaymentController extends Controller
             compact(
                 'object', 'years', 'months', 'companies', 'objects',
                 'worktypes', 'categories', 'importTypes', 'paymentTypes', 'banks', 'activeOrganizations', 'pType',
-                'codes', 'currencies', 'crmCostAuthors'
+                'codes', 'currencies', 'crmCostAuthors', 'cashAccountAuthors'
             )
         );
     }
