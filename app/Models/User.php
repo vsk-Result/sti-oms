@@ -72,4 +72,38 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(FavouriteLink::class, 'created_by_user_id')->orderBy('order');
     }
+
+    public function getInitials(): string
+    {
+        return implode('', array_map(function($s) {
+            return mb_strtoupper(mb_substr($s, 0, 1));
+        }, explode(' ', $this->name)));
+    }
+
+    public function getInitialColor(): string
+    {
+        $firstChar = mb_strtoupper(mb_substr(explode(' ', $this->name)[0], 0, 1));
+
+        if ($firstChar < 'Д') {
+            return 'primary';
+        }
+
+        if ($firstChar < 'И') {
+            return 'warning';
+        }
+
+        if ($firstChar < 'О') {
+            return 'danger';
+        }
+
+        if ($firstChar < 'У') {
+            return 'info';
+        }
+
+        if ($firstChar < 'Ш') {
+            return 'secondary';
+        }
+
+        return 'dark';
+    }
 }

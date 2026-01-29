@@ -157,4 +157,13 @@ class CashAccount extends Model
     {
         return $this->name . ' | ' . $this->responsible?->name ?? '-';
     }
+
+    public function getValidPercent(): int
+    {
+        $payments = $this->payments;
+        $paymentsCount = $payments->where('type_id', CashAccountPayment::TYPE_OBJECT)->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE, CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_WAITING, CashAccountPayment::STATUS_VALIDATED])->count();
+        $validCount = $payments->where('type_id', CashAccountPayment::TYPE_OBJECT)->whereIn('status_id', [CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_VALIDATED])->count();
+
+        return $paymentsCount > 0 ? round($validCount / $paymentsCount * 100) : 0;
+    }
 }

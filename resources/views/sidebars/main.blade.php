@@ -260,9 +260,9 @@
                         <span class="menu-title">
                             Кассы
 
-                            @if($cashAccountNotificationService->hasUnreadNotifications(auth()->user()))
-                                <i class="ms-3 fa fa-info-circle text-danger"></i>
-                            @endif
+{{--                            @if($cashAccountNotificationService->hasUnreadNotifications(auth()->user()))--}}
+{{--                                <i class="ms-3 fa fa-info-circle text-danger"></i>--}}
+{{--                            @endif--}}
                         </span>
                     </a>
                 </div>

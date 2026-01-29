@@ -477,3 +477,7 @@ td.cf-comment:hover .btn-cf-comment, th.cf-comment:hover .btn-cf-comment {
     z-index: 999;
     cursor: pointer;
 }
+
+.border-hover-sti:hover {
+    border-color: #f15a22 !important;
+}
