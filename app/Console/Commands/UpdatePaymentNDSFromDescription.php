@@ -33,7 +33,6 @@ class UpdatePaymentNDSFromDescription extends HandledCommand
 
         $payments = Payment::whereBetween('date', ['2025-01-01', '2026-01-31'])
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
-            ->take(50)
             ->get();
 
         $info = [];
