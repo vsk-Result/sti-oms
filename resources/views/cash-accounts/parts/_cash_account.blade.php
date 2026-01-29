@@ -39,7 +39,7 @@
 
             @php
                 $validPercent = $cashAccount->getValidPercent();
-                $validColor = $validPercent <= 49 ? 'danger' : ($validPercent <= 100 ? 'warning' : 'success');
+                $validColor = $validPercent <= 49 ? 'danger' : ($validPercent < 100 ? 'warning' : 'success');
             @endphp
 
             <div class="h-4px w-100 bg-light mb-7" data-bs-toggle="tooltip" aria-label="Проверена на {{ $validPercent }}%" data-bs-original-title="Проверена на {{ $validPercent }}%" data-kt-initialized="1">
