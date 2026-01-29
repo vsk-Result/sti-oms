@@ -11,7 +11,7 @@ class ITRSalaryPivotImport implements WithMultipleSheets, SkipsUnknownSheets
     public function sheets(): array
     {
         return [
-            'История' => new SheetForArray(),
+            'Лист_1' => new SheetForArray(),
         ];
     }
 

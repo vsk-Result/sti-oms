@@ -19,18 +19,17 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
 
     public function handle()
     {
-//        if ($this->isProcessRunning()) {
-//            return 0;
-//        }
-//
-//        $this->startProcess();
+        if ($this->isProcessRunning()) {
+            return 0;
+        }
+
+        $this->startProcess();
 
         try {
 
-            $filename = storage_path() . '/app/public/public/objects-debts-manuals/itr_salary_pivot_table.xlsx';
-            $importData = Excel::toArray(new ITRSalaryPivotImport(), new UploadedFile($filename, 'itr_salary_pivot_table.xlsx'));
-            $importData = $importData['История'];
-
+            $filename = storage_path() . '/app/public/public/objects-debts-manuals/Отчет по начисленным зп для итр.xlsx';
+            $importData = Excel::toArray(new ITRSalaryPivotImport(), new UploadedFile($filename, 'Отчет по начисленным зп для итр.xlsx'));
+            $importData = $importData['Лист_1'];
             $info = [];
 
             $currentDate = null;
@@ -75,7 +74,7 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
 
         $this->sendInfoMessage('Файл успешно загружен');
 
-//        $this->endProcess();
+        $this->endProcess();
 
         return 0;
     }
