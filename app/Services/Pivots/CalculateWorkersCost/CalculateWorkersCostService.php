@@ -254,8 +254,8 @@ class CalculateWorkersCostService
                             if ($month['date_name'] >= '2025-10') {
                                 $amount = 0;
 
-                                if (isset($pivotCodePaymentsByPeriod[$month['date_name']])) {
-                                    $mInfo = $pivotCodePaymentsByPeriod[$month['date_name']];
+                                if (isset($pivotCodePaymentsByPeriod[$month['date_name']]['codes'])) {
+                                    $mInfo = $pivotCodePaymentsByPeriod[$month['date_name']]['codes'];
                                     foreach ($codes as $code) {
                                         $amount += $mInfo[$code] ?? 0;
                                     }
@@ -482,6 +482,7 @@ class CalculateWorkersCostService
         $transferCacheData = Cache::get('calc_workers_cost_transfer_data', []);
         $workhoursCacheData = Cache::get('calc_workers_cost_workhours_data', []);
         $workhoursHoursCacheData = Cache::get('calc_workers_cost_workhours_hours_data', []);
+        $pivotCodePaymentsByPeriod = Cache::get('GetBillSumByCodeReportingPeriod', []);
 
         $generalCacheDataNewData = [];
         $workhoursCacheDataNewData = [];
@@ -631,8 +632,8 @@ class CalculateWorkersCostService
                             } elseif ($codes[0] === 'accrued_taxes_transport') {
                                 $amount = -1 * abs(AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'workers_salary') {
-//                                $amount = 0;
-                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                                $amount = 0;
+//                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
                             } elseif ($codes[0] === 'itr_salary') {
                                 $amount = 0;
 
@@ -650,8 +651,9 @@ class CalculateWorkersCostService
                                 if ($month['date_name'] >= '2025-10') {
                                     $amount = 0;
 
-                                    if (isset($pivotCodePaymentsByPeriod[$month['date_name']][$object->code])) {
-                                        $mInfo = $pivotCodePaymentsByPeriod[$month['date_name']][$object->code];
+                                    if (isset($pivotCodePaymentsByPeriod[$month['date_name']]['objects'][$object->code])) {
+                                        $mInfo = $pivotCodePaymentsByPeriod[$month['date_name']]['objects'][$object->code];
+
                                         foreach ($codes as $code) {
                                             $amount += $mInfo[$code] ?? 0;
                                         }
