@@ -34,7 +34,6 @@ class CashFlowController extends Controller
         $CFPlanPaymentEntries = PlanPaymentEntry::all();
         $periods = $this->receivePlanService->getPeriods(null, $request->get('period'));
         $plans = $this->receivePlanService->getPlans(null, $periods[0]['start'], end($periods)['start']);
-
         $cfPayments = $this->receivePlanService->getCFPaymentsForAll($periods);
         $object27_1 = BObject::where('code', '27.1')->first();
 

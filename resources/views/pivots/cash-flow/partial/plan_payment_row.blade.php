@@ -40,13 +40,17 @@
         @endif
     </td>
 
+    @php
+        $amount = $payment->entries->where('date', '<', $periods[0]['start'])->sum('amount');
+    @endphp
+
+    <td class="text-right">
+        {{ \App\Models\CurrencyExchangeRate::format(-abs($amount), 'RUB', 0, true) }}
+    </td>
+
     @foreach($periods as $index => $period)
         @php
-            if ($index === 0) {
-                $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
-            } else {
-                $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
-            }
+            $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
 
             $comment = \App\Models\CashFlow\Comment::where('period', $period['format'])
                     ->where('type_id', \App\Models\CashFlow\Comment::TYPE_PAYMENT)
