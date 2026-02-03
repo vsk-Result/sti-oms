@@ -221,16 +221,13 @@ class CalculateWorkersCostService
                             $amount = AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount');
                         } elseif ($codes[0] === 'transfer') {
                             if ($month['date_name'] >= '2025-10') {
-                                if ($allPeriodsClosed) {
-                                    $amount = (float) Payment::whereBetween('date', $month['period'])
-                                        ->where('amount', '<', 0)
-                                        ->where('code', '7.11.1')
-                                        ->where('type_id', Payment::TYPE_GENERAL)
-                                        ->where('description', 'LIKE', '%transfer trosak%')
-                                        ->sum('amount');
-                                } else {
-                                    $amount = 0;
-                                }
+                                $amount = (float) Payment::whereBetween('date', $month['period'])
+                                    ->where('amount', '<', 0)
+                                    ->where('code', '7.11.1')
+                                    ->where('type_id', Payment::TYPE_GENERAL)
+                                    ->where('description', 'LIKE', '%transfer trosak%')
+                                    ->sum('amount');
+
                             } else {
                                 $amount = (float) Payment::whereBetween('date', $month['period'])
                                     ->where('amount', '<', 0)
