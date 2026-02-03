@@ -248,7 +248,7 @@ class CalculateWorkersCostService
                                 }
                             }
                         } else {
-                            if ($month['date_name'] >= '2025-10') {
+                            if ($month['date_name'] >= '2025-10' && $codes[0] !== '7.6') {
                                 $amount = 0;
 
                                 if (isset($pivotCodePaymentsByPeriod[$month['date_name']]['codes'])) {
@@ -645,7 +645,7 @@ class CalculateWorkersCostService
                                 }
                             } else {
 
-                                if ($month['date_name'] >= '2025-10') {
+                                if ($month['date_name'] >= '2025-10' && $codes[0] !== '7.6') {
                                     $amount = 0;
 
                                     if (isset($pivotCodePaymentsByPeriod[$month['date_name']]['objects'][$object->code])) {
