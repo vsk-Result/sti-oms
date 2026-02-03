@@ -29,7 +29,6 @@
                     data: function (params) {
                         return {
                             search: params.term,
-                            objects: $('#filter-object').val()
                         };
                     },
                     processResults: function (data) {

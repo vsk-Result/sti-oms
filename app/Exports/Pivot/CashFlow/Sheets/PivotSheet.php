@@ -41,7 +41,7 @@ class PivotSheet implements
         $cfPayments = $this->receivePlanService->getCFPaymentsForAll($periods);
         $accounts = $this->accountBalanceService->getCurrentAccounts();
 
-        $lastColumnIndex = 3 + count($periods);
+        $lastColumnIndex = 4 + count($periods);
         $lastColumn = $this->getColumnWord($lastColumnIndex);
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
@@ -50,6 +50,7 @@ class PivotSheet implements
 
         $sheet->getColumnDimension('A')->setWidth(60);
         $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(50);
         $sheet->getColumnDimension($lastColumn)->setWidth(30);
 
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
@@ -58,6 +59,7 @@ class PivotSheet implements
 
         $sheet->setCellValue('A1', 'Остаток денежных средств на начало дня на счетах: ' . Carbon::now()->format('d.m.Y'));
         $sheet->setCellValue('B1', 'Сумма');
+        $sheet->setCellValue('C1', 'Не оплачено с прошлого периода');
 
         $row = 2;
         foreach ($accounts as $accountName => $amount) {
@@ -104,9 +106,17 @@ class PivotSheet implements
         $sheet->getRowDimension($row)->setRowHeight(30);
         $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
 
+        $receive = $plans->where('date', '<', $periods[0]['start'])->sum('amount');
+        $payments = $cfPayments['total']['all']['no_paid'];
+        $total = $receive + $payments;
 
-        $total = 0;
-        $columnIndex = 3;
+        $column = $this->getColumnWord(3);
+        $sheet->setCellValue($column . $row, ($receive + $payments) != 0 ? ($receive + $payments) : '');
+        if (($receive + $payments) < 0) {
+            $sheet->getStyle($column . $row)->getFont()->setColor(new Color(Color::COLOR_RED));
+        }
+
+        $columnIndex = 4;
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
 
@@ -140,7 +150,7 @@ class PivotSheet implements
         $sheet->getStyle('A' . $row . ':'. $lastColumn . ($row + 2))->getFont()->setItalic(true);
         $sheet->getStyle('A' . $row . ':'. $lastColumn . ($row + 2))->getFont()->setSize(11);
 
-        $columnIndex = 3;
+        $columnIndex = 4;
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $sheet->setCellValue($column . '1', $period['format']);
@@ -150,10 +160,20 @@ class PivotSheet implements
 
         $sheet->setCellValue($lastColumn . '1', 'ИТОГО');
 
-        $total = 0;
-        $targetAvansTotal = 0;
-        $otherTotal = 0;
-        $columnIndex = 3;
+        $column = $this->getColumnWord(3);
+        $amount = $plans->where('date', '<', $periods[0]['start'])->sum('amount');
+        $targetAvansAmount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
+        $otherAmount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
+
+        $total = $amount;
+        $targetAvansTotal = $targetAvansAmount;
+        $otherTotal = $otherAmount;
+
+        $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+        $sheet->setCellValue($column . ($row + 1), $targetAvansAmount != 0 ? $targetAvansAmount : '');
+        $sheet->setCellValue($column . ($row + 2), $otherAmount != 0 ? $otherAmount : '');
+
+        $columnIndex = 4;
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = $plans->where('date', $period['start'])->sum('amount');
@@ -192,11 +212,25 @@ class PivotSheet implements
         $sheet->getStyle('A' . $row . ':'. $lastColumn . ($row + 3))->getFont()->setItalic(true);
         $sheet->getStyle('A' . $row . ':'. $lastColumn . ($row + 3))->getFont()->setSize(11);
 
-        $total = 0;
-        $totalContractors = 0;
-        $totalProviders = 0;
-        $totalService = 0;
-        $columnIndex = 3;
+
+        $column = $this->getColumnWord(3);
+
+        $amount = $cfPayments['total']['all']['no_paid'];
+        $contractors = $cfPayments['total']['contractors']['no_paid'];
+        $providers = $cfPayments['total']['providers_fix']['no_paid'] + $cfPayments['total']['providers_float']['no_paid'];
+        $service = $cfPayments['total']['service']['no_paid'];
+
+        $total = $amount;
+        $totalContractors = $contractors;
+        $totalProviders = $providers;
+        $totalService = $service;
+
+        $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+        $sheet->setCellValue($column . ($row + 1), $contractors != 0 ? $contractors : '');
+        $sheet->setCellValue($column . ($row + 2), $providers != 0 ? $providers : '');
+        $sheet->setCellValue($column . ($row + 3), $service != 0 ? $service : '');
+
+        $columnIndex = 4;
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
 
@@ -250,7 +284,15 @@ class PivotSheet implements
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('e7e7e7');
 
-            $columnIndex = 3;
+
+            $column = $this->getColumnWord(3);
+            $receive = $plans->where('object_id', $object->id)->where('date', '<', $periods[0]['start'])->sum('amount');
+            $payment = $cfPayments['objects'][$object->id]['no_paid']['total'] ?? 0;
+
+            $sheet->setCellValue($column . $row, ($receive + $payment) != 0 ? ($receive + $payment) : '');
+            $sheet->getStyle($column . $row)->getFont()->setColor(new Color(($receive + $payment) < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+            $columnIndex = 4;
             foreach($periods as $period) {
                 $column = $this->getColumnWord($columnIndex);
 
@@ -270,8 +312,15 @@ class PivotSheet implements
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
             $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-            $columnIndex = 3;
-            $total = 0;
+
+            $column = $this->getColumnWord(3);
+
+            $amount = $plans->where('object_id', $object->id)->where('date', '<', $periods[0]['start'])->sum('amount');
+            $total = $amount;
+
+            $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+            $columnIndex = 4;
             foreach($periods as $period) {
                 $column = $this->getColumnWord($columnIndex);
 
@@ -298,8 +347,20 @@ class PivotSheet implements
                 $sheet->getStyle('A' . $row . ':'. $lastColumn . $row)->getFont()->setItalic(true);
                 $sheet->getStyle('A' . $row . ':'. $lastColumn . $row)->getFont()->setSize(11);
 
-                $total = 0;
-                $columnIndex = 3;
+
+                $column = $this->getColumnWord(3);
+                $plan = $plans->where('object_id', $object->id)->where('date', '<', $periods[0]['start'])->where('reason_id', $reasonId)->first();
+                $amount = 0;
+
+                if ($plan) {
+                    $amount = $plan->amount;
+                }
+
+                $total = $amount;
+
+                $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+                $columnIndex = 4;
                 foreach($periods as $period) {
 
                     $column = $this->getColumnWord($columnIndex);
@@ -327,8 +388,14 @@ class PivotSheet implements
                 $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFont()->setBold(true);
                 $sheet->getStyle('A' . $row . ':' . $lastColumn . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-                $columnIndex = 3;
-                $total = 0;
+                $column = $this->getColumnWord(3);
+
+                $amount = $cfPayments['objects'][$object->id]['no_paid']['total'] ?? 0;
+                $total = $amount;
+
+                $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+                $columnIndex = 4;
                 foreach($periods as $period) {
                     $column = $this->getColumnWord($columnIndex);
 
@@ -365,13 +432,19 @@ class PivotSheet implements
 
         $officeObjectId = BObject::where('code', '27.1')->first()->id;
 
-        $total = 0;
-        $columnIndex = 3;
+        $column = $this->getColumnWord(3);
+        $amount = -abs($CFPlanPaymentEntries->where('date', '<', $periods[0]['start'])->sum('amount')) + -abs($cfPayments['objects'][$officeObjectId]['no_paid']['total'] ?? 0);
+
+        $total = $amount;
+
+        $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+        $columnIndex = 4;
         foreach($periods as $index => $period) {
 
             $column = $this->getColumnWord($columnIndex);
             if ($index === 0) {
-                $amount = -abs($CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
+                $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
             } else {
                 $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs($cfPayments['objects'][$officeObjectId][$period['start']]['total'] ?? 0);
             }
@@ -391,8 +464,14 @@ class PivotSheet implements
         $sheet->setCellValue('B' . $row, '27.1');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
-        $total = 0;
-        $columnIndex = 3;
+
+        $column = $this->getColumnWord(3);
+        $amount = $cfPayments['objects'][$officeObjectId]['no_paid']['total'] ?? 0;
+        $total = $amount;
+
+        $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+        $columnIndex = 4;
         foreach($periods as $period) {
 
             $column = $this->getColumnWord($columnIndex);
@@ -417,14 +496,13 @@ class PivotSheet implements
                 continue;
             }
             $planGroupedPaymentAmount[$group->name] = [];
+            $planGroupedPaymentAmount[$group->name]['no_paid'] = 0;
 
             foreach ($group->payments as $payment) {
+                $planGroupedPaymentAmount[$group->name]['no_paid'] += $payment->entries->where('date', '<', $periods[0]['start'])->sum('amount');
+
                 foreach($periods as $index => $period) {
-                    if ($index === 0) {
-                        $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
-                    } else {
-                        $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
-                    }
+                    $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
 
                     if (! isset($planGroupedPaymentAmount[$group->name][$period['id']])) {
                         $planGroupedPaymentAmount[$group->name][$period['id']] = 0;
@@ -443,11 +521,17 @@ class PivotSheet implements
             $sheet->setCellValue('B' . $row, $group->object->code ?? '');
             $sheet->getRowDimension($row)->setRowHeight(30);
 
-            $groupTotal = 0;
-            $columnIndex = 3;
+
+            $column = $this->getColumnWord(3);
+            $amount = -abs($planGroupedPaymentAmount[$group->name]['no_paid']);
+            $groupTotal = $amount;
+
+            $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+            $columnIndex = 4;
             foreach($periods as $period) {
                 $column = $this->getColumnWord($columnIndex);
-                $amount = $planGroupedPaymentAmount[$group->name][$period['id']];
+                $amount = -abs($planGroupedPaymentAmount[$group->name][$period['id']]);
                 $groupTotal += $amount;
 
                 $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
@@ -471,15 +555,17 @@ class PivotSheet implements
                 $sheet->setCellValue('B' . $row, $payment->object->code ?? '');
                 $sheet->getRowDimension($row)->setRowHeight(30);
 
-                $columnIndex = 3;
+
+                $column = $this->getColumnWord(3);
+                $amount = $payment->entries->where('date', '<', $periods[0]['start'])->sum('amount');
+
+                $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+                $columnIndex = 4;
                 foreach($periods as $index => $period) {
 
                     $column = $this->getColumnWord($columnIndex);
-                    if ($index === 0) {
-                        $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
-                    } else {
-                        $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
-                    }
+                    $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
 
                     $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
                     $columnIndex++;
@@ -511,15 +597,17 @@ class PivotSheet implements
             $sheet->setCellValue('B' . $row, $payment->object->code ?? '');
             $sheet->getRowDimension($row)->setRowHeight(30);
 
-            $columnIndex = 3;
+            $column = $this->getColumnWord(3);
+            $amount = $payment->entries->where('date', '<', $periods[0]['start'])->sum('amount');
+
+            $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+
+            $columnIndex = 4;
             foreach($periods as $index => $period) {
 
                 $column = $this->getColumnWord($columnIndex);
-                if ($index === 0) {
-                    $amount = $payment->entries->where('date', '<=', $period['end'])->sum('amount');
-                } else {
-                    $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
-                }
+                $amount = $payment->entries->whereBetween('date', [$period['start'], $period['end']])->sum('amount');
 
                 $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
                 $columnIndex++;
@@ -538,7 +626,7 @@ class PivotSheet implements
             $sheet->getRowDimension($row)->setRowHeight(30);
 
             $total = 0;
-            $columnIndex = 3;
+            $columnIndex = 4;
             foreach($periods as $index => $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -563,13 +651,20 @@ class PivotSheet implements
         $sheet->setCellValue('A' . $row, 'Итого расходов по неделям:');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
-        $total = 0;
-        $columnIndex = 3;
+
+        $column = $this->getColumnWord(3);
+        $amount = -abs($CFPlanPaymentEntries->where('date', '<', $periods[0]['start'])->sum('amount')) + -abs($cfPayments['total']['all']['no_paid']);
+        $total = $amount;
+
+        $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+
+        $columnIndex = 4;
         foreach($periods as $index => $period) {
 
             $column = $this->getColumnWord($columnIndex);
             if ($index === 0) {
-                $amount = -abs($CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['total']['all'][$period['start']]);
+                $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs(array_sum($otherPlanPayments)) + -abs($cfPayments['total']['all'][$period['start']]);
             } else {
                 $amount = -abs($CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount')) + -abs($cfPayments['total']['all'][$period['start']]);
             }
@@ -586,14 +681,25 @@ class PivotSheet implements
         $sheet->setCellValue('A' . $row, 'Сальдо (без учета целевых авансов) по неделям:');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
-        $columnIndex = 3;
+
+        $column = $this->getColumnWord(3);
+        $otherAmount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
+
+        $amount = $CFPlanPaymentEntries->where('date', '<', $periods[0]['start'])->sum('amount') - $cfPayments['total']['all']['no_paid'];
+
+        $diff = $otherAmount - $amount;
+
+        $sheet->setCellValue($column . $row, $diff != 0 ? $diff : '');
+        $sheet->getStyle($column . $row)->getFont()->setColor(new Color($diff < 0 ? Color::COLOR_RED : Color::COLOR_BLACK));
+
+        $columnIndex = 4;
         foreach($periods as $index => $period) {
 
             $column = $this->getColumnWord($columnIndex);
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
+                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
             } else {
                 $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
             }
@@ -610,15 +716,26 @@ class PivotSheet implements
         $sheet->setCellValue('A' . $row, 'Накопительное Сальдо (без учета целевых авансов) по неделям:');
         $sheet->getRowDimension($row)->setRowHeight(30);
 
-        $prev = 0;
-        $columnIndex = 3;
+
+        $column = $this->getColumnWord(3);
+        $otherAmount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
+
+        $amount = $CFPlanPaymentEntries->where('date', '<', $periods[0]['start'])->sum('amount') - $cfPayments['total']['all']['no_paid'];
+
+        $diff = $otherAmount - $amount;
+        $prev = $diff;
+
+        $sheet->setCellValue($column . $row, $diff != 0 ? $diff : '');
+        $sheet->getStyle($column . $row)->getFont()->setColor(new Color($diff < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+
+        $columnIndex = 4;
         foreach($periods as $index => $period) {
 
             $column = $this->getColumnWord($columnIndex);
             $otherAmount = $plans->where('date', $period['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
 
             if ($index === 0) {
-                $amount = $CFPlanPaymentEntries->where('date', '<=', $period['end'])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
+                $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') + array_sum($otherPlanPayments) - $cfPayments['total']['all'][$period['start']] + array_sum($accounts);
             } else {
                 $amount = $CFPlanPaymentEntries->whereBetween('date', [$period['start'], $period['end']])->sum('amount') - $cfPayments['total']['all'][$period['start']];
             }
@@ -659,8 +776,19 @@ class PivotSheet implements
         $sheet->setCellValue('A' . $row, '        ' . $title);
         $sheet->getRowDimension($row)->setRowHeight(25);
 
-        $columnIndex = 3;
-        $total = 0;
+        $column = $this->getColumnWord(3);
+
+        if ($key === 'providers') {
+            $amount = ($cfPayments['objects'][$objectId]['no_paid'][$key . '_fix'] ?? 0) + ($cfPayments['objects'][$objectId]['no_paid'][$key . '_float'] ?? 0);
+        } else {
+            $amount = $cfPayments['objects'][$objectId]['no_paid'][$key] ?? 0;
+        }
+
+        $total = $amount;
+
+        $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+        $columnIndex = 4;
         foreach($periods as $period) {
             $column = $this->getColumnWord($columnIndex);
 
@@ -693,8 +821,14 @@ class PivotSheet implements
             $sheet->setCellValue('A' . $row, '                ' . $name);
             $sheet->getRowDimension($row)->setRowHeight(25);
 
-            $columnIndex = 3;
-            $total = 0;
+            $column = $this->getColumnWord(3);
+
+            $amount = $info['no_paid'] ?? 0;
+            $total = $amount;
+
+            $sheet->setCellValue($column . $row, $amount != 0 ? $amount : '');
+
+            $columnIndex = 4;
             foreach($periods as $period) {
                 $column = $this->getColumnWord($columnIndex);
 
