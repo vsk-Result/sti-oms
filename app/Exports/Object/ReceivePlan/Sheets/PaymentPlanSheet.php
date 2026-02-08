@@ -39,6 +39,7 @@ class PaymentPlanSheet implements
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
         $sheet->getRowDimension(1)->setRowHeight(50);
         $sheet->getColumnDimension('A')->setWidth(40);
+        $sheet->getColumnDimension('B')->setWidth(32);
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
         $sheet->getStyle('A1:' . $lastColumn . '1')->getAlignment()->setVertical('center')->setHorizontal('center');
         $sheet->setCellValue('A1', 'Основание');
