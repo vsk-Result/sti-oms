@@ -5,18 +5,12 @@ namespace App\Services\CashAccount;
 use App\Models\CashAccount\CashAccount;
 use App\Models\CashAccount\CashAccountPayment;
 use App\Models\CashAccount\ClosePeriod;
-use App\Services\CashAccount\Payment\PaymentTransferToObjectService;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Collection;
 
 class ClosePeriodService
 {
-    public function __construct(private PaymentTransferToObjectService $paymentTransferToObjectService,)
-    {
-
-    }
-
     public function getClosePeriods(CashAccount $cashAccount): Collection
     {
         return ClosePeriod::where('cash_account_id', $cashAccount->id)->orderByDesc('period')->get();
@@ -118,21 +112,6 @@ class ClosePeriodService
 
     public function updateClosePeriod(ClosePeriod $closePeriod): void
     {
-        if (auth()->id() === 1) {
-            $closedPayments = CashAccountPayment::where('cash_account_id', $closePeriod->cash_account_id)
-                ->whereIn('status_id', [CashAccountPayment::STATUS_CLOSED])
-                ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')
-                ->get();
-
-            foreach ($closedPayments as $payment) {
-                $data = $payment->getObjectPaymentData();
-
-                if (is_null($data['object_payment_id'])) {
-                    $this->paymentTransferToObjectService->transfer($payment);
-                }
-            }
-        }
-
         $validPayments = CashAccountPayment::where('cash_account_id', $closePeriod->cash_account_id)
             ->whereIn('status_id', [CashAccountPayment::STATUS_VALID, CashAccountPayment::STATUS_VALIDATED])
             ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')

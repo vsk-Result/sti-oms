@@ -49,6 +49,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:import-period-payments-with-codes-data-from-one-c')->dailyAt('22:00');
         $schedule->command('oms:transfer-valid-cash-account-payments-to-object-payments')->dailyAt('22:00');
         $schedule->command('oms:update-transfer-costs')->twiceDaily(13, 18);
+        $schedule->command('oms:update-cash-account-closed-periods')->twiceDaily(9, 16);
     }
 
     /**
