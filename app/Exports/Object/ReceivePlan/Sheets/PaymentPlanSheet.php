@@ -33,7 +33,7 @@ class PaymentPlanSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        $lastColumnIndex = 1 + count($this->periods);
+        $lastColumnIndex = 2 + count($this->periods);
         $lastColumn = $this->getColumnWord($lastColumnIndex);
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(12);
@@ -41,10 +41,11 @@ class PaymentPlanSheet implements
         $sheet->getColumnDimension('A')->setWidth(40);
         $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
         $sheet->getStyle('A1:' . $lastColumn . '1')->getAlignment()->setVertical('center')->setHorizontal('center');
-        $sheet->setCellValue('A1', 'Категория');
+        $sheet->setCellValue('A1', 'Основание');
+        $sheet->setCellValue('B1', 'Не оплачено с прошлого периода');
 
         $row = 1;
-        $columnIndex = 2;
+        $columnIndex = 3;
         foreach($this->periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $sheet->setCellValue($column . $row, $period['format']);
@@ -56,7 +57,16 @@ class PaymentPlanSheet implements
         $sheet->setCellValue('A' . $row, 'Работы');
         $sheet->getRowDimension($row)->setRowHeight(50);
 
-        $columnIndex = 2;
+        $column = $this->getColumnWord(2);
+        $amount = $this->payments['contractors']['no_paid'] ?? 0;
+
+        if ($amount == 0) {
+            $amount = '';
+        }
+
+        $sheet->setCellValue($column . $row, $amount);
+
+        $columnIndex = 3;
         foreach($this->periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = $this->payments['contractors'][$period['start']] ?? 0;
@@ -74,7 +84,16 @@ class PaymentPlanSheet implements
             $sheet->setCellValue('A' . $row, '        ' . $contractorName);
             $sheet->getRowDimension($row)->setRowHeight(50);
 
-            $columnIndex = 2;
+            $column = $this->getColumnWord(2);
+            $amount = $info['no_paid'] ?? 0;
+
+            if ($amount == 0) {
+                $amount = '';
+            }
+
+            $sheet->setCellValue($column . $row, $amount);
+
+            $columnIndex = 3;
             foreach($this->periods as $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -101,7 +120,16 @@ class PaymentPlanSheet implements
         $sheet->setCellValue('A' . $row, 'Материалы');
         $sheet->getRowDimension($row)->setRowHeight(50);
 
-        $columnIndex = 2;
+        $column = $this->getColumnWord(2);
+        $amount = ($this->payments['providers_fix']['no_paid'] ?? 0) + ($this->payments['providers_float']['no_paid'] ?? 0);
+
+        if ($amount == 0) {
+            $amount = '';
+        }
+
+        $sheet->setCellValue($column . $row, $amount);
+
+        $columnIndex = 3;
         foreach($this->periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = ($this->payments['providers_fix'][$period['start']] ?? 0) + ($this->payments['providers_float'][$period['start']] ?? 0);
@@ -118,7 +146,16 @@ class PaymentPlanSheet implements
         $sheet->setCellValue('A' . $row, '    Фиксированная часть');
         $sheet->getRowDimension($row)->setRowHeight(50);
 
-        $columnIndex = 2;
+        $column = $this->getColumnWord(2);
+        $amount = $this->payments['providers_fix']['no_paid'] ?? 0;
+
+        if ($amount == 0) {
+            $amount = '';
+        }
+
+        $sheet->setCellValue($column . $row, $amount);
+
+        $columnIndex = 3;
         foreach($this->periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = $this->payments['providers_fix'][$period['start']] ?? 0;
@@ -136,7 +173,16 @@ class PaymentPlanSheet implements
             $sheet->setCellValue('A' . $row, '            ' . $contractorName);
             $sheet->getRowDimension($row)->setRowHeight(50);
 
-            $columnIndex = 2;
+            $column = $this->getColumnWord(2);
+            $amount = $info['no_paid'] ?? 0;
+
+            if ($amount == 0) {
+                $amount = '';
+            }
+
+            $sheet->setCellValue($column . $row, $amount);
+
+            $columnIndex = 3;
             foreach($this->periods as $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -163,7 +209,16 @@ class PaymentPlanSheet implements
         $sheet->setCellValue('A' . $row, '    Изменяемая часть');
         $sheet->getRowDimension($row)->setRowHeight(50);
 
-        $columnIndex = 2;
+        $column = $this->getColumnWord(2);
+        $amount = $this->payments['providers_float']['no_paid'] ?? 0;
+
+        if ($amount == 0) {
+            $amount = '';
+        }
+
+        $sheet->setCellValue($column . $row, $amount);
+
+        $columnIndex = 3;
         foreach($this->periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = $this->payments['providers_float'][$period['start']] ?? 0;
@@ -181,7 +236,16 @@ class PaymentPlanSheet implements
             $sheet->setCellValue('A' . $row, '            ' . $contractorName);
             $sheet->getRowDimension($row)->setRowHeight(50);
 
-            $columnIndex = 2;
+            $column = $this->getColumnWord(2);
+            $amount = $info['no_paid'] ?? 0;
+
+            if ($amount == 0) {
+                $amount = '';
+            }
+
+            $sheet->setCellValue($column . $row, $amount);
+
+            $columnIndex = 3;
             foreach($this->periods as $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -208,7 +272,16 @@ class PaymentPlanSheet implements
         $sheet->setCellValue('A' . $row, 'Накладные/Услуги');
         $sheet->getRowDimension($row)->setRowHeight(50);
 
-        $columnIndex = 2;
+        $column = $this->getColumnWord(2);
+        $amount = $this->payments['service']['no_paid'] ?? 0;
+
+        if ($amount == 0) {
+            $amount = '';
+        }
+
+        $sheet->setCellValue($column . $row, $amount);
+
+        $columnIndex = 3;
         foreach($this->periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = $this->payments['service'][$period['start']] ?? 0;
@@ -226,7 +299,16 @@ class PaymentPlanSheet implements
             $sheet->setCellValue('A' . $row, '        ' . $contractorName);
             $sheet->getRowDimension($row)->setRowHeight(50);
 
-            $columnIndex = 2;
+            $column = $this->getColumnWord(2);
+            $amount = $info['no_paid'] ?? 0;
+
+            if ($amount == 0) {
+                $amount = '';
+            }
+
+            $sheet->setCellValue($column . $row, $amount);
+
+            $columnIndex = 3;
             foreach($this->periods as $period) {
 
                 $column = $this->getColumnWord($columnIndex);
@@ -253,7 +335,16 @@ class PaymentPlanSheet implements
         $sheet->setCellValue('A' . $row, 'Итого');
         $sheet->getRowDimension($row)->setRowHeight(50);
 
-        $columnIndex = 2;
+        $column = $this->getColumnWord(2);
+        $amount = $this->payments['total']['no_paid'] ?? 0;
+
+        if ($amount == 0) {
+            $amount = '';
+        }
+
+        $sheet->setCellValue($column . $row, $amount);
+
+        $columnIndex = 3;
         foreach($this->periods as $period) {
             $column = $this->getColumnWord($columnIndex);
             $amount = $this->payments['total'][$period['start']] ?? 0;
