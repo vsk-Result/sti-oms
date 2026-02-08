@@ -261,6 +261,12 @@ class ReceivePlanService
             return $payments;
         }
 
+        $payments['total']['no_paid'] = 0;
+        $payments['contractors']['no_paid'] = 0;
+        $payments['providers_fix']['no_paid'] = 0;
+        $payments['providers_float']['no_paid'] = 0;
+        $payments['service']['no_paid'] = 0;
+
         foreach ($periods as $index => $period) {
             $payments['total'][$period['start']] = 0;
             $payments['contractors'][$period['start']] = 0;
@@ -281,8 +287,17 @@ class ReceivePlanService
                         $payments['details']['contractors'][$contractor->organization->name][$period['start']] = 0;
                     }
 
+                    if (! isset($payments['details']['contractors'][$contractor->organization->name]['no_paid'])) {
+                        $payments['details']['contractors'][$contractor->organization->name]['no_paid'] = 0;
+                    }
+
                     if ($index === 0) {
-                        if ($contractor->date <= $period['end']) {
+                        if ($contractor->date < $period['start']) {
+                            $payments['contractors']['no_paid'] += $contractor['amount'];
+                            $payments['total']['no_paid'] += $contractor['amount'];
+
+                            $payments['details']['contractors'][$contractor->organization->name]['no_paid'] += $contractor['amount'];
+                        } else if ($contractor->date <= $period['end']) {
                             $payments['contractors'][$period['start']] += $contractor['amount'];
                             $payments['total'][$period['start']] += $contractor['amount'];
 
@@ -303,8 +318,17 @@ class ReceivePlanService
                         $payments['details']['providers_fix'][$fix->organization->name][$period['start']] = 0;
                     }
 
+                    if (! isset($payments['details']['providers_fix'][$fix->organization->name]['no_paid'])) {
+                        $payments['details']['providers_fix'][$fix->organization->name]['no_paid'] = 0;
+                    }
+
                     if ($index === 0) {
-                        if ($fix->date <= $period['end']) {
+                        if ($fix->date < $period['start']) {
+                            $payments['providers_fix']['no_paid'] += $fix['amount'];
+                            $payments['total']['no_paid'] += $fix['amount'];
+
+                            $payments['details']['providers_fix'][$fix->organization->name]['no_paid'] += $fix['amount'];
+                        } else if ($fix->date <= $period['end']) {
                             $payments['providers_fix'][$period['start']] += $fix['amount'];
                             $payments['total'][$period['start']] += $fix['amount'];
 
@@ -325,8 +349,17 @@ class ReceivePlanService
                         $payments['details']['providers_float'][$float->organization->name][$period['start']] = 0;
                     }
 
+                    if (! isset($payments['details']['providers_float'][$float->organization->name]['no_paid'])) {
+                        $payments['details']['providers_float'][$float->organization->name]['no_paid'] = 0;
+                    }
+
                     if ($index === 0) {
-                        if ($float->date <= $period['end']) {
+                        if ($float->date < $period['start']) {
+                            $payments['providers_float']['no_paid'] += $float['amount'];
+                            $payments['total']['no_paid'] += $float['amount'];
+
+                            $payments['details']['providers_float'][$float->organization->name]['no_paid'] += $float['amount'];
+                        } else if ($float->date <= $period['end']) {
                             $payments['providers_float'][$period['start']] += $float['amount'];
                             $payments['total'][$period['start']] += $float['amount'];
 
@@ -347,8 +380,17 @@ class ReceivePlanService
                         $payments['details']['service'][$service->organization->name][$period['start']] = 0;
                     }
 
+                    if (! isset($payments['details']['service'][$service->organization->name]['no_paid'])) {
+                        $payments['details']['service'][$service->organization->name]['no_paid'] = 0;
+                    }
+
                     if ($index === 0) {
-                        if ($service->date <= $period['end']) {
+                        if ($service->date < $period['start']) {
+                            $payments['service']['no_paid'] += $service['amount'];
+                            $payments['total']['no_paid'] += $service['amount'];
+
+                            $payments['details']['service'][$service->organization->name]['no_paid'] += $service['amount'];
+                        } else if ($service->date <= $period['end']) {
                             $payments['service'][$period['start']] += $service['amount'];
                             $payments['total'][$period['start']] += $service['amount'];
 
@@ -387,6 +429,10 @@ class ReceivePlanService
                     $payments['details']['contractors'][$contractor['organization']][$period['start']] = 0;
                 }
 
+                if (! isset($payments['details']['contractors'][$contractor['organization']]['no_paid'])) {
+                    $payments['details']['contractors'][$contractor['organization']]['no_paid'] = 0;
+                }
+
                 $amount = $contractor['amount'];
 
                 if ($contractor['currency'] === 'USD') {
@@ -396,7 +442,12 @@ class ReceivePlanService
                 }
 
                 if ($index === 0) {
-                    if ($date <= $period['end']) {
+                    if ($date < $period['start']) {
+                        $payments['contractors']['no_paid'] += $amount;
+                        $payments['total']['no_paid'] += $amount;
+
+                        $payments['details']['contractors'][$contractor['organization']]['no_paid'] += $amount;
+                    } else if ($date <= $period['end']) {
                         $payments['contractors'][$period['start']] += $amount;
                         $payments['total'][$period['start']] += $amount;
 
@@ -419,6 +470,10 @@ class ReceivePlanService
                     $payments['details']['providers_fix'][$fix['organization']][$period['start']] = 0;
                 }
 
+                if (! isset($payments['details']['providers_fix'][$fix['organization']]['no_paid'])) {
+                    $payments['details']['providers_fix'][$fix['organization']]['no_paid'] = 0;
+                }
+
                 $amount = $fix['amount'];
 
                 if ($fix['currency'] === 'USD') {
@@ -428,7 +483,12 @@ class ReceivePlanService
                 }
 
                 if ($index === 0) {
-                    if ($date <= $period['end']) {
+                    if ($date < $period['start']) {
+                        $payments['providers_fix']['no_paid'] += $amount;
+                        $payments['total']['no_paid'] += $amount;
+
+                        $payments['details']['providers_fix'][$fix['organization']]['no_paid'] += $amount;
+                    } else if ($date <= $period['end']) {
                         $payments['providers_fix'][$period['start']] += $amount;
                         $payments['total'][$period['start']] += $amount;
 
@@ -451,6 +511,10 @@ class ReceivePlanService
                     $payments['details']['providers_float'][$float['organization']][$period['start']] = 0;
                 }
 
+                if (! isset($payments['details']['providers_float'][$float['organization']]['no_paid'])) {
+                    $payments['details']['providers_float'][$float['organization']]['no_paid'] = 0;
+                }
+
                 $amount = $float['amount'];
 
                 if ($float['currency'] === 'USD') {
@@ -460,7 +524,12 @@ class ReceivePlanService
                 }
 
                 if ($index === 0) {
-                    if ($date <= $period['end']) {
+                    if ($date < $period['start']) {
+                        $payments['providers_float']['no_paid'] += $amount;
+                        $payments['total']['no_paid'] += $amount;
+
+                        $payments['details']['providers_float'][$float['organization']]['no_paid'] += $amount;
+                    } else if ($date <= $period['end']) {
                         $payments['providers_float'][$period['start']] += $amount;
                         $payments['total'][$period['start']] += $amount;
 
@@ -483,6 +552,10 @@ class ReceivePlanService
                     $payments['details']['service'][$ser['organization']][$period['start']] = 0;
                 }
 
+                if (! isset($payments['details']['service'][$ser['organization']]['no_paid'])) {
+                    $payments['details']['service'][$ser['organization']]['no_paid'] = 0;
+                }
+
                 $amount = $ser['amount'];
 
                 if ($ser['currency'] === 'USD') {
@@ -492,7 +565,12 @@ class ReceivePlanService
                 }
 
                 if ($index === 0) {
-                    if ($date <= $period['end']) {
+                    if ($date < $period['start']) {
+                        $payments['service']['no_paid'] += $amount;
+                        $payments['total']['no_paid'] += $amount;
+
+                        $payments['details']['service'][$ser['organization']]['no_paid'] += $amount;
+                    } else if ($date <= $period['end']) {
                         $payments['service'][$period['start']] += $amount;
                         $payments['total'][$period['start']] += $amount;
 

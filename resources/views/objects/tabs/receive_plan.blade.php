@@ -63,6 +63,8 @@
                             <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                                     <th class="min-w-400px ps-2">Основание</th>
+                                    <th class="min-w-250px">Не оплачено с прошлого периода</th>
+
                                     @foreach($periods as $period)
                                         <th class="min-w-250px">{{ $period['format'] }}</th>
                                     @endforeach
@@ -72,6 +74,7 @@
                             <tbody class="text-gray-600 fw-bold fs-7">
                                 <tr class="total-row">
                                     <td class="ps-2 fw-bolder">Поступления ИТОГО</td>
+                                    <td></td>
 
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($plans->where('date', $period['start'])->sum('amount'), 'RUB') }}</td>
@@ -80,6 +83,7 @@
                                 @foreach($reasons as $reasonId => $reason)
                                     <tr>
                                         <td class="ps-5">{{ $reason }}</td>
+                                        <td></td>
 
                                         @foreach($periods as $period)
                                             @php
@@ -108,6 +112,9 @@
                                         Расходы ИТОГО
                                     </td>
 
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['total']['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['total'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
@@ -122,7 +129,10 @@
                                         Работы
                                     </td>
 
-                                    @foreach($periods as $period)
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['contractors']['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['contractors'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
@@ -131,7 +141,10 @@
                                     <tr class="collapse-row" data-trigger="contractors-cf" style="display: none;">
                                         <td class="ps-10 fs-8 fst-italic">{{ $contractorName }}</td>
 
-                                        @foreach($periods as $period)
+                                        <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                    @foreach($periods as $period)
                                             <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                         @endforeach
                                     </tr>
@@ -140,7 +153,10 @@
                                 <tr>
                                     <td class="ps-5 fw-bold">Материалы</td>
 
-                                    @foreach($periods as $period)
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(($cfPayments['providers_fix']['no_paid'] ?? 0) + ($cfPayments['providers_float']['no_paid'] ?? 0), 'RUB', 0, true) }}</td>
+
+
+                                @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format(($cfPayments['providers_fix'][$period['start']] ?? 0) + ($cfPayments['providers_float'][$period['start']] ?? 0), 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
@@ -154,7 +170,10 @@
                                         Фиксированная часть
                                     </td>
 
-                                    @foreach($periods as $period)
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_fix']['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_fix'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
@@ -163,7 +182,10 @@
                                     <tr class="collapse-row" data-trigger="providers-fix-cf" style="display: none;">
                                         <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
 
-                                        @foreach($periods as $period)
+                                        <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                    @foreach($periods as $period)
                                             <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                         @endforeach
                                     </tr>
@@ -178,7 +200,10 @@
                                         Изменяемая часть
                                     </td>
 
-                                    @foreach($periods as $period)
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_float']['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['providers_float'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
@@ -187,7 +212,10 @@
                                     <tr class="collapse-row" data-trigger="providers-float-cf" style="display: none;">
                                         <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
 
-                                        @foreach($periods as $period)
+                                        <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                    @foreach($periods as $period)
                                             <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                         @endforeach
                                     </tr>
@@ -202,7 +230,10 @@
                                         Накладные/Услуги
                                     </td>
 
-                                    @foreach($periods as $period)
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['service']['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['service'][$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                     @endforeach
                                 </tr>
@@ -211,7 +242,10 @@
                                     <tr class="collapse-row" data-trigger="service-cf" style="display: none;">
                                         <td class="ps-10 fs-8 fst-italic">{{ $contractorName }}</td>
 
-                                        @foreach($periods as $period)
+                                        <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
+
+
+                                    @foreach($periods as $period)
                                             <td class="text-right fs-8 fst-italic">{{ \App\Models\CurrencyExchangeRate::format($info[$period['start']] ?? 0, 'RUB', 0, true) }}</td>
                                         @endforeach
                                     </tr>
@@ -219,6 +253,8 @@
 
                                 <tr class="total-row">
                                     <td class="ps-2 fw-bolder">Сальдо ИТОГО</td>
+
+                                    <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($cfPayments['total']['no_paid'] ?? 0, 'RUB', 0, true) }}</td>
 
                                     @foreach($periods as $period)
                                         <td class="text-right">{{ \App\Models\CurrencyExchangeRate::format($plans->where('date', $period['start'])->sum('amount') + ($cfPayments['total'][$period['start']] ?? 0), 'RUB', 0, true) }}</td>
