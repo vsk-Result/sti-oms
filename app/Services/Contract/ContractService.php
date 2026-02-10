@@ -262,7 +262,7 @@ class ContractService
             foreach ($requestData['avanses'] as $index => $avansAmount) {
                 if ((float) $avansAmount > 0) {
                     $avansPlannedPaymentDate = $requestData['avanses_planned_payment_date'][$index];
-                    $avansTypeId = $requestData['avanses_type_id'][$avansId];
+                    $avansTypeId = $requestData['avanses_type_id'][$index];
                     ContractAvans::create([
                         'contract_id' => $contract->id,
                         'type_id' => $avansTypeId,
