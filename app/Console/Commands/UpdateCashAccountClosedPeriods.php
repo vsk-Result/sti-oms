@@ -33,7 +33,7 @@ class UpdateCashAccountClosedPeriods extends HandledCommand
         $cashAccounts = CashAccount::active()->get();
 
         foreach ($cashAccounts as $cashAccount) {
-            foreach ($cashAccounts->closedPeriods as $closePeriod) {
+            foreach ($cashAccount->closedPeriods as $closePeriod) {
                 $closedPayments = CashAccountPayment::where('cash_account_id', $cashAccount->id)
                     ->whereIn('status_id', [CashAccountPayment::STATUS_CLOSED])
                     ->where('date', 'LIKE', substr($closePeriod->period, 0, 7) . '-%')
