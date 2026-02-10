@@ -22,11 +22,11 @@ class UpdateCashAccountClosedPeriods extends HandledCommand
 
     public function handle()
     {
-        if ($this->isProcessRunning()) {
-            return 0;
-        }
-
-        $this->startProcess();
+//        if ($this->isProcessRunning()) {
+//            return 0;
+//        }
+//
+//        $this->startProcess();
 
         $this->sendInfoMessage('Старт обновления');
 
@@ -52,7 +52,7 @@ class UpdateCashAccountClosedPeriods extends HandledCommand
 
         $this->sendInfoMessage('Обновление завершено');
 
-        $this->endProcess();
+//        $this->endProcess();
 
         return 0;
     }
