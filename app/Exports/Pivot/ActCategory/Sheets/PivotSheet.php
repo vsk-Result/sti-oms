@@ -244,7 +244,7 @@ class PivotSheet implements
                 ->where('currency', 'RUB')
                 ->get();
 
-            $totalMaterialPaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_MATERIAL)->sum('amount');
+            $totalMaterialPaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_MATERIAL)->sum('amount') + $receivePaymentsRUB->whereNotIn('category', [Payment::CATEGORY_MATERIAL, Payment::CATEGORY_RAD, Payment::CATEGORY_OPSTE])->sum('amount');
             $totalRadPaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_RAD)->sum('amount');
             $totalOpstePaidAmount = $receivePaymentsRUB->where('category', Payment::CATEGORY_OPSTE)->sum('amount');
 
@@ -257,6 +257,8 @@ class PivotSheet implements
                     ->get();
 
                 $totalMaterialPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_MATERIAL)->sum('currency_amount') * $EURExchangeRate->rate;
+                $totalMaterialPaidAmount += $receivePaymentsEUR->whereNotIn('category', [Payment::CATEGORY_MATERIAL, Payment::CATEGORY_RAD, Payment::CATEGORY_OPSTE])->sum('currency_amount') * $EURExchangeRate->rate;
+
                 $totalRadPaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_RAD)->sum('currency_amount') * $EURExchangeRate->rate;
                 $totalOpstePaidAmount += $receivePaymentsEUR->where('category', Payment::CATEGORY_OPSTE)->sum('currency_amount') * $EURExchangeRate->rate;
             }
