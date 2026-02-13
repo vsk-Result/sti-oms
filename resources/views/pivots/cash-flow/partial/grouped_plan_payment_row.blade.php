@@ -44,7 +44,18 @@
     @endphp
 
     <td class="text-right">
-        {{ \App\Models\CurrencyExchangeRate::format(-abs($amount), 'RUB', 0, true) }}
+        @if (auth()->user()->can('index cash-flow-plan-payments') && !$payment->from_tax_plan)
+            <input
+                    type="text"
+                    value="{{ $amount }}"
+                    class="amount-mask form-control form-control-sm form-control-solid db-field"
+                    autocomplete="off"
+                    data-payment-id="{{ $payment->id }}"
+                    data-date="{{ \Carbon\Carbon::parse($period['start'])->addDays(2)->format('Y-m-d') }}"
+            />
+        @else
+            {{ \App\Models\CurrencyExchangeRate::format(-abs($amount), 'RUB', 0, true) }}
+        @endif
     </td>
 
     @foreach($periods as $index => $period)
