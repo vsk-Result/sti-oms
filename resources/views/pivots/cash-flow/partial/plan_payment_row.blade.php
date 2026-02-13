@@ -52,7 +52,7 @@
                     class="amount-mask form-control form-control-sm form-control-solid db-field"
                     autocomplete="off"
                     data-payment-id="{{ $payment->id }}"
-                    data-date="{{ \Carbon\Carbon::parse($periods[0]['start'])->addDays(2)->format('Y-m-d') }}"
+                    data-date="{{ \Carbon\Carbon::parse($periods[0]['start'])->subDays(2)->format('Y-m-d') }}"
             />
         @else
             {{ \App\Models\CurrencyExchangeRate::format(-abs($amount), 'RUB', 0, true) }}
