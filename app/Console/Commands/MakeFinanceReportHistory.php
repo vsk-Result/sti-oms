@@ -414,6 +414,11 @@ class MakeFinanceReportHistory extends HandledCommand
                         $dolgZakazchikovZaVipolnenieRabotiWithoutNDS = 0;
                     }
 
+                    if ($object->code === '360') {
+                        $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
+                        $ostatokPoDogovoruSZakazchikomWithoutNDS = $dolgFactUderjannogoGUWithoutNDS;
+                    }
+
 //                    $taxDebtAmount = TaxPlanItem::where('object_id', $object->id)
 //                        ->where('paid', false)
 //                        ->whereIn('name', ['НДС', 'Налог на прибыль аванс', 'НДФЛ', 'Транспортный налог', 'Налог на прибыль'])
