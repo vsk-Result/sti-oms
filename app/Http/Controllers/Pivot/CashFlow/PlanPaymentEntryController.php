@@ -28,9 +28,9 @@ class PlanPaymentEntryController extends Controller
         $periods = $this->receivePlanService->getPeriods();
         $objectList = BObject::active()->get();
 
-//        if ($entry->date === $periods[0]['start']) {
-//            PlanPaymentEntry::where('id', '!=', $entry->id)->where('payment_id', $payment->id)->where('date', '<=', $periods[0]['start'])->delete();
-//        }
+        if ($entry->date === $periods[0]['start']) {
+            PlanPaymentEntry::where('id', '!=', $entry->id)->where('payment_id', $payment->id)->where('date', $periods[0]['start'])->delete();
+        }
 
         $gr = $request->get('group');
         $row = $request->has('group') ? 'pivots.cash-flow/partial/grouped_plan_payment_row' : 'pivots.cash-flow/partial/plan_payment_row';
