@@ -29,7 +29,7 @@ class PlanPaymentEntryController extends Controller
         $objectList = BObject::active()->get();
 
         if ($entry->date === $periods[0]['start']) {
-            PlanPaymentEntry::where('id', '!=', $entry->id)->where('payment_id', $payment->id)->where('date', $periods[0]['start'])->delete();
+            PlanPaymentEntry::where('id', '!=', $entry->id)->where('payment_id', $payment->id)->whereBetween('date', [$periods[0]['start'], $periods[0]['end']])->delete();
         }
 
         $gr = $request->get('group');
