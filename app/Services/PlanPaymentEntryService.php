@@ -27,10 +27,10 @@ class PlanPaymentEntryService
         $entry = $this->findEntry($requestData['payment_id'], $requestData['date']);
 
         if ($entry) {
-            return $this->updatePlanPaymentEntry($entry, $requestData);
+            $entry = $this->updatePlanPaymentEntry($entry, $requestData);
+        } else {
+            $entry = $this->createPlanPaymentEntry($requestData);
         }
-
-        $entry = $this->createPlanPaymentEntry($requestData);
 
         if ($periods) {
             if ($entry->date < $periods[0]['start']) {
