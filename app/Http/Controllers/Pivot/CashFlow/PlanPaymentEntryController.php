@@ -23,9 +23,9 @@ class PlanPaymentEntryController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $entry = $this->planPaymentEntryService->createOrUpdatePlanPaymentEntry($request->toArray());
-        $payment = $entry->planPayment;
         $periods = $this->receivePlanService->getPeriods();
+        $entry = $this->planPaymentEntryService->createOrUpdatePlanPaymentEntry($request->toArray(), $periods);
+        $payment = $entry->planPayment;
         $objectList = BObject::active()->get();
 
         if ($entry->date === $periods[0]['start']) {

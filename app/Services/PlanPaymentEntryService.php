@@ -22,7 +22,7 @@ class PlanPaymentEntryService
         $this->notificationService = $notificationService;
     }
 
-    public function createOrUpdatePlanPaymentEntry(array $requestData): PlanPaymentEntry
+    public function createOrUpdatePlanPaymentEntry(array $requestData, ?array $periods): PlanPaymentEntry
     {
         $entry = $this->findEntry($requestData['payment_id'], $requestData['date']);
 
@@ -30,7 +30,15 @@ class PlanPaymentEntryService
             return $this->updatePlanPaymentEntry($entry, $requestData);
         }
 
-        return $this->createPlanPaymentEntry($requestData);
+        $entry = $this->createPlanPaymentEntry($requestData);
+
+        if ($periods) {
+            if ($entry->date < $periods[0]['start']) {
+                PlanPaymentEntry::where('id', '!=', $entry->id)->where('payment_id', $requestData['payment_id'])->whereBetween('date', '<', $periods[0]['start'])->delete();
+            }
+        }
+
+        return $entry;
     }
 
     public function createPlanPaymentEntry(array $requestData): PlanPaymentEntry
