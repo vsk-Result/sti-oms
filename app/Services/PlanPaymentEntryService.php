@@ -34,7 +34,7 @@ class PlanPaymentEntryService
 
         if ($periods) {
             if ($entry->date < $periods[0]['start']) {
-                PlanPaymentEntry::where('id', '!=', $entry->id)->where('payment_id', $requestData['payment_id'])->whereBetween('date', '<', $periods[0]['start'])->delete();
+                PlanPaymentEntry::where('id', '!=', $entry->id)->where('payment_id', $requestData['payment_id'])->where('date', '<', $periods[0]['start'])->delete();
             }
         }
 
