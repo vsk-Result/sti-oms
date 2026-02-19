@@ -4,12 +4,20 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
+use App\Services\CashAccount\CashAccountService;
+use App\Services\CashAccount\ClosePeriodService;
+use App\Services\CashAccount\NotificationService;
+use App\Services\CashAccount\Payment\PaymentService;
 use Carbon\Carbon;
 use Illuminate\View\View;
 use DateTime;
 
 class CostStatusController extends Controller
 {
+    public function __construct(
+        private PaymentService $paymentService,
+    ) {}
+
     public function index(): View
     {
         $closures = [];
@@ -41,6 +49,18 @@ class CostStatusController extends Controller
                 }
             }
         }
+
+        $realClosures = [];
+        foreach ($closures as $cashAccountId => $closure) {
+            $totalInfo = [];
+            $payments = $this->paymentService->filterPayments(['cash_account_id' => [$cashAccountId]], true, $totalInfo);
+
+            if ($payments > 0) {
+                $realClosures[$cashAccountId] = $closure;
+            }
+        }
+
+        $closures = $realClosures;
 
         return view('crm-costs.index', compact('closures'));
     }
