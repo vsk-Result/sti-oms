@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
+use App\Models\CashAccount\CashAccountPayment;
 use App\Services\CashAccount\CashAccountService;
 use App\Services\CashAccount\ClosePeriodService;
 use App\Services\CashAccount\NotificationService;
@@ -45,22 +46,14 @@ class CostStatusController extends Controller
                     continue;
                 }
                 if (! in_array($fp, $closePeriodMonths)) {
-                    $closures[$cashAccount->id]['not_close'][] = Carbon::parse($fp)->format('F Y');
+                    $payments = CashAccountPayment::where('cash_account_id', $cashAccount->id)->where('date', 'LIKE', $period . '-%')->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE])->get();
+
+                    if ($payments > 0) {
+                        $closures[$cashAccount->id]['not_close'][] = Carbon::parse($fp)->format('F Y');
+                    }
                 }
             }
         }
-
-        $realClosures = [];
-        foreach ($closures as $cashAccountId => $closure) {
-            $totalInfo = [];
-            $payments = $this->paymentService->filterPayments(['cash_account_id' => [$cashAccountId]], true, $totalInfo);
-
-            if ($payments > 0) {
-                $realClosures[$cashAccountId] = $closure;
-            }
-        }
-
-        $closures = $realClosures;
 
         return view('crm-costs.index', compact('closures'));
     }
