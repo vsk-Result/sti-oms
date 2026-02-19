@@ -93,7 +93,9 @@
                          $totalRadContractAmount = 0;
                          $totalOpsteContractAmount = 0;
 
-                         foreach (App\Models\Contract\Contract::whereIn('object_id', $activeObjectIds)->where('type_id', App\Models\Contract\Contract::TYPE_MAIN)->get() as $contract) {
+                         $mainContracts = App\Models\Contract\Contract::whereIn('object_id', $activeObjectIds)->where('type_id', App\Models\Contract\Contract::TYPE_MAIN)->get();
+
+                         foreach ($mainContracts as $contract) {
                             $totalContractAmount += $contract->getAmount('RUB');
                             $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
                             $totalRadContractAmount += $contract->getRadAmount('RUB');
@@ -158,37 +160,33 @@
                         $totalServiceGeneralPayments = 0;
 
                         foreach ($activeObjects as $aobject) {
-                            $materialRadPayments = $aobject->payments()
-                                ->where('amount', '<', 0)
+                            $objectPayments = $aobject->payments->where('amount', '<', 0);
+
+                            $materialRadPayments = $objectPayments
                                 ->whereIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
                                 ->where('category', \App\Models\Payment::CATEGORY_MATERIAL)
                                 ->sum('amount');
 
-                             $materialPayments = $aobject->payments()
-                                ->where('amount', '<', 0)
+                             $materialPayments = $objectPayments
                                 ->whereNotIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
                                 ->where('category', \App\Models\Payment::CATEGORY_MATERIAL)
                                 ->sum('amount');
 
-                             $radPayments = $aobject->payments()
-                                ->where('amount', '<', 0)
+                             $radPayments = $objectPayments
                                 ->where('category', \App\Models\Payment::CATEGORY_RAD)
                                 ->sum('amount');
 
-                             $radOwnPayments = $aobject->payments()
-                                ->where('amount', '<', 0)
+                             $radOwnPayments = $objectPayments
                                 ->whereIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
                                 ->where('category', \App\Models\Payment::CATEGORY_RAD)
                                 ->sum('amount');
 
-                             $serviceRadPayments = $aobject->payments()
-                                ->where('amount', '<', 0)
+                             $serviceRadPayments = $objectPayments
                                 ->whereIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
                                 ->whereNotIn('category', [\App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_MATERIAL])
                                 ->sum('amount');
 
-                             $servicePayments = $aobject->payments()
-                                ->where('amount', '<', 0)
+                             $servicePayments = $objectPayments
                                 ->whereNotIn('code', ['7.8', '7.8.1', '7.8.2', '7.9', '7.9.1', '7.9.2', '7.10'])
                                 ->whereNotIn('category', [\App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_MATERIAL])
                                 ->sum('amount');
@@ -608,7 +606,9 @@
                                 $totalRadContractAmount = 0;
                                 $totalOpsteContractAmount = 0;
 
-                                foreach ($object->contracts()->where('type_id', App\Models\Contract\Contract::TYPE_MAIN)->get() as $contract) {
+                                $mainContracts = $object->contracts()->where('type_id', App\Models\Contract\Contract::TYPE_MAIN)->get();
+
+                                foreach ($mainContracts as $contract) {
                                     $totalContractAmount += $contract->getAmount('RUB');
                                     $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
                                     $totalRadContractAmount += $contract->getRadAmount('RUB');
