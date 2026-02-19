@@ -48,7 +48,7 @@ class CostStatusController extends Controller
                 if (! in_array($fp, $closePeriodMonths)) {
                     $payments = CashAccountPayment::where('cash_account_id', $cashAccount->id)->where('date', 'LIKE', $period . '-%')->whereIn('status_id', [CashAccountPayment::STATUS_ACTIVE])->get();
 
-                    if ($payments > 0) {
+                    if ($payments->count() > 0) {
                         $closures[$cashAccount->id]['not_close'][] = Carbon::parse($fp)->format('F Y');
                     }
                 }
