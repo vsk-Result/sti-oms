@@ -136,8 +136,8 @@ class ActService
                 $actQuery->orderBy($requestData['sort_by'], $requestData['sort_direction'] ?? 'asc');
             }
         } else {
-            $actQuery->orderByDesc('date')
-                ->orderByDesc('id');
+            $actQuery->orderByDesc('number')
+                ->orderByDesc('date');
         }
 
         $actQuery->with('object', 'contract', 'payments');
