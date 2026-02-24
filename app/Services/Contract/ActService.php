@@ -136,7 +136,7 @@ class ActService
                 $actQuery->orderBy($requestData['sort_by'], $requestData['sort_direction'] ?? 'asc');
             }
         } else {
-            $actQuery->orderByRaw('CAST(number AS UNSIGNED) DESC');
+            $actQuery->orderByRaw('CAST(NULLIF(number, "") AS UNSIGNED) DESC');
         }
 
         $actQuery->with('object', 'contract', 'payments');
