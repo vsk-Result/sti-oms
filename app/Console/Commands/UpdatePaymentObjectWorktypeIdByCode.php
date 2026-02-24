@@ -28,7 +28,7 @@ class UpdatePaymentObjectWorktypeIdByCode extends HandledCommand
 
         $this->sendInfoMessage('Старт исправления статей затрат оплат');
 
-        Payment::whereBetween('date', ['2022-01-01', '2025-12-31'])->chunk(1000, function($payments) {
+        Payment::whereBetween('date', ['2025-11-01', '2026-12-31'])->chunk(1000, function($payments) {
             foreach ($payments as $payment) {
                 if (! empty($payment->code) && !is_null($payment->code)) {
                     $payment->update([
