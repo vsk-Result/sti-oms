@@ -115,25 +115,27 @@
 
                          foreach ($activeObjects as $aobject) {
                              $receivePaymentsRUB = $aobject->payments()
-                                ->where('payment_type_id', App\Models\Payment::PAYMENT_TYPE_NON_CASH)
+                                ->where('payment_type_id', \App\Models\Payment::PAYMENT_TYPE_NON_CASH)
                                 ->where('company_id', 1)
                                 ->whereIn('organization_sender_id', $aobject->customers->pluck('id')->toArray())
                                 ->where('currency', 'RUB')
                                 ->get();
 
-                            $totalMaterialPaidAmount += $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('amount');
+                            $totalMaterialPaidAmount += $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('amount') + $receivePaymentsRUB->whereNotIn('category', [\App\Models\Payment::CATEGORY_MATERIAL, \App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_OPSTE])->sum('amount');
                             $totalRadPaidAmount += $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_RAD)->sum('amount');
                             $totalOpstePaidAmount += $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_OPSTE)->sum('amount');
 
                             if ($EURExchangeRate) {
                                 $receivePaymentsEUR = $aobject->payments()
-                                    ->where('payment_type_id', App\Models\Payment::PAYMENT_TYPE_NON_CASH)
+                                    ->where('payment_type_id', \App\Models\Payment::PAYMENT_TYPE_NON_CASH)
                                     ->where('company_id', 1)
                                     ->whereIn('organization_sender_id', $aobject->customers->pluck('id')->toArray())
                                     ->where('currency', 'EUR')
                                     ->get();
 
                                 $totalMaterialPaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('currency_amount') * $EURExchangeRate->rate;
+                                $totalMaterialPaidAmount += $receivePaymentsEUR->whereNotIn('category', [\App\Models\Payment::CATEGORY_MATERIAL, \App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_OPSTE])->sum('currency_amount') * $EURExchangeRate->rate;
+
                                 $totalRadPaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_RAD)->sum('currency_amount') * $EURExchangeRate->rate;
                                 $totalOpstePaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_OPSTE)->sum('currency_amount') * $EURExchangeRate->rate;
                             }
@@ -664,25 +666,27 @@
                                 }
 
                                 $receivePaymentsRUB = $object->payments()
-                                    ->where('payment_type_id', App\Models\Payment::PAYMENT_TYPE_NON_CASH)
+                                    ->where('payment_type_id', \App\Models\Payment::PAYMENT_TYPE_NON_CASH)
                                     ->where('company_id', 1)
                                     ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
                                     ->where('currency', 'RUB')
                                     ->get();
 
-                                $totalMaterialPaidAmount = $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('amount');
+                                $totalMaterialPaidAmount = $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('amount') + $receivePaymentsRUB->whereNotIn('category', [\App\Models\Payment::CATEGORY_MATERIAL, \App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_OPSTE])->sum('amount');
                                 $totalRadPaidAmount = $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_RAD)->sum('amount');
                                 $totalOpstePaidAmount = $receivePaymentsRUB->where('category', \App\Models\Payment::CATEGORY_OPSTE)->sum('amount');
 
                                 if ($EURExchangeRate) {
                                     $receivePaymentsEUR = $object->payments()
-                                        ->where('payment_type_id', App\Models\Payment::PAYMENT_TYPE_NON_CASH)
+                                        ->where('payment_type_id', \App\Models\Payment::PAYMENT_TYPE_NON_CASH)
                                         ->where('company_id', 1)
                                         ->whereIn('organization_sender_id', $object->customers->pluck('id')->toArray())
                                         ->where('currency', 'EUR')
                                         ->get();
 
                                     $totalMaterialPaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_MATERIAL)->sum('currency_amount') * $EURExchangeRate->rate;
+                                    $totalMaterialPaidAmount += $receivePaymentsEUR->whereNotIn('category', [\App\Models\Payment::CATEGORY_MATERIAL, \App\Models\Payment::CATEGORY_RAD, \App\Models\Payment::CATEGORY_OPSTE])->sum('currency_amount') * $EURExchangeRate->rate;
+
                                     $totalRadPaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_RAD)->sum('currency_amount') * $EURExchangeRate->rate;
                                     $totalOpstePaidAmount += $receivePaymentsEUR->where('category', \App\Models\Payment::CATEGORY_OPSTE)->sum('currency_amount') * $EURExchangeRate->rate;
                                 }
