@@ -131,6 +131,11 @@ class BObject extends Model implements Audit
         return $this->hasMany(Act::class, 'object_id');
     }
 
+    public function budgets(): HasMany
+    {
+        return $this->hasMany(Budget::class, 'object_id');
+    }
+
     public static function getObjectsList($needAllObjects = false): array
     {
         $result = [];

@@ -12,6 +12,7 @@ use App\Models\Object\ResponsiblePersonPosition;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Status;
+use App\Services\Object\ObjectBudgetService;
 use App\Services\ObjectService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -22,10 +23,12 @@ use Illuminate\Http\Request;
 class ObjectController extends Controller
 {
     private ObjectService $objectService;
+    private ObjectBudgetService $budgetService;
 
-    public function __construct(ObjectService $objectService)
+    public function __construct(ObjectService $objectService, ObjectBudgetService $budgetService)
     {
         $this->objectService = $objectService;
+        $this->budgetService = $budgetService;
     }
 
     public function index(Request $request): View|JsonResponse
@@ -96,7 +99,9 @@ class ObjectController extends Controller
 
         $positions = ResponsiblePersonPosition::getPositions();
 
-        return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields', 'positions'));
+        $budgets = $this->budgetService->getObjectBudgets($object->id);
+
+        return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields', 'positions', 'budgets'));
     }
 
     public function update(BObject $object, UpdateObjectRequest $request): RedirectResponse

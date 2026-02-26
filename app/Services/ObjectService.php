@@ -5,11 +5,13 @@ namespace App\Services;
 use App\Helpers\Sanitizer;
 use App\Models\FinanceReport;
 use App\Models\Object\BObject;
+use App\Models\Object\Budget;
 use App\Models\Object\GeneralCost;
 use App\Models\Object\PlanPayment;
 use App\Models\Object\ResponsiblePerson;
 use App\Models\Payment;
 use App\Models\Status;
+use App\Services\Object\ObjectBudgetService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -17,11 +19,13 @@ class ObjectService
 {
     private UploadService $uploadService;
     private Sanitizer $sanitizer;
+    private ObjectBudgetService $budgetService;
 
-    public function __construct(UploadService $uploadService, Sanitizer $sanitizer)
+    public function __construct(UploadService $uploadService, Sanitizer $sanitizer, ObjectBudgetService $budgetService)
     {
         $this->uploadService = $uploadService;
         $this->sanitizer = $sanitizer;
+        $this->budgetService = $budgetService;
     }
 
     public function createObject(array $requestData): BObject
@@ -160,6 +164,12 @@ class ObjectService
                         'status_id' => Status::STATUS_ACTIVE,
                     ]);
                 }
+            }
+        }
+
+        if (! empty($requestData['object_budgets'])) {
+            foreach ($requestData['object_budgets'] as $budgetId => $budgetAmount) {
+                $this->budgetService->updateObjectBudget($budgetId, $budgetAmount);
             }
         }
     }

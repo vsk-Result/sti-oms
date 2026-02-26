@@ -306,6 +306,22 @@
                                         </div>
                                     @endforeach
                                 </div>
+
+                                <div class="pt-2">
+                                    <h3 class="mb-10 mt-6">Бюджет объекта</h3>
+
+                                    @foreach($budgets as $budget)
+                                        <div class="pt-4 mb-10 fv-row">
+                                            <label class="form-label fw-bolder text-dark fs-6">{{ $budget->name }}</label>
+                                            <input
+                                                class="amount-mask form-control form-control-lg form-control-solid"
+                                                type="text"
+                                                value="{{ old($budget->name, $budget->amount) }}"
+                                                name="object_budgets[{{ $budget->id }}]"
+                                            />
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
 

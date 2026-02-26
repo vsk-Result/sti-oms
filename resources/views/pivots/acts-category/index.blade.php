@@ -159,6 +159,16 @@
                         $totalServiceAmountPayments = 0;
                         $totalServiceGeneralPayments = 0;
 
+                        $objectBudgetInfo = [];
+                        $totalBudget = 0;
+                        $totalBudgetMaterial = 0;
+                        $totalBudgetRad = 0;
+                        $totalBudgetRadOwn = 0;
+                        $totalBudgetRadContractor = 0;
+                        $totalBudgetService = 0;
+                        $totalBudgetServiceAmount = 0;
+                        $totalBudgetServiceGeneral = 0;
+
                         foreach ($activeObjects as $aobject) {
                             $objectPayments = $aobject->payments->where('amount', '<', 0);
 
@@ -208,6 +218,8 @@
                                 'total' => $radPayments + $materialPayments + $servicePayments + $generalCosts
                             ];
 
+                             $objectBudgets = $aobject->budgets;
+
                              $totalPayments += $radPayments + $materialPayments + $servicePayments + $generalCosts;
                              $totalMaterialPayments += $materialPayments;
                              $totalRadPayments += $radPayments;
@@ -215,9 +227,38 @@
                              $totalServicePayments += $servicePayments + $generalCosts;
                              $totalServiceAmountPayments += $servicePayments;
                              $totalServiceGeneralPayments += $generalCosts;
+
+                             $objectBudgetInfo[$aobject->id] = [
+                                 'rad' => $objectBudgets->whereIn('type_id', [\App\Models\Object\Budget::TYPE_RAD_SELF, \App\Models\Object\Budget::TYPE_RAD_CONTRACTORS])->sum('amount'),
+                                'rad_own' => $objectBudgets->where('type_id', \App\Models\Object\Budget::TYPE_RAD_SELF)->sum('amount'),
+                                'rad_contractor' => $objectBudgets->where('type_id', \App\Models\Object\Budget::TYPE_RAD_CONTRACTORS)->sum('amount'),
+                                'material' => $objectBudgets->where('type_id', \App\Models\Object\Budget::TYPE_MATERIAL)->sum('amount'),
+                                'service' => $objectBudgets->whereIn('type_id', [\App\Models\Object\Budget::TYPE_SERVICE_OBJECT, \App\Models\Object\Budget::TYPE_SERVICE_GENERAL])->sum('amount'),
+                                'service_amount' => $objectBudgets->where('type_id', \App\Models\Object\Budget::TYPE_SERVICE_OBJECT)->sum('amount'),
+                                'service_general_cost' => $objectBudgets->where('type_id', \App\Models\Object\Budget::TYPE_SERVICE_GENERAL)->sum('amount'),
+                                'total' => $objectBudgets->sum('amount')
+                              ];
+
+                             $totalBudget += $objectBudgetInfo[$aobject->id]['total'];
+                             $totalBudgetMaterial += $objectBudgetInfo[$aobject->id]['material'];
+                            $totalBudgetRadOwn += $objectBudgetInfo[$aobject->id]['rad_own'];
+                            $totalBudgetRadContractor += $objectBudgetInfo[$aobject->id]['rad_contractor'];
+                            $totalBudgetRad += $objectBudgetInfo[$aobject->id]['rad'];
+                            $totalBudgetServiceAmount += $objectBudgetInfo[$aobject->id]['service_amount'];
+                            $totalBudgetServiceGeneral += $objectBudgetInfo[$aobject->id]['service_general_cost'];
+                            $totalBudgetService += $objectBudgetInfo[$aobject->id]['service'];
                          }
 
                          $totalRadContractorPayments = $totalRadPayments - $totalRadOwnPayments;
+
+                        $totalBudgetDeviation = $totalBudget != 0 ? (abs($totalPayments) / $totalBudget * 100) : 0;
+                        $totalBudgetMaterialDeviation = $totalBudgetMaterial != 0 ? (abs($totalMaterialPayments) / $totalBudgetMaterial * 100) : 0;
+                        $totalBudgetRadDeviation = $totalBudgetRad != 0 ? (abs($totalRadPayments) / $totalBudgetRad * 100) : 0;
+                        $totalBudgetRadOwnDeviation = $totalBudgetRadOwn != 0 ? (abs($totalRadOwnPayments) / $totalBudgetRadOwn * 100) : 0;
+                        $totalBudgetRadContractorDeviation = $totalBudgetRadContractor != 0 ? (abs($totalRadContractorPayments) / $totalBudgetRadContractor * 100) : 0;
+                        $totalBudgetServiceDeviation = $totalBudgetService != 0 ? (abs($totalServicePayments) / $totalBudgetService * 100) : 0;
+                        $totalBudgetServiceAmountDeviation = $totalBudgetServiceAmount != 0 ? (abs($totalServiceAmountPayments) / $totalBudgetServiceAmount * 100) : 0;
+                        $totalBudgetServiceGeneralDeviation = $totalBudgetServiceGeneral != 0 ? (abs($totalServiceGeneralPayments) / $totalBudgetServiceGeneral * 100) : 0;
                     @endphp
 
                     <tbody class="text-gray-600 fw-bold fs-7">
@@ -249,19 +290,19 @@
                                 {{ number_format($totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount * 100 : 0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudget, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalPayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(100) . '%' }}
+                            <td class="cell-center {{ $totalBudgetDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format($totalPayments + $totalAmount, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudget + $totalPayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(100) . '%' }}
+                            <td class="cell-center {{ $totalBudgetDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetDeviation)) . '%' }}
                             </td>
                         </tr>
                         <tr>
@@ -294,19 +335,19 @@
                                 {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudgetMaterial, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalMaterialPayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format($totalPayments != 0 ? $totalMaterialPayments / $totalPayments * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetMaterialDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetMaterialDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format($totalMaterialPayments + $totalMaterialAmount, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudgetMaterial + $totalMaterialPayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(($totalPayments + $totalAmount) != 0 ? ($totalMaterialPayments + $totalMaterialAmount) / ($totalPayments + $totalAmount) * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetMaterialDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetMaterialDeviation)) . '%' }}
                             </td>
                         </tr>
 
@@ -340,19 +381,19 @@
                                 {{ number_format($totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudgetRad, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalRadPayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format($totalPayments != 0 ? $totalRadPayments / $totalPayments * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetRadDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetRadDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format($totalRadPayments + $totalRadAmount, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudgetRad + $totalRadPayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(($totalPayments + $totalAmount) != 0 ? ($totalRadPayments + $totalRadAmount) / ($totalPayments + $totalAmount) * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetRadDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetRadDeviation)) . '%' }}
                             </td>
                         </tr>
 
@@ -386,19 +427,19 @@
                                 {{ number_format(0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudgetRadOwn, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalRadOwnPayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format($totalRadPayments != 0 ? $totalRadOwnPayments / $totalRadPayments * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetRadOwnDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetRadOwnDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudgetRadOwn + $totalRadOwnPayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetRadOwnDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetRadOwnDeviation)) . '%' }}
                             </td>
                         </tr>
 
@@ -432,19 +473,19 @@
                                 {{ number_format(0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudgetRadContractor, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalRadContractorPayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format($totalRadPayments != 0 ? $totalRadContractorPayments / $totalRadPayments * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetRadContractorDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetRadContractorDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudgetRadContractor + $totalRadContractorPayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetRadContractorDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetRadContractorDeviation)) . '%' }}
                             </td>
                         </tr>
 
@@ -478,19 +519,19 @@
                                 {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudgetService, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalServicePayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format($totalPayments != 0 ? $totalServicePayments / $totalPayments * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetServiceDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetServiceDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format($totalServicePayments + $totalOpsteAmount, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudgetService + $totalServicePayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(($totalPayments + $totalAmount) != 0 ? ($totalServicePayments + $totalOpsteAmount) / ($totalPayments + $totalAmount) * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetServiceDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetServiceDeviation)) . '%' }}
                             </td>
                         </tr>
 
@@ -524,19 +565,19 @@
                                 {{ number_format(0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudgetServiceAmount, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalServiceAmountPayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format($totalServicePayments != 0 ? $totalServiceAmountPayments / $totalServicePayments * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetServiceAmountDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetServiceAmountDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudgetServiceAmount + $totalServiceAmountPayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetServiceAmountDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetServiceAmountDeviation)) . '%' }}
                             </td>
                         </tr>
 
@@ -570,19 +611,19 @@
                                 {{ number_format(0) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format($totalBudgetServiceGeneral, 'RUB', 0, true) }}
                             </td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format($totalServiceGeneralPayments, 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format($totalServicePayments != 0 ? $totalServiceGeneralPayments / $totalServicePayments * 100 : 0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetServiceGeneralDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format($totalBudgetServiceGeneralDeviation) . '%' }}
                             </td>
                             <td class="cell-center">
-                                {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                {{ \App\Models\CurrencyExchangeRate::format(min(0, $totalBudgetServiceGeneral + $totalServiceGeneralPayments), 'RUB', 0, true) }}
                             </td>
-                            <td class="cell-center">
-                                {{ number_format(0) . '%' }}
+                            <td class="cell-center {{ $totalBudgetServiceGeneralDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                {{ number_format(min(0, 100 - $totalBudgetServiceGeneralDeviation)) . '%' }}
                             </td>
                         </tr>
 
@@ -663,6 +704,15 @@
                                 $totalMaterialAmountPercent = round($totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount * 100 : 0);
                                 $totalRadAmountPercent = round($totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount * 100 : 0);
                                 $totalOpsteAmountPercent = round($totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount * 100 : 0);
+
+                                $totalBudgetDeviation = $objectBudgetInfo[$object->id]['total'] != 0 ? (abs($objectPaymentInfo[$object->id]['total']) / $objectBudgetInfo[$object->id]['total'] * 100) : 0;
+                                $totalBudgetMaterialDeviation = $objectBudgetInfo[$object->id]['material'] != 0 ? (abs($objectPaymentInfo[$object->id]['material']) / $objectBudgetInfo[$object->id]['material'] * 100) : 0;
+                                $totalBudgetRadDeviation = $objectBudgetInfo[$object->id]['rad'] != 0 ? (abs($objectPaymentInfo[$object->id]['rad']) / $objectBudgetInfo[$object->id]['rad'] * 100) : 0;
+                                $totalBudgetRadOwnDeviation = $objectBudgetInfo[$object->id]['rad_own'] != 0 ? (abs($objectPaymentInfo[$object->id]['rad_own']) / $objectBudgetInfo[$object->id]['rad_own'] * 100) : 0;
+                                $totalBudgetRadContractorDeviation = $objectBudgetInfo[$object->id]['rad_contractor'] != 0 ? (abs($objectPaymentInfo[$object->id]['rad_contractor']) / $objectBudgetInfo[$object->id]['rad_contractor'] * 100) : 0;
+                                $totalBudgetServiceDeviation = $objectBudgetInfo[$object->id]['service'] != 0 ? (abs($objectPaymentInfo[$object->id]['service']) / $objectBudgetInfo[$object->id]['service'] * 100) : 0;
+                                $totalBudgetServiceAmountDeviation = $objectBudgetInfo[$object->id]['service_amount'] != 0 ? (abs($objectPaymentInfo[$object->id]['service_amount']) / $objectBudgetInfo[$object->id]['service_amount'] * 100) : 0;
+                                $totalBudgetServiceGeneralDeviation = $objectBudgetInfo[$object->id]['service_general_cost'] != 0 ? (abs($objectPaymentInfo[$object->id]['service_general_cost']) / $objectBudgetInfo[$object->id]['service_general_cost'] * 100) : 0;
                             @endphp
                             <tr class="object-row fw-bolder">
                                 <td class="ps-2 fw-bolder collapse-trigger cursor-pointer" data-trigger="collapse_{{ $object->id }}">
@@ -695,19 +745,19 @@
                                     {{ number_format($totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount * 100 : 0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['total'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['total'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(100) . '%' }}
+                                <td class="cell-center {{ $totalBudgetDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['total'] + $totalAmount, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['total'] + $objectPaymentInfo[$object->id]['total']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(100) . '%' }}
+                                <td class="cell-center {{ $totalBudgetDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetDeviation)) . '%' }}
                                 </td>
                             </tr>
                             <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
@@ -740,19 +790,19 @@
                                     {{ number_format($totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount * 100 : 0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['material'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['material'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($objectPaymentInfo[$object->id]['total'] != 0 ? $objectPaymentInfo[$object->id]['material'] / $objectPaymentInfo[$object->id]['total'] * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetMaterialDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetMaterialDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['material'] + $totalMaterialAmount, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['material'] + $objectPaymentInfo[$object->id]['material']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(($objectPaymentInfo[$object->id]['total'] + $totalAmount) != 0 ? ($objectPaymentInfo[$object->id]['material'] + $totalMaterialAmount) / ($objectPaymentInfo[$object->id]['total'] + $totalAmount) * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetMaterialDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetMaterialDeviation)) . '%' }}
                                 </td>
                             </tr>
 
@@ -786,19 +836,19 @@
                                     {{ number_format($totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount * 100 : 0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['rad'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['rad'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($objectPaymentInfo[$object->id]['total'] != 0 ? $objectPaymentInfo[$object->id]['rad'] / $objectPaymentInfo[$object->id]['total'] * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetRadDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetRadDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['rad'] + $totalRadAmount, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['rad'] + $objectPaymentInfo[$object->id]['rad']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(($objectPaymentInfo[$object->id]['total'] + $totalAmount) != 0 ? ($objectPaymentInfo[$object->id]['rad'] + $totalRadAmount) / ($objectPaymentInfo[$object->id]['total'] + $totalAmount) * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetRadDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetRadDeviation)) . '%' }}
                                 </td>
                             </tr>
 
@@ -832,19 +882,19 @@
                                     {{ number_format(0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['rad_own'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['rad_own'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($objectPaymentInfo[$object->id]['rad'] != 0 ? $objectPaymentInfo[$object->id]['rad_own'] / $objectPaymentInfo[$object->id]['rad'] * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetRadOwnDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetRadOwnDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['rad_own'] + $objectPaymentInfo[$object->id]['rad_own']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetRadOwnDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetRadOwnDeviation)) . '%' }}
                                 </td>
                             </tr>
 
@@ -878,19 +928,19 @@
                                     {{ number_format(0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['rad_contractor'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['rad_contractor'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($objectPaymentInfo[$object->id]['rad'] != 0 ? $objectPaymentInfo[$object->id]['rad_contractor'] / $objectPaymentInfo[$object->id]['rad'] * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetRadContractorDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetRadContractorDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['rad_contractor'] + $objectPaymentInfo[$object->id]['rad_contractor']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetRadContractorDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetRadContractorDeviation)) . '%' }}
                                 </td>
                             </tr>
 
@@ -924,19 +974,19 @@
                                     {{ number_format($totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount * 100 : 0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['service'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['service'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($objectPaymentInfo[$object->id]['total'] != 0 ? $objectPaymentInfo[$object->id]['service'] / $objectPaymentInfo[$object->id]['total'] * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetServiceDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetServiceDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['service'] + $totalOpsteAmount, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['service'] + $objectPaymentInfo[$object->id]['service']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(($objectPaymentInfo[$object->id]['total'] + $totalAmount) != 0 ? ($objectPaymentInfo[$object->id]['service'] + $totalOpsteAmount) / ($objectPaymentInfo[$object->id]['total'] + $totalAmount) * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetServiceDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetServiceDeviation)) . '%' }}
                                 </td>
                             </tr>
 
@@ -970,19 +1020,19 @@
                                     {{ number_format(0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['service_amount'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['service_amount'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($objectPaymentInfo[$object->id]['service'] != 0 ? $objectPaymentInfo[$object->id]['service_amount'] / $objectPaymentInfo[$object->id]['service'] * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetServiceAmountDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetServiceAmountDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['service_amount'] + $objectPaymentInfo[$object->id]['service_amount']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetServiceAmountDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetServiceAmountDeviation)) . '%' }}
                                 </td>
                             </tr>
 
@@ -1016,19 +1066,19 @@
                                     {{ number_format(0) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format($objectBudgetInfo[$object->id]['service_general_cost'], 'RUB', 0, true) }}
                                 </td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format($objectPaymentInfo[$object->id]['service_general_cost'], 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format($objectPaymentInfo[$object->id]['service'] != 0 ? $objectPaymentInfo[$object->id]['service_general_cost'] / $objectPaymentInfo[$object->id]['service'] * 100 : 0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetServiceGeneralDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format($totalBudgetServiceGeneralDeviation) . '%' }}
                                 </td>
                                 <td class="cell-center">
-                                    {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
+                                    {{ \App\Models\CurrencyExchangeRate::format(min(0, $objectBudgetInfo[$object->id]['service_general_cost'] + $objectPaymentInfo[$object->id]['service_general_cost']), 'RUB', 0, true) }}
                                 </td>
-                                <td class="cell-center">
-                                    {{ number_format(0) . '%' }}
+                                <td class="cell-center {{ $totalBudgetServiceGeneralDeviation > 100 ? 'text-danger fw-bolder' : '' }}">
+                                    {{ number_format(min(0, 100 - $totalBudgetServiceGeneralDeviation)) . '%' }}
                                 </td>
                             </tr>
                         @endforeach
