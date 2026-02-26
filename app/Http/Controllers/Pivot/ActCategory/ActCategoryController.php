@@ -38,7 +38,7 @@ class ActCategoryController extends Controller
 
 //        $objects = BObject::active()->whereNotIn('code', ['353', '346', '362', '368', '359'])->orderBy('code')->get();
         if (auth()->user()->hasRole(['object-leader', 'finance-object-user'])) {
-            $objects = $objects->whereIn('id', auth()->user()->objects->pluck('id'))->sortBy('code')->get();
+            $objects = $objects->whereIn('id', auth()->user()->objects->pluck('id'));
         }
 
         $filteredObjects = $objects;
