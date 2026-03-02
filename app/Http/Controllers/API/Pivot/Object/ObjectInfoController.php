@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Pivot\Object;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashFlow\PlanPayment;
+use App\Models\CashFlow\PlanPaymentGroup;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
 use App\Models\Object\BObject;
@@ -37,6 +38,7 @@ class ObjectInfoController extends Controller
         $total = $objectsInfo->total;
 
         $info = [
+            'taxes' => [],
             'credits' => [],
             'loans' => [],
             'debts' => [],
@@ -141,19 +143,25 @@ class ObjectInfoController extends Controller
             $info['total']['total_debts'] += $totalDebts;
         }
 
-        $ndsPlanPayment = PlanPayment::where('name', 'НДС')->first();
-        $pribPlanPayment = PlanPayment::where('name', 'Налог на прибыль')->first();
-        $strahPlanPayment = PlanPayment::where('name', 'Страховые взносы')->first();
-        $ndflPlanPayment = PlanPayment::where('name', 'НДФЛ')->first();
-        $transpPlanPayment = PlanPayment::where('name', 'Транспортный налог')->first();
-        $peniPlanPayment = PlanPayment::where('name', 'Пени')->first();
+        $taxes = [];
+        $taxesTotalAmount = 0;
+        $taxPlanPaymentGroup = PlanPaymentGroup::where('name', 'Налоги')->first();
 
-        $tax_debts_nds = $ndsPlanPayment ? $ndsPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
-        $tax_debts_prib = $pribPlanPayment ? $pribPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
-        $tax_debts_strah = $strahPlanPayment ? $strahPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
-        $tax_debts_ndfl = $ndflPlanPayment ? $ndflPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
-        $tax_debts_transport = $transpPlanPayment ? $transpPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
-        $tax_debts_penis = $peniPlanPayment ? $peniPlanPayment->entries->where('date', '<=', Carbon::now())->sum('amount') : 0;
+        foreach ($taxPlanPaymentGroup?->payments as $payment) {
+            $amount = $payment->entries->where('date', '<=', Carbon::now())->sum('amount');
+
+            $taxes[] = [
+                'name' => $payment->name,
+                'amount' => $amount
+            ];
+
+            $taxesTotalAmount += $amount;
+        }
+
+        $info['taxes'] = [
+            'debts' => $taxes,
+            'total' => $taxesTotalAmount
+        ];
 
 //        $taxPlans = TaxPlanItem::where('paid', false)
 //            ->where('due_date', '<', Carbon::now())
@@ -169,13 +177,6 @@ class ObjectInfoController extends Controller
 //        $info['total']['tax_debts_penis'] = -$taxPlans->where('name', 'Пени')->sum('amount');
 
         $info['total']['tax_debts'] = $objectsInfo->summary->{'Активные'}->{'tax_debt'};
-
-        $info['total']['tax_debts_nds'] = -abs($tax_debts_nds);
-        $info['total']['tax_debts_strah'] = -abs($tax_debts_strah);
-        $info['total']['tax_debts_prib'] = -abs($tax_debts_prib);
-        $info['total']['tax_debts_ndfl'] = -abs($tax_debts_ndfl);
-        $info['total']['tax_debts_transport'] = -abs($tax_debts_transport);
-        $info['total']['tax_debts_penis'] = -abs($tax_debts_penis);
 
         $info['total']['total_debts'] += $info['total']['tax_debts'];
 
