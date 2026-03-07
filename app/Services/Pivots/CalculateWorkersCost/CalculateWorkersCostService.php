@@ -497,6 +497,8 @@ class CalculateWorkersCostService
         $workhoursCacheDataNewData = [];
         $workhoursHoursCacheDataNewData = [];
 
+        $workhoursHoursCacheData = [];
+
         $activeCashAccounts = $this->cashAccountService->getAllActiveCashAccounts();
 
         foreach ($infoByObjects['years'] as $year) {
@@ -751,12 +753,7 @@ class CalculateWorkersCostService
                         }
 
                         $info['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['total']['amount']['total'] / $info['total']['hours']['total'];
-                        try {
-
                         $info['total']['rate'][$year['name']]['total'] = $info['hours'][$year['name']]['total'] === 0 ? 0 : $info['total']['amount'][$year['name']]['total'] / $info['hours'][$year['name']]['total'];
-                        } catch (\Exception $e) {
-                            dd($info['hours'][$year['name']]['total']);
-                        }
                         $info['total']['rate'][$year['name']][$quart['name']]['total'] = $info['hours'][$year['name']][$quart['name']]['total'] === 0 ? 0 : $info['total']['amount'][$year['name']][$quart['name']]['total'] / $info['hours'][$year['name']][$quart['name']]['total'];
 
                         $infoByObjects['objects'][$object->getName()] = $info;
