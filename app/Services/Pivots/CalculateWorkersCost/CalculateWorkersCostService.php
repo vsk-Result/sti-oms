@@ -497,6 +497,7 @@ class CalculateWorkersCostService
         $workhoursCacheDataNewData = [];
         $workhoursHoursCacheDataNewData = [];
 
+        $workhoursCacheData = [];
         $workhoursHoursCacheData = [];
 
         $activeCashAccounts = $this->cashAccountService->getAllActiveCashAccounts();
