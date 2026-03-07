@@ -40,6 +40,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:notify-to-email-about-object-balance')->dailyAt('15:00');
         $schedule->command('oms:get-debts-files-from-one-c')->hourly();
         $schedule->command('oms:import-itr-salary-debts-from-1c-excel')->hourly();
+        $schedule->command('oms:import-workers-salary-debts-from-1c-excel')->hourly();
         $schedule->command('oms:import-cf-data-from-1c-excel')->hourly();
         $schedule->command('oms:schedule-export-tasks-runner')->everyMinute();
         $schedule->command('oms:notify-to-email-about-crm-cash-check')->everyTenMinutes();

@@ -198,7 +198,7 @@ class PivotSheet implements
         $rowIndex++;
 
 
-        $sheet->setCellValue('A' . $rowIndex, 'Количество часов рабочих (по данным из CRM)');
+        $sheet->setCellValue('A' . $rowIndex, 'Количество часов рабочих');
         $sheet->getRowDimension($rowIndex)->setRowHeight(30);
 
         $columnIndex = 2;

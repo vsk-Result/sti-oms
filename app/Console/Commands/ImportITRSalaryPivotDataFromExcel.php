@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Console\HandledCommand;
 use App\Imports\ITRSalaryPivotImport;
-use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,7 +14,7 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
 
     protected $description = 'Загружает расходы на зарплаты ИТР из Excel';
 
-    protected string $period = 'Вручную';
+    protected string $period = 'Каждый час';
 
     public function handle()
     {
@@ -39,10 +38,10 @@ class ImportITRSalaryPivotDataFromExcel extends HandledCommand
                     continue;
                 }
 
-                $isDate = substr($row[0], 0, 2) === '01';
+                $isDate = is_date_from_month_year_word($row[0]);
 
                 if ($isDate) {
-                    $currentDate = Carbon::parse($row[0])->format('Y-m-d');
+                    $currentDate = get_date_and_month_from_string($row[0], true) . '-01';
                     $info[$currentDate] = [
                         'objects' => [],
                         'total' => 0,

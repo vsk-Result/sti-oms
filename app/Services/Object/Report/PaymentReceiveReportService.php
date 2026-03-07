@@ -139,6 +139,7 @@ class PaymentReceiveReportService
 
         $objectActs = $object->acts;
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
+        $workersSalaryPivot = Cache::get('workers_salary_pivot_data_excel', []);
         $paymentPeriodData = Cache::get('p_and_l_payments_period_1c_data', []);
         $transferCacheData = Cache::get('calc_workers_cost_transfer_data', []);
 
@@ -220,10 +221,15 @@ class PaymentReceiveReportService
                         }
                     }
 
+                    if ($month['date_name'] < '2026-01') {
                         $salaryWorkers = -abs((float) WorkhourPivot::where('date', $month['date_name'])
                             ->where('is_main', true)
                             ->where('code', $object->code)
                             ->sum('amount'));
+                    } else {
+                        $salaryWorkers = -abs($workersSalaryPivot[$month['date_name']]['objects'][$object->code]['total']['amount'] ?? 0);
+                    }
+
 
                         $salaryItr = -abs($itrAmount);
                         $salaryTaxes = -abs(0);

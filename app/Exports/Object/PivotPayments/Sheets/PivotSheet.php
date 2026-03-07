@@ -6,6 +6,7 @@ use App\Models\KostCode;
 use App\Models\Object\BObject;
 use App\Models\Payment;
 use App\Models\PivotObjectDebt;
+use App\Models\SERVICE\WorkhourPivot;
 use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -100,8 +101,12 @@ class PivotSheet implements
             }
         }
 
-        $workersSalary = 0;
-//        $workersSalary = (float) WorkhourPivot::where('is_main', true)->where('code', $object->code)->sum('amount');
+
+        $workersSalaryPivot = Cache::get('workers_salary_pivot_data_excel', []);
+
+        $workersSalary = (float) WorkhourPivot::where('date', '<', '2026-01')->where('is_main', true)->where('code', $object->code)->sum('amount');
+        $workersSalary += ($workersSalaryPivot['total']['amount'] ?? 0);
+
         $salaryTax = Payment::where('object_id', $object->id)->where('amount', '<', 0)->whereIn('code', ['7.3', '7.3.1', '7.3.2'])->sum('amount');
 
 

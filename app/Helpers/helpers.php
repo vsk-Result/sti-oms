@@ -68,6 +68,38 @@ if (! function_exists('get_date_and_month_from_string')) {
     }
 }
 
+if (! function_exists('is_date_from_month_year_word')) {
+    function is_date_from_month_year_word($value) {
+        if (str_contains($value, 'Январь')) {
+            return true;
+        } elseif (str_contains($value, 'Февраль')) {
+            return true;
+        } elseif (str_contains($value, 'Март')) {
+            return true;
+        } elseif (str_contains($value, 'Апрель')) {
+            return true;
+        } elseif (str_contains($value, 'Май')) {
+            return true;
+        } elseif (str_contains($value, 'Июнь')) {
+            return true;
+        } elseif (str_contains($value, 'Июль')) {
+            return true;
+        } elseif (str_contains($value, 'Август')) {
+            return true;
+        } elseif (str_contains($value, 'Сентябрь')) {
+            return true;
+        } elseif (str_contains($value, 'Октябрь')) {
+            return true;
+        } elseif (str_contains($value, 'Ноябрь')) {
+            return true;
+        } elseif (str_contains($value, 'Декабрь')) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
 if (! function_exists('translate_month')) {
     function translate_month($month) {
         return [

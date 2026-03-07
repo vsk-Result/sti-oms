@@ -133,7 +133,7 @@
                             </tr>
 
                             <tr>
-                                <td class="ps-6 hl">Количество часов рабочих (по данным из CRM)</td>
+                                <td class="ps-6 hl">Количество часов рабочих</td>
 
                                 @foreach($infoByObjects['years'] as $year)
                                     <td class="text-center hl" colspan="2">{{ number_format($info['hours'][$year['name']]['total'], 0, '.', ' ') }}</td>

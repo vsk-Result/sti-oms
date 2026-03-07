@@ -171,6 +171,7 @@ class CalculateWorkersCostService
         }
 
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
+        $workersSalaryPivot = Cache::get('workers_salary_pivot_data_excel', []);
         $NDFLPivot = Cache::get('ndfl_pivot_data_excel', []);
         $pivotCodePaymentsByPeriod = Cache::get('GetBillSumByCodeReportingPeriod', []);
 
@@ -188,7 +189,13 @@ class CalculateWorkersCostService
                         $info['hours'][$year['name']]['total'] = 0;
                     }
 
-                    $hours = Workhour::whereBetween('date', $month['period'])->sum('hours');
+                    if ($month['date_name'] < '2026-01') {
+                        $hours = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('hours');
+//                        $hours = 0;
+                    } else {
+                        $hours = $workersSalaryPivot[$month['date_name']]['total']['hours'] ?? 0;
+                    }
+
                     $info['hours'][$year['name']][$quart['name']][$month['name']] = $hours;
                     $info['total']['hours']['total'] += $hours;
 
@@ -237,8 +244,12 @@ class CalculateWorkersCostService
                                     ->sum('amount');
                             }
                         } elseif ($codes[0] === 'workers_salary') {
-                            $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('amount');
-//                              $amount = 0;
+                            if ($month['date_name'] < '2026-01') {
+                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('amount');
+//                                $amount = 0;
+                            } else {
+                                $amount = $workersSalaryPivot[$month['date_name']]['total']['amount'] ?? 0;
+                            }
                         } elseif ($codes[0] === 'itr_salary') {
                             $amount = 0;
 
@@ -474,6 +485,7 @@ class CalculateWorkersCostService
 
         $object27_1 = BObject::where('code', '27.1')->first();
         $ITRSalaryPivot = Cache::get('itr_salary_pivot_data_excel', []);
+        $workersSalaryPivot = Cache::get('workers_salary_pivot_data_excel', []);
 
         $generalCacheData = Cache::get('calc_workers_cost_general_data', []);
         $transferCacheData = Cache::get('calc_workers_cost_transfer_data', []);
@@ -575,7 +587,12 @@ class CalculateWorkersCostService
                         if (isset($workhoursHoursCacheData[$month['date_name']])) {
                             $hours = $workhoursHoursCacheData[$month['date_name']];
                         } else {
-                            $hours = Workhour::whereBetween('date', $month['period'])->whereIn('o_id', $crmObjects)->sum('hours');
+                            if ($month['date_name'] < '2026-01') {
+                                $hours = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('hours');
+                            } else {
+                                $hours = $workersSalaryPivot[$month['date_name']]['objects'][$object->code]['total']['hours'] ?? 0;
+                            }
+
                             $workhoursHoursCacheDataNewData[$month['date_name']] = $hours;
                         }
 
@@ -629,8 +646,12 @@ class CalculateWorkersCostService
                             } elseif ($codes[0] === 'accrued_taxes_transport') {
                                 $amount = -1 * abs(AccruedTax::where('name', 'Транспортный налог')->whereBetween('date', $month['period'])->sum('amount') * ($workhourPercents[$month['name']][$object->code] ?? 0));
                             } elseif ($codes[0] === 'workers_salary') {
-//                                $amount = 0;
-                                $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                                if ($month['date_name'] < '2026-01') {
+                                    $amount = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('amount');
+                                } else {
+                                    $amount = $workersSalaryPivot[$month['date_name']]['objects'][$object->code]['total']['amount'] ?? 0;
+                                }
+
                             } elseif ($codes[0] === 'itr_salary') {
                                 $amount = 0;
 
