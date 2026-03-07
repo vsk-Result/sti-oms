@@ -683,6 +683,10 @@ class CalculateWorkersCostService
 
                             $amount = -abs($amount);
 
+                            if ($amount === -0) {
+                                $amount = 0;
+                            }
+
                             $rate = $info['hours'][$year['name']][$quart['name']][$month['name']] != 0 ? $amount / $info['hours'][$year['name']][$quart['name']][$month['name']] : 0;
 
                             $info['data'][$group]['amount'][$year['name']][$quart['name']][$month['name']] = $amount;
@@ -747,7 +751,7 @@ class CalculateWorkersCostService
 
                             $info['total']['amount']['total'] += $amount;
 
-                            $info['data'][$group]['total']['rate']['total'] = abs($info['total']['hours']['total']) === 0 ? 0 : $info['data'][$group]['total']['amount']['total'] / $info['total']['hours']['total'];
+                            $info['data'][$group]['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['data'][$group]['total']['amount']['total'] / $info['total']['hours']['total'];
                         }
 
                         $info['total']['rate']['total'] = $info['total']['hours']['total'] === 0 ? 0 : $info['total']['amount']['total'] / $info['total']['hours']['total'];
