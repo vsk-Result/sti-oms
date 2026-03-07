@@ -590,8 +590,7 @@ class CalculateWorkersCostService
                             $hours = $workhoursHoursCacheData[$month['date_name']];
                         } else {
                             if ($month['date_name'] < '2026-01') {
-                                dd(WorkhourPivot::first());
-                                $hours = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('hours');
+                                $hours = WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->where('code', $object->code)->sum('hours');
                             } else {
                                 $hours = $workersSalaryPivot[$month['date_name']]['objects'][$object->code]['total']['hours'] ?? 0;
                             }
