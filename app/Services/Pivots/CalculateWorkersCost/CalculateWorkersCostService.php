@@ -190,7 +190,7 @@ class CalculateWorkersCostService
                     }
 
                     if ($month['date_name'] < '2026-01') {
-                        $hours = (float) WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('hours');
+                        $hours = WorkhourPivot::where('date', $month['date_name'])->where('is_main', true)->sum('hours');
 //                        $hours = 0;
                     } else {
                         $hours = $workersSalaryPivot[$month['date_name']]['total']['hours'] ?? 0;
@@ -496,8 +496,6 @@ class CalculateWorkersCostService
         $generalCacheDataNewData = [];
         $workhoursCacheDataNewData = [];
         $workhoursHoursCacheDataNewData = [];
-
-        $workhoursHoursCacheData = [];
 
         $activeCashAccounts = $this->cashAccountService->getAllActiveCashAccounts();
 
