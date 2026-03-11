@@ -23,6 +23,7 @@ use App\Http\Controllers\API\Object\BalanceController;
 use App\Http\Controllers\API\Object\ManagerController;
 use App\Http\Controllers\API\Debt\OrganizationController;
 use App\Http\Controllers\API\Finance\FinanceReportExportController;
+use App\Http\Controllers\API\Pivot\Salary\WorkersSalaryController;
 use App\Http\Controllers\API\Pivot\TaxPlan\TaxPlanExportController;
 use App\Http\Controllers\API\Gromisoft\Employees\EmployeeController;
 use App\Http\Controllers\API\Finance\GeneralReportController;
@@ -67,6 +68,8 @@ Route::get('pivots/cash-flow/export', [CashFlowExportController::class, 'index']
 Route::get('pivots/workers-salary', [WorkerSalaryController::class, 'index']);
 
 Route::get('pivots/tax-plan/export', [TaxPlanExportController::class, 'index']);
+
+Route::get('pivots/salary/workers', [WorkersSalaryController::class, 'index']);
 
 Route::get('objects/access', [AccessController::class, 'index']);
 Route::get('objects/debts', [ODebtController::class, 'index']);
