@@ -621,7 +621,7 @@
                                 @endif
                             </div>
                             <div class="ms-3 d-flex flex-column align-items-senter fw-bold {{ $info['ostatokNeotrabotannogoAvansa'] < 0 ? 'text-danger' : 'text-success' }} object-nds-{{ $object->id }}" data-amount-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}" data-amount-without-nds="{{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa_without_nds'], 'RUB') }}">
-                                {{ \App\Models\CurrencyExchangeRate::format($info['ostatokNeotrabotannogoAvansa'], 'RUB') }}
+                                {{ \App\Models\CurrencyExchangeRate::format(is_valid_amount_in_range($info['ostatokNeotrabotannogoAvansa']) ? $info['ostatokNeotrabotannogoAvansa'] : 0, 'RUB') }}
 
                                 @if ($object->free_limit_amount != 0)
                                     <br>
