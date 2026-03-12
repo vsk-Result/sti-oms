@@ -176,6 +176,8 @@ class WorkersSalaryController extends Controller
             }
         }
 
-        return response()->json(compact('info'));
+        $pivot = $workersSalaryPivot;
+
+        return response()->json(compact('info', 'pivot'));
     }
 }
