@@ -20,10 +20,11 @@ class ReceivePlanController extends Controller
         $this->receivePlanService = $receivePlanService;
     }
 
-    public function index(BObject $object): View
+    public function index(BObject $object, Request $request): View
     {
+        $periodMonth = (int) $request->get('period_month', 3);
         $reasons = ReceivePlan::getReasons();
-        $periods = $this->receivePlanService->getPeriods($object->id);
+        $periods = $this->receivePlanService->getPeriods($object->id, null, $periodMonth);
         $plans = $this->receivePlanService->getPlans($object->id, $periods[0]['start'], end($periods)['start']);
         $cfPayments = $this->receivePlanService->getCFPayments($object->id, $periods);
         $cashFlowPayments = CashFlowPayment::where('object_id', $object->id)->get();

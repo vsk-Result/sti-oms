@@ -22,6 +22,7 @@ use App\Http\Controllers\Object\Report\PaymentReceiveReport\PaymentReceiveReport
 use App\Http\Controllers\Object\UserController;
 use App\Http\Controllers\Object\WriteoffController;
 use App\Http\Controllers\Object\CashFlow\CashFlowPaymentController;
+use App\Http\Controllers\Object\CashFlow\CashFlowReceiveController;
 use App\Http\Controllers\Object\Report\ActCategory\ActCategoryController;
 use App\Http\Controllers\Object\Report\ActCategory\ExportController as ActCategoryExportController;
 use App\Http\Controllers\Object\Report\PaymentsReceive\PaymentsReceiveController;
@@ -112,6 +113,10 @@ Route::post('objects/{object}/receive-plan/export', [ReceivePlanExportController
 
 Route::post('objects/{object}/cash-flow/payments', [CashFlowPaymentController::class, 'store'])->name('objects.cash_flow.payments.store');
 Route::post('objects/{object}/cash-flow/payments/{payment}/destroy', [CashFlowPaymentController::class, 'destroy'])->name('objects.cash_flow.payments.destroy');
+
+// Cash flow - приходы вручную
+
+Route::post('objects/{object}/cash-flow/receives', [CashFlowReceiveController::class, 'store'])->name('objects.cash_flow.receives.store');
 
 // Проверка
 

@@ -4,9 +4,10 @@
 
 @section('object-tab-content')
     @include('objects.modals.cash_flow_add_payment')
+    @include('objects.modals.cash_flow_add_receive')
     @include('objects.modals.cash_flow_payments')
 
-    <div class="row">
+    <div id="receive-info" class="row" data-start-date="{{ Carbon\Carbon::now()->addMonthsNoOverflow(3)->endOfWeek()->addDay()->format('Y-m-d') }}" data-end-date="{{ \Carbon\Carbon::now()->addYears(2)->format('Y-m-d') }}">
         <div class="col-lg-12">
             <div class="card mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-6">
@@ -14,6 +15,29 @@
 
                     <div class="card-toolbar">
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            <button type="button"
+                                    class="btn btn-bg-light btn-color-info"
+                                    data-kt-menu-trigger="click"
+                                    data-kt-menu-placement="bottom-start"
+                            >
+                                {{ request()->get('period_month', 3) == 3 ? 'Период за 3 месяца' : 'Период за 2 года' }}
+                            </button>
+
+                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                                <div class="menu-item px-3">
+                                    <a href="{{ route('objects.receive_plan.index', $object) }}?object_id%5B%5D={{ $object->id }}&period_month=3" class="menu-link px-3 {{ request()->get('period_month', 3) == 3 ? 'active' : '' }}">
+                                        Период за 3 месяца
+                                    </a>
+                                </div>
+
+                                <div class="menu-item px-3">
+                                    <a href="{{ route('objects.receive_plan.index', $object) }}?object_id%5B%5D={{ $object->id }}&period_month=24" class="menu-link px-3 {{ request()->get('period_month', 3) == 24 ? 'active' : '' }}">
+                                        Период за 2 года
+                                    </a>
+                                </div>
+                            </div>
+
+
                             <button {{ $cashFlowPayments->count() === 0 ? 'disabled' : '' }} type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#cashFlowPaymentsModal">
                                 <span class="svg-icon svg-icon-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -36,7 +60,18 @@
                                 Новый расход
                             </a>
 
-                            <form action="{{ route('objects.receive_plan.exports.store', $object) }}" method="POST" class="hidden">
+                            <a href="#" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#cashFlowAddReceiveModal">
+                                <span class="svg-icon svg-icon-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="5" fill="black"></rect>
+                                        <rect x="10.8891" y="17.8033" width="12" height="2" rx="1" transform="rotate(-90 10.8891 17.8033)" fill="black"></rect>
+                                        <rect x="6.01041" y="10.9247" width="12" height="2" rx="1" fill="black"></rect>
+                                    </svg>
+                                </span>
+                                Запланировать приход
+                            </a>
+
+                            <form action="{{ route('objects.receive_plan.exports.store', $object) . (strpos(request()->fullUrl(), '?') !== false ? substr(request()->fullUrl(), strpos(request()->fullUrl(), '?')) : '') }}" method="POST" class="hidden">
                                 @csrf
                                 <a
                                         href="javascript:void(0);"
@@ -360,6 +395,57 @@
                     return {results};
                 }
             }
+        });
+
+        $('.date-range-picker-single-receive').daterangepicker({
+            singleDatePicker: true,
+            autoUpdateInput: false,
+            showDropdowns: true,
+            isInvalidDate: function(ele) {
+                const currDate = moment(ele._d).format('YYYY-MM-DD');
+                const startDate = $('#receive-info').data('start-date');
+                const endDate = $('#receive-info').data('end-date');
+
+                return !(currDate >= startDate && currDate <= endDate);
+            },
+            locale: {
+                firstDay: 1,
+                format: "Y-MM-DD",
+                cancelLabel: 'Очистить',
+                separator: " - ",
+                applyLabel: "Применить",
+                daysOfWeek: [
+                    "Вс",
+                    "Пн",
+                    "Вт",
+                    "Ср",
+                    "Чт",
+                    "Пт",
+                    "Сб"
+                ],
+                monthNames: [
+                    "Январь",
+                    "Февраль",
+                    "Март",
+                    "Апрель",
+                    "Май",
+                    "Июнь",
+                    "Июль",
+                    "Август",
+                    "Сентябрь",
+                    "Октябрь",
+                    "Ноябрь",
+                    "Декабрь"
+                ],
+            }
+        });
+
+        $('.date-range-picker-single-receive').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('Y-MM-DD'));
+        });
+
+        $('.date-range-picker-single-receive').on('cancel.daterangepicker', function() {
+            $(this).val('');
         });
     </script>
 @endpush

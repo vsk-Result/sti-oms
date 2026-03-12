@@ -27,12 +27,12 @@ class ReceivePlanService
         $this->currencyExchangeService = $currencyExchangeService;
     }
 
-    public function getPeriods(?int $objectId = null, ?string $initialPeriod = null): array
+    public function getPeriods(?int $objectId = null, ?string $initialPeriod = null, ?int $months = 3): array
     {
         $periods = [];
 
         $start = Carbon::now();
-        $end = Carbon::now()->addMonthsNoOverflow(3)->format('Y-m-d');
+        $end = Carbon::now()->addMonthsNoOverflow($months)->format('Y-m-d');
 
         if ($initialPeriod) {
             [$startInitial, $endInitial] = explode(' - ', $initialPeriod);
@@ -49,7 +49,9 @@ class ReceivePlanService
             'format' => $start->startOfWeek()->format('d.m.Y') . ' - ' . $start->endOfWeek()->format('d.m.Y')
         ];
 
-        for ($i = 1; $i < 16; $i++) {
+        $monthCount = $months * 4 + 2;
+
+        for ($i = 1; $i < $monthCount; $i++) {
             $newDate = Carbon::now()->addDays($i * 7);
 
             if ($newDate->format('Y-m-d') > $end) {
@@ -65,11 +67,15 @@ class ReceivePlanService
         }
 
         if ($objectId) {
+            $resultPeriods = [];
             $reasons = ReceivePlan::getReasons();
-
-            foreach ($periods as $period) {
+            foreach ($periods as $index => $period) {
+                $issetInfo = false;
                 foreach ($reasons as $reasonId => $reasonName) {
-                    if ($this->isPlanExist($objectId, $reasonId, $period['start'])) {
+                    $findPlan = $this->findPlan($objectId, $reasonId, $period['start']);
+
+                    if ($findPlan) {
+                        $issetInfo = !$issetInfo ? $findPlan->amount > 0 : $issetInfo;
                         continue;
                     }
 
@@ -80,6 +86,14 @@ class ReceivePlanService
                         'amount' => 0,
                         'status_id' => Status::STATUS_ACTIVE
                     ]);
+                }
+
+                if ($index > 14) {
+                    if ($issetInfo) {
+                        $resultPeriods[] = $period;
+                    }
+                } else {
+                    $resultPeriods[] = $period;
                 }
             }
 
@@ -95,6 +109,8 @@ class ReceivePlanService
                     $plan->delete();
                 }
             }
+
+            return $resultPeriods;
         }
 
         return $periods;
@@ -129,7 +145,6 @@ class ReceivePlanService
     {
         $plan = $this->findPlan($requestData['object_id'], $requestData['reason_id'], $requestData['date']);
         $period = Carbon::parse($requestData['date'])->startOfWeek()->format('d.m.Y') . ' - ' . Carbon::parse($requestData['date'])->endOfWeek()->format('d.m.Y');
-
         if (!$plan) {
             $plan = $this->createReceivePlan([
                 'object_id' => $requestData['object_id'],
@@ -138,6 +153,8 @@ class ReceivePlanService
                 'amount' => $this->sanitizer->set($requestData['amount'])->toAmount()->get(),
                 'status_id' => Status::STATUS_ACTIVE
             ]);
+
+
 
             $this->notificationService->createNotification(
                 Notification::TYPE_RECEIVE,
