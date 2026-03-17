@@ -32,7 +32,7 @@ class ReceivePlanService
         $periods = [];
 
         $start = Carbon::now();
-        $end = Carbon::now()->addMonthsNoOverflow($months)->format('Y-m-d');
+        $end = Carbon::now()->addMonthsNoOverflow($months + 1)->format('Y-m-d');
 
         if ($initialPeriod) {
             [$startInitial, $endInitial] = explode(' - ', $initialPeriod);
