@@ -27,7 +27,7 @@ class Contract extends Model implements HasMedia, Audit
     protected $fillable = [
         'parent_id', 'type_id', 'company_id', 'object_id', 'created_by_user_id', 'updated_by_user_id',
         'name', 'start_date', 'end_date', 'amount', 'amount_type_id', 'description', 'stage_id', 'status_id',
-        'currency', 'currency_rate', 'params', 'rad_amount', 'opste_amount', 'organization_id'
+        'currency', 'currency_rate', 'params', 'rad_amount', 'opste_amount', 'organization_id', 'rad_percent', 'material_percent', 'service_percent'
     ];
 
     const TYPE_MAIN = 0;

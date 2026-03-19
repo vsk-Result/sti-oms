@@ -227,6 +227,75 @@
                                 </div>
 
                                 <div class="row">
+                                    <div class="col-md-2 mb-10 fv-row">
+                                        <div class="mb-1">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-10 mb-10 fv-row">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-1">
+                                                    <label class="form-label fw-bolder text-dark fs-6">% суммы на материалы</label>
+                                                    <div class="position-relative mb-3">
+                                                        <input
+                                                            class="amount-mask amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('rad_percent') ? 'is-invalid' : '' }}"
+                                                            type="text"
+                                                            name="rad_percent"
+                                                            value="{{ old('rad_percent', 0) }}"
+                                                        />
+
+                                                        <div class="form-text">Используется при автоматической разбивке приходов по договору</div>
+                                                    </div>
+                                                    @if ($errors->has('rad_percent'))
+                                                        <div class="fv-plugins-message-container invalid-feedback">
+                                                            <div>{{ implode(' ', $errors->get('rad_percent')) }}</div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-1">
+                                                    <label class="form-label fw-bolder text-dark fs-6">% суммы на работы</label>
+                                                    <div class="position-relative mb-3">
+                                                        <input
+                                                                class="amount-mask amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('material_percent') ? 'is-invalid' : '' }}"
+                                                                type="text"
+                                                                name="material_percent"
+                                                                value="{{ old('material_percent', 0) }}"
+                                                        />
+                                                    </div>
+                                                    @if ($errors->has('material_percent'))
+                                                        <div class="fv-plugins-message-container invalid-feedback">
+                                                            <div>{{ implode(' ', $errors->get('material_percent')) }}</div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-1">
+                                                    <label class="form-label fw-bolder text-dark fs-6">% суммы на накладные/услуги</label>
+                                                    <div class="position-relative mb-3">
+                                                        <input
+                                                                class="amount-mask amount-formatted form-control form-control-lg form-control-solid {{ $errors->has('service_percent') ? 'is-invalid' : '' }}"
+                                                                type="text"
+                                                                name="service_percent"
+                                                                value="{{ old('service_percent', 0) }}"
+                                                        />
+                                                    </div>
+                                                    @if ($errors->has('service_percent'))
+                                                        <div class="fv-plugins-message-container invalid-feedback">
+                                                            <div>{{ implode(' ', $errors->get('service_percent')) }}</div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
                                     <div class="col-md-12 mb-10 fv-row">
                                         <div class="mb-1">
                                             <label class="form-label fw-bolder text-dark fs-6">Описание</label>
