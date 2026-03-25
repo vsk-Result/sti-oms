@@ -336,7 +336,7 @@
                         </td>
                     </tr>
 
-                    @if (count(array_unique($contract->avanses->pluck('type_id')->toArray())) > 1 || count(array_unique($contract->avansesReceived->pluck('type_id')->toArray())) > 1)
+                    @if (count(array_unique($contract->avanses->pluck('type_id')->toArray())) > 1 || count(array_unique($contract->avansesReceived->pluck('type_id')->toArray())) > 1 || auth()->id() === 1)
 
                         <tr class="fs-8">
                             <td></td>
