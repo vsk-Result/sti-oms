@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Imports\ITRSalaryPivotImport;
 use App\Imports\Payment\SplitResidenceExcelImport;
 use App\Models\CRM\CObject;
 use App\Models\CRM\Workhour;
@@ -35,7 +36,7 @@ class SplitResidenceExcelController extends Controller
         $isVector = $organization->name === 'ВЕКТОР ООО';
         $isElift = $organization->name === 'ЕЛИВТ ООО';
 
-        $isOther = $isKadinova || $isArtist || $isElift || $isVector;
+        $isOther = $isKadinova || $isArtist || $isElift;
 
         $payments = Payment::where('organization_receiver_id', $requestData['organization_id'])->where('was_split', false)->get();
 
@@ -44,11 +45,23 @@ class SplitResidenceExcelController extends Controller
             return redirect()->back()->withInput();
         }
 
-        $importData = Excel::toArray(new SplitResidenceExcelImport(), $requestData['file']);
+        if ($isVector) {
+            $list = 'Лист_1';
+            // просто название листа из 1с одинаковое обычно
+            $importData = Excel::toArray(new ITRSalaryPivotImport(), $requestData['file']);
 
-        if (!isset($importData['Отчет'])) {
-            session()->flash('split_residence_excel_status', 'Отсутствует лист "Отчет"');
-            return redirect()->back()->withInput();
+            if (!isset($importData['Лист_1'])) {
+                session()->flash('split_residence_excel_status', 'Отсутствует лист "Лист_1"');
+                return redirect()->back()->withInput();
+            }
+        } else {
+            $list = 'Отчет';
+            $importData = Excel::toArray(new SplitResidenceExcelImport(), $requestData['file']);
+
+            if (!isset($importData['Отчет'])) {
+                session()->flash('split_residence_excel_status', 'Отсутствует лист "Отчет"');
+                return redirect()->back()->withInput();
+            }
         }
 
         $totalAmount = 0;
@@ -60,7 +73,11 @@ class SplitResidenceExcelController extends Controller
             $dataStartIndex = 4;
         }
 
-        foreach ($importData['Отчет'] as $rowIndex => $row) {
+        if ($isVector) {
+            $dataStartIndex = 8;
+        }
+
+        foreach ($importData[$list] as $rowIndex => $row) {
             if ($rowIndex < $dataStartIndex) {
                 continue;
             }
@@ -69,10 +86,11 @@ class SplitResidenceExcelController extends Controller
                 break;
             }
 
-            $objectInfo = $isOther ? $row[4] : $row[3];
+            $objectInfo = $isOther || $isVector ? $row[4] : $row[3];
             $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, $isOther ? ' ' : ' -'));
+            $objectCode = $isVector ? $objectInfo : $objectCode;
 
-            if (empty($objectCode) || $objectCode === '27.7') {
+            if (empty($objectCode) || $objectCode === '27.7' || $objectCode == '27') {
                 $objectCode = '27.1';
             }
 
@@ -99,8 +117,12 @@ class SplitResidenceExcelController extends Controller
                 $amount = $row[45] ?? 0;
             }
 
-            if ($isArtist || $isElift || $isVector) {
+            if ($isArtist || $isElift) {
                 $amount = $row[46] ?? 0;
+            }
+
+            if ($isVector) {
+                $amount = $row[37] ?? 0;
             }
 
             $groupedObjectAmount[$objectMainCode][$worktype] += $amount;
@@ -118,6 +140,7 @@ class SplitResidenceExcelController extends Controller
             $object = BObject::where('code', $code)->first();
 
             foreach ($info as $worktype => $amount) {
+                $worktype = empty($worktype) ? null : $worktype;
                 $this->splitPayment($object, $worktype, -$amount, $requestData['organization_id']);
             }
         }
