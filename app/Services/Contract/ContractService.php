@@ -336,6 +336,23 @@ class ContractService
                 }
             }
         }
+
+        foreach ($contract->acts as $act) {
+            $amountAvansFloat = $act->amount_avans_float;
+            $amountAvansFix = $act->amount_avans;
+
+            if ($contract->isFloat()) {
+                $act->update([
+                    'amount_avans_float' => $amountAvansFloat + $amountAvansFix,
+                    'amount_avans' => 0,
+                ]);
+            } else {
+                $act->update([
+                    'amount_avans' => $amountAvansFloat + $amountAvansFix,
+                    'amount_avans_float' => 0,
+                ]);
+            }
+        }
     }
 
     public function destroyContract(Contract $contract): void
