@@ -53,21 +53,25 @@ class SplitTaxPaymentsService
             $resultSplitInfo[$objectCode] += $amount;
         }
 
-        foreach ($resultSplitInfo as $code => $amount) {
-            if (! BObject::where('code', $code)->exists()) {
-                return 'Объект ' . $code . ' не найден в OMS. Разбивка не произошла.';
-            }
-        }
+//        foreach ($resultSplitInfo as $code => $amount) {
+//            if (! BObject::where('code', $code)->exists()) {
+//                return 'Объект ' . $code . ' не найден в OMS. Разбивка не произошла.';
+//            }
+//        }
 
+        $exceptCodes = [];
         $objectIds = BObject::whereIn('code', array_keys($resultSplitInfo))->pluck('id', 'code')->toArray();
         $logs = [];
-
         $logs[] = '[' . now()->format('d.m.Y H:i:s') . '] Разбивка взносов из файла ' . $fileName;
 
         foreach ($payments as $payment) {
             $logs[] = 'Рассматриваем оплату с ID "' . $payment->id . '", описанием "' . $payment->description . '", датой "' . $payment->date . '", суммой "' . $payment->amount . '"';
             foreach ($resultSplitInfo as $code => $amount) {
                 if (! is_valid_amount_in_range($amount)) {
+                    continue;
+                }
+
+                if (in_array($code, $exceptCodes)) {
                     continue;
                 }
 
@@ -94,7 +98,7 @@ class SplitTaxPaymentsService
                     if ($diff > 0) {
                         $resultSplitInfo[$code] = $diff;
                     } else {
-                        unset($resultSplitInfo[$code]);
+                        $exceptCodes[] = $code;
                     }
 
                     continue;
@@ -121,7 +125,7 @@ class SplitTaxPaymentsService
 
                 $logs[] = 'Изменили текущую оплату с ID "' . $payment->id . '", на сумму "' . $diff . '"';
 
-                unset($resultSplitInfo[$code]);
+                $exceptCodes[] = $code;
             }
         }
 
