@@ -101,7 +101,7 @@ class SplitTaxPaymentsService
                         $exceptCodes[] = $code;
                     }
 
-                    continue;
+                    break;
                 }
 
                 $logs[] = 'Разница < 0, поэтому создаем новую оплату на основе текущей для объекта с кодом "' . $code . '"';
