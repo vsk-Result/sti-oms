@@ -34,7 +34,7 @@ class PivotSplitSheet implements
 
     public function title(): string
     {
-        return 'Договора';
+        return is_null($this->name) ? 'Договора' : $this->name;
     }
 
     public function styles(Worksheet $sheet): void
@@ -299,8 +299,6 @@ class PivotSplitSheet implements
                 continue;
             }
 
-            $startRow = $row;
-
             $sheet->setCellValue('A' . $row, $contract->getName());
             $sheet->setCellValue('B' . $row, $contract->currency);
             $sheet->setCellValue('C' . $row, $this->formatAmount($contract->getAmount($currency)));
@@ -356,6 +354,7 @@ class PivotSplitSheet implements
                 $row++;
             }
 
+
             $subContracts = $contract->children->where('currency', $currency);
 
             if ($subContracts->count() > 0) {
@@ -410,17 +409,39 @@ class PivotSplitSheet implements
 
                 $row++;
             }
-
-            $row--;
-
-            $sheet->getStyle('A' . $startRow . ':M' . $row)->applyFromArray($THINStyleArray);
-            $sheet->getStyle('A' . ($startRow + 1) . ':A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-            $sheet->getStyle('B' . ($startRow + 1) . ':B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-            $sheet->getStyle('C' . ($startRow + 1) . ':M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
-            $sheet->getStyle('C' . ($startRow + 1) . ':M' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-            $row += 1;
         }
+
+        if ($this->contracts->where('currency', $currency)->count() > 0) {
+            $sheet->setCellValue('A' . $row, 'Итого');
+            $sheet->setCellValue('B' . $row, $currency);
+            $sheet->setCellValue('C' . $row, $total['amount'][$currency]);
+            $sheet->setCellValue('D' . $row, $total['avanses_amount'][$currency]);
+            $sheet->setCellValue('E' . $row, $total['avanses_received_amount'][$currency]);
+            $sheet->setCellValue('F' . $row, $total['avanses_left_amount'][$currency]);
+            $sheet->setCellValue('G' . $row, $total['acts_amount'][$currency]);
+            $sheet->setCellValue('H' . $row, $total['avanses_acts_avanses_amount'][$currency]);
+            $sheet->setCellValue('I' . $row, $total['avanses_acts_deposites_amount'][$currency]);
+            $sheet->setCellValue('J' . $row, $total['avanses_acts_paid_amount'][$currency] + $total['avanses_acts_left_paid_amount'][$currency]);
+            $sheet->setCellValue('K' . $row, $total['avanses_acts_paid_amount'][$currency]);
+            $sheet->setCellValue('L' . $row, $total['avanses_acts_left_paid_amount'][$currency]);
+            $sheet->setCellValue('M' . $row, $total['avanses_notwork_left_amount'][$currency]);
+
+            $row++;
+        }
+
+        $row--;
+
+        $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':M' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+
+        $sheet->getStyle('A1:M' . $row)->applyFromArray($THINStyleArray);
+        $sheet->getStyle('A1:M1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+        $sheet->getStyle('B2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+        $sheet->getStyle('A2:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('C4:M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('C4:M' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+        $sheet->getRowDimension($row)->setRowHeight(20);
 
         $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, 13, $row);
         $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);

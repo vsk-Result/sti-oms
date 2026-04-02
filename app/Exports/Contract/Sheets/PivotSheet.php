@@ -261,7 +261,19 @@ class PivotSheet implements
 
     public function styledForCUMCHANKA(Worksheet $sheet): void
     {
-        $total = $this->total;
+        $total = [
+            'amount' => 0,
+            'avanses_amount' => 0,
+            'avanses_received_amount' => 0,
+            'avanses_left_amount' => 0,
+            'acts_amount' => 0,
+            'avanses_acts_avanses_amount' => 0,
+            'avanses_acts_deposites_amount' => 0,
+            'avanses_acts_paid_amount' => 0,
+            'avanses_acts_left_paid_amount' => 0,
+            'avanses_notwork_left_amount' => 0,
+        ];
+
         $THINStyleArray = [ 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => '0000000'],],],];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
@@ -328,6 +340,17 @@ class PivotSheet implements
             $sheet->setCellValue('L' . $row, $this->formatAmount($contract->getActsLeftPaidAmount($currency)));
             $sheet->setCellValue('M' . $row, $this->formatAmount($contract->getNotworkLeftAmount($currency)));
 
+            $total['amount'] += $contract->getAmount($currency);
+            $total['avanses_amount'] += $contract->getAvansesAmount($currency);
+            $total['avanses_received_amount'] += $contract->getAvansesReceivedAmount($currency);
+            $total['avanses_left_amount'] += $contract->getAvansesLeftAmount($currency);
+            $total['acts_amount'] += $contract->getActsAmount($currency);
+            $total['avanses_acts_avanses_amount'] += $contract->getActsAvasesAmount($currency);
+            $total['avanses_acts_deposites_amount'] += $contract->getActsDepositesAmount($currency);
+            $total['avanses_acts_paid_amount'] += $contract->getActsPaidAmount($currency);
+            $total['avanses_acts_left_paid_amount'] += $contract->getActsLeftPaidAmount($currency);
+            $total['avanses_notwork_left_amount'] += $contract->getNotworkLeftAmount($currency);
+
             $sheet->getRowDimension($row)->setRowHeight(40);
             $row++;
 
@@ -429,17 +452,17 @@ class PivotSheet implements
         if ($this->contracts->where('currency', $currency)->count() > 0) {
             $sheet->setCellValue('A' . $row, 'Итого');
             $sheet->setCellValue('B' . $row, $currency);
-            $sheet->setCellValue('C' . $row, $total['amount'][$currency]);
-            $sheet->setCellValue('D' . $row, $total['avanses_amount'][$currency]);
-            $sheet->setCellValue('E' . $row, $total['avanses_received_amount'][$currency]);
-            $sheet->setCellValue('F' . $row, $total['avanses_left_amount'][$currency]);
-            $sheet->setCellValue('G' . $row, $total['acts_amount'][$currency]);
-            $sheet->setCellValue('H' . $row, $total['avanses_acts_avanses_amount'][$currency]);
-            $sheet->setCellValue('I' . $row, $total['avanses_acts_deposites_amount'][$currency]);
-            $sheet->setCellValue('J' . $row, $total['avanses_acts_paid_amount'][$currency] + $total['avanses_acts_left_paid_amount'][$currency]);
-            $sheet->setCellValue('K' . $row, $total['avanses_acts_paid_amount'][$currency]);
-            $sheet->setCellValue('L' . $row, $total['avanses_acts_left_paid_amount'][$currency]);
-            $sheet->setCellValue('M' . $row, $total['avanses_notwork_left_amount'][$currency]);
+            $sheet->setCellValue('C' . $row, $total['amount']);
+            $sheet->setCellValue('D' . $row, $total['avanses_amount']);
+            $sheet->setCellValue('E' . $row, $total['avanses_received_amount']);
+            $sheet->setCellValue('F' . $row, $total['avanses_left_amount']);
+            $sheet->setCellValue('G' . $row, $total['acts_amount']);
+            $sheet->setCellValue('H' . $row, $total['avanses_acts_avanses_amount']);
+            $sheet->setCellValue('I' . $row, $total['avanses_acts_deposites_amount']);
+            $sheet->setCellValue('J' . $row, $total['avanses_acts_paid_amount'] + $total['avanses_acts_left_paid_amount']);
+            $sheet->setCellValue('K' . $row, $total['avanses_acts_paid_amount']);
+            $sheet->setCellValue('L' . $row, $total['avanses_acts_left_paid_amount']);
+            $sheet->setCellValue('M' . $row, $total['avanses_notwork_left_amount']);
 
             $row++;
         }
@@ -462,6 +485,19 @@ class PivotSheet implements
 
         $row += 3;
         $startRow = $row;
+
+        $total = [
+            'amount' => 0,
+            'avanses_amount' => 0,
+            'avanses_received_amount' => 0,
+            'avanses_left_amount' => 0,
+            'acts_amount' => 0,
+            'avanses_acts_avanses_amount' => 0,
+            'avanses_acts_deposites_amount' => 0,
+            'avanses_acts_paid_amount' => 0,
+            'avanses_acts_left_paid_amount' => 0,
+            'avanses_notwork_left_amount' => 0,
+        ];
 
         $sheet->setCellValue('A' . $row, 'Справка объекта 363 | Камчатка (Кольцово)' . ' на ' . now()->format('d.m.Y'));
         $sheet->mergeCells('A' . $row . ':M' . $row);
@@ -525,6 +561,17 @@ class PivotSheet implements
             $sheet->setCellValue('L' . $row, $this->formatAmount($contract->getActsLeftPaidAmount($currency)));
             $sheet->setCellValue('M' . $row, $this->formatAmount($contract->getNotworkLeftAmount($currency)));
 
+            $total['amount'] += $contract->getAmount($currency);
+            $total['avanses_amount'] += $contract->getAvansesAmount($currency);
+            $total['avanses_received_amount'] += $contract->getAvansesReceivedAmount($currency);
+            $total['avanses_left_amount'] += $contract->getAvansesLeftAmount($currency);
+            $total['acts_amount'] += $contract->getActsAmount($currency);
+            $total['avanses_acts_avanses_amount'] += $contract->getActsAvasesAmount($currency);
+            $total['avanses_acts_deposites_amount'] += $contract->getActsDepositesAmount($currency);
+            $total['avanses_acts_paid_amount'] += $contract->getActsPaidAmount($currency);
+            $total['avanses_acts_left_paid_amount'] += $contract->getActsLeftPaidAmount($currency);
+            $total['avanses_notwork_left_amount'] += $contract->getNotworkLeftAmount($currency);
+
             $sheet->getRowDimension($row)->setRowHeight(40);
             $row++;
 
@@ -626,17 +673,17 @@ class PivotSheet implements
         if ($this->contracts->where('currency', $currency)->count() > 0) {
             $sheet->setCellValue('A' . $row, 'Итого');
             $sheet->setCellValue('B' . $row, $currency);
-            $sheet->setCellValue('C' . $row, $total['amount'][$currency]);
-            $sheet->setCellValue('D' . $row, $total['avanses_amount'][$currency]);
-            $sheet->setCellValue('E' . $row, $total['avanses_received_amount'][$currency]);
-            $sheet->setCellValue('F' . $row, $total['avanses_left_amount'][$currency]);
-            $sheet->setCellValue('G' . $row, $total['acts_amount'][$currency]);
-            $sheet->setCellValue('H' . $row, $total['avanses_acts_avanses_amount'][$currency]);
-            $sheet->setCellValue('I' . $row, $total['avanses_acts_deposites_amount'][$currency]);
-            $sheet->setCellValue('J' . $row, $total['avanses_acts_paid_amount'][$currency] + $total['avanses_acts_left_paid_amount'][$currency]);
-            $sheet->setCellValue('K' . $row, $total['avanses_acts_paid_amount'][$currency]);
-            $sheet->setCellValue('L' . $row, $total['avanses_acts_left_paid_amount'][$currency]);
-            $sheet->setCellValue('M' . $row, $total['avanses_notwork_left_amount'][$currency]);
+            $sheet->setCellValue('C' . $row, $total['amount']);
+            $sheet->setCellValue('D' . $row, $total['avanses_amount']);
+            $sheet->setCellValue('E' . $row, $total['avanses_received_amount']);
+            $sheet->setCellValue('F' . $row, $total['avanses_left_amount']);
+            $sheet->setCellValue('G' . $row, $total['acts_amount']);
+            $sheet->setCellValue('H' . $row, $total['avanses_acts_avanses_amount']);
+            $sheet->setCellValue('I' . $row, $total['avanses_acts_deposites_amount']);
+            $sheet->setCellValue('J' . $row, $total['avanses_acts_paid_amount'] + $total['avanses_acts_left_paid_amount']);
+            $sheet->setCellValue('K' . $row, $total['avanses_acts_paid_amount']);
+            $sheet->setCellValue('L' . $row, $total['avanses_acts_left_paid_amount']);
+            $sheet->setCellValue('M' . $row, $total['avanses_notwork_left_amount']);
 
             $row++;
         }
