@@ -37,7 +37,7 @@ class PivotSheet implements
 
     public function styles(Worksheet $sheet): void
     {
-        if ($this->object->code === '363' && auth()->id() === 1){
+        if ($this->object->code === '363'){
             $this->styledForCUMCHANKA($sheet);
             return;
         }
