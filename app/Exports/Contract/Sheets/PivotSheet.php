@@ -461,6 +461,8 @@ class PivotSheet implements
 
 
         $row += 5;
+        $startRow = $row;
+
         $sheet->setCellValue('A' . $row, 'Справка объекта 363 | Камчатка (Кольцово)' . ' на ' . now()->format('d.m.Y'));
         $sheet->mergeCells('A' . $row . ':M' . $row);
 
@@ -644,8 +646,8 @@ class PivotSheet implements
         $sheet->getStyle('A' . $row . ':M' . $row)->getFont()->setBold(true);
         $sheet->getStyle('A' . $row . ':M' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-        $sheet->getStyle('A1:M' . $row)->applyFromArray($THINStyleArray);
-        $sheet->getStyle('A1:M1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+        $sheet->getStyle('A' . $startRow . ':M' . $row)->applyFromArray($THINStyleArray);
+        $sheet->getStyle('A' . $startRow . ':M' . $startRow)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('B2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
         $sheet->getStyle('C4:M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
