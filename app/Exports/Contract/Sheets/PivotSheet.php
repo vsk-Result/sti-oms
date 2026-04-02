@@ -464,6 +464,7 @@ class PivotSheet implements
             $sheet->setCellValue('L' . $row, $total['avanses_acts_left_paid_amount']);
             $sheet->setCellValue('M' . $row, $total['avanses_notwork_left_amount']);
 
+            $sheet->getRowDimension($row)->setRowHeight(40);
             $row++;
         }
 
@@ -479,7 +480,6 @@ class PivotSheet implements
         $sheet->getStyle('C4:M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('C4:M' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
-        $sheet->getRowDimension($row)->setRowHeight(20);
 
 
 
@@ -685,6 +685,7 @@ class PivotSheet implements
             $sheet->setCellValue('L' . $row, $total['avanses_acts_left_paid_amount']);
             $sheet->setCellValue('M' . $row, $total['avanses_notwork_left_amount']);
 
+            $sheet->getRowDimension($row)->setRowHeight(40);
             $row++;
         }
 
@@ -699,8 +700,6 @@ class PivotSheet implements
         $sheet->getStyle('A' . ($startRow + 1) . ':A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
         $sheet->getStyle('C4:M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('C4:M' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-        $sheet->getRowDimension($row)->setRowHeight(20);
 
 
         $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, 13, $row);
