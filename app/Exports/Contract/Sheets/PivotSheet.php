@@ -649,7 +649,7 @@ class PivotSheet implements
         $sheet->getStyle('A' . $startRow . ':M' . $row)->applyFromArray($THINStyleArray);
         $sheet->getStyle('A' . $startRow . ':M' . $startRow)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('B2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
-        $sheet->getStyle('A' . $startRow . ':A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('A' . ($startRow + 1) . ':A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
         $sheet->getStyle('C4:M' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
         $sheet->getStyle('C4:M' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
