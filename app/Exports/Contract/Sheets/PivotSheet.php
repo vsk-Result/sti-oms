@@ -460,7 +460,7 @@ class PivotSheet implements
 
 
 
-        $row += 2;
+        $row += 5;
         $sheet->setCellValue('A' . $row, 'Справка объекта 363 | Камчатка (Кольцово)' . ' на ' . now()->format('d.m.Y'));
         $sheet->mergeCells('A' . $row . ':M' . $row);
 
@@ -468,7 +468,7 @@ class PivotSheet implements
         $sheet->getStyle('A' . $row . ':M' . ($row + 2))->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getRowDimension($row)->setRowHeight(45);
 
-        $row += 3;
+        $row += 2;
 
         $sheet->setCellValue('A' . $row, 'Номер');
         $sheet->setCellValue('B' . $row, 'Валюта');
