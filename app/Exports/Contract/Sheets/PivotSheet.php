@@ -460,7 +460,7 @@ class PivotSheet implements
 
 
 
-        $row += 5;
+        $row += 3;
         $startRow = $row;
 
         $sheet->setCellValue('A' . $row, 'Справка объекта 363 | Камчатка (Кольцово)' . ' на ' . now()->format('d.m.Y'));

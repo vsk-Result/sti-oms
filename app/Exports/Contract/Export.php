@@ -26,8 +26,15 @@ class Export implements WithMultipleSheets
     public function sheets(): array
     {
         if ($this->splitContracts) {
+            if ($this->object->code === '363') {
+                return [
+                    new PivotSplitSheet($this->object, $this->contracts, $this->total, 'МАПКЕ'),
+                    new PivotSplitSheet($this->object, $this->contracts, $this->total, 'Кольцово'),
+                ];
+            }
+
             return [
-                new PivotSplitSheet($this->object, $this->contracts, $this->total),
+                new PivotSplitSheet($this->object, $this->contracts, $this->total)
             ];
         }
 
