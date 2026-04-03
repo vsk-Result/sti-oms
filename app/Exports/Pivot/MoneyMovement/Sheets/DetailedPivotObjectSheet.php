@@ -48,10 +48,10 @@ class DetailedPivotObjectSheet implements
         $sheet->setCellValue('B3', FinanceReportHistory::getBalanceForFinanceReportByDate($minDate));
 
         $sheet->setCellValue('A4', 'Итого приход');
-        $sheet->setCellValue('B4', Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('company_id', Company::getSTI()->id)->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'));
+        $sheet->setCellValue('B4', (clone $this->payments)->where('amount', '>=', 0)->sum('amount'));
 
         $sheet->setCellValue('A5', 'Итого расход');
-        $sheet->setCellValue('B5', Payment::where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('company_id', Company::getSTI()->id)->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'));
+        $sheet->setCellValue('B5', (clone $this->payments)->where('amount', '<', 0)->sum('amount'));
 
         $sheet->setCellValue('A6', 'Остаток на конец ' . Carbon::parse($maxDate)->format('d.m'));
         $sheet->setCellValue('B6', FinanceReportHistory::getBalanceForFinanceReportByDate($maxDate));
