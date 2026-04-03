@@ -42,9 +42,8 @@ class DetailedPivotObjectSheet implements
         $maxDate = (clone $this->payments)->max('date');
         $period = [$minDate, $maxDate];
 
+        $totalReceive = 0;
         $ostN = FinanceReportHistory::getBalanceForFinanceReportByDate($minDate);
-        $totalP = (clone $this->payments)->where('amount', '<', 0)->sum('amount');
-        $totalR = (clone $this->payments)->where('amount', '>=', 0)->sum('amount');
 
         $sheet->setCellValue('A2', 'Период с ' . Carbon::parse($minDate)->format('d.m.Y') . ' по ' . Carbon::parse($maxDate)->format('d.m.Y'));
 
@@ -52,13 +51,8 @@ class DetailedPivotObjectSheet implements
         $sheet->setCellValue('B3', $ostN);
 
         $sheet->setCellValue('A4', 'Итого приход');
-        $sheet->setCellValue('B4', $totalR);
-
         $sheet->setCellValue('A5', 'Итого расход');
-        $sheet->setCellValue('B5', $totalP);
-
         $sheet->setCellValue('A6', 'Остаток на конец ' . Carbon::parse($maxDate)->format('d.m'));
-        $sheet->setCellValue('B6', $ostN + $totalR + $totalP);
 
         $sheet->getStyle('A2:B2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getRowDimension(2)->setRowHeight(30);
@@ -133,6 +127,8 @@ class DetailedPivotObjectSheet implements
                 'groupInfo' => $groupInfo
             ]);
 
+            $totalReceive += (clone $this->payments)->where('object_id', $object->id)->where('amount', '>=', 0)->sum('amount');
+
             $row += 5 + $addToRow;
         }
 
@@ -168,6 +164,8 @@ class DetailedPivotObjectSheet implements
 
             $groupInfo[] = $groupInfoItem;
         }
+
+        $totalReceive += (clone $this->payments)->where('object_id', $office->id)->where('amount', '>=', 0)->sum('amount');
 
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Офис',
@@ -208,6 +206,8 @@ class DetailedPivotObjectSheet implements
             $groupInfo[] = $groupInfoItem;
         }
 
+        $totalReceive += (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '>=', 0)->sum('amount');
+
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Общие затраты',
             'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '>=', 0)->sum('amount'),
@@ -247,6 +247,8 @@ class DetailedPivotObjectSheet implements
             $groupInfo[] = $groupInfoItem;
         }
 
+        $totalReceive += (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '>=', 0)->sum('amount');
+
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Трансфер',
             'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '>=', 0)->sum('amount'),
@@ -260,6 +262,10 @@ class DetailedPivotObjectSheet implements
         $sheet->getStyle('B3:B' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
         $totalCategorySum = array_sum($categoryTotal);
+
+        $sheet->setCellValue('B4', $totalReceive);
+        $sheet->setCellValue('B5', $totalCategorySum);
+        $sheet->setCellValue('B6', $ostN + $totalCategorySum + $totalReceive);
 
         $sheet->setCellValue('D2', 'Свод итогов по категориям по расходам');
         $sheet->setCellValue('F2', '%');
