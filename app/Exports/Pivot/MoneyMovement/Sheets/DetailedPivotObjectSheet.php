@@ -42,19 +42,23 @@ class DetailedPivotObjectSheet implements
         $maxDate = (clone $this->payments)->max('date');
         $period = [$minDate, $maxDate];
 
+        $ostN = FinanceReportHistory::getBalanceForFinanceReportByDate($minDate);
+        $totalP = (clone $this->payments)->where('amount', '<', 0)->sum('amount');
+        $totalR = (clone $this->payments)->where('amount', '>=', 0)->sum('amount');
+
         $sheet->setCellValue('A2', 'Период с ' . Carbon::parse($minDate)->format('d.m.Y') . ' по ' . Carbon::parse($maxDate)->format('d.m.Y'));
 
         $sheet->setCellValue('A3', 'Остаток на начало ' . Carbon::parse($minDate)->format('d.m'));
-        $sheet->setCellValue('B3', FinanceReportHistory::getBalanceForFinanceReportByDate($minDate));
+        $sheet->setCellValue('B3', $ostN);
 
         $sheet->setCellValue('A4', 'Итого приход');
-        $sheet->setCellValue('B4', (clone $this->payments)->where('amount', '>=', 0)->sum('amount'));
+        $sheet->setCellValue('B4', $totalR);
 
         $sheet->setCellValue('A5', 'Итого расход');
-        $sheet->setCellValue('B5', (clone $this->payments)->where('amount', '<', 0)->sum('amount'));
+        $sheet->setCellValue('B5', $totalP);
 
         $sheet->setCellValue('A6', 'Остаток на конец ' . Carbon::parse($maxDate)->format('d.m'));
-        $sheet->setCellValue('B6', FinanceReportHistory::getBalanceForFinanceReportByDate($maxDate));
+        $sheet->setCellValue('B6', $ostN + $totalR + $totalP);
 
         $sheet->getStyle('A2:B2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getRowDimension(2)->setRowHeight(30);
@@ -95,7 +99,8 @@ class DetailedPivotObjectSheet implements
             $groupInfo = [];
 
             $addToRow = 0;
-            foreach ($object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+            $oPayments = (clone $this->payments)->where('object_id', $object->id)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get();
+            foreach ($oPayments as $payment) {
                 $groupInfoItem = [
                     'name' => $payment->category,
                     'amount' => $payment->sum_amount,
@@ -108,7 +113,8 @@ class DetailedPivotObjectSheet implements
 
                 $addToRow++;
 
-                foreach ($object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+                $ooPayments = (clone $this->payments)->where('object_id', $object->id)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get();
+                foreach ($ooPayments as $payment) {
                     $groupInfoItem['groupInfo'][] = [
                         'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
                         'amount' => $payment->sum_amount,
@@ -121,8 +127,8 @@ class DetailedPivotObjectSheet implements
 
             $this->fillObjectInfo($sheet, $row, [
                 'title' => $object->getName(),
-                'receive' => $object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
-                'payment' => $object->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
+                'receive' => (clone $this->payments)->where('object_id', $object->id)->where('amount', '>=', 0)->sum('amount'),
+                'payment' => (clone $this->payments)->where('object_id', $object->id)->where('amount', '<', 0)->sum('amount'),
                 'period' => $period,
                 'groupInfo' => $groupInfo
             ]);
@@ -137,7 +143,8 @@ class DetailedPivotObjectSheet implements
         $groupInfo = [];
 
         $addToRow = 0;
-        foreach ($office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+        $oPayments = (clone $this->payments)->where('object_id', $office->id)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get();
+        foreach ($oPayments as $payment) {
             $groupInfoItem = [
                 'name' => $payment->category,
                 'amount' => $payment->sum_amount,
@@ -150,7 +157,8 @@ class DetailedPivotObjectSheet implements
 
             $addToRow++;
 
-            foreach ($office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+            $ooPayments = (clone $this->payments)->where('object_id', $office->id)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get();
+            foreach ($ooPayments as $payment) {
                 $groupInfoItem['groupInfo'][] = [
                     'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
                     'amount' => $payment->sum_amount,
@@ -163,8 +171,8 @@ class DetailedPivotObjectSheet implements
 
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Офис',
-            'receive' => $office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '>=', 0)->sum('amount'),
-            'payment' => $office->payments()->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->whereBetween('date', $period)->where('amount', '<', 0)->sum('amount'),
+            'receive' => (clone $this->payments)->where('object_id', $office->id)->where('amount', '>=', 0)->sum('amount'),
+            'payment' => (clone $this->payments)->where('object_id', $office->id)->where('amount', '<', 0)->sum('amount'),
             'period' => $period,
             'groupInfo' => $groupInfo
         ]);
@@ -174,7 +182,8 @@ class DetailedPivotObjectSheet implements
         $groupInfo = [];
 
         $addToRow = 0;
-        foreach ((clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+        $oPayments = (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get();
+        foreach ($oPayments as $payment) {
             $groupInfoItem = [
                 'name' => $payment->category,
                 'amount' => $payment->sum_amount,
@@ -187,7 +196,8 @@ class DetailedPivotObjectSheet implements
 
             $addToRow++;
 
-            foreach ((clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+            $ooPayments = (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get();
+            foreach ($ooPayments as $payment) {
                 $groupInfoItem['groupInfo'][] = [
                     'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
                     'amount' => $payment->sum_amount,
@@ -200,8 +210,8 @@ class DetailedPivotObjectSheet implements
 
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Общие затраты',
-            'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '>=', 0)->sum('amount'),
-            'payment' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '<', 0)->sum('amount'),
+            'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '>=', 0)->sum('amount'),
+            'payment' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '<', 0)->sum('amount'),
             'period' => $period,
             'groupInfo' => $groupInfo
         ]);
@@ -211,7 +221,8 @@ class DetailedPivotObjectSheet implements
         $groupInfo = [];
 
         $addToRow = 0;
-        foreach ((clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get() as $payment) {
+        $oPayments = (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '<', 0)->select('category', DB::raw('sum(amount) as sum_amount'))->groupBy('category')->get();
+        foreach ($oPayments as $payment) {
             $groupInfoItem = [
                 'name' => $payment->category,
                 'amount' => $payment->sum_amount,
@@ -224,7 +235,8 @@ class DetailedPivotObjectSheet implements
 
             $addToRow++;
 
-            foreach ((clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get() as $payment) {
+            $ooPayments = (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '<', 0)->where('category', $payment->category)->select('organization_receiver_id', DB::raw('sum(amount) as sum_amount'))->groupBy('organization_receiver_id')->get();
+            foreach ($ooPayments as $payment) {
                 $groupInfoItem['groupInfo'][] = [
                     'name' => $organizations[$payment->organization_receiver_id] ?? 'Не определена_' . $payment->organization_receiver_id,
                     'amount' => $payment->sum_amount,
@@ -237,8 +249,8 @@ class DetailedPivotObjectSheet implements
 
         $this->fillObjectInfo($sheet, $row, [
             'title' => 'Трансфер',
-            'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '>=', 0)->sum('amount'),
-            'payment' => (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('company_id', Company::getSTI()->id)->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)->where('amount', '<', 0)->sum('amount'),
+            'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '>=', 0)->sum('amount'),
+            'payment' => (clone $this->payments)->where('type_id', Payment::TYPE_TRANSFER)->where('amount', '<', 0)->sum('amount'),
             'period' => $period,
             'groupInfo' => $groupInfo
         ]);
