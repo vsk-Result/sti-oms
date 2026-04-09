@@ -368,18 +368,19 @@ class PivotSheet implements
         $sheet->getStyle('F2:F' . $row)->getNumberFormat()->setFormatCode('#,##0');
         $sheet->getStyle('G2:G' . $row)->getNumberFormat()->setFormatCode('#,##0');
         $sheet->getStyle('I2:I' . $row)->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('K2:K' . $row)->getNumberFormat()->setFormatCode('#,##0');
 
         $sheet->getStyle('C2:C' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);;
         $sheet->getStyle('E2:E' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);;
         $sheet->getStyle('H2:H' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);;
         $sheet->getStyle('J2:J' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE_00);;
 
-        $sheet->getStyle('A1:J' . $row)->applyFromArray([
+        $sheet->getStyle('A1:K' . $row)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'b7b7b7']]]
         ]);
-        $sheet->getStyle('A2:J2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+        $sheet->getStyle('A2:K2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
-        $sheet->getStyle('B2:J' . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
+        $sheet->getStyle('B2:K' . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
         $sheet->getStyle('A2:A' . $row)->getAlignment()->setVertical('center');
 
         $sheet->getPageSetup()->setPrintAreaByColumnAndRow(1, 1, 10, $row);
