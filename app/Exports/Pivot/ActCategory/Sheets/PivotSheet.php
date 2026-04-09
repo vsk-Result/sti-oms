@@ -47,10 +47,11 @@ class PivotSheet implements
         $sheet->getColumnDimension('H')->setWidth(30);
         $sheet->getColumnDimension('I')->setWidth(30);
         $sheet->getColumnDimension('J')->setWidth(30);
+        $sheet->getColumnDimension('K')->setWidth(30);
 
         $sheet->getStyle('A1:J2')->getFont()->setBold(true);
         $sheet->getStyle('A1:A5')->getFont()->setBold(true);
-        $sheet->getStyle('A1:J1')->getAlignment()->setVertical('center')->setHorizontal('center');
+        $sheet->getStyle('A1:K1')->getAlignment()->setVertical('center')->setHorizontal('center');
 
         $sheet->setCellValue('A1', 'Категория');
         $sheet->setCellValue('B1', 'Сумма по договору');
@@ -62,6 +63,7 @@ class PivotSheet implements
         $sheet->setCellValue('H1', '% оплаты');
         $sheet->setCellValue('I1', 'Остаток к оплате');
         $sheet->setCellValue('J1', '% остатка к оплате');
+        $sheet->setCellValue('K1', 'Остаток неотр. аванса');
 
 //        $sheet->getStyle('A3:'. $lastColumn . '4')->getFont()->setItalic(true);
 
@@ -104,18 +106,21 @@ class PivotSheet implements
         $totalMaterialContractAmount = 0;
         $totalRadContractAmount = 0;
         $totalOpsteContractAmount = 0;
+        $totalNotWorkLeftAmount = 0;
 
         foreach (Contract::whereIn('object_id', $activeObjectIds)->where('type_id', Contract::TYPE_MAIN)->get() as $contract) {
             $totalContractAmount += $contract->getAmount('RUB');
             $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
             $totalRadContractAmount += $contract->getRadAmount('RUB');
             $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
+            $totalNotWorkLeftAmount += $contract->getNotworkLeftAmount('RUB');
 
             if ($EURExchangeRate) {
                 $totalContractAmount += $contract->getAmount('EUR') * $EURExchangeRate->rate;
                 $totalMaterialContractAmount += $contract->getMaterialAmount('EUR') * $EURExchangeRate->rate;
                 $totalRadContractAmount += $contract->getRadAmount('EUR') * $EURExchangeRate->rate;
                 $totalOpsteContractAmount += $contract->getOpsteAmount('EUR') * $EURExchangeRate->rate;
+                $totalNotWorkLeftAmount += $contract->getNotworkLeftAmount('EUR') * $EURExchangeRate->rate;
             }
         }
 
@@ -174,6 +179,7 @@ class PivotSheet implements
         $sheet->setCellValue('I2', $totalLeftPaidAmount);
 
         $this->setAndColorPercentCell($sheet, 'J2', $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'K2', $totalNotWorkLeftAmount);
 
         $sheet->setCellValue('B3', $totalMaterialContractAmount);
         $sheet->setCellValue('C3', $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
@@ -224,18 +230,21 @@ class PivotSheet implements
             $totalMaterialContractAmount = 0;
             $totalRadContractAmount = 0;
             $totalOpsteContractAmount = 0;
+            $totalNotWorkLeftAmount = 0;
 
             foreach ($object->contracts()->where('type_id', Contract::TYPE_MAIN)->get() as $contract) {
                 $totalContractAmount += $contract->getAmount('RUB');
                 $totalMaterialContractAmount += $contract->getMaterialAmount('RUB');
                 $totalRadContractAmount += $contract->getRadAmount('RUB');
                 $totalOpsteContractAmount += $contract->getOpsteAmount('RUB');
+                $totalNotWorkLeftAmount += $contract->getNotworkLeftAmount('RUB');
 
                 if ($EURExchangeRate) {
                     $totalContractAmount += $contract->getAmount('EUR') * $EURExchangeRate->rate;
                     $totalMaterialContractAmount += $contract->getMaterialAmount('EUR') * $EURExchangeRate->rate;
                     $totalRadContractAmount += $contract->getRadAmount('EUR') * $EURExchangeRate->rate;
                     $totalOpsteContractAmount += $contract->getOpsteAmount('EUR') * $EURExchangeRate->rate;
+                    $totalNotWorkLeftAmount += $contract->getNotworkLeftAmount('EUR') * $EURExchangeRate->rate;
                 }
             }
 
@@ -293,6 +302,7 @@ class PivotSheet implements
             $sheet->setCellValue('I' . $row, $totalLeftPaidAmount);
 
             $this->setAndColorPercentCell($sheet, 'J' . $row, $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'K' . $row, $totalNotWorkLeftAmount);
 
             $row++;
             $sheet->getRowDimension($row)->setRowHeight(30);
