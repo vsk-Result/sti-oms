@@ -179,7 +179,7 @@ class PivotSheet implements
         $sheet->setCellValue('I2', $totalLeftPaidAmount);
 
         $this->setAndColorPercentCell($sheet, 'J2', $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
-        $this->setAndColorPercentCell($sheet, 'K2', $totalNotWorkLeftAmount);
+        $sheet->setCellValue('K2', $totalNotWorkLeftAmount);
 
         $sheet->setCellValue('B3', $totalMaterialContractAmount);
         $sheet->setCellValue('C3', $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
@@ -302,7 +302,7 @@ class PivotSheet implements
             $sheet->setCellValue('I' . $row, $totalLeftPaidAmount);
 
             $this->setAndColorPercentCell($sheet, 'J' . $row, $totalContractAmount != 0 ? $totalLeftPaidAmount / $totalContractAmount : 0);
-            $this->setAndColorPercentCell($sheet, 'K' . $row, $totalNotWorkLeftAmount);
+            $sheet->setCellValue('K' . $row, $totalNotWorkLeftAmount);
 
             $row++;
             $sheet->getRowDimension($row)->setRowHeight(30);
