@@ -283,8 +283,8 @@ class PivotSheet implements
             $totalLeftPaidAmount = $totalMaterialLeftPaidAmount + $totalRadLeftPaidAmount + $totalOpsteLeftPaidAmount;
 
             $sheet->getRowDimension($row)->setRowHeight(40);
-            $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
-            $sheet->getStyle('A' . $row . ':J' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
+            $sheet->getStyle('A' . $row . ':K' . $row)->getFont()->setBold(true);
+            $sheet->getStyle('A' . $row . ':K' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('f7f7f7');
 
 
             $sheet->setCellValue('A' . $row, $object->getName());
