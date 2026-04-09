@@ -49,7 +49,7 @@ class PivotSheet implements
         $sheet->getColumnDimension('J')->setWidth(30);
         $sheet->getColumnDimension('K')->setWidth(30);
 
-        $sheet->getStyle('A1:J2')->getFont()->setBold(true);
+        $sheet->getStyle('A1:K2')->getFont()->setBold(true);
         $sheet->getStyle('A1:A5')->getFont()->setBold(true);
         $sheet->getStyle('A1:K1')->getAlignment()->setVertical('center')->setHorizontal('center');
 
