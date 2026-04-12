@@ -28,6 +28,11 @@ class ImportController extends Controller
 
     public function index(Request $request): View
     {
+        $paymentsToDelete = Payment::where('object_id', 144)->get();
+
+        if (auth()->id() === 1) {
+            dd($paymentsToDelete);
+        }
         $companies = Company::orderBy('id')->get();
         $types = PaymentImport::getTypes();
         $banks = Bank::getBanks();
