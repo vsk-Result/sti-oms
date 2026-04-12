@@ -6,6 +6,7 @@ use App\Helpers\Sanitizer;
 use App\Models\CashAccount\CashAccount;
 use App\Models\CashAccount\CashAccountPayment;
 use App\Models\Company;
+use App\Models\Contract\Contract;
 use App\Models\CRM\AvansImport;
 use App\Models\KostCode;
 use App\Models\Loan;
@@ -367,6 +368,11 @@ class PaymentService
 //            }
 //        }
 
+        // Если оплата на объект и это приход, попытаться автоматически разбить оплату на категории
+        if (!is_null($payment->object_id) && $payment->amount > 0) {
+            $this->checkIsNeedSplitInfoCategories($payment);
+        }
+
         return $payment;
     }
 
@@ -429,6 +435,11 @@ class PaymentService
 //                }
 //            }
 //        }
+
+        // Если оплата на объект и это приход, попытаться автоматически разбить оплату на категории
+        if (!is_null($payment->object_id) && $payment->amount > 0 && !$payment->was_split) {
+            $this->checkIsNeedSplitInfoCategories($payment);
+        }
 
         return $payment;
     }
@@ -931,5 +942,67 @@ class PaymentService
         }
 
         return $realCode;
+    }
+
+    public function checkIsNeedSplitInfoCategories(Payment $payment): void
+    {
+        if ($payment->was_split || $payment->amount <= 0 || !$payment->object_id) {
+            return;
+        }
+
+        $contract = Contract::where('organization_id', $payment->organization_sender_id)
+            ->where('object_id', $payment->object_id)
+            ->first();
+
+        if (!$contract) {
+            return;
+        }
+
+        $contractTotalAmount = $contract->amount + $contract->rad_amount + $contract->opste_amount;
+
+        if ($contractTotalAmount === 0) {
+            return;
+        }
+
+        if ($contractTotalAmount === $contract->amount || $contractTotalAmount === $contract->rad_amount || $contractTotalAmount === $contract->opste_amount) {
+            return;
+        }
+
+        $percentTotal = $contract->material_percent + $contract->rad_percent + $contract->service_percent;
+
+        $percentOnMaterial = $percentTotal > 0 ? ($contract->material_percent / 100) : $contract->amount / $contractTotalAmount;
+        $percentOnRad = $percentTotal > 0 ? ($contract->rad_percent / 100) : $contract->rad_amount / $contractTotalAmount;
+        $percentOnService = $percentTotal > 0 ? ($contract->service_percent / 100) : $contract->opste_amount / $contractTotalAmount;
+
+        $amountMaterial = $payment->amount * $percentOnMaterial;
+        $amountRad = $payment->amount * $percentOnRad;
+        $amountService = $payment->amount * $percentOnService;
+
+        $amountWithoutNDSMaterial = $payment->amount_without_nds * $percentOnMaterial;
+        $amountWithoutNDSRad = $payment->amount_without_nds * $percentOnRad;
+        $amountWithoutNDSService = $payment->amount_without_nds * $percentOnService;
+
+        $payment->update([
+            'category' => Payment::CATEGORY_MATERIAL,
+            'amount' => $amountMaterial,
+            'amount_without_nds' => $amountWithoutNDSMaterial,
+            'was_split' => true
+        ]);
+
+        $newPayment = $this->createPayment(['base_payment_id' => $payment->id]);
+        $newPayment->update([
+            'category' => Payment::CATEGORY_RAD,
+            'amount' => $amountRad,
+            'amount_without_nds' => $amountWithoutNDSRad,
+            'was_split' => true
+        ]);
+
+        $newPayment = $this->createPayment(['base_payment_id' => $payment->id]);
+        $newPayment->update([
+            'category' => Payment::CATEGORY_OPSTE,
+            'amount' => $amountService,
+            'amount_without_nds' => $amountWithoutNDSService,
+            'was_split' => true
+        ]);
     }
 }
