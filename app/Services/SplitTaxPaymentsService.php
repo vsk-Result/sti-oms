@@ -53,11 +53,11 @@ class SplitTaxPaymentsService
             $resultSplitInfo[$objectCode] += $amount;
         }
 
-//        foreach ($resultSplitInfo as $code => $amount) {
-//            if (! BObject::where('code', $code)->exists()) {
-//                return 'Объект ' . $code . ' не найден в OMS. Разбивка не произошла.';
-//            }
-//        }
+        foreach ($resultSplitInfo as $code => $amount) {
+            if (! BObject::where('code', $code)->exists()) {
+                return 'Объект ' . $code . ' не найден в OMS. Разбивка не произошла.';
+            }
+        }
 
         $exceptCodes = [];
         $objectIds = BObject::whereIn('code', array_keys($resultSplitInfo))->pluck('id', 'code')->toArray();
@@ -167,7 +167,7 @@ class SplitTaxPaymentsService
         $result = [];
 
         foreach ($splitInfo as $index => $info) {
-            if ($index < 5 || $info[1] === 'Итого:') {
+            if ($index < 4 || $info[1] === 'Итого:') {
                 continue;
             }
 
