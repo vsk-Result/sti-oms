@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\Act\ActController;
+use App\Http\Controllers\Act\ExportController;
+
+// Экспорт актов
+
+Route::post('acts/export', [ExportController::class, 'store'])->name('acts.exports.store');
 
 // Акты
 
