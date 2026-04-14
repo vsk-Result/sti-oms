@@ -111,7 +111,7 @@
 
             $periodsByYears = array_reverse($periodsByYears, true);
 
-            $generalCostsInfo = Illuminate\Support\Facades\Cache::get('general_costs___1', function() use ($periodsByYears, $object27_1) {
+            $generalCostsInfo = Illuminate\Support\Facades\Cache::get('general_costs_without_nds', function() use ($periodsByYears, $object27_1) {
                 $generalInfo = [];
                 $groupedByYearsInfo = [];
                 $generalTotalAmount = 0;
@@ -123,9 +123,9 @@
                     ];
                     foreach ($periods as $index => $period) {
                         $datesBetween = [$period['start_date'], $period['end_date']];
-                        $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11.1']);
-                        $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                                        + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                        $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11.1', '7.1']);
+                        $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount_without_nds')
+                                        + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount_without_nds')
                                         + $period['bonus'];
 
                         $generalInfo[$year][$index] = [
@@ -133,7 +133,7 @@
                             'end_date' => $period['end_date'],
                             'cuming_amount' => 0,
                             'general_amount' => $generalAmount,
-                            'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                            'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus'], true),
                         ];
 
                         $generalTotalAmount += $generalAmount;
@@ -166,8 +166,6 @@
                     'generalTotalAmount' => $generalTotalAmount,
                 ];
             });
-
-
     @endphp
 
     <div class="card mb-5 mb-xl-8 p-0 border-0">

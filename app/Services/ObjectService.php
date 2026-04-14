@@ -174,7 +174,7 @@ class ObjectService
         }
     }
 
-    public static function getGeneralCostsByPeriod(string $startDate, string $endDate, int $bonus = 0): array
+    public static function getGeneralCostsByPeriod(string $startDate, string $endDate, int $bonus = 0, ?bool $needWithoutNDS = false): array
     {
         if (str_contains($startDate, '2017-')) {
             return [
@@ -304,19 +304,24 @@ class ObjectService
 
         $bonus = $bonus / count($periods);
 
+        $amountField = $needWithoutNDS ? 'amount_without_nds' : 'amount';
+        $exceptCodes = $needWithoutNDS ? ['7.11.1', '7.1'] : ['7.11.1'];
+
         $result = [];
         foreach ($periods as $startDate => $endDate) {
             $generalTotalAmount = Payment::whereBetween('date', [$startDate, $endDate])
-                ->whereNotIn('code', ['7.11', '7.11.1', '.7.11.2'])
+                ->whereNotIn('code', $exceptCodes)
                 ->where('type_id', Payment::TYPE_GENERAL)
                 ->whereIn('company_id', [1, 5])
-                ->sum('amount');
+                ->sum($amountField);
+
             $generalTotalAmount += Payment::whereBetween('date', [$startDate, $endDate])
+                ->whereNotIn('code', $exceptCodes)
                 ->where('object_id', $object27_1->id)
                 ->whereIn('company_id', [1, 5])
-                ->sum('amount');
-            $generalTotalAmount += $bonus;
+                ->sum($amountField);
 
+            $generalTotalAmount += $bonus;
 
             $sumCumings = 0;
             $cumings = [];

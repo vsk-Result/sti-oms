@@ -15,9 +15,10 @@ class ExportController extends Controller
     {
         $requestYears = request()->input('year', []);
         $requestObjects = request()->input('object_id', []);
+        $filterNDS = $request->get('filter_nds', 'nds');
 
         return Excel::download(
-            new Export($requestYears, $requestObjects),
+            new Export($requestYears, $requestObjects, $filterNDS),
             'Общие затраты на ' . Carbon::now()->format('d-m-Y') . '.xlsx'
         );
     }

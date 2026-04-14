@@ -6,11 +6,11 @@ use App\Console\HandledCommand;
 use App\Models\Object\BObject;
 use Illuminate\Support\Facades\Cache;
 
-class UpdateGeneralCosts extends HandledCommand
+class UpdateGeneralCostsWithoutNDS extends HandledCommand
 {
-    protected $signature = 'oms:update-general-costs';
+    protected $signature = 'oms:update-general-costs-without-nds';
 
-    protected $description = 'Обновляет общие затраты объектов';
+    protected $description = 'Обновляет общие затраты объектов без ндс';
 
     protected string $period = 'Каждые 30 минут';
 
@@ -137,9 +137,9 @@ class UpdateGeneralCosts extends HandledCommand
                 ];
                 foreach ($periods as $index => $period) {
                     $datesBetween = [$period['start_date'], $period['end_date']];
-                    $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11.1']);
-                    $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                        + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                    $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11.1', '7.1']);
+                    $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount_without_nds')
+                        + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount_without_nds')
                         + $period['bonus'];
 
                     $generalInfo[$year][$index] = [
@@ -147,7 +147,7 @@ class UpdateGeneralCosts extends HandledCommand
                         'end_date' => $period['end_date'],
                         'cuming_amount' => 0,
                         'general_amount' => $generalAmount,
-                        'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                        'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus'], true),
                     ];
 
                     $generalTotalAmount += $generalAmount;
@@ -180,7 +180,7 @@ class UpdateGeneralCosts extends HandledCommand
                 'generalTotalAmount' => $generalTotalAmount,
             ];
 
-            Cache::put('general_costs___1', $info);
+            Cache::put('general_costs_without_nds', $info);
 
         } catch (\Exception $e) {
             $this->sendErrorMessage('Ошибка в вычислениях: ' . $e->getMessage());

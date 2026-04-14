@@ -25,12 +25,14 @@ class PivotSheet implements
     private string $sheetName;
     private array $requestYears;
     private array $requestObjects;
+    private string $filterNDS;
 
-    public function __construct(string $sheetName, array $requestYears, array $requestObjects)
+    public function __construct(string $sheetName, array $requestYears, array $requestObjects, string $filterNDS)
     {
         $this->sheetName = $sheetName;
         $this->requestYears = $requestYears;
         $this->requestObjects = $requestObjects;
+        $this->filterNDS = $filterNDS;
     }
 
     public function title(): string
@@ -125,17 +127,20 @@ class PivotSheet implements
         $generalTotalAmount = 0;
         $generalInfo = [];
         foreach ($periods as $index => $period) {
-            $datesBetween = [$period['start_date'], $period['end_date']];
-            $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5]);
-            $generalAmount = (clone $paymentQuery)->whereNotIn('code', ['7.11', '7.11.1', '.7.11.2'])->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
-                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+            $exceptCodes = $this->filterNDS === 'nds' ? ['7.11.1'] : ['7.11.1', '7.1'];
+            $amountField = $this->filterNDS === 'nds' ? 'amount' : 'amount_without_nds';
+
+                $datesBetween = [$period['start_date'], $period['end_date']];
+            $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', $exceptCodes);
+            $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum($amountField)
+                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum($amountField)
                 + $period['bonus'];
 
             $generalInfo[$index] = [
                 'start_date' => $period['start_date'],
                 'end_date' => $period['end_date'],
                 'general_amount' => $generalAmount,
-                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus'], $this->filterNDS !== 'nds'),
             ];
 
             $generalTotalAmount += $generalAmount;

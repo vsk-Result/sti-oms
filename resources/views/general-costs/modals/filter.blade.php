@@ -8,7 +8,7 @@
             <form action="{{ request()->url() }}" method="GET">
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="form-label">Год</label>
                                 <select
@@ -27,7 +27,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="form-label">Объект</label>
                                 <select
@@ -45,7 +45,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="form-label">Группировать закрытые объекты</label>
                                 <select
@@ -56,6 +56,21 @@
                                 >
                                     <option value="true" {{ request()->input('group_closed_objects', ['true'])[0] == 'true' ? 'selected' : '' }}>Да</option>
                                     <option value="false" {{ request()->input('group_closed_objects', ['true'])[0] == 'false' ? 'selected' : '' }}>Нет</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="form-label">НДС</label>
+                                <select
+                                    name="filter_nds"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-dropdown-parent="#filterGeneralCostsModal"
+                                >
+                                    <option value="nds" {{ request()->input('filter_nds', 'nds') === 'nds' ? 'selected' : '' }}>С НДС</option>
+                                    <option value="without_nds" {{ request()->input('filter_nds', 'nds') === 'without_nds' ? 'selected' : '' }}>Без НДС</option>
                                 </select>
                             </div>
                         </div>
