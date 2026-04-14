@@ -10,7 +10,7 @@ class GeneralCost extends Model
 {
     protected $table = 'object_general_costs';
 
-    protected $fillable = ['object_id', 'amount', 'is_pinned'];
+    protected $fillable = ['object_id', 'amount', 'is_pinned', 'amount_without_nds', 'nds_type'];
 
     public function object(): BelongsTo
     {

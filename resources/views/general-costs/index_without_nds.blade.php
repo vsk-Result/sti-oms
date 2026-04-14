@@ -319,7 +319,7 @@
                                         }
                                     }
 
-                                    \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
+                                    \App\Services\ObjectGeneralCostService::updateGeneralCostWithoutNDS($object, $totalGeneral);
                                 @endphp
 
                                 <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
@@ -467,7 +467,7 @@
                                         }
                                     }
 
-                                    \App\Services\ObjectGeneralCostService::updateGeneralCost($object, $totalGeneral);
+                                    \App\Services\ObjectGeneralCostService::updateGeneralCostWithoutNDS($object, $totalGeneral);
                                 @endphp
 
                                 <td class="text-success bl hl text-right">{{ \App\Models\CurrencyExchangeRate::format($totalCuming, 'RUB', 0, true) }}</td>
