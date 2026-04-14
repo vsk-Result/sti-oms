@@ -105,6 +105,7 @@ class FinanceReport
             'Остаток неотработанного аванса в изменяемой цене' => 'ostatokNeotrabotannogoAvansaFloat',
             'Остаток к получ. от заказчика (в т.ч. ГУ)' => 'ostatokPoDogovoruSZakazchikom',
             'Прогнозируемые затраты ИТОГО' => 'prognoz_total',
+            'Общие затраты на НДС, налог на прибыль' => 'general_nds',
         ];
 
         $fieldsWithoutNDS = ['prognozBalance_without_nds'];
