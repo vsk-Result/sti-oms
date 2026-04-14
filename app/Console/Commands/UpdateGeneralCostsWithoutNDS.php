@@ -137,7 +137,7 @@ class UpdateGeneralCostsWithoutNDS extends HandledCommand
                 ];
                 foreach ($periods as $index => $period) {
                     $datesBetween = [$period['start_date'], $period['end_date']];
-                    $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11.1', '7.1']);
+                    $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11.1', '7.1', '7.2']);
                     $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount_without_nds')
                         + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount_without_nds')
                         + $period['bonus'];

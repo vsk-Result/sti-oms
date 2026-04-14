@@ -305,7 +305,7 @@ class ObjectService
         $bonus = $bonus / count($periods);
 
         $amountField = $needWithoutNDS ? 'amount_without_nds' : 'amount';
-        $exceptCodes = $needWithoutNDS ? ['7.11.1', '7.1'] : ['7.11.1'];
+        $exceptCodes = $needWithoutNDS ? ['7.11.1', '7.1', '7.2'] : ['7.11.1'];
 
         $result = [];
         foreach ($periods as $startDate => $endDate) {

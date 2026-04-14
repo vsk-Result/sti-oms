@@ -127,7 +127,7 @@ class PivotSheet implements
         $generalTotalAmount = 0;
         $generalInfo = [];
         foreach ($periods as $index => $period) {
-            $exceptCodes = $this->filterNDS === 'nds' ? ['7.11.1'] : ['7.11.1', '7.1'];
+            $exceptCodes = $this->filterNDS === 'nds' ? ['7.11.1'] : ['7.11.1', '7.1', '7.2'];
             $amountField = $this->filterNDS === 'nds' ? 'amount' : 'amount_without_nds';
 
                 $datesBetween = [$period['start_date'], $period['end_date']];
