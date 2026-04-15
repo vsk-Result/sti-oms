@@ -172,7 +172,7 @@ class PivotSheet implements
         $this->setAndColorPercentCell($sheet, 'E2', $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
 
         $sheet->setCellValue('F2', $totalContractAmount - $totalAmount);
-        if ($totalContractAmount - $totalAmount < 1) {
+        if ($totalContractAmount - $totalAmount < -1) {
             $sheet->getStyle('F2')->applyFromArray([
                 'font' => [
                     'color' => ['rgb' => 'FF0000'],
@@ -196,7 +196,7 @@ class PivotSheet implements
         $this->setAndColorPercentCell($sheet, 'E3', $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
 
         $sheet->setCellValue('F3', $totalMaterialContractAmount - $totalMaterialAmount);
-        if ($totalMaterialContractAmount - $totalMaterialAmount < 1) {
+        if ($totalMaterialContractAmount - $totalMaterialAmount < -1) {
             $sheet->getStyle('F3')->applyFromArray([
                 'font' => [
                     'color' => ['rgb' => 'FF0000'],
@@ -216,7 +216,7 @@ class PivotSheet implements
         $this->setAndColorPercentCell($sheet, 'E4', $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
 
         $sheet->setCellValue('F4', $totalRadContractAmount - $totalRadAmount);
-        if ($totalRadContractAmount - $totalRadAmount < 1) {
+        if ($totalRadContractAmount - $totalRadAmount < -1) {
             $sheet->getStyle('F4')->applyFromArray([
                 'font' => [
                     'color' => ['rgb' => 'FF0000'],
@@ -235,7 +235,7 @@ class PivotSheet implements
         $this->setAndColorPercentCell($sheet, 'E5', $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
 
         $sheet->setCellValue('F5', $totalOpsteContractAmount - $totalOpsteAmount);
-        if ($totalOpsteContractAmount - $totalOpsteAmount < 1) {
+        if ($totalOpsteContractAmount - $totalOpsteAmount < -1) {
             $sheet->getStyle('F5')->applyFromArray([
                 'font' => [
                     'color' => ['rgb' => 'FF0000'],
@@ -332,7 +332,7 @@ class PivotSheet implements
             $this->setAndColorPercentCell($sheet, 'E' . $row, $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
 
             $sheet->setCellValue('F' . $row, $totalContractAmount - $totalAmount);
-            if ($totalContractAmount - $totalAmount < 1) {
+            if ($totalContractAmount - $totalAmount < -1) {
                 $sheet->getStyle('F' . $row)->applyFromArray([
                     'font' => [
                         'color' => ['rgb' => 'FF0000'],
@@ -363,7 +363,7 @@ class PivotSheet implements
             $this->setAndColorPercentCell($sheet, 'E' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
 
             $sheet->setCellValue('F' . $row, $totalMaterialContractAmount - $totalMaterialAmount);
-            if ($totalMaterialContractAmount - $totalMaterialAmount < 1) {
+            if ($totalMaterialContractAmount - $totalMaterialAmount < -1) {
                 $sheet->getStyle('F' . $row)->applyFromArray([
                     'font' => [
                         'color' => ['rgb' => 'FF0000'],
@@ -390,7 +390,7 @@ class PivotSheet implements
             $this->setAndColorPercentCell($sheet, 'E' . $row, $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
 
             $sheet->setCellValue('F' . $row, $totalRadContractAmount - $totalRadAmount);
-            if ($totalRadContractAmount - $totalRadAmount < 1) {
+            if ($totalRadContractAmount - $totalRadAmount < -1) {
                 $sheet->getStyle('F' . $row)->applyFromArray([
                     'font' => [
                         'color' => ['rgb' => 'FF0000'],
@@ -417,7 +417,7 @@ class PivotSheet implements
             $this->setAndColorPercentCell($sheet, 'E' . $row, $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
 
             $sheet->setCellValue('F' . $row, $totalOpsteContractAmount - $totalOpsteAmount);
-            if ($totalOpsteContractAmount - $totalOpsteAmount < 1) {
+            if ($totalOpsteContractAmount - $totalOpsteAmount < -1) {
                 $sheet->getStyle('F' . $row)->applyFromArray([
                     'font' => [
                         'color' => ['rgb' => 'FF0000'],
