@@ -242,6 +242,15 @@ class BObject extends Model implements Audit
 
     public function getWorkSalaryDebt(): float
     {
+        $debts = Cache::get('workers_salary_1c_data', []);
+
+        if (! isset($debts[$this->code])) {
+            return 0;
+        }
+
+        return $debts[$this->code]['total_amount'];
+
+        // Логика из CRM
         $amount = 0;
         $details = $this->getWorkSalaryDebtDetails();
 
@@ -265,6 +274,15 @@ class BObject extends Model implements Audit
 
     public function getWorkSalaryDebtDetails(): array
     {
+        $debts = Cache::get('workers_salary_1c_data', []);
+
+        if (! isset($debts[$this->code])) {
+            return [];
+        }
+
+        return $debts[$this->code]['details'];
+
+        // Логика из CRM
         if (isset(self::getCodesWithoutWorktype()[$this->code])) {
             return [];
         }
