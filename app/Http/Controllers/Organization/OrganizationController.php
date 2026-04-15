@@ -9,6 +9,7 @@ use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Status;
 use App\Services\OrganizationService;
+use App\Services\OrganizationValidator;
 use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -98,6 +99,18 @@ class OrganizationController extends Controller
 
     public function store(StoreOrUpdateOrganizationRequest $request): RedirectResponse
     {
+        $validator = app(OrganizationValidator::class);
+
+        $validationResult = $validator->validate(
+            $request->input('inn'),
+            $request->input('kpp')
+        );
+
+        if (!$validationResult['valid']) {
+            session()->flash('validator_errors', $validationResult['errors']);
+            return redirect()->back()->withInput();
+        }
+
         $this->organizationService->createOrganization($request->toArray());
         return redirect()->route('organizations.index');
     }
@@ -113,6 +126,18 @@ class OrganizationController extends Controller
 
     public function update(Organization $organization, StoreOrUpdateOrganizationRequest $request): RedirectResponse
     {
+        $validator = app(OrganizationValidator::class);
+
+        $validationResult = $validator->validate(
+            $request->input('inn'),
+            $request->input('kpp')
+        );
+
+        if (!$validationResult['valid']) {
+            session()->flash('validator_errors', $validationResult['errors']);
+            return redirect()->back()->withInput();
+        }
+
         $this->organizationService->updateOrganization($organization, $request->toArray());
 
         foreach ($organization->paymentsSend as $payment) {
