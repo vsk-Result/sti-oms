@@ -172,6 +172,15 @@ class PivotSheet implements
         $this->setAndColorPercentCell($sheet, 'E2', $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
 
         $sheet->setCellValue('F2', $totalContractAmount - $totalAmount);
+        if ($totalContractAmount - $totalAmount < 0) {
+            $sheet->getStyle('F2')->applyFromArray([
+                'font' => [
+                    'color' => ['rgb' => 'FF0000'],
+                ],
+            ]);
+        }
+
+
         $sheet->setCellValue('G2', $totalPaidAmount);
 
         $this->setAndColorPercentCell($sheet, 'H2', $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0);
@@ -182,34 +191,62 @@ class PivotSheet implements
         $sheet->setCellValue('K2', $totalNotWorkLeftAmount);
 
         $sheet->setCellValue('B3', $totalMaterialContractAmount);
-        $sheet->setCellValue('C3', $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'C3', $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
         $sheet->setCellValue('D3', $totalMaterialAmount);
-        $sheet->setCellValue('E3', $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'E3', $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
+
         $sheet->setCellValue('F3', $totalMaterialContractAmount - $totalMaterialAmount);
+        if ($totalMaterialContractAmount - $totalMaterialAmount < 0) {
+            $sheet->getStyle('F3')->applyFromArray([
+                'font' => [
+                    'color' => ['rgb' => 'FF0000'],
+                ],
+            ]);
+        }
+
+
         $sheet->setCellValue('G3', $totalMaterialPaidAmount);
-        $sheet->setCellValue('H3', $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'H3', $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
         $sheet->setCellValue('I3', $totalMaterialLeftPaidAmount);
-        $sheet->setCellValue('J3', $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'J3', $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
 
         $sheet->setCellValue('B4', $totalRadContractAmount);
-        $sheet->setCellValue('C4', $totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'C4', $totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount : 0);
         $sheet->setCellValue('D4', $totalRadAmount);
-        $sheet->setCellValue('E4', $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'E4', $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
+
         $sheet->setCellValue('F4', $totalRadContractAmount - $totalRadAmount);
+        if ($totalRadContractAmount - $totalRadAmount < 0) {
+            $sheet->getStyle('F4')->applyFromArray([
+                'font' => [
+                    'color' => ['rgb' => 'FF0000'],
+                ],
+            ]);
+        }
+
         $sheet->setCellValue('G4', $totalRadPaidAmount);
-        $sheet->setCellValue('H4', $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'H4', $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
         $sheet->setCellValue('I4', $totalRadLeftPaidAmount);
-        $sheet->setCellValue('J4', $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'J4', $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
 
         $sheet->setCellValue('B5', $totalOpsteContractAmount);
-        $sheet->setCellValue('C5', $totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'C5', $totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount : 0);
         $sheet->setCellValue('D5', $totalOpsteAmount);
-        $sheet->setCellValue('E5', $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'E5', $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
+
         $sheet->setCellValue('F5', $totalOpsteContractAmount - $totalOpsteAmount);
+        if ($totalOpsteContractAmount - $totalOpsteAmount < 0) {
+            $sheet->getStyle('F5')->applyFromArray([
+                'font' => [
+                    'color' => ['rgb' => 'FF0000'],
+                ],
+            ]);
+        }
+
         $sheet->setCellValue('G5', $totalOpstePaidAmount);
-        $sheet->setCellValue('H5', $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'H5', $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
         $sheet->setCellValue('I5', $totalOpsteLeftPaidAmount);
-        $sheet->setCellValue('J5', $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
+        $this->setAndColorPercentCell($sheet, 'J5', $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
 
         $row = 6;
         foreach($activeObjects as $object) {
@@ -295,6 +332,14 @@ class PivotSheet implements
             $this->setAndColorPercentCell($sheet, 'E' . $row, $totalContractAmount != 0 ? $totalAmount / $totalContractAmount : 0);
 
             $sheet->setCellValue('F' . $row, $totalContractAmount - $totalAmount);
+            if ($totalContractAmount - $totalAmount < 0) {
+                $sheet->getStyle('F' . $row)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => 'FF0000'],
+                    ],
+                ]);
+            }
+
             $sheet->setCellValue('G' . $row, $totalPaidAmount);
 
             $this->setAndColorPercentCell($sheet, 'H' . $row, $totalContractAmount != 0 ? $totalPaidAmount / $totalContractAmount : 0);
@@ -313,14 +358,23 @@ class PivotSheet implements
 
             $sheet->setCellValue('A' . $row, 'Материалы');
             $sheet->setCellValue('B' . $row, $totalMaterialContractAmount);
-            $sheet->setCellValue('C' . $row, $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'C' . $row, $totalContractAmount != 0 ? $totalMaterialContractAmount / $totalContractAmount : 0);
             $sheet->setCellValue('D' . $row, $totalMaterialAmount);
-            $sheet->setCellValue('E' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'E' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialAmount / $totalMaterialContractAmount : 0);
+
             $sheet->setCellValue('F' . $row, $totalMaterialContractAmount - $totalMaterialAmount);
+            if ($totalMaterialContractAmount - $totalMaterialAmount < 0) {
+                $sheet->getStyle('F' . $row)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => 'FF0000'],
+                    ],
+                ]);
+            }
+
             $sheet->setCellValue('G' . $row, $totalMaterialPaidAmount);
-            $sheet->setCellValue('H' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'H' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialPaidAmount / $totalMaterialContractAmount : 0);
             $sheet->setCellValue('I' . $row, $totalMaterialLeftPaidAmount);
-            $sheet->setCellValue('J' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'J' . $row, $totalMaterialContractAmount != 0 ? $totalMaterialLeftPaidAmount / $totalMaterialContractAmount : 0);
 
             $row++;
             $sheet->getRowDimension($row)->setRowHeight(30);
@@ -331,14 +385,23 @@ class PivotSheet implements
 
             $sheet->setCellValue('A' . $row, 'Работы');
             $sheet->setCellValue('B' . $row, $totalRadContractAmount);
-            $sheet->setCellValue('C' . $row, $totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'C' . $row, $totalContractAmount != 0 ? $totalRadContractAmount / $totalContractAmount : 0);
             $sheet->setCellValue('D' . $row, $totalRadAmount);
-            $sheet->setCellValue('E' . $row, $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'E' . $row, $totalRadContractAmount != 0 ? $totalRadAmount / $totalRadContractAmount : 0);
+
             $sheet->setCellValue('F' . $row, $totalRadContractAmount - $totalRadAmount);
+            if ($totalRadContractAmount - $totalRadAmount < 0) {
+                $sheet->getStyle('F' . $row)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => 'FF0000'],
+                    ],
+                ]);
+            }
+
             $sheet->setCellValue('G' . $row, $totalRadPaidAmount);
-            $sheet->setCellValue('H' . $row, $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'H' . $row, $totalRadContractAmount != 0 ? $totalRadPaidAmount / $totalRadContractAmount : 0);
             $sheet->setCellValue('I' . $row, $totalRadLeftPaidAmount);
-            $sheet->setCellValue('J' . $row, $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'J' . $row, $totalRadContractAmount != 0 ? $totalRadLeftPaidAmount / $totalRadContractAmount : 0);
 
             $row++;
             $sheet->getRowDimension($row)->setRowHeight(30);
@@ -349,14 +412,23 @@ class PivotSheet implements
 
             $sheet->setCellValue('A' . $row, 'Накладные');
             $sheet->setCellValue('B' . $row, $totalOpsteContractAmount);
-            $sheet->setCellValue('C' . $row, $totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'C' . $row, $totalContractAmount != 0 ? $totalOpsteContractAmount / $totalContractAmount : 0);
             $sheet->setCellValue('D' . $row, $totalOpsteAmount);
-            $sheet->setCellValue('E' . $row, $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'E' . $row, $totalOpsteContractAmount != 0 ? $totalOpsteAmount / $totalOpsteContractAmount : 0);
+
             $sheet->setCellValue('F' . $row, $totalOpsteContractAmount - $totalOpsteAmount);
+            if ($totalOpsteContractAmount - $totalOpsteAmount < 0) {
+                $sheet->getStyle('F' . $row)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => 'FF0000'],
+                    ],
+                ]);
+            }
+
             $sheet->setCellValue('G' . $row, $totalOpstePaidAmount);
-            $sheet->setCellValue('H' . $row, $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'H' . $row, $totalOpsteContractAmount != 0 ? $totalOpstePaidAmount / $totalOpsteContractAmount : 0);
             $sheet->setCellValue('I' . $row, $totalOpsteLeftPaidAmount);
-            $sheet->setCellValue('J' . $row, $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
+            $this->setAndColorPercentCell($sheet, 'J' . $row, $totalOpsteContractAmount != 0 ? $totalOpsteLeftPaidAmount / $totalOpsteContractAmount : 0);
 
             $row++;
         }
