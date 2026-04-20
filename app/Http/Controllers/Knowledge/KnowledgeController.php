@@ -35,7 +35,7 @@ class KnowledgeController extends Controller
                 'name' => 'Заполнение Cash Flow объекта на длительный срок',
                 'ext' => 'doc',
                 'size' => '250 Кб',
-                'file' => 'Заполнение_Cash_Flow_объекта_на_длительный_срок.docx'
+                'file' => 'Заполнение_Cash_Flow_объекта_на_длительный_срок_.docx'
             ],
             [
                 'name' => 'Автоматическое разделение прихода по категориям',
