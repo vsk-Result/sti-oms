@@ -33,9 +33,9 @@ class KnowledgeController extends Controller
         $instructions = [
             [
                 'name' => 'Заполнение Cash Flow объекта на длительный срок',
-                'ext' => 'doc',
+                'ext' => 'pdf',
                 'size' => '250 Кб',
-                'file' => 'Заполнение_Cash_Flow_объекта_на_длительный_срок_.docx'
+                'file' => 'Заполнение_Cash_Flow_объекта_на_длительный_срок.pdf'
             ],
             [
                 'name' => 'Автоматическое разделение прихода по категориям',
