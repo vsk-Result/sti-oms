@@ -26,7 +26,7 @@ class ObjectBudgetService
         $budgetList = Budget::getBudgetList();
 
         foreach ($budgetList as $budget) {
-            $budgetExist = Budget::where('type_id', $budget['type_id'])->first();
+            $budgetExist = Budget::where('object_id', $objectId)->where('type_id', $budget['type_id'])->first();
 
             if ($budgetExist) {
                 continue;
