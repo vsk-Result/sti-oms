@@ -48,6 +48,7 @@ class ScheduleExportService
 
     public function createTask(string $name, string $model, string $filepath, string $filename, array $data, string $email): void
     {
+        //Очень странная штука. Status_id задается 0, но по факту в БД ставится 1.
         ScheduleExport::create([
             'name' => $name,
             'model' => $model,

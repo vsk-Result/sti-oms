@@ -43,7 +43,7 @@ class HandledCommand extends Command
 //
 //        $this->logChannel = Log::channel($this->signature);
 
-        $this->needNotifyErrors = true;
+        $this->needNotifyErrors = false;
         $this->logChannel = Log::channel('custom_imports_log');
         $this->botId = (string) config('services.telegram-bot-api.channel_id_for_scheduler');
         $this->CRONProcessService = new CRONProcessService();

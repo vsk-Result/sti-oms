@@ -301,6 +301,15 @@
                         </div>
 
                         <div class="menu-item">
+                            <a class="menu-link py-2 {{ request()->is('pivots/all-debts*') ? 'active' : '' }}" href="{{ route('pivots.all_debts.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Отчет по долгам</span>
+                            </a>
+                        </div>
+
+                        <div class="menu-item">
                             <a class="menu-link py-2 {{ request()->is('pivots/organization-debts*') ? 'active' : '' }}" href="{{ route('pivots.organization_debts.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Debt\DebtExportController;
 use App\Http\Controllers\Pivot\Balance\BalanceController;
 use App\Http\Controllers\Pivot\Debt\DebtController;
 use App\Http\Controllers\Pivot\Debt\ExportController;
@@ -48,6 +49,10 @@ Route::get('pivots/dt-sti', [DTSTIController::class, 'index'])->name('pivots.dts
 
 // Экспорт сводной по долгам ДТ - СТИ
 Route::post('pivots/dt-sti/export', [DTSTIExportController::class, 'store'])->name('pivots.dtsti.exports.store');
+
+// Отчет по долгам
+Route::get('pivots/all-debts', [DebtController::class, 'getView'])->name('pivots.all_debts.index');
+Route::post('pivots/all-debts/export', [DebtExportController::class, 'store'])->name('pivots.all_debts.export');
 
 // Отчет по CASH FLOW
 Route::get('pivots/cash-flow', [CashFlowController::class, 'index'])->name('pivots.cash_flow.index');

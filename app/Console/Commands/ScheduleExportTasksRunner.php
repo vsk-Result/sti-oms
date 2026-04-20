@@ -47,7 +47,7 @@ class ScheduleExportTasksRunner extends HandledCommand
 
             $filename = $taskToRun->filepath . '/' . $taskToRun->id . '___' . $taskToRun->filename;
 
-            Excel::store(new $taskToRun->model($data), $filename);
+            Excel::store(new $taskToRun->model($data), 'public/' . $filename);
         } catch(Exception $e){
             $taskToRun->update([
                 'status_id' => ScheduleExport::STATUS_CANCELED

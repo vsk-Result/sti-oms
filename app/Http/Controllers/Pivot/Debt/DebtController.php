@@ -21,4 +21,9 @@ class DebtController extends Controller
         $pivot = $this->debtService->getPivot();
         return view('pivots.debts.index', compact('pivot'));
     }
+
+    public function getView(): View
+    {
+        return view('pivots.debts.view');
+    }
 }
