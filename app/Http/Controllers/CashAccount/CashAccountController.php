@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CashAccount;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
+use App\Models\CashAccount\CashAccountPayment;
 use App\Models\Object\BObject;
 use App\Models\User;
 use App\Services\CashAccount\CashAccountService;
@@ -21,6 +22,9 @@ class CashAccountController extends Controller
 
     public function index(): View
     {
+        if (auth()->id() === 1) {
+            dd(CashAccountPayment::where('additional_data', 'LIKE', '%298485%')->get());
+        }
         $responsibleCashAccounts = $this->cashAccountService->getResponsibleCashAccounts();
         $sharedCashAccounts = $this->cashAccountService->getSharedCashAccounts();
         $archivedCashAccounts = $this->cashAccountService->getArchivedCashAccounts();
