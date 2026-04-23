@@ -102,7 +102,7 @@ class HandledCommand extends Command
         $this->CRONProcessService->failedProcess($this->signature, $errorMessage);
 
         if ($this->needNotifyErrors) {
-            Notification::send([$this->botId], new SchedulerExecuted($this->signature, '🛑', $errorMessage));
+//            Notification::send([$this->botId], new SchedulerExecuted($this->signature, '🛑', $errorMessage));
         }
     }
 
