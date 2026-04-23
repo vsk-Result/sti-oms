@@ -31,7 +31,7 @@ class UpdatePaymentNDSFromDescription extends HandledCommand
 
         $this->sendInfoMessage('Старт обновления суммы без ндс оплат');
 
-        $payments = Payment::whereBetween('date', ['2025-01-01', '2026-01-31'])
+        $payments = Payment::whereBetween('date', ['2025-01-01', '2026-12-31'])
             ->where('payment_type_id', Payment::PAYMENT_TYPE_NON_CASH)
             ->get();
 
