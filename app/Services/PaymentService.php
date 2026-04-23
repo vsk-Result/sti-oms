@@ -537,6 +537,7 @@ class PaymentService
         if (
             ! str_contains($description, 'вт.ч.ндс')
             && ! str_contains($description, 'втомчислендс')
+            && ! str_contains($description, 'включаяндс')
         ) {
             return false;
         }
