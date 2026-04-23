@@ -51,6 +51,10 @@ class UpdatePaymentNDSFromDescription extends HandledCommand
                 }
 
                 if ($ndsPos === false) {
+                    $ndsPos = mb_strpos($description, 'включаяндс');
+                }
+
+                if ($ndsPos === false) {
                     $percent = $this->getNDS($payment->date);
                     $info[] = [
                         'payment' => $payment,
