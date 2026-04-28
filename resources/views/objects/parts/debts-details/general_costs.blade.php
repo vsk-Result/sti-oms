@@ -30,11 +30,11 @@
         </div>
     </div>
 
-    <div class="d-flex flex-row justify-content-between">
-        <strong>% от прихода заказчика</strong>
+    <div class="d-flex flex-row justify-content-between text-muted fs-8">
+        <strong>%</strong>
 
         <div class="d-flex flex-column align-items-end">
-            <span class="text-danger">{{ number_format($info['receive_customer'] != 0 ? (($info['general_nds'] ?? 0) / $info['receive_customer'] * 100) : 0) }}%</span>
+            <span class="">{{ abs(number_format($info['receive_customer'] != 0 ? (($info['general_nds'] ?? 0) / $info['receive_customer'] * 100) : 0, 2)) }}%</span>
         </div>
     </div>
 </div>
