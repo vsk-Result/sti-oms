@@ -43,7 +43,7 @@ class Export implements
         $sheet->setCellValue('D1', 'Отчетный период');
         $sheet->setCellValue('E1', 'Дата акта');
         $sheet->setCellValue('F1', 'Выполнено');
-        $sheet->setCellValue('J1', 'Аванс удержан');
+        $sheet->setCellValue('G1', 'Аванс удержан');
         $sheet->setCellValue('H1', 'Депозит удержан');
         $sheet->setCellValue('I1', 'К оплате');
         $sheet->setCellValue('J1', 'Дата планируемой оплаты');
