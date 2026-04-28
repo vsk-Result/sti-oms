@@ -453,7 +453,7 @@
                     </div>
                 @endcan
 
-                @if (auth()->id() === 1 || auth()->id() === 12)
+                @if (auth()->id() === 1 || auth()->id() === 12 || auth()->id() === 31)
                     <div class="menu-item">
                         <a href="{{ route('tax_split.index') }}" class="menu-link {{ request()->is('tax-split*') ? 'active' : '' }}">
                             <span class="menu-title">Разбивка налогов</span>
