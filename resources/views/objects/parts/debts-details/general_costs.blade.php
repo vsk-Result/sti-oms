@@ -34,7 +34,7 @@
         <strong>% от прихода заказчика</strong>
 
         <div class="d-flex flex-column align-items-end">
-            <span class="text-danger">{{ \App\Models\CurrencyExchangeRate::format($info['receive_customer'] != 0 ? (($info['general_nds'] ?? 0) / $info['receive_customer']) : 0, 'RUB') }}</span>
+            <span class="text-danger">{{ number_format($info['receive_customer'] != 0 ? (($info['general_nds'] ?? 0) / $info['receive_customer'] * 100) : 0) }}%</span>
         </div>
     </div>
 </div>
