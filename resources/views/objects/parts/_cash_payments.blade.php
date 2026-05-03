@@ -94,7 +94,9 @@
             <td>
                 <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $payment->object->name }}">{{ $payment->getObject() }}</span>
             </td>
-            <td>{{ $payment->code }}</td>
+            <td>
+                <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ \App\Models\KostCode::getTitleByCode($payment->code) }}">{{ $payment->code }}</span>
+            </td>
             <td>
                 @if ($payment->amount < 0)
                     @include('partials.check_organization', ['organizationName' => $payment->organizationReceiver?->name, 'organizationInn' => $payment->organizationReceiver?->inn])
