@@ -25,6 +25,6 @@ class ExportController extends Controller
         $object = BObject::find($request->get('object_id')[0]);
         $acts = $this->actService->filterActs($request->toArray(), $total, false);
 
-        return Excel::download(new Export($acts, $total), 'Справка актов объекта ' . $object->getName() . ' на ' . now()->format('d.m.Y') . '.xlsx');
+        return Excel::download(new Export($acts, $total, $object), 'Справка актов объекта ' . $object->getName() . ' на ' . now()->format('d.m.Y') . '.xlsx');
     }
 }

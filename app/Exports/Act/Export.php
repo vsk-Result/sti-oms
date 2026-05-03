@@ -2,6 +2,7 @@
 
 namespace App\Exports\Act;
 
+use App\Models\Object\BObject;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -19,11 +20,13 @@ class Export implements
 {
     private Collection $acts;
     private array $total;
+    private BObject $object;
 
-    public function __construct(Collection $acts, array $total)
+    public function __construct(Collection $acts, array $total, BObject $object)
     {
         $this->acts = $acts;
         $this->total = $total;
+        $this->object = $object;
     }
 
     public function title(): string
@@ -37,20 +40,27 @@ class Export implements
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
-        $sheet->setCellValue('A1', 'Договор');
-        $sheet->setCellValue('B1', 'Тип');
-        $sheet->setCellValue('C1', 'Номер акта');
-        $sheet->setCellValue('D1', 'Отчетный период');
-        $sheet->setCellValue('E1', 'Дата акта');
-        $sheet->setCellValue('F1', 'Выполнено');
-        $sheet->setCellValue('G1', 'Аванс удержан');
-        $sheet->setCellValue('H1', 'Депозит удержан');
-        $sheet->setCellValue('I1', 'К оплате');
-        $sheet->setCellValue('J1', 'Дата планируемой оплаты');
-        $sheet->setCellValue('K1', 'Оплачено');
-        $sheet->setCellValue('L1', 'Сумма неоплаченных работ');
+        $sheet->setCellValue('A2', 'Справка актов объекта ' . $this->object->getName() . ' на ' . now()->format('d.m.Y'));
+        $sheet->mergeCells('A2:L2');
+        $sheet->getStyle('A2:L2')->getFont()->setBold(true);
+        $sheet->getStyle('A2:L2')->getFont()->setName('Calibri')->setSize(16);
+        $sheet->getStyle('A2:L2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+        $sheet->getRowDimension(2)->setRowHeight(60);
 
-        $sheet->getRowDimension(1)->setRowHeight(35);
+        $sheet->setCellValue('A3', 'Договор');
+        $sheet->setCellValue('B3', 'Тип');
+        $sheet->setCellValue('C3', 'Номер акта');
+        $sheet->setCellValue('D3', 'Отчетный период');
+        $sheet->setCellValue('E3', 'Дата акта');
+        $sheet->setCellValue('F3', 'Выполнено');
+        $sheet->setCellValue('G3', 'Аванс удержан');
+        $sheet->setCellValue('H3', 'Депозит удержан');
+        $sheet->setCellValue('I3', 'К оплате');
+        $sheet->setCellValue('J3', 'Дата планируемой оплаты');
+        $sheet->setCellValue('K3', 'Оплачено');
+        $sheet->setCellValue('L3', 'Сумма неоплаченных работ');
+
+        $sheet->getRowDimension(3)->setRowHeight(35);
 
         $sheet->getColumnDimension('A')->setWidth(50);
         $sheet->getColumnDimension('B')->setWidth(35);
@@ -65,9 +75,9 @@ class Export implements
         $sheet->getColumnDimension('K')->setWidth(35);
         $sheet->getColumnDimension('L')->setWidth(35);
 
-        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+        $sheet->getStyle('A3:L3')->getFont()->setBold(true);
 
-        $row = 2;
+        $row = 4;
         foreach ($this->acts as $act) {
             $sheet->setCellValue('A' . $row, $act->contract->getFullName());
             $sheet->setCellValue('B' . $row, $act->amount_avans > 0 ? 'Фиксированный' : 'Целевой');
@@ -102,15 +112,15 @@ class Export implements
         $sheet->getStyle('A' . $row . ':L' . $row)->getFont()->setBold(true);
         $sheet->getRowDimension($row)->setRowHeight(30);
 
-        $sheet->getStyle('A1:L' . $row)->applyFromArray($THINStyleArray);
-        $sheet->getStyle('A2:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
-        $sheet->getStyle('B2:L' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('A1:L1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
-        $sheet->getStyle('F2:I' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
-        $sheet->getStyle('K2:L' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
-        $sheet->getStyle('E2:E' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
-        $sheet->getStyle('J2:J' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+        $sheet->getStyle('A3:L' . $row)->applyFromArray($THINStyleArray);
+        $sheet->getStyle('A4:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
+        $sheet->getStyle('B4:L' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('A3:L3')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
+        $sheet->getStyle('F4:I' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+        $sheet->getStyle('K4:L' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+        $sheet->getStyle('E4:E' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+        $sheet->getStyle('J4:J' . $row)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
 
-        $sheet->setAutoFilter('A1:L' . $row);
+        $sheet->setAutoFilter('A3:L' . $row);
     }
 }
