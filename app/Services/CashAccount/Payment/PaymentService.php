@@ -432,7 +432,7 @@ class PaymentService
 
     public function createCRMAvans(CashAccountPayment $payment, array $additionalData): CashAccountPayment
     {
-        if ($additionalData['crm_not_need_avans']) {
+        if (isset($additionalData['crm_not_need_avans'])) {
             $avansId = null;
         } else {
             $avans = new Avans;
@@ -471,7 +471,7 @@ class PaymentService
 
     public function updateCRMAvans(CashAccountPayment $payment, array $additionalData): CashAccountPayment
     {
-        if ($additionalData['crm_not_need_avans']) {
+        if (isset($additionalData['crm_not_need_avans'])) {
             $crmEmployee = Employee::find($additionalData['employee_id']);
             $currentAdditionalData = json_decode($payment->additional_data, true) ?? [];
 
