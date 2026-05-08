@@ -250,6 +250,16 @@
                                                 <a href="{{ route('cash_accounts.request_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_DECLINE }}" class="text-danger menu-link px-3">Отклонить</a>
                                             </div>
 
+                                            @if ($payment->audits->count() > 0)
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('cash_accounts.payments.history.index', $cashAccount) }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>
+                                                </div>
+                                            @else
+                                                <div class="menu-item px-3" style="cursor:default !important;">
+                                                    <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
+                                                </div>
+                                            @endif
+
                                             @if (auth()->user()->hasRole('super-admin'))
                                                 <div class="menu-item px-3">
                                                     <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
@@ -274,6 +284,16 @@
                                                 <a href="{{ route('cash_accounts.transfer_cash.update', [$cashAccount->id, $payment->id]) }}?status_id={{ \App\Models\CashAccount\CashAccountPayment::TRANSFER_STATUS_DECLINE }}" class="text-danger menu-link px-3">Отклонить</a>
                                             </div>
 
+                                            @if ($payment->audits->count() > 0)
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('cash_accounts.payments.history.index', $cashAccount) }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>
+                                                </div>
+                                            @else
+                                                <div class="menu-item px-3" style="cursor:default !important;">
+                                                    <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
+                                                </div>
+                                            @endif
+
                                             @if (auth()->user()->hasRole('super-admin'))
                                                 <div class="menu-item px-3">
                                                     <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">
@@ -297,6 +317,16 @@
                                             <div class="menu-item px-3">
                                                 <a href="javascript:void(0);" data-create-payment-url="{{ route('cash_accounts.payments.create', $cashAccount) }}?copy_payment_id={{ $payment->id }}" class="copy-payment menu-link px-3">Сделать копию</a>
                                             </div>
+
+                                            @if ($payment->audits->count() > 0)
+                                                <div class="menu-item px-3">
+                                                    <a href="{{ route('cash_accounts.payments.history.index', $cashAccount) }}?payment_id={{ $payment->id }}" class="menu-link px-3">История</a>
+                                                </div>
+                                            @else
+                                                <div class="menu-item px-3" style="cursor:default !important;">
+                                                    <span class="menu-link px-3 text-muted" style="cursor:default !important;">Истории нет</span>
+                                                </div>
+                                            @endif
 
                                             <div class="menu-item px-3">
                                                 <form action="{{ route('cash_accounts.payments.destroy', [$cashAccount, $payment]) }}" method="POST" class="hidden">

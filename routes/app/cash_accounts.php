@@ -7,6 +7,7 @@ use App\Http\Controllers\CashAccount\ClosePeriodController;
 use App\Http\Controllers\CashAccount\ClosePeriodExportController;
 use App\Http\Controllers\CashAccount\Payment\PaymentController;
 use App\Http\Controllers\CashAccount\Payment\ExportController;
+use App\Http\Controllers\CashAccount\Payment\HistoryController;
 use App\Http\Controllers\CashAccount\Payment\PaymentValidateController;
 
 // Закрыть период
@@ -35,6 +36,10 @@ Route::get('cash-accounts/{cashAccount}', [CashAccountController::class, 'show']
 Route::get('cash-accounts/{cashAccount}/edit', [CashAccountController::class, 'edit'])->name('cash_accounts.edit')->middleware('can:edit cash-accounts');
 Route::post('cash-accounts/{cashAccount}', [CashAccountController::class, 'update'])->name('cash_accounts.update')->middleware('can:edit cash-accounts');
 Route::delete('cash-accounts/{cashAccount}', [CashAccountController::class, 'destroy'])->name('cash_accounts.destroy')->middleware('can:edit cash-accounts');
+
+// История оплат
+
+Route::get('cash-accounts/{cashAccount}/payments/history', [HistoryController::class, 'index'])->name('cash_accounts.payments.history.index');
 
 // Экспорт оплат по кассам
 

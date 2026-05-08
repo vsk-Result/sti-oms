@@ -31,3 +31,8 @@ Breadcrumbs::for('cash_accounts.payments.index', function (BreadcrumbTrail $trai
     $trail->parent('cash_accounts.index');
     $trail->push('Записи кассы ' . $cashAccount->name, $route);
 });
+
+Breadcrumbs::for('cash_accounts.payments.history.index', function (BreadcrumbTrail $trail, CashAccount $cashAccount) {
+    $trail->parent('cash_accounts.payments.index', $cashAccount);
+    $trail->push('История оплат');
+});
