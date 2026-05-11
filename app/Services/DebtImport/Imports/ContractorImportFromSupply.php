@@ -105,6 +105,7 @@ class ContractorImportFromSupply extends BaseImport
                 $importInfo['data'][$object->id]['organizations'][$organization->id] = [
                     'organization_id' => $organization->id,
                     'organization_name' => $organization->name,
+                    'organization_inn' => $organization->inn,
                     'amount' => 0,
                     'guarantee' => 0,
                     'amount_without_nds' => 0,

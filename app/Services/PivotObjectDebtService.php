@@ -126,6 +126,7 @@ class PivotObjectDebtService
                         $info[$objId]['organizations'][$organizationData['organization_name']] = [
                             'organization_id' => $organizationData['organization_id'],
                             'organization_name' => $organizationData['organization_name'],
+                            'organization_inn' => $organizationData['organization_inn'] ?? '',
                             'unwork_avans' => 0,
                             'balance_contract' => 0,
                             'guarantee' => 0,
@@ -196,6 +197,7 @@ class PivotObjectDebtService
                     $total['organizations'][$organizationName] = [
                         'organization_id' => $organizationInfo['organization_id'],
                         'organization_name' => $organizationInfo['organization_name'],
+                        'organization_inn' => $organizationData['organization_inn'] ?? '',
                         'unwork_avans' => 0,
                         'balance_contract' => 0,
                         'guarantee' => 0,
@@ -321,6 +323,7 @@ class PivotObjectDebtService
             $info[$objectId]['organizations']['Комиссия'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия',
+                'organization_inn' => '',
                 'amount' => 0,
                 'amount_without_nds' => 0,
                 'avans' => -$komissiyaServiceAmount,
@@ -343,6 +346,7 @@ class PivotObjectDebtService
             $info[$objectId]['organizations']['Комиссия за БГ'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия за БГ',
+                'organization_inn' => '',
                 'avans' => -$komissiyaBGServiceAmount,
                 'amount' => 0,
                 'amount_without_nds' => 0,
@@ -365,6 +369,7 @@ class PivotObjectDebtService
             $info[$objectId]['organizations']['Комиссия за БГ (г/у)'] = [
                 'organization_id' => null,
                 'organization_name' => 'Комиссия за БГ (г/у)',
+                'organization_inn' => '',
                 'avans' => -$komissiyaBG_GU_ServiceAmount,
                 'amount' => 0,
                 'amount_without_nds' => 0,
@@ -387,6 +392,7 @@ class PivotObjectDebtService
             $info[$objectId]['organizations']['Консалтинг'] = [
                 'organization_id' => null,
                 'organization_name' => 'Консалтинг',
+                'organization_inn' => '',
                 'amount' => -$konsaltingServiceAmount,
                 'amount_without_nds' => -$konsaltingServiceAmount,
                 'total_amount' => -$konsaltingServiceAmount,
@@ -417,7 +423,7 @@ class PivotObjectDebtService
     private function getClearedDetails(array $details, bool $forView = false): array
     {
         $result = [];
-        $exceptKeys = ['organization_id', 'organization_name', 'details'];
+        $exceptKeys = ['organization_id', 'organization_name', 'organization_inn', 'details'];
 
         if ($forView) {
             $exceptKeys[] = 'balance_contract';

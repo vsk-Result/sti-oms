@@ -95,6 +95,7 @@ class ProviderImportFrom1C extends BaseImport
                 $importInfo['data'][$object->id]['organizations'][$organization->id] = [
                     'organization_id' => $organization->id,
                     'organization_name' => $organization->name,
+                    'organization_inn' => $organization->inn,
                     'amount' => 0,
                     'amount_fix' => 0,
                     'amount_float' => 0,

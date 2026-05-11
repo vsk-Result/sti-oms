@@ -158,7 +158,7 @@
                                 @forelse($contractorDebts['organizations'] as $organizationInfo)
                                     <tr>
                                         <td class="ps-2">
-                                            @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name']])
+                                            @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])
                                         </td>
                                         <td class="text-success text-end pe-2">
                                             {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['unwork_avans'], 'RUB', 0, true) }}
@@ -252,8 +252,7 @@
                             @forelse($providerDebts['organizations'] as $organizationInfo)
                                 <tr class="row-edit-debt-manual">
                                     <td class="ps-2">
-                                        @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name']])
-                                    </td>
+                                        @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])                                    </td>
                                     <td class="text-danger text-end">
                                         {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_fix']) }}
                                     </td>
@@ -417,8 +416,7 @@
                                 @forelse($serviceDebts['organizations'] as $organizationInfo)
                                     <tr>
                                         <td class="ps-2">
-                                            @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name']])
-                                        </td>
+                                            @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])                                        </td>
 
                                         @php
                                             $periodSum = array_sum($periodPivotData['data'][$organizationInfo['organization_name']] ?? []);
