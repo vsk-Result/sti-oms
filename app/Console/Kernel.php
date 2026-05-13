@@ -54,6 +54,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:update-transfer-costs')->twiceDaily(13, 18);
         $schedule->command('oms:update-cash-account-closed-periods')->twiceDaily(9, 16);
         $schedule->command('oms:update-payment-object-worktypeid-by-codes')->twiceDaily(9, 16);
+        $schedule->command('oms:import-warning-organizations-fines-data-from-excel')->dailyAt('21:00');
     }
 
     /**
