@@ -56,13 +56,13 @@
             }
         }
 
-        if (isset($organizationInn) && isset($organizationName) && $organizationInn != 0 && !empty($organizationInn)) {
-            $moreOrganizations = \App\Models\Organization::where('name', '!=', $organizationName)->where('inn', $organizationInn)->get();
-
-            if ($moreOrganizations->count() > 0) {
-                $hasMoreWithINN = true;
-            }
-        }
+//        if (isset($organizationInn) && isset($organizationName) && $organizationInn != 0 && !empty($organizationInn)) {
+//            $moreOrganizations = \App\Models\Organization::where('name', '!=', $organizationName)->where('inn', $organizationInn)->get();
+//
+//            if ($moreOrganizations->count() > 0) {
+//                $hasMoreWithINN = true;
+//            }
+//        }
     }
 @endphp
 
