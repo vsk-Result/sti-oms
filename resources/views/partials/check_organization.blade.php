@@ -18,6 +18,19 @@
                         $amount += $info['amount'];
                     }
                 }
+            } else {
+                if (isset($organizationName) && !empty($organizationName)) {
+                    $foundByName = array_search($organizationName, array_column($warningOrganizationsInfo, 'organizationName'));
+                    if ($foundByName !== false) {
+                        $warningInfo = $warningOrganizationsInfo[$foundByName];
+
+                        foreach ($warningOrganizationsInfo as $info) {
+                            if (!empty($info['organizationName']) && ($info['organizationName'] == $organizationName)) {
+                                $amount += $info['amount'];
+                            }
+                        }
+                    }
+                }
             }
         } elseif (isset($organizationName) && !empty($organizationName)) {
             $foundByName = array_search($organizationName, array_column($warningOrganizationsInfo, 'organizationName'));
@@ -40,6 +53,19 @@
                 foreach ($warningOrganizationsFineInfo as $info) {
                     if (!empty($info['inn']) && $info['inn'] == $organizationInn) {
                         $amount += $info['amount'];
+                    }
+                }
+            } else {
+                if (isset($organizationName) && !empty($organizationName)) {
+                    $foundByName = array_search($organizationName, array_column($warningOrganizationsFineInfo, 'organizationName'));
+                    if ($foundByName !== false) {
+                        $warningFineInfo = $warningOrganizationsFineInfo[$foundByName];
+
+                        foreach ($warningOrganizationsFineInfo as $info) {
+                            if (!empty($info['organizationName']) && ($info['organizationName'] == $organizationName)) {
+                                $amount += $info['amount'];
+                            }
+                        }
                     }
                 }
             }
