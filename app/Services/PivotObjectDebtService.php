@@ -39,6 +39,7 @@ class PivotObjectDebtService
         }
 
         $warningOrganizationsFineInfo = Cache::get('warning_organizations_fine_data', []);
+        $organizationFineExist = [];
 
 
         foreach ($objectIds as $objId) {
@@ -165,23 +166,27 @@ class PivotObjectDebtService
                     $organizationInn = $organizationData['organization_inn'] ?? '';
 
                     $foundByInn = array_search($organizationInn, array_column($warningOrganizationsFineInfo, 'inn'));
-                    if ($foundByInn !== false && !empty($organizationInn)) {
+                    if ($foundByInn !== false && !empty($organizationInn) && !in_array($organizationInn, $organizationFineExist)) {
                         foreach ($warningOrganizationsFineInfo as $inf) {
                             if (!empty($inf['inn']) && $inf['inn'] == $organizationInn) {
                                 $info[$objId]['organizations'][$organizationData['organization_name']]['fines'] += -$inf['amount'];
                                 $info[$objId]['total']['fines'] += -$inf['amount'];
                             }
                         }
+
+                        $organizationFineExist[] = $organizationInn;
                     } else {
                         $foundFineByName = array_search($organizationData['organization_name'], array_column($warningOrganizationsFineInfo, 'organizationName'));
 
-                        if ($foundFineByName !== false && !empty($organizationData['organization_name'])) {
+                        if ($foundFineByName !== false && !empty($organizationData['organization_name']) && !in_array($organizationInn, $organizationFineExist)) {
                             foreach ($warningOrganizationsFineInfo as $inf) {
                                 if (!empty($inf['organizationName']) && ($inf['organizationName'] == $organizationData['organization_name'])) {
                                     $info[$objId]['organizations'][$organizationData['organization_name']]['fines'] += -$inf['amount'];
                                     $info[$objId]['total']['fines'] += -$inf['amount'];
                                 }
                             }
+
+                            $organizationFineExist[] = $organizationData['organization_name'];
                         }
                     }
                 }
