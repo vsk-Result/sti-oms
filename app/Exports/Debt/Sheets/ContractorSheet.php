@@ -47,6 +47,7 @@ class ContractorSheet implements
         $sheet->setCellValue('F1', 'Гарантийное удержание');
         $sheet->setCellValue('G1', 'ГУ срок наступил');
         $sheet->setCellValue('H1', 'Остаток оплаты по договору');
+        $sheet->setCellValue('I1', 'Штрафные санкции');
 
         $sheet->getColumnDimension('A')->setWidth(50);
         $sheet->getColumnDimension('B')->setWidth(20);
@@ -56,8 +57,9 @@ class ContractorSheet implements
         $sheet->getColumnDimension('F')->setWidth(18);
         $sheet->getColumnDimension('G')->setWidth(18);
         $sheet->getColumnDimension('H')->setWidth(18);
+        $sheet->getColumnDimension('I')->setWidth(18);
 
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
 
 //        if(! auth()->user()->hasRole('finance-object-user-mini')) {
 //
@@ -75,16 +77,17 @@ class ContractorSheet implements
             $sheet->setCellValue('F' . $row, $organizationData['guarantee']);
             $sheet->setCellValue('G' . $row, $organizationData['guarantee_deadline']);
             $sheet->setCellValue('H' . $row, $organizationData['balance_contract']);
+            $sheet->setCellValue('I' . $row, $organizationData['fines']);
 
             $sheet->getRowDimension($row)->setRowHeight(40);
             $row++;
         }
         $row--;
 
-        $sheet->getStyle('A1:H' . $row)->applyFromArray($THINStyleArray);
-        $sheet->getStyle('A1:H1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
+        $sheet->getStyle('A1:I' . $row)->applyFromArray($THINStyleArray);
+        $sheet->getStyle('A1:I1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
-        $sheet->getStyle('C2:H' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
-        $sheet->getStyle('C2:H' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+        $sheet->getStyle('C2:I' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('C2:I' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }

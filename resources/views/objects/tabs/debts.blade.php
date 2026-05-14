@@ -116,6 +116,7 @@
                             <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2">Контрагент</th>
+                                    <th class="w-150px text-end">Штрафы</th>
                                     <th class="w-150px text-end">Неотр. аванс</th>
                                     <th class="w-150px text-end">ГУ</th>
                                     <th class="w-150px text-end">в т.ч. ГУ срок наступил</th>
@@ -132,6 +133,9 @@
                                 </tr>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="ps-2 hl">ИТОГО</th>
+                                    <th class="w-150px text-end hl text-danger">
+                                        {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['fines']) }}
+                                    </th>
                                     <th class="w-150px text-end hl text-success">
                                         {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['unwork_avans']) }}
                                     </th>
@@ -159,6 +163,9 @@
                                     <tr>
                                         <td class="ps-2">
                                             @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])
+                                        </td>
+                                        <td class="text-danger text-end pe-2">
+                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['fines'], 'RUB', 0, true) }}
                                         </td>
                                         <td class="text-success text-end pe-2">
                                             {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['unwork_avans'], 'RUB', 0, true) }}
@@ -194,7 +201,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6">
+                                        <td colspan="7">
                                             <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
                                                 Долги отсутствуют
                                             </p>

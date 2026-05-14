@@ -7,6 +7,7 @@ use App\Models\PivotObjectDebt;
 use App\Models\Status;
 use App\Models\TaxPlanItem;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class PivotObjectDebtService
 {
@@ -37,6 +38,9 @@ class PivotObjectDebtService
             $objectIds = BObject::where('status_id', Status::STATUS_BLOCKED)->pluck('id')->toArray();
         }
 
+        $warningOrganizationsFineInfo = Cache::get('warning_organizations_fine_data', []);
+
+
         foreach ($objectIds as $objId) {
             $info[$objId] = [
                 'sources' => [],
@@ -52,6 +56,7 @@ class PivotObjectDebtService
                     'balance_contract' => 0,
                     'total_amount' => 0,
                     'total_amount_without_nds' => 0,
+                    'fines' => 0,
                 ],
                 'organizations' => [],
             ];
@@ -107,6 +112,7 @@ class PivotObjectDebtService
                         'balance_contract' => 0,
                         'total_amount' => 0,
                         'total_amount_without_nds' => 0,
+                        'fines' => 0,
                     ];
                     $info[$objId]['organizations'] = [];
                 }
@@ -138,6 +144,7 @@ class PivotObjectDebtService
                             'amount_without_nds' => 0,
                             'total_amount' => 0,
                             'total_amount_without_nds' => 0,
+                            'fines' => 0,
                             'details' => []
                         ];
                     }
@@ -154,6 +161,29 @@ class PivotObjectDebtService
                     $info[$objId]['organizations'][$organizationData['organization_name']]['total_amount'] += ($organizationData['amount'] ?? 0) + ($organizationData['avans'] ?? 0);
                     $info[$objId]['organizations'][$organizationData['organization_name']]['total_amount_without_nds'] += ($organizationData['amount_without_nds'] ?? 0) + ($organizationData['avans'] ?? 0);
                     $info[$objId]['organizations'][$organizationData['organization_name']]['details'] = array_merge($info[$objId]['organizations'][$organizationData['organization_name']]['details'], $organizationData['details'] ?? []);
+
+                    $organizationInn = $organizationData['organization_inn'] ?? '';
+
+                    $foundByInn = array_search($organizationInn, array_column($warningOrganizationsFineInfo, 'inn'));
+                    if ($foundByInn !== false && !empty($organizationInn)) {
+                        foreach ($warningOrganizationsFineInfo as $inf) {
+                            if (!empty($inf['inn']) && $inf['inn'] == $organizationInn) {
+                                $info[$objId]['organizations'][$organizationData['organization_name']]['fines'] += -$inf['amount'];
+                                $info[$objId]['total']['fines'] += -$inf['amount'];
+                            }
+                        }
+                    } else {
+                        $foundFineByName = array_search($organizationData['organization_name'], array_column($warningOrganizationsFineInfo, 'organizationName'));
+
+                        if ($foundFineByName !== false && !empty($organizationData['organization_name'])) {
+                            foreach ($warningOrganizationsFineInfo as $inf) {
+                                if (!empty($inf['organizationName']) && ($inf['organizationName'] == $organizationData['organization_name'])) {
+                                    $info[$objId]['organizations'][$organizationData['organization_name']]['fines'] += -$inf['amount'];
+                                    $info[$objId]['total']['fines'] += -$inf['amount'];
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -181,6 +211,7 @@ class PivotObjectDebtService
                 'balance_contract' => 0,
                 'total_amount' => 0,
                 'total_amount_without_nds' => 0,
+                'fines' => 0,
             ],
             'organizations' => [],
         ];
@@ -209,6 +240,7 @@ class PivotObjectDebtService
                         'amount_without_nds' => 0,
                         'total_amount' => 0,
                         'total_amount_without_nds' => 0,
+                        'fines' => 0,
                         'details' => [],
                     ];
                 }
@@ -224,6 +256,7 @@ class PivotObjectDebtService
                 $total['organizations'][$organizationName]['balance_contract'] += $organizationInfo['balance_contract'] ?? 0;
                 $total['organizations'][$organizationName]['total_amount'] += ($organizationInfo['amount'] ?? 0) + ($organizationInfo['avans'] ?? 0);
                 $total['organizations'][$organizationName]['total_amount_without_nds'] += ($organizationInfo['amount_without_nds'] ?? 0) + ($organizationInfo['avans'] ?? 0);
+                $total['organizations'][$organizationName]['fines'] += $organizationInfo['fines'] ?? 0;
                 $total['organizations'][$organizationName]['details'] = array_merge($total['organizations'][$organizationName]['details'], $organizationInfo['details'] ?? []);
             }
         }
