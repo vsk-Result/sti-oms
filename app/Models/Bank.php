@@ -155,6 +155,18 @@ class Bank
             'logo' => '/images/banks/sber.png',
             'visible' => true
         ],
+        [
+            'id' => 26,
+            'name' => 'БСПБ',
+            'logo' => '/images/banks/sber.png',
+            'visible' => true
+        ],
+        [
+            'id' => 27,
+            'name' => 'АКБ "ФОРА-БАНК"',
+            'logo' => '/images/banks/sber.png',
+            'visible' => true
+        ],
     ];
 
     public static function getBanks(): array
