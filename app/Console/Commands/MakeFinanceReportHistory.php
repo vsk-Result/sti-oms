@@ -415,6 +415,8 @@ class MakeFinanceReportHistory extends HandledCommand
                     }
 
                     if ($object->code === '360') {
+                        $dolgFactUderjannogoGU = $object->guaranteePayments->where('currency', 'RUB')->sum('fact_amount') - $object->guaranteePayments->where('currency', 'RUB')->sum('amount_payments');
+                        $dolgFactUderjannogoGUWithoutNDS = $dolgFactUderjannogoGU;
                         $ostatokPoDogovoruSZakazchikom = $dolgFactUderjannogoGU;
                         $ostatokPoDogovoruSZakazchikomWithoutNDS = $dolgFactUderjannogoGUWithoutNDS;
                     }
