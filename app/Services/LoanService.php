@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class LoanService
 {
-    public $objectLoansForCumchatka = ['МАПК(Е) АО'];
+    public array $objectLoansForCumchatka = ['МАПК(Е) АО'];
 
     private Sanitizer $sanitizer;
 
@@ -43,7 +43,8 @@ class LoanService
             $query->whereIn('organization_id', $requestData['organization_id']);
         }
 
-        $query->whereNotIn('name', $this->objectLoansForCumchatka);
+        $objectOrganizations = Organization::whereIn('name', $this->objectLoansForCumchatka)->pluck('id')->toArray();
+        $query->whereNotIn('organization_id', $objectOrganizations);
 
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
