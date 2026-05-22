@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 class LoanService
 {
+    public $objectLoansForCumchatka = ['МАПК(Е) АО'];
+
     private Sanitizer $sanitizer;
 
     public function __construct(Sanitizer $sanitizer)
@@ -39,6 +41,10 @@ class LoanService
 
         if (! empty($requestData['organization_id'])) {
             $query->whereIn('organization_id', $requestData['organization_id']);
+        }
+
+        foreach ($this->objectLoansForCumchatka as $names) {
+            $query->whereNotIn('name', $names);
         }
 
         $perPage = 30;
