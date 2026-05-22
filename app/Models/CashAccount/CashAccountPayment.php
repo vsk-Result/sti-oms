@@ -149,11 +149,11 @@ class CashAccountPayment extends Model implements Audit, HasMedia
         $crmApartmentData = $this->getCrmApartmentData();
         $itrData = $this->getItrData();
 
-        if (! is_null($crmAvansData['employee_name']) && $this->code === '7.8.2') {
+        if (! is_null($crmAvansData['employee_name']) && $this->code === '7.8.2' && !$crmAvansData['crm_not_need_avans']) {
             $description .= ', выплата аванса ' . $crmAvansData['employee_name'] . ' за ' . $crmAvansData['date'];
         }
 
-        if (! is_null($crmAvansData['employee_name']) && $this->code === '7.9.2') {
+        if (! is_null($crmAvansData['employee_name']) && $this->code === '7.9.2' && !$crmAvansData['crm_not_need_avans']) {
             $description .= ', выплата зарплаты ' . $crmAvansData['employee_name'] . ' за ' . $crmAvansData['date'];
         }
 
