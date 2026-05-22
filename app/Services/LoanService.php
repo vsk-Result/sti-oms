@@ -43,9 +43,7 @@ class LoanService
             $query->whereIn('organization_id', $requestData['organization_id']);
         }
 
-        foreach ($this->objectLoansForCumchatka as $names) {
-            $query->whereNotIn('name', $names);
-        }
+        $query->whereNotIn('name', $this->objectLoansForCumchatka);
 
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
