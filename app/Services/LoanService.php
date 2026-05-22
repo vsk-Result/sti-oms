@@ -39,6 +39,14 @@ class LoanService
             $query->whereIn('company_id', $requestData['company_id']);
         }
 
+        if (isset($requestData['only_object_organizations'])) {
+            $objectOrganizations = Organization::whereIn('name', $this->objectLoansForCumchatka)->pluck('id')->toArray();
+            $query->whereIn('organization_id', $objectOrganizations);
+        } else {
+            $objectOrganizations = Organization::whereIn('name', $this->objectLoansForCumchatka)->pluck('id')->toArray();
+            $query->whereNotIn('organization_id', $objectOrganizations);
+        }
+
         if (! empty($requestData['organization_id'])) {
             $query->whereIn('organization_id', $requestData['organization_id']);
         }

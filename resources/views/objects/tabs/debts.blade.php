@@ -57,429 +57,456 @@
 
     <div class="row g-6 g-xl-9">
         <div class="col-lg-12">
-            <div class="card card-flush h-lg-100">
-                <div class="card-header mt-6 align-items-baseline">
-                    <div class="card-title">
-                        <div class="d-flex flex-column">
-                            <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
-                            @if(! auth()->user()->hasRole('finance-object-user-mini'))
-                                <a class="btn btn-sm btn-light-primary mt-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal">
-                                    Обновить
-                                </a>
-                            @endif
-                        </div>
-                    </div>
+            <div class="mb-5">
+                <div class="d-grid">
+                    <ul class="nav nav-tabs flex-nowrap text-nowrap border-0">
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary active" data-bs-toggle="tab" href="#contractors">Подрядчики</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary" data-bs-toggle="tab" href="#providers">Поставщики</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary" data-bs-toggle="tab" href="#service">Услуги</a>
+                        </li>
 
-                    <div class="card-toolbar">
-                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['total_amount']) }}
+                        @if ($object->code === '363')
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-active-light btn-color-gray-600 btn-active-color-primary" data-bs-toggle="tab" href="#customers">Заказчики</a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="contractors" role="tabpanel">
+                    <div class="card card-flush h-lg-100">
+                        <div class="card-header mt-6 align-items-baseline">
+                            <div class="card-title">
+                                <div class="d-flex flex-column">
+                                    <h3 class="fw-bolder mb-1">Долг подрядчикам</h3>
+                                    @if(! auth()->user()->hasRole('finance-object-user-mini'))
+                                        <a class="btn btn-sm btn-light-primary mt-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#debtUploadManualModal">
+                                            Обновить
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+
+                            <div class="card-toolbar">
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="fs-4 fw-bolder text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['total_amount']) }}
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="card-body p-9 pt-0">
-                    @php
-                        $periodPivotData = [
-                            'dates' => [],
-                            'data' => [],
-                        ];
+                        <div class="card-body p-9 pt-0">
+                            @php
+                                $periodPivotData = [
+                                    'dates' => [],
+                                    'data' => [],
+                                ];
 
-                        foreach ($contractorDebts['organizations'] as $organizationInfo) {
-                            foreach ($organizationInfo['details'] as $detail) {
-                                $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
+                                foreach ($contractorDebts['organizations'] as $organizationInfo) {
+                                    foreach ($organizationInfo['details'] as $detail) {
+                                        $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
 
-                                if (! isset($periodPivotData['data'][$organizationInfo['organization_name']][$date])) {
-                                    $periodPivotData['data'][$organizationInfo['organization_name']][$date] = 0;
+                                        if (! isset($periodPivotData['data'][$organizationInfo['organization_name']][$date])) {
+                                            $periodPivotData['data'][$organizationInfo['organization_name']][$date] = 0;
+                                        }
+
+                                        $periodPivotData['data'][$organizationInfo['organization_name']][$date] += $detail['amount'];
+
+                                        if (! in_array($date, $periodPivotData['dates'])) {
+                                            $periodPivotData['dates'][] = $date;
+                                        }
+                                    }
                                 }
 
-                                $periodPivotData['data'][$organizationInfo['organization_name']][$date] += $detail['amount'];
+                                $sortedDates = $periodPivotData['dates'];
+                                asort($sortedDates);
 
-                                if (! in_array($date, $periodPivotData['dates'])) {
-                                    $periodPivotData['dates'][] = $date;
-                                }
-                            }
-                        }
+                                $periodPivotData['dates'] = $sortedDates;
+                            @endphp
 
-                        $sortedDates = $periodPivotData['dates'];
-                        asort($sortedDates);
+                            <div class="table-responsive freeze-table">
+                                <table class="table table-hover align-middle table-row-dashed fs-6">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2">Контрагент</th>
+                                        <th class="w-150px text-end">Штрафы</th>
+                                        <th class="w-150px text-end">Неотр. аванс</th>
+                                        <th class="w-150px text-end">ГУ</th>
+                                        <th class="w-150px text-end">в т.ч. ГУ срок наступил</th>
+                                        <th class="w-150px text-end pe-2">Авансы к оплате</th>
+                                        <th class="w-175px text-end">Долг за СМР</th>
 
-                        $periodPivotData['dates'] = $sortedDates;
-                    @endphp
-
-                    <div class="table-responsive freeze-table">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2">Контрагент</th>
-                                    <th class="w-150px text-end">Штрафы</th>
-                                    <th class="w-150px text-end">Неотр. аванс</th>
-                                    <th class="w-150px text-end">ГУ</th>
-                                    <th class="w-150px text-end">в т.ч. ГУ срок наступил</th>
-                                    <th class="w-150px text-end pe-2">Авансы к оплате</th>
-                                    <th class="w-175px text-end">Долг за СМР</th>
-
-                                    @if (count($periodPivotData['dates']) > 0)
-                                        <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="contractors-periods">+</th>
-                                    @endif
-
-                                    @foreach($periodPivotData['dates'] as $date)
-                                        <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="contractors-periods" style="display: none;">{{ translate_year_month($date) }}</th>
-                                    @endforeach
-                                </tr>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2 hl">ИТОГО</th>
-                                    <th class="w-150px text-end hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['fines']) }}
-                                    </th>
-                                    <th class="w-150px text-end hl text-success">
-                                        {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['unwork_avans']) }}
-                                    </th>
-                                    <th class="w-150px text-end hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['guarantee']) }}
-                                    </th>
-                                    <th class="w-150px text-end hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['guarantee_deadline']) }}
-                                    </th>
-                                    <th class="w-150px text-end pe-2 hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['avans']) }}
-                                    </th>
-                                    <th class="w-175px text-end hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['amount']) }}
-                                    </th>
-                                    <th></th>
-
-                                    @foreach($periodPivotData['dates'] as $date)
-                                        <th class="collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="contractors-periods" style="display: none;"></th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                                @forelse($contractorDebts['organizations'] as $organizationInfo)
-                                    <tr>
-                                        <td class="ps-2">
-                                            @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])
-                                        </td>
-                                        <td class="text-danger text-end pe-2">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['fines'], 'RUB', 0, true) }}
-                                        </td>
-                                        <td class="text-success text-end pe-2">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['unwork_avans'], 'RUB', 0, true) }}
-                                        </td>
-                                        <td class="text-danger text-end pe-2">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['guarantee'], 'RUB', 0, true) }}
-                                        </td>
-                                        <td class="text-danger text-end pe-2">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['guarantee_deadline'], 'RUB', 0, true) }}
-                                        </td>
-                                        <td class="text-danger text-end pe-2">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['avans'], 'RUB', 0, true) }}
-                                        </td>
-
-                                        @php
-                                            $periodSum = array_sum($periodPivotData['data'][$organizationInfo['organization_name']] ?? []);
-                                        @endphp
-                                        <td class="text-danger text-end pe-2 {{ $periodSum !== 0 && $periodSum != $organizationInfo['amount'] ? 'period-warning' : '' }}">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount'], 'RUB', 0, true) }}
-                                        </td>
-
-                                        <td></td>
+                                        @if (count($periodPivotData['dates']) > 0)
+                                            <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="contractors-periods">+</th>
+                                        @endif
 
                                         @foreach($periodPivotData['dates'] as $date)
-                                            <td
-                                                    class="text-danger text-end pe-2 collapse-col period {{ $loop->last ? 'pe-2' : '' }}"
-                                                    data-trigger="contractors-periods"
-                                                    style="display: none;"
-                                            >
-                                                {{ \App\Models\CurrencyExchangeRate::format($periodPivotData['data'][$organizationInfo['organization_name']][$date] ?? 0, 'RUB', 0, true) }}
-                                            </td>
+                                            <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="contractors-periods" style="display: none;">{{ translate_year_month($date) }}</th>
                                         @endforeach
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7">
-                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                                Долги отсутствуют
-                                            </p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @if(! auth()->user()->hasRole('finance-object-user-mini'))
-
-        <div class="col-lg-12">
-            <div class="card card-flush h-lg-100">
-                <div class="card-header mt-6">
-                    <div class="card-title flex-column">
-                        <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
-                    </div>
-
-                    <div class="card-toolbar">
-                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount']) }}
-                                </div>
-                            </div>
-                            <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-body p-9 pt-0">
-                    <div class="table-responsive freeze-table">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="ps-2">Контрагент</th>
-                                <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
-                                <th class="w-175px pe-2 text-end">Сумма (изм)</th>
-                            </tr>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="ps-2 hl">ИТОГО</th>
-                                <th class="w-175px pe-2 text-end hl text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_fix']) }}
-                                </th>
-                                <th class="w-175px pe-2 text-end hl text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_float']) }}
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                            @forelse($providerDebts['organizations'] as $organizationInfo)
-                                <tr class="row-edit-debt-manual">
-                                    <td class="ps-2">
-                                        @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])                                    </td>
-                                    <td class="text-danger text-end">
-                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_fix']) }}
-                                    </td>
-                                    <td class="text-danger text-end">
-                                        {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_float']) }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3">
-                                        <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                            Долги отсутствуют
-                                        </p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-12">
-            <div class="card card-flush h-lg-100">
-                <div class="card-header mt-6 align-items-baseline">
-                    <div class="card-title">
-                        <div class="d-flex flex-column">
-                            <h3 class="fw-bolder mb-1">Долг за услуги</h3>
-                        </div>
-                    </div>
-
-                    <div class="card-toolbar">
-                        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="fs-4 fw-bolder text-danger">
-                                    {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['total_amount']) }}
-                                </div>
-                            </div>
-                            <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-body p-9 pt-0">
-                    @php
-                        $periodPivotData = [
-                            'dates' => [],
-                            'data' => [],
-                        ];
-
-                        foreach ($serviceDebts['organizations'] as $organizationInfo) {
-                            foreach ($organizationInfo['details'] as $detail) {
-                                if ($detail['type'] !== 'amount') {
-                                    continue;
-                                }
-
-                                $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
-
-                                if (! isset($periodPivotData['data'][$organizationInfo['organization_name']][$date])) {
-                                    $periodPivotData['data'][$organizationInfo['organization_name']][$date] = 0;
-                                }
-
-                                $periodPivotData['data'][$organizationInfo['organization_name']][$date] += $detail['amount'];
-
-                                if (! in_array($date, $periodPivotData['dates'])) {
-                                    $periodPivotData['dates'][] = $date;
-                                }
-                            }
-                        }
-
-                        $sortedDates = $periodPivotData['dates'];
-                        asort($sortedDates);
-
-                        $periodPivotData['dates'] = $sortedDates;
-                    @endphp
-
-                    @php
-                        $periodPivotAvansData = [
-                            'dates' => [],
-                            'data' => [],
-                        ];
-
-                        foreach ($serviceDebts['organizations'] as $organizationInfo) {
-                            foreach ($organizationInfo['details'] as $detail) {
-                                if ($detail['type'] !== 'avans') {
-                                    continue;
-                                }
-
-                                $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
-
-                                if (! isset($periodPivotAvansData['data'][$organizationInfo['organization_name']][$date])) {
-                                    $periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] = 0;
-                                }
-
-                                $periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] += $detail['amount'];
-
-                                if (! in_array($date, $periodPivotAvansData['dates'])) {
-                                    $periodPivotAvansData['dates'][] = $date;
-                                }
-                            }
-                        }
-
-                        $sortedDates = $periodPivotAvansData['dates'];
-                        asort($sortedDates);
-
-                        $periodPivotAvansData['dates'] = $sortedDates;
-                    @endphp
-
-                    <div class="table-responsive freeze-table">
-                        <table class="table table-hover align-middle table-row-dashed fs-6">
-                            <thead>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2">Контрагент</th>
-                                    <th class="w-175px text-end">Аванс к оплате</th>
-
-                                    @if (count($periodPivotAvansData['dates']) > 0)
-                                        <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-avans-periods">+</th>
-                                    @endif
-
-                                    @foreach($periodPivotAvansData['dates'] as $date)
-                                        <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-avans-periods" style="display: none;">{{ translate_year_month($date) }}</th>
-                                    @endforeach
-
-                                    <th class="w-175px text-end pe-2">Долг за оказанные услуги</th>
-
-                                    @if (count($periodPivotData['dates']) > 0)
-                                        <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-periods">+</th>
-                                    @endif
-
-                                    @foreach($periodPivotData['dates'] as $date)
-                                        <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-periods" style="display: none;">{{ translate_year_month($date) }}</th>
-                                    @endforeach
-                                </tr>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="ps-2 hl">ИТОГО</th>
-                                    <th class="w-175px text-end hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['avans']) }}
-                                    </th>
-
-                                    @if (count($periodPivotAvansData['dates']) > 0)
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2 hl">ИТОГО</th>
+                                        <th class="w-150px text-end hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['fines']) }}
+                                        </th>
+                                        <th class="w-150px text-end hl text-success">
+                                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['unwork_avans']) }}
+                                        </th>
+                                        <th class="w-150px text-end hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['guarantee']) }}
+                                        </th>
+                                        <th class="w-150px text-end hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['guarantee_deadline']) }}
+                                        </th>
+                                        <th class="w-150px text-end pe-2 hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['avans']) }}
+                                        </th>
+                                        <th class="w-175px text-end hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['amount']) }}
+                                        </th>
                                         <th></th>
-                                    @endif
 
-                                    @foreach($periodPivotAvansData['dates'] as $date)
-                                        <th class="collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-avans-periods" style="display: none;"></th>
-                                    @endforeach
+                                        @foreach($periodPivotData['dates'] as $date)
+                                            <th class="collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="contractors-periods" style="display: none;"></th>
+                                        @endforeach
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-gray-600 fw-bold">
+                                    @forelse($contractorDebts['organizations'] as $organizationInfo)
+                                        <tr>
+                                            <td class="ps-2">
+                                                @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])
+                                            </td>
+                                            <td class="text-danger text-end pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['fines'], 'RUB', 0, true) }}
+                                            </td>
+                                            <td class="text-success text-end pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['unwork_avans'], 'RUB', 0, true) }}
+                                            </td>
+                                            <td class="text-danger text-end pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['guarantee'], 'RUB', 0, true) }}
+                                            </td>
+                                            <td class="text-danger text-end pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['guarantee_deadline'], 'RUB', 0, true) }}
+                                            </td>
+                                            <td class="text-danger text-end pe-2">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['avans'], 'RUB', 0, true) }}
+                                            </td>
 
-                                    <th class="w-175px text-end pe-2 hl text-danger">
-                                        {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
-                                    </th>
+                                            @php
+                                                $periodSum = array_sum($periodPivotData['data'][$organizationInfo['organization_name']] ?? []);
+                                            @endphp
+                                            <td class="text-danger text-end pe-2 {{ $periodSum !== 0 && $periodSum != $organizationInfo['amount'] ? 'period-warning' : '' }}">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount'], 'RUB', 0, true) }}
+                                            </td>
 
-                                    <th></th>
+                                            <td></td>
 
-                                    @foreach($periodPivotData['dates'] as $date)
-                                        <th class="collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-periods" style="display: none;"></th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                                @forelse($serviceDebts['organizations'] as $organizationInfo)
-                                    <tr>
-                                        <td class="ps-2">
-                                            @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])                                        </td>
+                                            @foreach($periodPivotData['dates'] as $date)
+                                                <td
+                                                        class="text-danger text-end pe-2 collapse-col period {{ $loop->last ? 'pe-2' : '' }}"
+                                                        data-trigger="contractors-periods"
+                                                        style="display: none;"
+                                                >
+                                                    {{ \App\Models\CurrencyExchangeRate::format($periodPivotData['data'][$organizationInfo['organization_name']][$date] ?? 0, 'RUB', 0, true) }}
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7">
+                                                <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                    Долги отсутствуют
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="providers" role="tabpanel">
+                    <div class="card card-flush h-lg-100">
+                        <div class="card-header mt-6">
+                            <div class="card-title flex-column">
+                                <h3 class="fw-bolder mb-1">Долг поставщикам</h3>
+                            </div>
 
-                                        @php
-                                            $periodSum = array_sum($periodPivotData['data'][$organizationInfo['organization_name']] ?? []);
-                                            $periodAvansSum = array_sum($periodPivotAvansData['data'][$organizationInfo['organization_name']] ?? []);
-                                        @endphp
-                                        <td class="text-danger text-end {{ $periodAvansSum !== 0 && $periodAvansSum != $organizationInfo['avans'] ? 'period-warning' : '' }}">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['avans']) }}
-                                        </td>
+                            <div class="card-toolbar">
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="fs-4 fw-bolder text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount']) }}
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-9 pt-0">
+                            <div class="table-responsive freeze-table">
+                                <table class="table table-hover align-middle table-row-dashed fs-6">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2">Контрагент</th>
+                                        <th class="w-175px pe-2 text-end">Сумма (фикс)</th>
+                                        <th class="w-175px pe-2 text-end">Сумма (изм)</th>
+                                    </tr>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2 hl">ИТОГО</th>
+                                        <th class="w-175px pe-2 text-end hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_fix']) }}
+                                        </th>
+                                        <th class="w-175px pe-2 text-end hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($providerDebts['total']['amount_float']) }}
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-gray-600 fw-bold">
+                                    @forelse($providerDebts['organizations'] as $organizationInfo)
+                                        <tr class="row-edit-debt-manual">
+                                            <td class="ps-2">
+                                                @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])                                    </td>
+                                            <td class="text-danger text-end">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_fix']) }}
+                                            </td>
+                                            <td class="text-danger text-end">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount_float']) }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3">
+                                                <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                    Долги отсутствуют
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="service" role="tabpanel">
+                    <div class="card card-flush h-lg-100">
+                        <div class="card-header mt-6 align-items-baseline">
+                            <div class="card-title">
+                                <div class="d-flex flex-column">
+                                    <h3 class="fw-bolder mb-1">Долг за услуги</h3>
+                                </div>
+                            </div>
+
+                            <div class="card-toolbar">
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="fs-4 fw-bolder text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['total_amount']) }}
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold fs-6 text-gray-400">Итого долг</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-9 pt-0">
+                            @php
+                                $periodPivotData = [
+                                    'dates' => [],
+                                    'data' => [],
+                                ];
+
+                                foreach ($serviceDebts['organizations'] as $organizationInfo) {
+                                    foreach ($organizationInfo['details'] as $detail) {
+                                        if ($detail['type'] !== 'amount') {
+                                            continue;
+                                        }
+
+                                        $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
+
+                                        if (! isset($periodPivotData['data'][$organizationInfo['organization_name']][$date])) {
+                                            $periodPivotData['data'][$organizationInfo['organization_name']][$date] = 0;
+                                        }
+
+                                        $periodPivotData['data'][$organizationInfo['organization_name']][$date] += $detail['amount'];
+
+                                        if (! in_array($date, $periodPivotData['dates'])) {
+                                            $periodPivotData['dates'][] = $date;
+                                        }
+                                    }
+                                }
+
+                                $sortedDates = $periodPivotData['dates'];
+                                asort($sortedDates);
+
+                                $periodPivotData['dates'] = $sortedDates;
+                            @endphp
+
+                            @php
+                                $periodPivotAvansData = [
+                                    'dates' => [],
+                                    'data' => [],
+                                ];
+
+                                foreach ($serviceDebts['organizations'] as $organizationInfo) {
+                                    foreach ($organizationInfo['details'] as $detail) {
+                                        if ($detail['type'] !== 'avans') {
+                                            continue;
+                                        }
+
+                                        $date = \Carbon\Carbon::parse($detail['date'])->format('Y-m');
+
+                                        if (! isset($periodPivotAvansData['data'][$organizationInfo['organization_name']][$date])) {
+                                            $periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] = 0;
+                                        }
+
+                                        $periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] += $detail['amount'];
+
+                                        if (! in_array($date, $periodPivotAvansData['dates'])) {
+                                            $periodPivotAvansData['dates'][] = $date;
+                                        }
+                                    }
+                                }
+
+                                $sortedDates = $periodPivotAvansData['dates'];
+                                asort($sortedDates);
+
+                                $periodPivotAvansData['dates'] = $sortedDates;
+                            @endphp
+
+                            <div class="table-responsive freeze-table">
+                                <table class="table table-hover align-middle table-row-dashed fs-6">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2">Контрагент</th>
+                                        <th class="w-175px text-end">Аванс к оплате</th>
+
+                                        @if (count($periodPivotAvansData['dates']) > 0)
+                                            <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-avans-periods">+</th>
+                                        @endif
+
+                                        @foreach($periodPivotAvansData['dates'] as $date)
+                                            <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-avans-periods" style="display: none;">{{ translate_year_month($date) }}</th>
+                                        @endforeach
+
+                                        <th class="w-175px text-end pe-2">Долг за оказанные услуги</th>
+
+                                        @if (count($periodPivotData['dates']) > 0)
+                                            <th class="w-40px ps-3 fs-1 fw-bold collapse-trigger cursor-pointer cell-center" data-trigger="service-periods">+</th>
+                                        @endif
+
+                                        @foreach($periodPivotData['dates'] as $date)
+                                            <th class="w-150px text-end collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-periods" style="display: none;">{{ translate_year_month($date) }}</th>
+                                        @endforeach
+                                    </tr>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="ps-2 hl">ИТОГО</th>
+                                        <th class="w-175px text-end hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['avans']) }}
+                                        </th>
 
                                         @if (count($periodPivotAvansData['dates']) > 0)
                                             <th></th>
                                         @endif
 
                                         @foreach($periodPivotAvansData['dates'] as $date)
-                                            <td
-                                                    class="text-danger text-end pe-2 collapse-col period {{ $loop->last ? 'pe-2' : '' }}"
-                                                    data-trigger="service-avans-periods"
-                                                    style="display: none;"
-                                            >
-                                                {{ \App\Models\CurrencyExchangeRate::format($periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] ?? 0, 'RUB', 0, true) }}
-                                            </td>
+                                            <th class="collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-avans-periods" style="display: none;"></th>
                                         @endforeach
 
-                                        <td class="text-danger text-end pe-2 {{ $periodSum !== 0 && $periodSum != $organizationInfo['amount'] ? 'period-warning' : '' }}">
-                                            {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
-                                        </td>
+                                        <th class="w-175px text-end pe-2 hl text-danger">
+                                            {{ \App\Models\CurrencyExchangeRate::format($serviceDebts['total']['amount']) }}
+                                        </th>
 
-                                        <td></td>
+                                        <th></th>
 
                                         @foreach($periodPivotData['dates'] as $date)
-                                            <td
-                                                    class="text-danger text-end pe-2 collapse-col period {{ $loop->last ? 'pe-2' : '' }}"
-                                                    data-trigger="service-periods"
-                                                    style="display: none;"
-                                            >
-                                                {{ \App\Models\CurrencyExchangeRate::format($periodPivotData['data'][$organizationInfo['organization_name']][$date] ?? 0, 'RUB', 0, true) }}
-                                            </td>
+                                            <th class="collapse-col period {{ $loop->last ? 'pe-2' : '' }}" data-trigger="service-periods" style="display: none;"></th>
                                         @endforeach
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3">
-                                            <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
-                                                Долги отсутствуют
-                                            </p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                    </thead>
+                                    <tbody class="text-gray-600 fw-bold">
+                                    @forelse($serviceDebts['organizations'] as $organizationInfo)
+                                        <tr>
+                                            <td class="ps-2">
+                                                @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])                                        </td>
+
+                                            @php
+                                                $periodSum = array_sum($periodPivotData['data'][$organizationInfo['organization_name']] ?? []);
+                                                $periodAvansSum = array_sum($periodPivotAvansData['data'][$organizationInfo['organization_name']] ?? []);
+                                            @endphp
+                                            <td class="text-danger text-end {{ $periodAvansSum !== 0 && $periodAvansSum != $organizationInfo['avans'] ? 'period-warning' : '' }}">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['avans']) }}
+                                            </td>
+
+                                            @if (count($periodPivotAvansData['dates']) > 0)
+                                                <th></th>
+                                            @endif
+
+                                            @foreach($periodPivotAvansData['dates'] as $date)
+                                                <td
+                                                        class="text-danger text-end pe-2 collapse-col period {{ $loop->last ? 'pe-2' : '' }}"
+                                                        data-trigger="service-avans-periods"
+                                                        style="display: none;"
+                                                >
+                                                    {{ \App\Models\CurrencyExchangeRate::format($periodPivotAvansData['data'][$organizationInfo['organization_name']][$date] ?? 0, 'RUB', 0, true) }}
+                                                </td>
+                                            @endforeach
+
+                                            <td class="text-danger text-end pe-2 {{ $periodSum !== 0 && $periodSum != $organizationInfo['amount'] ? 'period-warning' : '' }}">
+                                                {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['amount']) }}
+                                            </td>
+
+                                            <td></td>
+
+                                            @foreach($periodPivotData['dates'] as $date)
+                                                <td
+                                                        class="text-danger text-end pe-2 collapse-col period {{ $loop->last ? 'pe-2' : '' }}"
+                                                        data-trigger="service-periods"
+                                                        style="display: none;"
+                                                >
+                                                    {{ \App\Models\CurrencyExchangeRate::format($periodPivotData['data'][$organizationInfo['organization_name']][$date] ?? 0, 'RUB', 0, true) }}
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3">
+                                                <p class="text-center text-dark fw-bolder d-block my-4 fs-6">
+                                                    Долги отсутствуют
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                @if ($object->code === '363')
+                    <div class="tab-pane fade" id="customers" role="tabpanel">
+                        @include('loans.parts._loans', ['skipFilter' => true])
+                    </div>
+                @endif
             </div>
         </div>
     </div>
-    @endif
 @endsection
 
 @push('styles')
