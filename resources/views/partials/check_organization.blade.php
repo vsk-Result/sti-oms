@@ -13,7 +13,6 @@
                 $organizationInn = $or->inn;
             }
         }
-        $organizationInn = empty($organizationInn) ? : $organizationInn;
         if (isset($organizationInn) && !empty($organizationName)) {
             $foundByInn = array_search($organizationInn, array_column($warningOrganizationsInfo, 'inn'));
             if ($foundByInn !== false) {
