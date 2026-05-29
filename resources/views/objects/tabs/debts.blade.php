@@ -157,7 +157,7 @@
                                     </tr>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="ps-2 hl">ИТОГО</th>
-                                        <th class="w-150px text-end hl text-danger">
+                                        <th class="w-150px text-end hl text-success">
                                             {{ \App\Models\CurrencyExchangeRate::format($contractorDebts['total']['fines']) }}
                                         </th>
                                         <th class="w-150px text-end hl text-success">
@@ -188,7 +188,7 @@
                                             <td class="ps-2">
                                                 @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])
                                             </td>
-                                            <td class="text-danger text-end pe-2">
+                                            <td class="text-success text-end pe-2">
                                                 {{ \App\Models\CurrencyExchangeRate::format($organizationInfo['fines'], 'RUB', 0, true) }}
                                             </td>
                                             <td class="text-success text-end pe-2">
