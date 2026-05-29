@@ -125,5 +125,11 @@
         title="С ИНН {{ $organizationInn ?? '' }} в базе есть еще контрагенты: {{ implode(', ', $moreOrganizations->pluck('name')->toArray()) }}"
     >{{ $organizationName ?? '' }}</span>
 @else
-    <span>{{ $organizationName ?? '' }}</span>
+    <span>
+        {{ $organizationName ?? '' }}
+
+        @if (auth()->id() === 1)
+            {{ $organizationInn ?? 'нет' }}
+        @endif
+    </span>
 @endif
