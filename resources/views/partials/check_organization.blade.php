@@ -8,7 +8,7 @@
         $warningOrganizationsInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_data', []);
         $warningOrganizationsFineInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_fine_data', []);
         if (empty($organizationInn) && !empty($organizationName)) {
-            $or = \App\Models\Organization::where('name', $organizationName)->whereNotNull('inn')->first();
+            $or = \App\Models\Organization::where('name', $organizationName)->whereNotNull('inn')->where('inn', '!=', '')->first();
             if ($or) {
                 $organizationInn = $or->inn;
             }
