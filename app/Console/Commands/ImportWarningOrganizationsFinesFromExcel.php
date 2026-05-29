@@ -7,6 +7,7 @@ use App\Helpers\Sanitizer;
 use App\Imports\Organization\WarningOrganizationFineImport;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ImportWarningOrganizationsFinesFromExcel extends HandledCommand
@@ -36,9 +37,17 @@ class ImportWarningOrganizationsFinesFromExcel extends HandledCommand
 
         foreach ($objectCodesToImport as $objectCode) {
             try {
+                $name = $objectCode . '_fine.xls';
 
-                $filename = storage_path() . '/app/public/public/objects-debts-manuals/' . $objectCode . '_fine.xls';
-                $importData = Excel::toArray(new WarningOrganizationFineImport(), new UploadedFile($filename, $objectCode . '_fine.xls'));
+                $filename = storage_path() . '/app/public/public/objects-debts-manuals/' . $name;
+
+                if (! File::exists($filename)) {
+                    $name = $objectCode . '_fine.xlsx';
+
+                    $filename = storage_path() . '/app/public/public/objects-debts-manuals/' . $name;
+                }
+
+                $importData = Excel::toArray(new WarningOrganizationFineImport(), new UploadedFile($filename, $name));
 
                 $data = $importData['Реестр штрафных санкций'];
 
@@ -51,9 +60,9 @@ class ImportWarningOrganizationsFinesFromExcel extends HandledCommand
 
                     $type = 'Штрафные санкции';
                     $organizationName = trim($row[2] ?? '');
-                    $inn = '';
-                    $amount = $this->sanitizer->set($row[5] ?? 0)->toAmount()->get();
-                    $filename = $objectCode . '_fine.xls';
+                    $inn = trim($row[3] ?? '');
+                    $amount = $this->sanitizer->set($row[6] ?? 0)->toAmount()->get();
+                    $filename = $name;
 
                     $info[] = compact('type', 'organizationName', 'inn', 'amount', 'filename');
                 }

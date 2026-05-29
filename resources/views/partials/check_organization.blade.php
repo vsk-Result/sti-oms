@@ -7,7 +7,13 @@
         $amount = 0;
         $warningOrganizationsInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_data', []);
         $warningOrganizationsFineInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_fine_data', []);
-
+        if (empty($organizationInn) && !empty($organizationName)) {
+            $or = \App\Models\Organization::where('name', $organizationName)->whereNotNull('inn')->first();
+            if ($or) {
+                $organizationInn = $or->inn;
+            }
+        }
+        $organizationInn = empty($organizationInn) ? : $organizationInn;
         if (isset($organizationInn) && !empty($organizationName)) {
             $foundByInn = array_search($organizationInn, array_column($warningOrganizationsInfo, 'inn'));
             if ($foundByInn !== false) {
