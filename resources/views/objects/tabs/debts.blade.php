@@ -184,11 +184,6 @@
                                     </thead>
                                     <tbody class="text-gray-600 fw-bold">
                                     @forelse($contractorDebts['organizations'] as $organizationInfo)
-                                        @php
-                                            if (auth()->id() === 1) {
-                                                dd($contractorDebts['organizations']);
-                                            }
-                                        @endphp
                                         <tr>
                                             <td class="ps-2">
                                                 @include('partials.check_organization', ['organizationName' => $organizationInfo['organization_name'], 'organizationInn' => $organizationInfo['organization_inn'] ?? ''])

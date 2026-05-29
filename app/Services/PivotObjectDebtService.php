@@ -221,6 +221,10 @@ class PivotObjectDebtService
             'organizations' => [],
         ];
 
+        if (auth()->id() === 1) {
+            dd($info);
+        }
+
         foreach ($info as $totalInfo) {
             foreach ($totalInfo['total'] as $name => $value) {
                 $total['total'][$name] += $value;
