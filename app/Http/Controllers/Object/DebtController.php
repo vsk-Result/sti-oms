@@ -16,11 +16,6 @@ class DebtController extends Controller
     public function index(BObject $object): View
     {
         $contractorDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_CONTRACTOR, ['with_sorted_details' => true]);
-
-        if (auth()->id() === 1) {
-            dd($contractorDebts);
-        }
-
         $providerDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_PROVIDER, ['with_sorted_details' => true]);
         $serviceDebts = $this->pivotObjectDebtService->getPivotDebts($object->id, PivotObjectDebt::DEBT_TYPE_SERVICE, ['with_sorted_details' => true]);
         $total = [];

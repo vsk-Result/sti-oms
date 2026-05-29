@@ -130,6 +130,10 @@ class PivotObjectDebtService
 
                 foreach ($details as $organizationData) {
                     if (! isset($info[$objId]['organizations'][$organizationData['organization_name']])) {
+                        if (auth()->id() === 1) {
+                            dd($organizationData);
+                        }
+
                         $info[$objId]['organizations'][$organizationData['organization_name']] = [
                             'organization_id' => $organizationData['organization_id'],
                             'organization_name' => $organizationData['organization_name'],
