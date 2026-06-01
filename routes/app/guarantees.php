@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\Guarantee\GuaranteeController;
+use App\Http\Controllers\Guarantee\ExportController;
+
+// Экспорт ГУ
+
+Route::post('guarantees/export', [ExportController::class, 'store'])->name('guarantees.exports.store');
 
 // Гарантийные удержания
 

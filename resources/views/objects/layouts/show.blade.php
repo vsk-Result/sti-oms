@@ -38,7 +38,7 @@
                                     <a class="nav-link text-active-primary me-6 {{ request()->is('*/acts') || request()->is('*/reports/act-category') ? 'active' : '' }}" href="{{ route('objects.acts.index', $object) }}?object_id%5B%5D={{ $object->id }}">Акты</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}">Гарантийные удержания</a>
+                                    <a class="nav-link text-active-primary me-6 {{ request()->is('*/guarantees') ? 'active' : '' }}" href="{{ route('objects.guarantees.index', $object) }}?object_id%5B%5D={{ $object->id }}">Гарантийные удержания</a>
                                 </li>
                             @endif
                                 <li class="nav-item">
