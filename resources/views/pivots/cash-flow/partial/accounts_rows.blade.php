@@ -2,6 +2,9 @@
     <tr class="text-start text-muted fs-8 gs-0">
         <td class="min-w-400px ps-8 fw-bolder">{{ $accountName }}</td>
         <td class="min-w-50px text-right">{{ \App\Models\CurrencyExchangeRate::format($amount, 'RUB', 0, true) }}</td>
+        @if (auth()->user()->can('index cash-flow-notifications'))
+            <td class="min-w-50px"></td>
+        @endif
         <td class="min-w-50px"></td>
 
         @foreach($periods as $period)

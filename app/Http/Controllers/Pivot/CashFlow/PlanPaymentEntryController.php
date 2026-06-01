@@ -37,6 +37,7 @@ class PlanPaymentEntryController extends Controller
         $view = view($row, compact('payment', 'periods', 'objectList', 'gr'))->render();
 
         $status = 'success';
-        return response()->json(compact('status', 'view'));
+        $message = 'Данные успешно обновлены';
+        return response()->json(compact('status', 'view', 'message'));
     }
 }

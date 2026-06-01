@@ -39,6 +39,19 @@
         @endif
     </td>
 
+    @if (auth()->user()->can('index cash-flow-notifications'))
+        <td class="min-w-50px text-center">
+            <input
+                class="form-check-input update-plan-payment-notification"
+                type="checkbox"
+                name="update_plan_payment_notification_{{$payment->id}}}"
+                data-payment-id="{{ $payment->id }}"
+                data-url="{{ route('pivots.cash_flow.plan_payments.notifications.update') }}"
+                {{ $payment->need_notification ? 'checked' : '' }}
+            />
+        </td>
+    @endif
+
     @php
         $amount = $payment->entries->where('date', '<', $periods[0]['start'])->sum('amount');
     @endphp

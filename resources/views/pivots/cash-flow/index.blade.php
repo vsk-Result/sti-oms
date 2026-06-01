@@ -73,6 +73,10 @@
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 cell-center">
                             <th class="min-w-400px ps-2 text-start">Остаток денежных средств на начало дня на счетах: <span class="fw-boldest">{{ \Carbon\Carbon::now()->format('d.m.Y') }}</span></th>
                             <th class="min-w-125px">{{ \App\Models\CurrencyExchangeRate::format(array_sum($accounts), 'RUB', 0, true) }}</th>
+                            @if (auth()->user()->can('index cash-flow-notifications'))
+                                <th class="min-w-125px">Уведомление</th>
+                            @endif
+
                             <th class="min-w-125px">Не оплачено с прошлого периода</th>
                             @foreach($periods as $period)
                                 <th class="min-w-250px">{{ $period['format'] }}</th>
@@ -88,6 +92,10 @@
                     <tr class="text-start text-muted fw-bolder fs-7 gs-0 total-row">
                         <td class="min-w-400px ps-2">САЛЬДО ИТОГО, в том числе:</td>
                         <td class="min-w-50px text-center">Код объекта</td>
+
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
 
                         @php
                             $receive = $plans->where('date', '<', $periods[0]['start'])->sum('amount');
@@ -119,6 +127,10 @@
                         <td class="min-w-400px ps-5">ПОСТУПЛЕНИЯ ИТОГО, в том числе:</td>
                         <td class="min-w-50px"></td>
 
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
+
                         @php
                             $amount = $plans->where('date', '<', $periods[0]['start'])->sum('amount');
                             $total = $amount;
@@ -146,6 +158,10 @@
                     <tr class="text-start text-muted fs-8 gs-0">
                         <td class="min-w-400px ps-8 fw-bolder">Целевые авансы</td>
                         <td class="min-w-50px"></td>
+
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
 
                         @php
                             $amount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
@@ -188,6 +204,10 @@
                     <tr class="text-start text-muted fs-8 gs-0">
                         <td class="min-w-400px ps-8 fw-bolder">Прочие поступления</td>
                         <td class="min-w-50px"></td>
+
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
 
                         @php
                             $amount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
@@ -233,6 +253,10 @@
                         <td class="min-w-400px ps-5">РАСХОДЫ ИТОГО, в том числе:</td>
                         <td class="min-w-50px"></td>
 
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
+
                         @php
                             $amount = $cfPayments['total']['all']['no_paid'];
                             $total = $amount;
@@ -260,6 +284,10 @@
                     <tr class="text-start text-muted fs-8 gs-0">
                         <td class="min-w-400px ps-8 fw-bolder">Работы</td>
                         <td class="min-w-50px"></td>
+
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
 
                         @php
                             $amount = $cfPayments['total']['contractors']['no_paid'];
@@ -289,6 +317,10 @@
                         <td class="min-w-400px ps-8 fw-bolder">Материалы</td>
                         <td class="min-w-50px"></td>
 
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
+
                         @php
                             $amount = $cfPayments['total']['providers_fix']['no_paid'] + $cfPayments['total']['providers_float']['no_paid'];
                             $total = $amount;
@@ -316,6 +348,10 @@
                     <tr class="text-start text-muted fs-8 gs-0">
                         <td class="min-w-400px ps-8 fw-bolder">Накладные/Услуги</td>
                         <td class="min-w-50px"></td>
+
+                        @if (auth()->user()->can('index cash-flow-notifications'))
+                            <td class="min-w-50px"></td>
+                        @endif
 
                         @php
                             $amount = $cfPayments['total']['service']['no_paid'];
@@ -373,6 +409,10 @@
                                 </td>
                                 <td class="text-center">{{ $object->code }}</td>
 
+                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                    <td></td>
+                                @endif
+
                                 @php
                                     $receive = $plans->where('object_id', $object->id)->where('date', '<', $periods[0]['start'])->sum('amount');
                                     $payment = $cfPayments['objects'][$object->id]['no_paid']['total'] ?? 0;
@@ -401,6 +441,10 @@
                                 <tr class="text-start text-muted fw-bolder fs-7 gs-0 object-row">
                                     <td class="min-w-400px ps-5">ПОСТУПЛЕНИЯ ИТОГО, в том числе:</td>
                                     <td class="min-w-50px"></td>
+
+                                    @if (auth()->user()->can('index cash-flow-notifications'))
+                                        <td></td>
+                                    @endif
 
                                     @php
                                         $amount = $plans->where('object_id', $object->id)->where('date', '<', $periods[0]['start'])->sum('amount');
@@ -439,6 +483,10 @@
                                 <tr>
                                     <td class="ps-8 fs-8 fst-italic">{{ $reason }}</td>
                                     <td></td>
+
+                                    @if (auth()->user()->can('index cash-flow-notifications'))
+                                        <td></td>
+                                    @endif
 
                                     @php
                                         $plan = $plans->where('object_id', $object->id)->where('date', '<', $periods[0]['start'])->where('reason_id', $reasonId)->first();
@@ -497,6 +545,10 @@
                                     <td class="min-w-400px ps-5">РАСХОДЫ ИТОГО, в том числе:</td>
                                     <td class="min-w-50px"></td>
 
+                                    @if (auth()->user()->can('index cash-flow-notifications'))
+                                        <td></td>
+                                    @endif
+
                                     @php
                                         $amount = $cfPayments['objects'][$object->id]['no_paid']['total'] ?? 0;
                                         $total = $amount;
@@ -542,6 +594,10 @@
                                         </td>
                                         <td></td>
 
+                                        @if (auth()->user()->can('index cash-flow-notifications'))
+                                            <td></td>
+                                        @endif
+
                                         @php
                                             $amount = $cfPayments['objects'][$object->id]['no_paid']['contractors'] ?? 0;
                                             $total = $amount;
@@ -571,6 +627,10 @@
                                         <tr class="collapse-row" data-trigger="contractors-cf-{{$object->code}}" style="display: none;">
                                             <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                             <td></td>
+
+                                            @if (auth()->user()->can('index cash-flow-notifications'))
+                                                <td></td>
+                                            @endif
 
                                             @php
                                                 $amount = $info['no_paid'] ?? 0;
@@ -608,6 +668,10 @@
                                         </td>
                                         <td></td>
 
+                                        @if (auth()->user()->can('index cash-flow-notifications'))
+                                            <td></td>
+                                        @endif
+
                                         @php
                                             $amount = ($cfPayments['objects'][$object->id]['no_paid']['providers_fix'] ?? 0) + ($cfPayments['objects'][$object->id]['no_paid']['providers_float'] ?? 0);
                                             $total = $amount;
@@ -638,6 +702,10 @@
                                             <tr class="collapse-row" data-trigger="providers-cf-{{$object->code}}" style="display: none;">
                                                 <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                                 <td></td>
+
+                                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                                    <td></td>
+                                                @endif
 
                                                 @php
                                                     $amount = $info['no_paid'] ?? 0;
@@ -672,6 +740,10 @@
                                             </td>
                                             <td></td>
 
+                                            @if (auth()->user()->can('index cash-flow-notifications'))
+                                                <td></td>
+                                            @endif
+
                                             @php
                                                 $amount = ($cfPayments['objects'][$object->id]['no_paid']['providers_fix'] ?? 0);
                                                 $total = $amount;
@@ -701,6 +773,10 @@
                                             <tr class="collapse-row" data-trigger="providers-fix-cf-{{$object->code}}" style="display: none;">
                                                 <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                                 <td></td>
+
+                                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                                    <td></td>
+                                                @endif
 
                                                 @php
                                                     $amount = $info['no_paid'] ?? 0;
@@ -732,6 +808,10 @@
                                             </td>
                                             <td></td>
 
+                                            @if (auth()->user()->can('index cash-flow-notifications'))
+                                                <td></td>
+                                            @endif
+
                                             @php
                                                 $amount = ($cfPayments['objects'][$object->id]['no_paid']['providers_float'] ?? 0);
                                                 $total = $amount;
@@ -761,6 +841,10 @@
                                             <tr class="collapse-row" data-trigger="providers-float-cf-{{$object->code}}" style="display: none;">
                                                 <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                                 <td></td>
+
+                                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                                    <td></td>
+                                                @endif
 
                                                 @php
                                                     $amount = $info['no_paid'] ?? 0;
@@ -796,6 +880,10 @@
                                         </td>
                                         <td></td>
 
+                                        @if (auth()->user()->can('index cash-flow-notifications'))
+                                            <td></td>
+                                        @endif
+
                                         @php
                                             $amount = $cfPayments['objects'][$object->id]['no_paid']['service'] ?? 0;
                                             $total = $amount;
@@ -825,6 +913,10 @@
                                         <tr class="collapse-row" data-trigger="service-cf-{{$object->code}}" style="display: none;">
                                             <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                             <td></td>
+
+                                            @if (auth()->user()->can('index cash-flow-notifications'))
+                                                <td></td>
+                                            @endif
 
                                             @php
                                                 $amount = $info['no_paid'] ?? 0;
@@ -859,6 +951,10 @@
                         <tr class="text-start text-muted fw-bolder fs-7 gs-0 total-row">
                             <td class="min-w-400px ps-2">Общие расходы</td>
                             <td class="min-w-50px text-center"></td>
+
+                            @if (auth()->user()->can('index cash-flow-notifications'))
+                                <td class="min-w-50px"></td>
+                            @endif
 
                             @php
                                 $amount = -abs($CFPlanPaymentEntries->where('date', '<', $periods[0]['start'])->sum('amount')) + -abs($cfPayments['objects'][$officeObjectId]['no_paid']['total'] ?? 0);
@@ -895,6 +991,10 @@
                                 Расходы офиса
                             </td>
                             <td class="text-center">27.1</td>
+
+                            @if (auth()->user()->can('index cash-flow-notifications'))
+                                <td class="min-w-50px"></td>
+                            @endif
 
                             @php
                                 $amount = $cfPayments['objects'][$officeObjectId]['no_paid']['total'] ?? 0;
@@ -939,6 +1039,10 @@
                                 </td>
                                 <td></td>
 
+                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                    <td class="min-w-50px"></td>
+                                @endif
+
                                 @php
                                     $amount = $cfPayments['objects'][$officeObjectId]['no_paid']['contractors'] ?? 0;
                                     $total = $amount;
@@ -968,6 +1072,10 @@
                                 <tr class="collapse-row" data-trigger="office-object" style="display: none;">
                                     <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                     <td></td>
+
+                                    @if (auth()->user()->can('index cash-flow-notifications'))
+                                        <td class="min-w-50px"></td>
+                                    @endif
 
                                     @php
                                         $amount = $info['no_paid'] ?? 0;
@@ -999,6 +1107,10 @@
                                 </td>
                                 <td></td>
 
+                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                    <td class="min-w-50px"></td>
+                                @endif
+
                                 @php
                                     $amount = ($cfPayments['objects'][$officeObjectId]['no_paid']['providers_fix'] ?? 0) + ($cfPayments['objects'][$officeObjectId]['no_paid']['providers_float'] ?? 0);
                                     $total = $amount;
@@ -1028,6 +1140,10 @@
                                 <tr class="collapse-row" data-trigger="office-object" style="display: none;">
                                     <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                     <td></td>
+
+                                    @if (auth()->user()->can('index cash-flow-notifications'))
+                                        <td class="min-w-50px"></td>
+                                    @endif
 
                                     @php
                                         $amount = $info['no_paid'] ?? 0;
@@ -1060,6 +1176,10 @@
                                 </td>
                                 <td></td>
 
+                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                    <td class="min-w-50px"></td>
+                                @endif
+
                                 @php
                                     $amount = $cfPayments['objects'][$officeObjectId]['no_paid']['service'] ?? 0;
                                     $total = $amount;
@@ -1089,6 +1209,10 @@
                                 <tr class="collapse-row" data-trigger="office-object" style="display: none;">
                                     <td class="ps-14 fs-8 fst-italic">{{ $contractorName }}</td>
                                     <td></td>
+
+                                    @if (auth()->user()->can('index cash-flow-notifications'))
+                                        <td class="min-w-50px"></td>
+                                    @endif
 
                                     @php
                                         $amount = $info['no_paid'] ?? 0;
@@ -1147,6 +1271,10 @@
                                 </td>
                                 <td class="text-center">{{ $group->object->code ?? '' }}</td>
 
+                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                    <td class="min-w-50px"></td>
+                                @endif
+
                                 @php
                                     $amount = -abs($planGroupedPaymentAmount[$group->name]['no_paid']);
                                     $groupTotal = $amount;
@@ -1185,6 +1313,10 @@
                                     {{ $paymentName }}
                                 </td>
                                 <td></td>
+
+                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                    <td></td>
+                                @endif
                                 <td></td>
 
                                 @php
@@ -1237,6 +1369,10 @@
                                     />
                                 </td>
                                 <td></td>
+
+                                @if (auth()->user()->can('index cash-flow-notifications'))
+                                    <td></td>
+                                @endif
                                 <td></td>
 
                                 @foreach($periods as $index => $period)
@@ -1286,6 +1422,17 @@
             $(document).on('click', '.plan-payment-name', function() {
                 $(this).parent().find('input').val($(this).text()).show().focus();
                 $(this).hide();
+            });
+
+            $(document).on('change', '.update-plan-payment-notification', function() {
+                const payment_id = $(this).data('payment-id');
+                const url = $(this).data('url');
+
+                mainApp.sendAJAX(
+                    url,
+                    'POST',
+                    {payment_id}
+                );
             });
 
             $(document).on('blur', '.update-plan-payment-input', function() {

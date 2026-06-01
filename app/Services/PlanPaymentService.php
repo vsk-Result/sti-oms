@@ -71,6 +71,7 @@ class PlanPaymentService
 
         $payment->update([
             'group_id' => $requestData['group_id'] ?? $payment->group_id,
+            'need_notification' => $requestData['need_notification'] ?? $payment->need_notification,
             'object_id' => $objectId,
             'name' => isset($requestData['name'])
                 ? $this->sanitizer->set($requestData['name'])->upperCaseFirstWord()->get()

@@ -10,6 +10,7 @@ use App\Http\Controllers\Pivot\DTSTI\ExportController as DTSTIExportController;
 use App\Http\Controllers\Pivot\CashFlow\CashFlowController;
 use App\Http\Controllers\Pivot\CashFlow\ExportController as CashFlowExportController;
 use App\Http\Controllers\Pivot\CashFlow\PlanPaymentController;
+use App\Http\Controllers\Pivot\CashFlow\PlanPaymentNotificationController;
 use App\Http\Controllers\Pivot\CashFlow\PlanPaymentEntryController;
 use App\Http\Controllers\Pivot\CashFlow\PlanPaymentTableController;
 use App\Http\Controllers\Pivot\CashFlow\PlanPaymentGroupController;
@@ -63,6 +64,10 @@ Route::get('pivots/cash-flow/plan-payments/group/{group}/destroy', [PlanPaymentG
 Route::get('pivots/cash-flow/plan-payments/table', [PlanPaymentTableController::class, 'index'])->name('pivots.cash_flow.plan_payments.table.index');
 Route::get('pivots/cash-flow/notifications/read', [NotificationController::class, 'update'])->name('pivots.cash_flow.notifications.update');
 Route::post('pivots/cash-flow/comments/update', [CommentController::class, 'update'])->name('pivots.cash_flow.comments.update');
+
+
+// Уведомления
+Route::post('pivots/cash-flow/plan-payments/notifications/update', [PlanPaymentNotificationController::class, 'update'])->name('pivots.cash_flow.plan_payments.notifications.update');
 
 
 // Отчет по категориям

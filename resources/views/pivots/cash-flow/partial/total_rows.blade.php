@@ -2,6 +2,10 @@
     <td class="ps-2 fw-bolder">Итого расходов по неделям:</td>
     <td></td>
 
+    @if (auth()->user()->can('index cash-flow-notifications'))
+        <td></td>
+    @endif
+
     @php
         $amount = -abs($CFPlanPaymentEntries->where('date', '<', $periods[0]['start'])->sum('amount')) + -abs($cfPayments['total']['all']['no_paid']);
         $total = $amount;
@@ -31,6 +35,10 @@
 <tr class="object-row plan-payment">
     <td class="ps-2 fw-bolder">Сальдо (без учета целевых авансов) по неделям:</td>
     <td></td>
+
+    @if (auth()->user()->can('index cash-flow-notifications'))
+        <td></td>
+    @endif
 
     @php
         $otherAmount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
@@ -63,6 +71,10 @@
 <tr class="object-row plan-payment">
     <td class="ps-2 fw-bolder">Накопительное Сальдо (без учета целевых авансов) по неделям:</td>
     <td></td>
+
+    @if (auth()->user()->can('index cash-flow-notifications'))
+        <td></td>
+    @endif
 
     @php
         $otherAmount = $plans->where('date', '<', $periods[0]['start'])->where('reason_id', '!=', \App\Models\Object\ReceivePlan::REASON_TARGET_AVANS)->sum('amount');
