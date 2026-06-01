@@ -7,6 +7,7 @@ use App\Http\Requests\Object\StoreOrUpdateObjectRequest;
 use App\Models\Contract\Contract;
 use App\Models\Object\BObject;
 use App\Models\Payment;
+use App\Models\Status;
 use App\Services\GuaranteeService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -28,7 +29,12 @@ class GuaranteeController extends Controller
         $objects = BObject::orderBy('code')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
         $guarantees = $this->guaranteeService->filterGuarantee($requestData, $total);
+        $statuses = [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
 
-        return view('objects.tabs.guarantees', compact('object', 'objects', 'contracts', 'guarantees', 'total'));
+        return view('objects.tabs.guarantees', compact('statuses', 'object', 'objects', 'contracts', 'guarantees', 'total'));
     }
 }

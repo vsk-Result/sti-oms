@@ -29,6 +29,15 @@ class Guarantee extends Model implements Audit, HasMedia
         'amount_payments'
     ];
 
+    private function getStatusesList(): array
+    {
+        return [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');

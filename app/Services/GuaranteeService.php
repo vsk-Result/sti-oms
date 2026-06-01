@@ -35,6 +35,10 @@ class GuaranteeService
             $query->whereIn('object_id', $requestData['object_id']);
         }
 
+        if (! empty($requestData['status_id'])) {
+            $query->whereIn('status_id', $requestData['status_id']);
+        }
+
         $perPage = 30;
         if (! empty($requestData['count_per_page'])) {
             $perPage = (int) preg_replace("/[^0-9]/", '', $requestData['count_per_page']);
@@ -48,6 +52,12 @@ class GuaranteeService
 
         $total['amount_payments']['RUB'] = (clone $query)->where('currency', 'RUB')->sum('amount_payments');
         $total['amount_payments']['EUR'] = (clone $query)->where('currency', 'EUR')->sum('amount_payments');
+
+        $total['amount_payments']['active']['RUB'] = (clone $query)->where('status_id', Status::STATUS_ACTIVE)->where('currency', 'RUB')->sum('amount_payments');
+        $total['amount_payments']['active']['EUR'] = (clone $query)->where('status_id', Status::STATUS_ACTIVE)->where('currency', 'EUR')->sum('amount_payments');
+
+        $total['amount_payments']['archive']['RUB'] = (clone $query)->where('status_id', Status::STATUS_BLOCKED)->where('currency', 'RUB')->sum('amount_payments');
+        $total['amount_payments']['archive']['EUR'] = (clone $query)->where('status_id', Status::STATUS_BLOCKED)->where('currency', 'EUR')->sum('amount_payments');
 
         $query->with('company', 'object', 'contract', 'customer');
         $query->orderByDesc('object_id');

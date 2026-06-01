@@ -32,7 +32,13 @@ class GuaranteeController extends Controller
         $objects = BObject::orderBy('code')->get();
         $contracts = Contract::with('parent')->orderBy('name')->get();
         $guarantees = $this->guaranteeService->filterGuarantee($request->toArray(), $total);
-        return view('guarantees.index', compact('guarantees', 'contracts', 'objects', 'total'));
+        $statuses = [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
+
+        return view('guarantees.index', compact('guarantees', 'contracts', 'objects', 'total', 'statuses'));
     }
 
     public function create(Request $request): View
@@ -65,7 +71,11 @@ class GuaranteeController extends Controller
         $companies = Company::orderBy('id')->get();
         $organizations = Organization::orderBy('name')->get();
         $contracts = Contract::with('object', 'children', 'children.object')->orderBy('name')->get();
-        $statuses = Status::getStatuses();
+        $statuses = [
+            Status::STATUS_ACTIVE => 'Активен',
+            Status::STATUS_BLOCKED => 'В архиве',
+            Status::STATUS_DELETED => 'Удален'
+        ];
         $currencies = Currency::getCurrencies();
 
         return view('guarantees.edit', compact('currencies', 'guarantee', 'objects', 'companies', 'statuses', 'organizations', 'contracts'));

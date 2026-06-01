@@ -8,7 +8,7 @@
             <form action="{{ request()->url() }}" method="GET">
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="form-label">Договор</label>
                                 <select
@@ -30,7 +30,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="form-label">Объект</label>
                                 <select
@@ -53,7 +53,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="form-label">Количество записей на странице</label>
                                 <input
@@ -62,6 +62,23 @@
                                     value="{{ request()->input('count_per_page', '30') }}"
                                     autocomplete="off"
                                 />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Статус</label>
+                                <select
+                                        name="status_id[]"
+                                        class="form-select form-select-solid"
+                                        data-control="select2"
+                                        data-dropdown-parent="#filterGuaranteeModal"
+                                        multiple
+                                >
+                                    @foreach($statuses as $statusId => $status)
+                                        <option value="{{ $statusId }}" {{ in_array($statusId, request()->input('status_id', [])) ? 'selected' : '' }}>{{ $status }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
