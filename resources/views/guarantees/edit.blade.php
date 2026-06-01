@@ -251,27 +251,33 @@
                                     <tbody>
                                     <tr>
                                         <td>
+                                            <select name="payments_type_id[]" class="form-select form-select-solid form-select-lg">
+                                                <option value="{{ \App\Models\GuaranteePayment::TYPE_PAYMENT }}" selected>Оплата</option>
+                                                <option value="{{ \App\Models\GuaranteePayment::TYPE_ABSENCE }}">Удержание</option>
+                                            </select>
+                                        </td>
+                                        <td>
                                             <input
-                                                    class="date-range-picker-single form-control form-control-lg form-control-solid"
-                                                    type="text"
-                                                    name="payments_date[]"
-                                                    value=""
-                                                    readonly
+                                                class="date-range-picker-single form-control form-control-lg form-control-solid"
+                                                type="text"
+                                                name="payments_date[]"
+                                                value=""
+                                                readonly
                                             />
                                         </td>
                                         <td>
                                             <input
-                                                    class="amount-mask form-control form-control-lg form-control-solid"
-                                                    type="text"
-                                                    name="payments_amount[]"
-                                                    value=""
-                                                    autocomplete="off"
+                                                class="amount-mask form-control form-control-lg form-control-solid"
+                                                type="text"
+                                                name="payments_amount[]"
+                                                value=""
+                                                autocomplete="off"
                                             />
                                         </td>
                                         <td>
                                             <button
-                                                    type="button"
-                                                    class="destroy-payment btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
+                                                type="button"
+                                                class="destroy-payment btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
                                             >
                                                 Удалить
                                             </button>
@@ -295,6 +301,7 @@
                                 <table id="payments-table" class="table align-middle table-row-dashed fs-6">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-150px">Тип оплаты</th>
                                         <th class="min-w-150px">Дата оплаты</th>
                                         <th class="min-w-150px">Сумма оплаты</th>
                                         <th class="min-w-150px rounded-end pe-4">Действие</th>
@@ -303,6 +310,12 @@
                                     <tbody class="text-gray-600 fw-bold">
                                     @foreach($guarantee->payments as $payment)
                                         <tr>
+                                            <td>
+                                                <select name="isset_payments_type_id[]" class="form-select form-select-solid form-select-lg">
+                                                    <option value="{{ \App\Models\GuaranteePayment::TYPE_PAYMENT }}" {{ $payment->type_id === \App\Models\GuaranteePayment::TYPE_PAYMENT ? 'selected' : '' }}>Оплата</option>
+                                                    <option value="{{ \App\Models\GuaranteePayment::TYPE_ABSENCE }}" {{ $payment->type_id === \App\Models\GuaranteePayment::TYPE_ABSENCE ? 'selected' : '' }}>Удержание</option>
+                                                </select>
+                                            </td>
                                             <td>
                                                 <input
                                                         class="date-range-picker-single form-control form-control-lg form-control-solid"
@@ -354,9 +367,11 @@
         $(function() {
             $('#create-payment').on('click', function () {
                 const $payment = $('#payment-template').clone();
+                $payment.find('select').attr('data-control', 'select2');
                 $('#payments-table tbody').append($payment.find('tr'));
 
                 mainApp.init();
+                KTApp.initSelect2();
             });
 
             $(document).on('click', '.destroy-payment', function() {

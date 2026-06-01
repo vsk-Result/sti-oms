@@ -75,6 +75,7 @@ class GuaranteeService
         if (! empty($requestData['payments_date'])) {
             foreach ($requestData['payments_date'] as $index => $paymentDate) {
                 $paymentAmount = $this->sanitizer->set($requestData['payments_amount'][$index])->toAmount()->get();
+                $typeId = $requestData['payments_type_id'][$index];
                 if ($paymentAmount > 0) {
                     GuaranteePayment::create([
                         'contract_id' => $requestData['contract_id'],
@@ -84,6 +85,7 @@ class GuaranteeService
                         'date' => $paymentDate,
                         'amount' => $this->sanitizer->set($paymentAmount)->toAmount()->get(),
                         'status_id' => Status::STATUS_ACTIVE,
+                        'type_id' => $typeId,
                         'currency' => $guarantee->currency,
                     ]);
                 }
@@ -124,11 +126,13 @@ class GuaranteeService
             foreach ($requestData['isset_payments_date'] as $paymentId => $paymentDate) {
                 $payment = GuaranteePayment::find($paymentId);
                 $paymentAmount = $this->sanitizer->set($requestData['isset_payments_amount'][$paymentId])->toAmount()->get();
+                $paymentTypeId = $requestData['isset_payments_type_id'][$paymentId];
 
                 $payment->update([
                     'date' => $paymentDate,
                     'amount' => $paymentAmount,
                     'currency' => $guarantee->currency,
+                    'type_id' => $paymentTypeId,
                 ]);
 
                 unset($currentPaymentsIds[$paymentId]);
@@ -143,6 +147,7 @@ class GuaranteeService
         if (! empty($requestData['payments_date'])) {
             foreach ($requestData['payments_date'] as $index => $paymentDate) {
                 $paymentAmount = $this->sanitizer->set($requestData['payments_amount'][$index])->toAmount()->get();
+                $paymentTypeId = $requestData['payments_type_id'][$index];
 
                 if ($paymentAmount > 0) {
                     GuaranteePayment::create([
@@ -154,6 +159,7 @@ class GuaranteeService
                         'amount' => $paymentAmount,
                         'status_id' => Status::STATUS_ACTIVE,
                         'currency' => $guarantee->currency,
+                        'type_id' => $paymentTypeId,
                     ]);
                 }
             }
