@@ -15,6 +15,7 @@ use App\Services\ReceivePlanService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CashFlowController extends Controller
 {
@@ -67,8 +68,18 @@ class CashFlowController extends Controller
         }
 
         $accounts = $this->accountBalanceService->getCurrentAccounts();
-
         $viewName = $request->get('view_name');
+
+        $viewNameCache = Cache::get('cash-flow-view', []);
+
+        if (!$viewName) {
+            $viewName = $viewNameCache[auth()->id()] ?? 'view_one';
+        } else {
+            $viewNameCache[auth()->id()] = $viewName;
+
+            Cache::put('cash-flow-view', $viewNameCache);
+        }
+
         $view = 'pivots.cash-flow.index';
 
         if ($viewName === 'view_two') {
