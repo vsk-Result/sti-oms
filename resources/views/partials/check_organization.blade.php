@@ -3,6 +3,11 @@
     $warningFineInfo = null;
     $hasMoreWithINN = false;
 
+    if (isset($organizationName) && $organizationName === 'ООО "Строй Техно Инженеринг"') {
+        $organizationName = null;
+        $organizationInn = null;
+    }
+
     if (isset($organizationInn) || isset($organizationName)) {
         $amount = 0;
         $warningOrganizationsInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_data', []);
