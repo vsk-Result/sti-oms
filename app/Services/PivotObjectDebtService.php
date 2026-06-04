@@ -181,6 +181,9 @@ class PivotObjectDebtService
                         if ($foundFineByName !== false && !empty($organizationData['organization_name']) && !in_array($organizationData['organization_name'], $organizationFineExist)) {
                             foreach ($warningOrganizationsFineInfo as $inf) {
                                 if (!empty($inf['organizationName']) && ($inf['organizationName'] == $organizationData['organization_name']) && $objectId === $inf['objectId']) {
+                                    if (auth()->id() === 1) {
+                                        dd($warningOrganizationsFineInfo, $inf, $objectId);
+                                    }
                                     $info[$objId]['organizations'][$organizationData['organization_name']]['fines'] += -$inf['amount'];
                                     $info[$objId]['total']['fines'] += -$inf['amount'];
                                 }
