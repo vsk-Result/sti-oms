@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CashAccount;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
+use App\Models\CashAccount\CashAccountPayment;
 use App\Models\Object\BObject;
 use App\Models\Object\CashFlowPayment;
 use App\Models\User;
@@ -27,8 +28,7 @@ class CashAccountController extends Controller
         $archivedCashAccounts = $this->cashAccountService->getArchivedCashAccounts();
 
         if (auth()->id() === 1) {
-            $payments = CashFlowPayment::whereBetween('date', ['2026-01-01', '2026-06-30'])->where('organization_id', 28883)->get();
-            dd($payments);
+            $payments = CashAccountPayment::whereBetween('date', ['2026-01-01', '2026-06-30'])->where('organization_id', 28883)->get();
             foreach ($payments as $payment) {
                 $payment->update([
                     'organization_id' => 56562
