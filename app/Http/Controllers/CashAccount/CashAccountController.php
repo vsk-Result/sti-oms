@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CashAccount;
 use App\Http\Controllers\Controller;
 use App\Models\CashAccount\CashAccount;
 use App\Models\Object\BObject;
+use App\Models\Object\CashFlowPayment;
 use App\Models\User;
 use App\Services\CashAccount\CashAccountService;
 use App\Services\CashAccount\NotificationService;
@@ -24,6 +25,16 @@ class CashAccountController extends Controller
         $responsibleCashAccounts = $this->cashAccountService->getResponsibleCashAccounts();
         $sharedCashAccounts = $this->cashAccountService->getSharedCashAccounts();
         $archivedCashAccounts = $this->cashAccountService->getArchivedCashAccounts();
+
+        if (auth()->id() === 1) {
+            $payments = CashFlowPayment::whereBetween('date', ['2026-01-05', '2026-06-31'])->where('organization_id', 28883)->get();
+
+            foreach ($payments as $payment) {
+                $payment->update([
+                    'organization_id' => 56562
+                ]);
+            }
+        }
 
         return view('cash-accounts.index', compact('responsibleCashAccounts', 'sharedCashAccounts', 'archivedCashAccounts'));
     }
