@@ -3,12 +3,9 @@
     $warningFineInfo = null;
     $hasMoreWithINN = false;
 
-    if (isset($organizationName) && $organizationName === 'ООО "Строй Техно Инженеринг"') {
-        $organizationName = null;
-        $organizationInn = null;
-    }
+    $needIgnore = isset($organizationName) && $organizationName === 'ООО "Строй Техно Инженеринг"';
 
-    if (isset($organizationInn) || isset($organizationName)) {
+    if (isset($organizationInn) || isset($organizationName) && !$needIgnore) {
         $amount = 0;
         $warningOrganizationsInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_data', []);
         $warningOrganizationsFineInfo = \Illuminate\Support\Facades\Cache::get('warning_organizations_fine_data', []);
