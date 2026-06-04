@@ -27,8 +27,8 @@ class CashAccountController extends Controller
         $archivedCashAccounts = $this->cashAccountService->getArchivedCashAccounts();
 
         if (auth()->id() === 1) {
-            $payments = CashFlowPayment::whereBetween('date', ['2026-01-05', '2026-06-30'])->where('organization_id', 28883)->get();
-
+            $payments = CashFlowPayment::whereBetween('date', ['2026-01-01', '2026-06-30'])->where('organization_id', 28883)->get();
+            dd($payments);
             foreach ($payments as $payment) {
                 $payment->update([
                     'organization_id' => 56562
