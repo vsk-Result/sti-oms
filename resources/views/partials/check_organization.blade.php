@@ -3,6 +3,7 @@
     $warningFineInfo = null;
     $hasMoreWithINN = false;
 
+
     $needIgnore = isset($organizationName) && $organizationName === 'ООО "Строй Техно Инженеринг"';
 
     if ((isset($organizationInn) || isset($organizationName)) && !$needIgnore) {
@@ -58,7 +59,7 @@
                 $warningFineInfo = $warningOrganizationsFineInfo[$foundByInn];
 
                 foreach ($warningOrganizationsFineInfo as $info) {
-                    if (!empty($info['inn']) && $info['inn'] == $organizationInn) {
+                    if (!empty($info['inn']) && $info['inn'] == $organizationInn && (isset($object) && $object->id === $info['objectId'])) {
                         $amount += $info['amount'];
                     }
                 }
@@ -69,7 +70,7 @@
                         $warningFineInfo = $warningOrganizationsFineInfo[$foundByName];
 
                         foreach ($warningOrganizationsFineInfo as $info) {
-                            if (!empty($info['organizationName']) && ($info['organizationName'] == $organizationName)) {
+                            if (!empty($info['organizationName']) && ($info['organizationName'] == $organizationName) && (isset($object) && $object->id === $info['objectId'])) {
                                 $amount += $info['amount'];
                             }
                         }
@@ -82,7 +83,7 @@
                 $warningFineInfo = $warningOrganizationsFineInfo[$foundByName];
 
                 foreach ($warningOrganizationsFineInfo as $info) {
-                    if (!empty($info['organizationName']) && ($info['organizationName'] == $organizationName)) {
+                    if (!empty($info['organizationName']) && ($info['organizationName'] == $organizationName) && (isset($object) && $object->id === $info['objectId'])) {
                         $amount += $info['amount'];
                     }
                 }
