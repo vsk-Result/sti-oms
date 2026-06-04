@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Console\HandledCommand;
 use App\Helpers\Sanitizer;
 use App\Imports\Organization\WarningOrganizationFineImport;
+use App\Models\Object\BObject;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
@@ -36,6 +37,8 @@ class ImportWarningOrganizationsFinesFromExcel extends HandledCommand
         $info = [];
 
         foreach ($objectCodesToImport as $objectCode) {
+            $objectId = BObject::where('code', $objectCode)->first()?->id ?? null;
+
             try {
                 $name = $objectCode . '_fine.xls';
 
@@ -64,7 +67,7 @@ class ImportWarningOrganizationsFinesFromExcel extends HandledCommand
                     $amount = $this->sanitizer->set($row[6] ?? 0)->toAmount()->get();
                     $filename = $name;
 
-                    $info[] = compact('type', 'organizationName', 'inn', 'amount', 'filename');
+                    $info[] = compact('type', 'organizationName', 'inn', 'amount', 'filename', 'objectId');
                 }
             } catch (\Exception $e) {
                 $this->sendErrorMessage('Не удалось загрузить организации с проблемами по штрафам');

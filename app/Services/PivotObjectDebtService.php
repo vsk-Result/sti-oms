@@ -168,7 +168,7 @@ class PivotObjectDebtService
                     $foundByInn = array_search($organizationInn, array_column($warningOrganizationsFineInfo, 'inn'));
                     if ($foundByInn !== false && !empty($organizationInn) && !in_array($organizationInn, $organizationFineExist)) {
                         foreach ($warningOrganizationsFineInfo as $inf) {
-                            if (!empty($inf['inn']) && $inf['inn'] == $organizationInn) {
+                            if (!empty($inf['inn']) && $inf['inn'] == $organizationInn && $objectId === $inf['objectId']) {
                                 $info[$objId]['organizations'][$organizationData['organization_name']]['fines'] += $inf['amount'];
                                 $info[$objId]['total']['fines'] += $inf['amount'];
                             }
@@ -180,7 +180,7 @@ class PivotObjectDebtService
 
                         if ($foundFineByName !== false && !empty($organizationData['organization_name']) && !in_array($organizationData['organization_name'], $organizationFineExist)) {
                             foreach ($warningOrganizationsFineInfo as $inf) {
-                                if (!empty($inf['organizationName']) && ($inf['organizationName'] == $organizationData['organization_name'])) {
+                                if (!empty($inf['organizationName']) && ($inf['organizationName'] == $organizationData['organization_name']) && $objectId === $inf['objectId']) {
                                     $info[$objId]['organizations'][$organizationData['organization_name']]['fines'] += -$inf['amount'];
                                     $info[$objId]['total']['fines'] += -$inf['amount'];
                                 }
