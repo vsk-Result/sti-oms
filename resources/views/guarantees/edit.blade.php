@@ -311,7 +311,7 @@
                                     @foreach($guarantee->payments as $payment)
                                         <tr>
                                             <td>
-                                                <select name="isset_payments_type_id[]" class="form-select form-select-solid form-select-lg">
+                                                <select name="isset_payments_type_id[{{ $payment->id }}]" class="form-select form-select-solid form-select-lg">
                                                     <option value="{{ \App\Models\GuaranteePayment::TYPE_PAYMENT }}" {{ $payment->type_id === \App\Models\GuaranteePayment::TYPE_PAYMENT ? 'selected' : '' }}>Оплата</option>
                                                     <option value="{{ \App\Models\GuaranteePayment::TYPE_ABSENCE }}" {{ $payment->type_id === \App\Models\GuaranteePayment::TYPE_ABSENCE ? 'selected' : '' }}>Удержание</option>
                                                 </select>
