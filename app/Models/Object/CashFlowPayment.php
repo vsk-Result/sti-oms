@@ -16,7 +16,10 @@ class CashFlowPayment extends Model implements Audit
 
     protected $table = 'object_cash_flow_payments';
 
-    protected $fillable = ['object_id', 'category_id', 'organization_id', 'date', 'amount', 'created_by_user_id', 'updated_by_user_id', 'status_id'];
+    protected $fillable = [
+        'object_id', 'category_id', 'organization_id', 'date',
+        'amount', 'created_by_user_id', 'updated_by_user_id', 'status_id'
+    ];
 
     public function object(): BelongsTo
     {

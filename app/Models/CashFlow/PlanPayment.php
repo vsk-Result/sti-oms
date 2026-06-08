@@ -21,7 +21,8 @@ class PlanPayment extends Model implements Audit
     protected $table = 'cash_flow_plan_payments';
 
     protected $fillable = [
-        'created_by_user_id', 'updated_by_user_id', 'object_id', 'name', 'status_id', 'group_id', 'from_tax_plan', 'need_notification'
+        'created_by_user_id', 'updated_by_user_id', 'object_id',
+        'name', 'status_id', 'group_id', 'from_tax_plan', 'need_notification'
     ];
 
     public function entries(): HasMany
