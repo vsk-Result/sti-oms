@@ -38,11 +38,6 @@ class NotifyToEmailAboutCashflowPayments extends HandledCommand
 //
 //        $this->startProcess();
 
-        $alwaysInCopy = ['oksana.dashenko@st-ing.com', 'enes@st-ing.com'];
-//
-//        $object = BObject::where('code', $objectCode)->first();
-//        $filepath = $this->balanceExportService->store($object);
-
         $periods = $this->receivePlanService->getPeriods();
 
         $payments = [];
@@ -59,7 +54,10 @@ class NotifyToEmailAboutCashflowPayments extends HandledCommand
                 $m->from('support@st-ing.com', 'OMS Support');
                 $m->subject('OMS. Оплаты CASH FLOW на следующую неделю');
 
-                $m->to('result007@yandex.ru');
+                $m->to('inna.kamennaya@dttermo.ru');
+                $m->to('viktoriya.vujisich@st-ing.com');
+                $m->cc('result007@yandex.ru');
+                $m->cc('oksana.dashenko@st-ing.com');
             });
         } catch(Exception $e) {
             $this->sendErrorMessage('Не удалось отправить уведомление на email: "' . $e->getMessage());
