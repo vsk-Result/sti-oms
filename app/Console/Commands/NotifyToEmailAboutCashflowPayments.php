@@ -47,10 +47,8 @@ class NotifyToEmailAboutCashflowPayments extends HandledCommand
 
         $payments = [];
         $planPayments = PlanPayment::where('need_notification', true)->get();
-
         foreach ($planPayments as $planPayment) {
-            $amount = $planPayment->entries->whereBetween('date', $periods[1])->sum('amount');
-
+            $amount = $planPayment->entries->whereBetween('date', [$periods[1]['start'], $periods[1]['end']])->sum('amount');
             if ($amount != 0) {
                 $payments[$planPayment->name] = $amount;
             }
