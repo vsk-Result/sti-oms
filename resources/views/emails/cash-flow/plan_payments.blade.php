@@ -5,7 +5,7 @@
 
     <ul>
         @foreach($payments as $paymentName => $amount)
-            <li><strong>{{ $paymentName }}</strong> - на сумму <strong style="color: red;"{{ \App\Models\CurrencyExchangeRate::format($amount) }}</li>
+            <li><strong>{{ $paymentName }}</strong> - на сумму <strong style="color: red;">{{ \App\Models\CurrencyExchangeRate::format($amount) }}</strong></li>
         @endforeach
     </ul>
 @else
