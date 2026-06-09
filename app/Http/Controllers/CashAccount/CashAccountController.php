@@ -27,14 +27,12 @@ class CashAccountController extends Controller
         $sharedCashAccounts = $this->cashAccountService->getSharedCashAccounts();
         $archivedCashAccounts = $this->cashAccountService->getArchivedCashAccounts();
 
-//        if (auth()->id() === 1) {
-//            $payments = CashAccountPayment::whereBetween('date', ['2026-01-01', '2026-06-30'])->where('organization_id', 28883)->get();
-//            foreach ($payments as $payment) {
-//                $payment->update([
-//                    'organization_id' => 56562
-//                ]);
-//            }
-//        }
+        $payments = CashAccountPayment::whereBetween('date', ['2026-01-01', '2026-06-30'])->where('organization_id', 28883)->get();
+        foreach ($payments as $payment) {
+            $payment->update([
+                'organization_id' => 56562
+            ]);
+        }
 
         return view('cash-accounts.index', compact('responsibleCashAccounts', 'sharedCashAccounts', 'archivedCashAccounts'));
     }
