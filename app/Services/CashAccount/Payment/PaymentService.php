@@ -10,6 +10,7 @@ use App\Models\CRM\Avans;
 use App\Models\CRM\Employee;
 use App\Models\Object\BObject;
 use App\Models\Organization;
+use App\Services\OrganizationService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Cache;
 
 class PaymentService
 {
-    public function __construct(private Sanitizer $sanitizer) {}
+    public function __construct(private Sanitizer $sanitizer, private OrganizationService $organizationService) {}
 
     public function filterPayments(array $requestData, bool $needPaginate = false, array &$totalInfo = []): Builder|LengthAwarePaginator
     {
@@ -171,10 +172,21 @@ class PaymentService
         }
 
         if ($needCreateCrmAvans || $needCreateItr || $needCreateCrmApartment) {
+            $STICompanyOrganization = $this->organizationService->getOrCreateOrganization([
+                'name' => 'ООО "Строй Техно Инженеринг"',
+                'inn' => '7720734368',
+                'kpp' => null
+            ]);
+
+            $DTCompanyOrganization = $this->organizationService->getOrCreateOrganization([
+                'name' => 'ООО "ДТ ТЕРМО ГРУПП"',
+                'kpp' => null
+            ]);
+
             if ($objectId === $object27_3->id) {
-                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
+                $organizationId = $DTCompanyOrganization->id ?? $STICompanyOrganization->id;
             } else {
-                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+                $organizationId = $STICompanyOrganization->id;
             }
          } else {
             $organizationId = $requestData['organization_id'];
@@ -284,10 +296,21 @@ class PaymentService
         }
 
         if ($isCrmEmployee || $isItr || $isCrmApartment) {
+            $STICompanyOrganization = $this->organizationService->getOrCreateOrganization([
+                'name' => 'ООО "Строй Техно Инженеринг"',
+                'inn' => '7720734368',
+                'kpp' => null
+            ]);
+
+            $DTCompanyOrganization = $this->organizationService->getOrCreateOrganization([
+                'name' => 'ООО "ДТ ТЕРМО ГРУПП"',
+                'kpp' => null
+            ]);
+
             if ($objectId === $object27_3->id) {
-                $organizationId = Organization::where('company_id', 4)->first()?->id ?? Organization::where('company_id', 1)->first()?->id ?? null;
+                $organizationId = $DTCompanyOrganization->id ?? $STICompanyOrganization->id;
             } else {
-                $organizationId = Organization::where('company_id', 1)->first()?->id ?? null;
+                $organizationId = $STICompanyOrganization->id;
             }
         } else {
             $organizationId = $requestData['organization_id'];

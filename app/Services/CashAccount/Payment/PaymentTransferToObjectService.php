@@ -20,7 +20,6 @@ class PaymentTransferToObjectService
     public function transfer(CashAccountPayment $payment): void
     {
         $companyOrganization = $this->organizationService->getOrCreateOrganization([
-            'company_id' => 1,
             'name' => 'ООО "Строй Техно Инженеринг"',
             'inn' => '7720734368',
             'kpp' => null

@@ -5,27 +5,34 @@ namespace App\Services\CashAccount;
 use App\Helpers\Sanitizer;
 use App\Models\CashAccount\CashAccount;
 use App\Models\CashAccount\CashAccountPayment;
-use App\Models\Organization;
 use App\Models\Payment;
 use App\Services\CashAccount\Payment\PaymentService;
+use App\Services\OrganizationService;
 
 class RequestCashService
 {
     public function __construct(
         private Sanitizer $sanitizer,
         private PaymentService $paymentService,
-        private CashAccountService $cashAccountService
+        private CashAccountService $cashAccountService,
+        private OrganizationService $organizationService,
     ) {}
 
     public function requestCash(CashAccount $cashAccount, array $requestData)
     {
         $amount = abs($this->sanitizer->set($requestData['amount'])->toAmount()->get());
 
+        $companyOrganization = $this->organizationService->getOrCreateOrganization([
+            'name' => 'ООО "Строй Техно Инженеринг"',
+            'inn' => '7720734368',
+            'kpp' => null
+        ]);
+
         $requestPayment = $this->paymentService->createPayment([
             'cash_account_id' => $cashAccount->id,
             'object_id' => null,
             'object_worktype_id' => null,
-            'organization_id' => Organization::where('company_id', 1)->first()?->id ?? null,
+            'organization_id' => $companyOrganization->id,
             'type_id' => CashAccountPayment::TYPE_REQUEST,
             'category' => Payment::CATEGORY_TRANSFER,
             'code' => '',
@@ -42,7 +49,7 @@ class RequestCashService
             'cash_account_id' => $requestData['sender_id'],
             'object_id' => null,
             'object_worktype_id' => null,
-            'organization_id' => Organization::where('company_id', 1)->first()?->id ?? null,
+            'organization_id' => $companyOrganization->id,
             'type_id' => CashAccountPayment::TYPE_TRANSFER,
             'category' => Payment::CATEGORY_TRANSFER,
             'code' => '',
