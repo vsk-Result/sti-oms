@@ -135,7 +135,7 @@
                                 {{ $guarantee->contract->getName() }}
                             @endif
                         </td>
-                        <td>{{ $guarantee->customer->name ?? '' }}</td>
+                        <td>{{ $guarantee->customer->name ?? $guarantee?->contract?->customer?->name ?? '' }}</td>
                         <td>
                             @if(auth()->user()->can('edit guarantees'))
                                 <a href="{{ route('guarantees.edit', $guarantee) }}" class="show-link">{{ \App\Models\CurrencyExchangeRate::format($guarantee->amount, $guarantee->currency) }}</a>

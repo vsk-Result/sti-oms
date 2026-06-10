@@ -65,7 +65,7 @@ class Export implements
         $row = 4;
         foreach ($this->guarantees as $guarantee) {
             $sheet->setCellValue('A' . $row, $guarantee->contract->getName());
-            $sheet->setCellValue('B' . $row, $guarantee->customer->name ?? '');
+            $sheet->setCellValue('B' . $row, $guarantee->customer->name ?? $guarantee?->contract?->customer?->name ?? '');
             $sheet->setCellValue('C' . $row, $guarantee->amount);
             $sheet->setCellValue('D' . $row, $guarantee->fact_amount);
             $sheet->setCellValue('E' . $row, $guarantee->amount_payments);

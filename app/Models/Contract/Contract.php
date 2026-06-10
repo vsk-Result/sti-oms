@@ -6,6 +6,7 @@ use App\Models\BankGuarantee;
 use App\Models\Company;
 use App\Models\Guarantee;
 use App\Models\Object\BObject;
+use App\Models\Organization;
 use App\Traits\HasStatus;
 use App\Traits\HasUser;
 use Carbon\Carbon;
@@ -46,6 +47,11 @@ class Contract extends Model implements HasMedia, Audit
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
     }
 
     public function bankGuarantees(): HasMany
