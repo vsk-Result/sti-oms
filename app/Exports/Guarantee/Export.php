@@ -40,7 +40,6 @@ class Export implements
         $sheet->mergeCells('A2:G2');
         $sheet->getStyle('A2:G2')->getFont()->setBold(true);
         $sheet->getStyle('A2:G2')->getFont()->setName('Calibri')->setSize(16);
-        $sheet->getStyle('A2:G2')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getRowDimension(2)->setRowHeight(60);
 
         $sheet->setCellValue('A3', 'Договор');
@@ -89,10 +88,12 @@ class Export implements
         $sheet->getRowDimension($row)->setRowHeight(30);
 
         $sheet->getStyle('A3:G' . $row)->applyFromArray($THINStyleArray);
-        $sheet->getStyle('A4:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(false);
+        $sheet->getStyle('A4:A' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
+        $sheet->getStyle('G4:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
         $sheet->getStyle('B4:G' . $row)->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getStyle('A3:G3')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(false);
         $sheet->getStyle('C4:F' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
+
 
         $sheet->setAutoFilter('A3:G' . $row);
     }
