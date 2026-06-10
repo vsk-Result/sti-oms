@@ -9,7 +9,7 @@
                 <div class="fw-bold fs-6 text-gray-400">
                     Сумма
                     <br/>
-                    <span class="text-success">Итого</span>
+                    <span>Итого</span>
                 </div>
             </div>
         </div>
