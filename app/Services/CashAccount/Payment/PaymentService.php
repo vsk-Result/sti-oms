@@ -180,6 +180,7 @@ class PaymentService
 
             $DTCompanyOrganization = $this->organizationService->getOrCreateOrganization([
                 'name' => 'ООО "ДТ ТЕРМО ГРУПП"',
+                'inn' => null,
                 'kpp' => null
             ]);
 
@@ -304,6 +305,7 @@ class PaymentService
 
             $DTCompanyOrganization = $this->organizationService->getOrCreateOrganization([
                 'name' => 'ООО "ДТ ТЕРМО ГРУПП"',
+                'inn' => null,
                 'kpp' => null
             ]);
 
