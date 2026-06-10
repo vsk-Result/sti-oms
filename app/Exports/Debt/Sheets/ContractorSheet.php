@@ -70,7 +70,7 @@ class ContractorSheet implements
         $row = 2;
         foreach ($contractorDebts['organizations'] as $organizationData) {
             $sheet->setCellValue('A' . $row, $organizationData['organization_name']);
-            $sheet->setCellValue('B' . $row, '');
+            $sheet->setCellValue('B' . $row, $organizationData['organization_inn']);
             $sheet->setCellValue('C' . $row, $organizationData['amount']);
             $sheet->setCellValue('D' . $row, $organizationData['avans']);
             $sheet->setCellValue('E' . $row, $organizationData['unwork_avans']);

@@ -60,7 +60,7 @@ class ServiceSheet implements
         $row = 2;
         foreach ($serviceDebts['organizations'] as $organizationData) {
             $sheet->setCellValue('A' . $row, $organizationData['organization_name']);
-            $sheet->setCellValue('B' . $row, '');
+            $sheet->setCellValue('B' . $row, $organizationData['organization_inn']);
             $sheet->setCellValue('C' . $row, $organizationData['avans']);
             $sheet->setCellValue('D' . $row, $organizationData['amount']);
 

@@ -62,7 +62,7 @@ class ProviderSheet implements
         $row = 2;
         foreach ($providerDebts['organizations'] as $organizationData) {
             $sheet->setCellValue('A' . $row, $organizationData['organization_name']);
-            $sheet->setCellValue('B' . $row, '');
+            $sheet->setCellValue('B' . $row, $organizationData['organization_inn']);
             $sheet->setCellValue('C' . $row, $organizationData['amount_fix']);
             $sheet->setCellValue('D' . $row, $organizationData['amount_float']);
             $sheet->setCellValue('E' . $row, $organizationData['total_amount']);
