@@ -46,7 +46,7 @@ class ProviderSheet implements
         $sheet->setCellValue('E1', 'Сумма долга');
 
         $sheet->getColumnDimension('A')->setWidth(50);
-        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('B')->setWidth(30);
         $sheet->getColumnDimension('C')->setWidth(18);
         $sheet->getColumnDimension('D')->setWidth(18);
         $sheet->getColumnDimension('E')->setWidth(18);
@@ -76,6 +76,7 @@ class ProviderSheet implements
         $sheet->getStyle('A1:E1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
         $sheet->getStyle('C2:E' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('B2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
         $sheet->getStyle('C2:E' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }

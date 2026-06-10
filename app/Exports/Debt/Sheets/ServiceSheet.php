@@ -45,7 +45,7 @@ class ServiceSheet implements
         $sheet->setCellValue('D1', 'Долг за оказанные услуги');
 
         $sheet->getColumnDimension('A')->setWidth(50);
-        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('B')->setWidth(30);
         $sheet->getColumnDimension('C')->setWidth(20);
         $sheet->getColumnDimension('D')->setWidth(20);
 
@@ -73,6 +73,7 @@ class ServiceSheet implements
         $sheet->getStyle('A1:D1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
         $sheet->getStyle('C2:D' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('B2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
         $sheet->getStyle('C2:D' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }

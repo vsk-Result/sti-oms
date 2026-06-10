@@ -50,7 +50,7 @@ class ContractorSheet implements
         $sheet->setCellValue('I1', 'Штрафные санкции');
 
         $sheet->getColumnDimension('A')->setWidth(50);
-        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('B')->setWidth(30);
         $sheet->getColumnDimension('C')->setWidth(18);
         $sheet->getColumnDimension('D')->setWidth(18);
         $sheet->getColumnDimension('E')->setWidth(18);
@@ -88,6 +88,7 @@ class ContractorSheet implements
         $sheet->getStyle('A1:I1')->getAlignment()->setVertical('center')->setHorizontal('center')->setWrapText(true);
         $sheet->getStyle('A2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('left')->setWrapText(true);
         $sheet->getStyle('C2:I' . $row)->getAlignment()->setVertical('center')->setHorizontal('right');
+        $sheet->getStyle('B2:B' . $row)->getAlignment()->setVertical('center')->setHorizontal('center');
         $sheet->getStyle('C2:I' . $row)->getNumberFormat()->setFormatCode('_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-');
     }
 }
