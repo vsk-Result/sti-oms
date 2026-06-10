@@ -37,6 +37,8 @@ class GuaranteeService
 
         if (! empty($requestData['status_id'])) {
             $query->whereIn('status_id', $requestData['status_id']);
+        } else {
+            $query->where('status_id', Status::STATUS_ACTIVE);
         }
 
         $perPage = 30;
