@@ -36,7 +36,7 @@ class SplitResidenceExcelController extends Controller
         $isVector = $organization->name === 'ВЕКТОР ООО';
         $isElift = $organization->name === 'ЕЛИВТ ООО';
 
-        $isOther = $isKadinova || $isArtist || $isElift;
+        $isOther = $isKadinova || $isElift;
 
         $payments = Payment::where('organization_receiver_id', $requestData['organization_id'])->where('was_split', false)->get();
 
@@ -45,7 +45,7 @@ class SplitResidenceExcelController extends Controller
             return redirect()->back()->withInput();
         }
 
-        if ($isVector) {
+        if ($isVector || $isArtist) {
             $list = 'Лист_1';
             // просто название листа из 1с одинаковое обычно
             $importData = Excel::toArray(new ITRSalaryPivotImport(), $requestData['file']);
@@ -73,7 +73,7 @@ class SplitResidenceExcelController extends Controller
             $dataStartIndex = 4;
         }
 
-        if ($isVector) {
+        if ($isVector || $isArtist) {
             $dataStartIndex = 8;
         }
 
@@ -86,9 +86,9 @@ class SplitResidenceExcelController extends Controller
                 break;
             }
 
-            $objectInfo = $isOther || $isVector ? $row[4] : $row[3];
+            $objectInfo = $isOther || $isVector || $isArtist ? $row[4] : $row[3];
             $objectCode = mb_substr($objectInfo, 0, strpos($objectInfo, $isOther ? ' ' : ' -'));
-            $objectCode = $isVector ? $objectInfo : $objectCode;
+            $objectCode = $isVector || $isArtist ? $objectInfo : $objectCode;
 
             if (empty($objectCode) || $objectCode === '27.7' || $objectCode == '27') {
                 $objectCode = '27.1';
@@ -117,12 +117,16 @@ class SplitResidenceExcelController extends Controller
                 $amount = $row[45] ?? 0;
             }
 
-            if ($isArtist || $isElift) {
+            if ($isElift) {
                 $amount = $row[46] ?? 0;
             }
 
             if ($isVector) {
                 $amount = $row[37] ?? 0;
+            }
+
+            if ($isArtist) {
+                $amount = $row[38] ?? 0;
             }
 
             $groupedObjectAmount[$objectMainCode][$worktype] += $amount;
