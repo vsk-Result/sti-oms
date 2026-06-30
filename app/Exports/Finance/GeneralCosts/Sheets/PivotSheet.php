@@ -7,7 +7,6 @@ use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
 use App\Models\Payment;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -125,29 +124,27 @@ class PivotSheet implements
 
         $periods = array_reverse($periods);
 
-        $generalCostsInfo = Cache::get('general_costs___1');
+        $generalTotalAmount = 0;
+        $generalInfo = [];
+        foreach ($periods as $index => $period) {
+            $exceptCodes = $this->filterNDS === 'nds' ? ['7.11.1'] : ['7.11.1', '7.1', '7.2'];
+            $amountField = $this->filterNDS === 'nds' ? 'amount' : 'amount_without_nds';
 
-        $generalTotalAmount = $generalCostsInfo['generalTotalAmount'];
-        $generalInfo = $generalCostsInfo['generalInfo'];
-//        foreach ($periods as $index => $period) {
-//            $exceptCodes = $this->filterNDS === 'nds' ? ['7.11.1'] : ['7.11.1', '7.1', '7.2'];
-//            $amountField = $this->filterNDS === 'nds' ? 'amount' : 'amount_without_nds';
-//
-//                $datesBetween = [$period['start_date'], $period['end_date']];
-//            $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', $exceptCodes);
-//            $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum($amountField)
-//                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum($amountField)
-//                + $period['bonus'];
-//
-//            $generalInfo[$index] = [
-//                'start_date' => $period['start_date'],
-//                'end_date' => $period['end_date'],
-//                'general_amount' => $generalAmount,
-//                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus'], $this->filterNDS !== 'nds'),
-//            ];
-//
-//            $generalTotalAmount += $generalAmount;
-//        }
+                $datesBetween = [$period['start_date'], $period['end_date']];
+            $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', $exceptCodes);
+            $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum($amountField)
+                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum($amountField)
+                + $period['bonus'];
+
+            $generalInfo[$index] = [
+                'start_date' => $period['start_date'],
+                'end_date' => $period['end_date'],
+                'general_amount' => $generalAmount,
+                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus'], $this->filterNDS !== 'nds'),
+            ];
+
+            $generalTotalAmount += $generalAmount;
+        }
 
         $averagePercents = [];
         foreach($objects as $object) {
