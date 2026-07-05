@@ -89,7 +89,7 @@ class PaymentReceiveSheet implements
         $this->fillRow($sheet, $rowIndex, 'Зарплата ИТР', '', $reportInfo['years'], $reportInfo['payment']['salary_itr']);
         $this->fillRow($sheet, $rowIndex, 'Налоги с зп', '', $reportInfo['years'], $reportInfo['payment']['salary_taxes']);
         $this->fillRow($sheet, $rowIndex, 'Услуги трансфера', '', $reportInfo['years'], $reportInfo['payment']['transfer']);
-        $this->fillRow($sheet, $rowIndex, 'Общие затраты (в т.ч офис)', '', $reportInfo['years'], $reportInfo['payment']['general_costs']);
+        $this->fillRow($sheet, $rowIndex, 'Общие расходы (в т.ч офис)', '', $reportInfo['years'], $reportInfo['payment']['general_costs']);
         $this->fillRow($sheet, $rowIndex, 'Налоги (НДС,прибыль)', '', $reportInfo['years'], $reportInfo['payment']['accrued_taxes']);
         $this->fillRow($sheet, $rowIndex, '', 'Итого расходы: ', $reportInfo['years'], $reportInfo['payment']);
 

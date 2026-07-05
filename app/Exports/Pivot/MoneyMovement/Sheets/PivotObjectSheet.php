@@ -105,7 +105,7 @@ class PivotObjectSheet implements
         $sum['payment'] += $payment;
 
         $sheet = $this->fillRow($sheet, $row++, [
-            'object_name' => 'Общие затраты',
+            'object_name' => 'Общие расходы',
             'receive' => $receive,
             'payment' => $payment,
             'total' => $total,

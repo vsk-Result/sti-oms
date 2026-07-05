@@ -331,7 +331,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="ps-5">Общие затраты (в т.ч офис)</td>
+                                    <td class="ps-5">Общие расходы (в т.ч офис)</td>
                                     <td></td>
 
                                     @foreach($info['years'] as $year)

@@ -172,7 +172,7 @@ class PivotSheet implements
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]]
         ]);
 
-        $sheet->setCellValue('A' . $row, 'Общие затраты (расходы центрального офиса, центрального склада, НДС)');
+        $sheet->setCellValue('A' . $row, 'Общие расходы (расходы центрального офиса, центрального склада, НДС)');
         $sheet->setCellValue('C' . $row, $this->services['pivotInfo']['general_balance']);
         $sheet->mergeCells('A' . $row . ':B' . $row);
         $sheet->getStyle('C' . $row)->getNumberFormat()->setFormatCode('#,##0');

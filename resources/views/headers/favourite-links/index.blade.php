@@ -22,7 +22,7 @@
 
             <div class="menu-item">
                 <a class="menu-link py-3" href="{{ route('payments.index') }}?count_per_page=30&object_id%5B%5D=Общее">
-                    <span class="menu-title">Общие затраты</span>
+                    <span class="menu-title">Общие расходы</span>
                 </a>
             </div>
 

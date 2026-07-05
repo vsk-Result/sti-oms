@@ -584,7 +584,7 @@
                         </tr>
 
                         <tr class="fst-italic">
-                            <td class="ps-2 fw-bolder ps-8">Общие затраты офиса</td>
+                            <td class="ps-2 fw-bolder ps-8">Общие расходы офиса</td>
                             <td class="cell-center">
                                 {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
                             </td>
@@ -1041,7 +1041,7 @@
                             </tr>
 
                             <tr class="collapse-row" data-trigger="collapse_{{ $object->id }}" style="display: none;">
-                                <td class="ps-8 fst-italic">Общие затраты офиса</td>
+                                <td class="ps-8 fst-italic">Общие расходы офиса</td>
                                 <td class="cell-center">
                                     {{ \App\Models\CurrencyExchangeRate::format(0, 'RUB', 0, true) }}
                                 </td>

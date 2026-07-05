@@ -10,7 +10,7 @@ class UpdateGeneralCosts extends HandledCommand
 {
     protected $signature = 'oms:update-general-costs';
 
-    protected $description = 'Обновляет общие затраты объектов';
+    protected $description = 'Обновляет общие расходы объектов';
 
     protected string $period = 'Каждые 30 минут';
 

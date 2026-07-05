@@ -21,7 +21,7 @@ class Export implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            new PivotSheet('Общие затраты', $this->requestYears, $this->requestObjects, $this->filterNDS)
+            new PivotSheet('Общие расходы', $this->requestYears, $this->requestObjects, $this->filterNDS)
         ];
     }
 }

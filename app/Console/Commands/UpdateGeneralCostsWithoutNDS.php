@@ -10,7 +10,7 @@ class UpdateGeneralCostsWithoutNDS extends HandledCommand
 {
     protected $signature = 'oms:update-general-costs-without-nds';
 
-    protected $description = 'Обновляет общие затраты объектов без ндс';
+    protected $description = 'Обновляет общие расходы объектов без ндс';
 
     protected string $period = 'Каждые 30 минут';
 

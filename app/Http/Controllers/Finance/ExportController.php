@@ -19,7 +19,7 @@ class ExportController extends Controller
 
         return Excel::download(
             new Export($requestYears, $requestObjects, $filterNDS),
-            'Общие затраты на ' . Carbon::now()->format('d-m-Y') . '.xlsx'
+            'Общие расходы на ' . Carbon::now()->format('d-m-Y') . '.xlsx'
         );
     }
 }

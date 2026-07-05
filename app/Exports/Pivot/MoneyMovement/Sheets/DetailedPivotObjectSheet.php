@@ -209,7 +209,7 @@ class DetailedPivotObjectSheet implements
         $totalReceive += (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '>=', 0)->sum('amount');
 
         $this->fillObjectInfo($sheet, $row, [
-            'title' => 'Общие затраты',
+            'title' => 'Общие расходы',
             'receive' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '>=', 0)->sum('amount'),
             'payment' => (clone $this->payments)->where('type_id', Payment::TYPE_GENERAL)->where('amount', '<', 0)->sum('amount'),
             'period' => $period,

@@ -71,7 +71,7 @@ class ObjectSheet implements
         $sheet->setCellValue('E13', 'Долг на зарплаты');
         $sheet->setCellValue('E14', 'Текущий баланс');
         $sheet->setCellValue('E15', 'Текущий баланс с существующими долгами');
-        $sheet->setCellValue('E16', 'Общие затраты компании');
+        $sheet->setCellValue('E16', 'Общие расходы компании');
         $sheet->setCellValue('E17', 'Промежуточный баланс с текущими долгами и общими расходами компании');
         $sheet->setCellValue('E18', 'Не закрытый аванс');
 

@@ -47,7 +47,7 @@ class Budget extends Model implements Audit
                 'type_id' => self::TYPE_SERVICE_OBJECT,
             ],
             [
-                'name' => 'Общие затраты офиса',
+                'name' => 'Общие расходы офиса',
                 'type_id' => self::TYPE_SERVICE_GENERAL,
             ]
         ];
