@@ -19,7 +19,7 @@ class NotifyToEmailAboutCashflowPayments extends HandledCommand
 
     protected $description = 'Отправляет на почту сотрудникам информацию о платежах cashflow за след неделю';
 
-    protected string $period = 'По понедельникам 09:00';
+    protected string $period = 'По понедельникам и пятницам 09:00';
 
     public function __construct(private ReceivePlanService $receivePlanService)
     {
@@ -40,19 +40,31 @@ class NotifyToEmailAboutCashflowPayments extends HandledCommand
 
         $periods = $this->receivePlanService->getPeriods();
 
-        $payments = [];
+        $currentPayments = [];
         $planPayments = PlanPayment::where('need_notification', true)->get();
         foreach ($planPayments as $planPayment) {
-            $amount = $planPayment->entries->whereBetween('date', [$periods[1]['start'], $periods[1]['end']])->sum('amount');
+            $amount = $planPayment->entries->whereBetween('date', [$periods[0]['start'], $periods[0]['end']])->sum('amount');
             if ($amount != 0) {
-                $payments[$planPayment->name] = $amount;
+                $currentPayments[$planPayment->name] = $amount;
             }
         }
 
+        $nextPayments = [];
+        foreach ($planPayments as $planPayment) {
+            $amount = $planPayment->entries->whereBetween('date', [$periods[1]['start'], $periods[1]['end']])->sum('amount');
+            if ($amount != 0) {
+                $nextPayments[$planPayment->name] = $amount;
+            }
+        }
+
+        if (now()->isFriday()) {
+            $currentPayments = [];
+        }
+
         try {
-            Mail::send('emails.cash-flow.plan_payments', compact('payments'), function ($m) {
+            Mail::send('emails.cash-flow.plan_payments', compact('currentPayments', 'nextPayments'), function ($m) {
                 $m->from('support@st-ing.com', 'OMS Support');
-                $m->subject('OMS. Оплаты CASH FLOW на следующую неделю');
+                $m->subject('OMS. Плановые оплаты CASH FLOW');
 
                 $m->to('inna.kamennaya@dttermo.ru');
                 $m->to('viktoriya.vujisich@st-ing.com');

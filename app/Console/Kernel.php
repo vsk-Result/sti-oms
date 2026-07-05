@@ -55,6 +55,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('oms:update-cash-account-closed-periods')->twiceDaily(9, 16);
         $schedule->command('oms:update-payment-object-worktypeid-by-codes')->twiceDaily(9, 16);
         $schedule->command('oms:import-warning-organizations-fines-data-from-excel')->dailyAt('21:00');
+        $schedule->command('oms:notify-to-email-about-cashflow-payments')->mondays()->at('09:00');
+        $schedule->command('oms:notify-to-email-about-cashflow-payments')->fridays()->at('09:00');
     }
 
     /**
