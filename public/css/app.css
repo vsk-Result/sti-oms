@@ -481,3 +481,34 @@ td.cf-comment:hover .btn-cf-comment, th.cf-comment:hover .btn-cf-comment {
 .border-hover-sti:hover {
     border-color: #f15a22 !important;
 }
+
+mark {
+    background:#FFE37D;
+    color:#181C32;
+    padding:1px 3px;
+    border-radius:3px;
+}
+
+.search-item{
+
+    transition:.15s;
+
+}
+
+.search-item:hover{
+
+    background:var(--bs-gray-100);
+
+}
+
+.search-group{
+
+    position:sticky;
+
+    top:0;
+
+    background:white;
+
+    z-index:2;
+
+}

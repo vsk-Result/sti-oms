@@ -86,7 +86,8 @@ const mainApp = function() {
 
     const initShowDateAndTime = function() {
         const date = new Date();
-        $('#show-date-and-time').text(date.toLocaleString());
+        const formatted = date.toLocaleString();
+        $('#show-date-and-time').text(formatted.substring(0, formatted.length - 3));
     }
 
     const initDateRangePicker = function() {

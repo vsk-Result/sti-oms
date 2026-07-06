@@ -49,6 +49,8 @@
                                     </a>
                                 </span>
                             </div>
+
+                            @include('headers.search.index')
                         @endif
                     </div>
                 </div>
