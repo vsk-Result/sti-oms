@@ -1,5 +1,5 @@
 @if (count($currentPayments) > 0)
-    <p>Плановые оплаты на текущую неделю:</p>
+    <p>Плановые оплаты на текущую неделю ({{ $currentPeriod }}):</p>
 
     <ul>
         @foreach($currentPayments as $paymentName => $amount)
@@ -14,7 +14,7 @@
 @endif
 
 @if (count($nextPayments) > 0)
-    <p>Плановые оплаты на следующую неделю:</p>
+    <p>Плановые оплаты на следующую неделю ({{ $nextPeriod }}):</p>
 
     <ul>
         @foreach($nextPayments as $paymentName => $amount)

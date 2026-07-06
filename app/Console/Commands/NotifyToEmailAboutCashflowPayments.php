@@ -61,8 +61,11 @@ class NotifyToEmailAboutCashflowPayments extends HandledCommand
             $currentPayments = [];
         }
 
+        $currentPeriod = $periods[0]['format'];
+        $nextPeriod = $periods[1]['format'];
+
         try {
-            Mail::send('emails.cash-flow.plan_payments', compact('currentPayments', 'nextPayments'), function ($m) {
+            Mail::send('emails.cash-flow.plan_payments', compact('currentPayments', 'nextPayments', 'currentPeriod', 'nextPeriod'), function ($m) {
                 $m->from('support@st-ing.com', 'OMS Support');
                 $m->subject('OMS. Плановые оплаты CASH FLOW');
 
