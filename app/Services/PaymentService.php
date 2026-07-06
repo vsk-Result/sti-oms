@@ -157,7 +157,7 @@ class PaymentService
         } else {
             $objectsExceptionUsers = ['mariya.serebryakova@st-ing.com'];
 
-            if (!in_array(auth()->user()->email, $objectsExceptionUsers)) {
+            if (!in_array(auth()->user()?->email, $objectsExceptionUsers)) {
                 if (auth()->user() && auth()->user()->hasRole(['object-leader', 'finance-object-user', 'finance-object-user-mini'])) {
                     $paymentQuery->whereIn('object_id', auth()->user()->objects->pluck('id'));
                 }
