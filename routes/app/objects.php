@@ -92,6 +92,8 @@ Route::get('objects/{object}/cash-payments', [CashPaymentController::class, 'ind
 // Файлы
 
 Route::get('objects/{object}/files', [FileController::class, 'index'])->name('objects.files.index');
+Route::post('objects/{object}/files', [FileController::class, 'store'])->name('objects.files.store');
+Route::delete('objects/{object}/files/delete', [FileController::class, 'destroy'])->name('objects.files.destroy');
 
 // Активность
 

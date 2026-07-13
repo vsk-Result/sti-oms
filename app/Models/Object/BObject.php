@@ -438,4 +438,9 @@ class BObject extends Model implements Audit
     {
         return array_merge(['000'], self::where('code', '>=', '346')->pluck('code')->toArray());
     }
+
+    public function getFilesPath(): string
+    {
+        return 'objects/' . $this->code . '/files';
+    }
 }

@@ -58,6 +58,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-active-primary me-6 {{ request()->is('*/workers-cost-report') ? 'active' : '' }}" href="{{ route('objects.workers_cost_report.index', $object) }}">Расчет стоимости рабочих</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-active-primary me-6 {{ request()->is('*/files') ? 'active' : '' }}" href="{{ route('objects.files.index', $object) }}">Файлы</a>
+                                </li>
 {{--                                @endif--}}
         {{--                            <li class="nav-item d-flex flex-row align-items-center">--}}
         {{--                                <a class="nav-link text-active-primary me-6 {{ request()->is('*/check') ? 'active' : '' }}" href="{{ route('objects.check.index', $object) }}?object_id%5B%5D={{ $object->id }}">Проверка</a>--}}
