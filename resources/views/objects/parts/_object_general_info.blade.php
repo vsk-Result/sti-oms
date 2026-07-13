@@ -110,7 +110,7 @@
         @php
             $uploadDebtStatusService = new App\Services\UploadDebtStatusService();
             $lastUploadDebt = $uploadDebtStatusService->getLastUpdatedDate('public/objects-debts/', 'Raboty(XLSX).xlsx');
-            $lastUploadDebtObject = $uploadDebtStatusService->getLastUpdatedDate('public/objects-debts/', $object->code . '.xlsx');
+            $lastUploadDebtObject = $uploadDebtStatusService->getLastUpdatedDate('public/objects-debts/', $object->code . '.xlsx', ['object_filespath' => $object->getFilesPath()]);
 
             $hasUploadDebtProblem = false;
 

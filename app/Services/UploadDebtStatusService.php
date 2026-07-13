@@ -264,13 +264,22 @@ class UploadDebtStatusService
         return $linksInfo;
     }
 
-    public function getLastUpdatedDate(string $path, string $filename): string
+    public function getLastUpdatedDate(string $path, string $filename, ?array $options = []): string
     {
         // Путь до файла с автоматической загрузкой
         $importFilePath = storage_path() . '/app/public/' . $path . $filename;
 
         //Путь до файла с ручной загрузкой
         $importManualFilePath = storage_path() . '/app/public/public/objects-debts-manuals/' . $filename;
+
+        if ( isset($options['object_filespath'])) {
+            //Путь до файла, загруженного у объекта
+            $importObjectFilePath = storage_path() . '/app/public/' . $options['object_filespath'] . '/' . $filename;
+
+            if (File::exists($importObjectFilePath)) {
+                return '-';
+            }
+        }
 
         if (! File::exists($importFilePath) && ! File::exists($importManualFilePath)) {
             return '-';
