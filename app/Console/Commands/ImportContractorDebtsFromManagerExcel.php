@@ -39,7 +39,17 @@ class ImportContractorDebtsFromManagerExcel extends HandledCommand
                 continue;
             }
 
-            $import = new ContractorImportFromManager($objectCode . '.xlsx', $objectCode);
+            $object = BObject::where('code', $objectCode)->first();
+
+            if (!$object) {
+                continue;
+            }
+
+            $import = new ContractorImportFromManager(
+                $objectCode . '.xlsx',
+                $objectCode,
+                $object->getFilesPath()
+            );
 
             $this->sendInfoMessage('Попытка загрузить файл ' . $import->getFilename());
 

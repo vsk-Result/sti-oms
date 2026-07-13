@@ -10,11 +10,12 @@ use Illuminate\Http\UploadedFile;
 
 class ContractorImportFromManager extends BaseImport
 {
-    public function __construct(string $filename, string $objectCode)
+    public function __construct(string $filename, string $objectCode, string $objectFilesPath)
     {
         parent::__construct();
 
         $this->filename = $filename;
+        $this->filespath = $objectFilesPath;
         $this->objectCode = $objectCode;
         $this->sanitizer = new Sanitizer();
         $this->additionalData = [
@@ -34,9 +35,7 @@ class ContractorImportFromManager extends BaseImport
 
             return $importInfo;
         }
-
         $importData = Excel::toArray(new ContractorExcelImport(), new UploadedFile($this->getLatestFileToImport(), $this->filename));
-
         if (! isset($importData['OMS'])) {
             $importInfo['errors'][] = 'В загружаемом файле "' . $this->filename . '" отсутствует лист OMS';
 

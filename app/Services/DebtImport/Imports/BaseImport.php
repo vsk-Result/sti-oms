@@ -11,6 +11,7 @@ class BaseImport
     protected OrganizationService $organizationService;
 
     protected string $filename;
+    protected string $filespath;
     protected string $pathFromIntegrations;
     protected string $pathFromManual;
     protected array $additionalData;
@@ -21,6 +22,7 @@ class BaseImport
         $this->pathFromIntegrations = 'public/objects-debts/';
         $this->pathFromManual = 'public/objects-debts-manuals/';
         $this->additionalData = [];
+        $this->filespath = '';
     }
 
     public function getFilename(): string
@@ -46,6 +48,19 @@ class BaseImport
         return $this->pathFromManual . $this->filename;
     }
 
+    protected function getFilesPath($isAbsolute = true): string
+    {
+        if (mb_strlen($this->filespath) === 0) {
+            return $this->getAutoPath($isAbsolute);
+        }
+
+        if ($isAbsolute) {
+            return storage_path() . '/app/public/' . $this->filespath . '/' . $this->filename;
+        }
+
+        return $this->filespath . '/' . $this->filename;
+    }
+
     protected function fileToImportNotExist(): bool
     {
         return ! File::exists($this->getAutoPath()) && ! File::exists($this->getManualPath());
@@ -55,6 +70,11 @@ class BaseImport
     {
         $autoPath = $this->getAutoPath();
         $manualPath = $this->getManualPath();
+        $filesPath = $this->getFilesPath();
+
+        if (File::exists($filesPath)) {
+            return $filesPath;
+        }
 
         if (! File::exists($autoPath)) {
             return $manualPath;
@@ -71,6 +91,11 @@ class BaseImport
     {
         $autoPath = $this->getAutoPath();
         $manualPath = $this->getManualPath();
+        $filesPath = $this->getFilesPath();
+
+        if (File::exists($filesPath)) {
+            return $this->getFilesPath(false);
+        }
 
         if (! File::exists($autoPath)) {
             return $this->getManualPath(false);
