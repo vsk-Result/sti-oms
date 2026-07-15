@@ -22,7 +22,7 @@ class CalculateSalaryService
 
         $details = BObject::active()->first()->getWorkSalaryDebtDetails();
         foreach ($details as $detail) {
-            $this->date = $detail['origin_date'];
+            $this->date = $detail['origin_date'] ?? '';
 
             $this->renderFinances();
         }

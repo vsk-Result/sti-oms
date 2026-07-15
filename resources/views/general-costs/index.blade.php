@@ -111,7 +111,7 @@
 
             $periodsByYears = array_reverse($periodsByYears, true);
 
-            $generalCostsInfo = Illuminate\Support\Facades\Cache::get('general_costs___1', function() use ($periodsByYears, $object27_1) {
+            $generalCostsInfo = Illuminate\Support\Facades\Cache::remember('general_costs___1', now()->addHour(), function() use ($periodsByYears, $object27_1) {
                 $generalInfo = [];
                 $groupedByYearsInfo = [];
                 $generalTotalAmount = 0;

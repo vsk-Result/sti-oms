@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 if (! function_exists('get_extension_image_path')) {
     function get_extension_image_path(string $extension) {

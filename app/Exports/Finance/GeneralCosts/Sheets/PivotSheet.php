@@ -6,7 +6,9 @@ use App\Models\CurrencyExchangeRate;
 use App\Models\Object\BObject;
 use App\Models\Object\GeneralCost;
 use App\Models\Payment;
+use App\Services\ObjectService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -49,102 +51,181 @@ class PivotSheet implements
 
         $object27_1 = BObject::where('code', '27.1')->first();
 
-        $periods = [
-            [
-                'start_date' => '2017-01-01',
-                'end_date' => '2017-12-31',
-                'bonus' => 0,
+        $periodsByYears = [
+            '2017' => [
+                [
+                    'start_date' => '2017-01-01',
+                    'end_date' => '2017-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2018-01-01',
-                'end_date' => '2018-12-31',
-                'bonus' => 21421114,
+            '2018' => [
+                [
+                    'start_date' => '2018-01-01',
+                    'end_date' => '2018-12-31',
+                    'bonus' => 21421114,
+                ],
             ],
-            [
-                'start_date' => '2019-01-01',
-                'end_date' => '2019-12-31',
-                'bonus' => (39760000 + 692048),
+            '2019' => [
+                [
+                    'start_date' => '2019-01-01',
+                    'end_date' => '2019-12-31',
+                    'bonus' => (39760000 + 692048),
+                ],
             ],
-            [
-                'start_date' => '2020-01-01',
-                'end_date' => '2020-12-31',
-                'bonus' => (2000000 + 418000 + 1615000),
+            '2020' => [
+                [
+                    'start_date' => '2020-01-01',
+                    'end_date' => '2020-12-31',
+                    'bonus' => (2000000 + 418000 + 1615000),
+                ],
             ],
-            [
-                'start_date' => '2021-01-01',
-                'end_date' => '2021-03-02',
-                'bonus' => 600000,
+            '2021' => [
+                [
+                    'start_date' => '2021-01-01',
+                    'end_date' => '2021-03-02',
+                    'bonus' => 600000,
+                ],
+                [
+                    'start_date' => '2021-03-03',
+                    'end_date' => '2021-12-31',
+                    'bonus' => (600000 + 68689966),
+                ],
             ],
-            [
-                'start_date' => '2021-03-03',
-                'end_date' => '2021-12-31',
-                'bonus' => (600000 + 68689966),
+            '2022' => [
+                [
+                    'start_date' => '2022-01-01',
+                    'end_date' => '2022-10-11',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2022-10-12',
+                    'end_date' => '2022-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2022-01-01',
-                'end_date' => '2022-10-11',
-                'bonus' => 0,
+            '2023' => [
+                [
+                    'start_date' => '2023-01-01',
+                    'end_date' => '2023-07-20',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2023-07-21',
+                    'end_date' => '2023-11-28',
+                    'bonus' => 0,
+                ],
+                [
+                    'start_date' => '2023-11-29',
+                    'end_date' => '2023-12-31',
+                    'bonus' => 0,
+                ]
             ],
-            [
-                'start_date' => '2022-10-12',
-                'end_date' => '2022-12-31',
-                'bonus' => 0,
+            '2024' => [
+                [
+                    'start_date' => '2024-01-01',
+                    'end_date' => '2024-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2023-01-01',
-                'end_date' => '2023-07-20',
-                'bonus' => 0,
+            '2025' => [
+                [
+                    'start_date' => '2025-01-01',
+                    'end_date' => '2025-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2023-07-21',
-                'end_date' => '2023-11-28',
-                'bonus' => 0,
+            '2026' => [
+                [
+                    'start_date' => '2026-01-01',
+                    'end_date' => '2026-12-31',
+                    'bonus' => 0,
+                ],
             ],
-            [
-                'start_date' => '2023-11-29',
-                'end_date' => '2023-12-31',
-                'bonus' => 0,
-            ],
-            [
-                'start_date' => '2024-01-01',
-                'end_date' => '2024-12-31',
-                'bonus' => 0,
-            ],
-            [
-                'start_date' => '2025-01-01',
-                'end_date' => '2025-12-31',
-                'bonus' => 0,
-            ],
-            [
-                'start_date' => '2026-01-01',
-                'end_date' => '2026-12-31',
-                'bonus' => 0,
-            ]
         ];
 
-        $periods = array_reverse($periods);
+        $periodsByYears = array_reverse($periodsByYears, true);
 
-        $generalTotalAmount = 0;
-        $generalInfo = [];
-        foreach ($periods as $index => $period) {
-            $exceptCodes = $this->filterNDS === 'nds' ? ['7.11.1'] : ['7.11.1', '7.1', '7.2'];
-            $amountField = $this->filterNDS === 'nds' ? 'amount' : 'amount_without_nds';
+        $generalCostsInfo = Cache::remember('general_costs___1', now()->addHour(), function() use ($periodsByYears, $object27_1) {
+            $generalInfo = [];
+            $groupedByYearsInfo = [];
+            $generalTotalAmount = 0;
 
-                $datesBetween = [$period['start_date'], $period['end_date']];
-            $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', $exceptCodes);
-            $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum($amountField)
-                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum($amountField)
-                + $period['bonus'];
+            foreach ($periodsByYears as $year => $periods) {
+                $groupedByYearsInfo[$year]['total'] = [
+                    'cuming_amount' => 0,
+                    'general_amount' => 0,
+                ];
+                foreach ($periods as $index => $period) {
+                    $datesBetween = [$period['start_date'], $period['end_date']];
+                    $paymentQuery = \App\Models\Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11.1']);
+                    $generalAmount = (clone $paymentQuery)->where('type_id', \App\Models\Payment::TYPE_GENERAL)->sum('amount')
+                        + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum('amount')
+                        + $period['bonus'];
 
-            $generalInfo[$index] = [
-                'start_date' => $period['start_date'],
-                'end_date' => $period['end_date'],
-                'general_amount' => $generalAmount,
-                'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus'], $this->filterNDS !== 'nds'),
+                    $generalInfo[$year][$index] = [
+                        'start_date' => $period['start_date'],
+                        'end_date' => $period['end_date'],
+                        'cuming_amount' => 0,
+                        'general_amount' => $generalAmount,
+                        'info' => \App\Services\ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus']),
+                    ];
+
+                    $generalTotalAmount += $generalAmount;
+
+                    foreach ($generalInfo[$year][$index]['info'] as $objectId => $i) {
+                        if (!isset($groupedByYearsInfo[$year][$objectId]['cuming_amount'])) {
+                            $groupedByYearsInfo[$year][$objectId]['cuming_amount'] = 0;
+                        }
+                        if (!isset($groupedByYearsInfo[$year][$objectId]['general_amount'])) {
+                            $groupedByYearsInfo[$year][$objectId]['general_amount'] = 0;
+                        }
+
+                        $groupedByYearsInfo[$year][$objectId]['cuming_amount'] += $i['cuming_amount'];
+                        $groupedByYearsInfo[$year][$objectId]['general_amount'] += $i['general_amount'];
+
+                        $generalInfo[$year][$index]['cuming_amount'] += $i['cuming_amount'];
+                    }
+
+                    foreach ($generalInfo[$year][$index]['info'] as $i) {
+                        $groupedByYearsInfo[$year]['total']['cuming_amount'] += $i['cuming_amount'];
+                    }
+
+                    $groupedByYearsInfo[$year]['total']['general_amount'] += $generalAmount;
+                }
+            }
+
+            return [
+                'generalInfo' => $generalInfo,
+                'groupedByYearsInfo' => $groupedByYearsInfo,
+                'generalTotalAmount' => $generalTotalAmount,
             ];
+        });
 
-            $generalTotalAmount += $generalAmount;
-        }
+        $generalInfo = $generalCostsInfo['generalInfo'];
+        $generalTotalAmount = $generalCostsInfo['generalTotalAmount'];
+//        $generalTotalAmount = 0;
+//        $generalInfo = [];
+//        foreach ($periods as $index => $period) {
+//            $exceptCodes = $this->filterNDS === 'nds' ? ['7.11.1'] : ['7.11.1', '7.1', '7.2'];
+//            $amountField = $this->filterNDS === 'nds' ? 'amount' : 'amount_without_nds';
+//
+//            $datesBetween = [$period['start_date'], $period['end_date']];
+//            $paymentQuery = Payment::query()->whereBetween('date', $datesBetween)->whereIn('company_id', [1, 5])->whereNotIn('code', $exceptCodes);
+//            $generalAmount = (clone $paymentQuery)->where('type_id', Payment::TYPE_GENERAL)->sum($amountField)
+//                + (clone $paymentQuery)->where('object_id', $object27_1->id)->sum($amountField)
+//                + $period['bonus'];
+//
+//            $generalInfo[$index] = [
+//                'start_date' => $period['start_date'],
+//                'end_date' => $period['end_date'],
+//                'cuming_amount' => 0,
+//                'general_amount' => $generalAmount,
+//                'info' => ObjectService::getGeneralCostsByPeriod($period['start_date'], $period['end_date'], $period['bonus'], $this->filterNDS !== 'nds'),
+//            ];
+//
+//            $generalTotalAmount += $generalAmount;
+//        }
 
         $averagePercents = [];
         foreach($objects as $object) {
@@ -155,18 +236,20 @@ class PivotSheet implements
             $percentSum = 0;
             $percentCount = 0;
 
-            foreach($generalInfo as $info) {
-                if (isset($info['info'][$object->id])) {
-                    $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0);
-                    $percentSum += $percent;
-                    $percentCount++;
+            foreach($generalInfo as $infoArray) {
+                foreach ($infoArray as $info) {
+                    if (isset($info['info'][$object->id])) {
+                        $percent = ($info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0);
+                        $percentSum += $percent;
+                        $percentCount++;
+                    }
                 }
             }
 
             $averagePercents[$object->id] = $percentCount > 0 ? $percentSum / $percentCount : 0;
         }
 
-        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU'];
+        $columns = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BK', 'BL', 'BM', 'BN', 'BO', 'BP', 'BQ', 'BR', 'BS', 'BT', 'BU', 'BV', 'BW', 'BX', 'BY', 'BZ'];
 
         $sheet->getParent()->getDefaultStyle()->getFont()->setName('Calibri')->setSize(11);
 
@@ -175,18 +258,22 @@ class PivotSheet implements
         $sheet->setCellValue('D1', $generalTotalAmount);
 
         $columnIndex = 0;
-        foreach($generalInfo as $info) {
-            $sheet->setCellValue($columns[$columnIndex] . '1', 'С ' . Carbon::parse($info['start_date'])->format('d.m.Y') . ' ПО ' .  Carbon::parse($info['end_date'])->format('d.m.Y'));
-            $sheet->setCellValue($columns[$columnIndex + 2] . '1', $info['general_amount']);
-            $columnIndex += 3;
+        foreach($generalInfo as $infoArray) {
+            foreach ($infoArray as $info) {
+                $sheet->setCellValue($columns[$columnIndex] . '1', 'С ' . Carbon::parse($info['start_date'])->format('d.m.Y') . ' ПО ' .  Carbon::parse($info['end_date'])->format('d.m.Y'));
+                $sheet->setCellValue($columns[$columnIndex + 2] . '1', $info['general_amount']);
+                $columnIndex += 3;
+            }
         }
 
         $sheet->getStyle('D1')->getFont()->setColor(new Color($generalTotalAmount < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
         $columnIndex = 2;
-        foreach($generalInfo as $info) {
-            $sheet->getStyle($columns[$columnIndex] . '1')->getFont()->setColor(new Color($info['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-            $columnIndex += 3;
+        foreach($generalInfo as $infoArray) {
+            foreach ($infoArray as $info) {
+                $sheet->getStyle($columns[$columnIndex] . '1')->getFont()->setColor(new Color($info['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                $columnIndex += 3;
+            }
         }
 
         $sheet->setCellValue('A2', 'Объект');
@@ -195,11 +282,13 @@ class PivotSheet implements
         $sheet->setCellValue('D2', 'Общие расходы');
 
         $columnIndex = 0;
-        foreach($generalInfo as $info) {
-            $sheet->setCellValue($columns[$columnIndex] . '2', 'Получено');
-            $sheet->setCellValue($columns[$columnIndex + 1] . '2', '%');
-            $sheet->setCellValue($columns[$columnIndex + 2] . '2', 'Общие расходы на объект');
-            $columnIndex += 3;
+        foreach($generalInfo as $infoArray) {
+            foreach ($infoArray as $info) {
+                $sheet->setCellValue($columns[$columnIndex] . '2', 'Получено');
+                $sheet->setCellValue($columns[$columnIndex + 1] . '2', '%');
+                $sheet->setCellValue($columns[$columnIndex + 2] . '2', 'Общие расходы на объект');
+                $columnIndex += 3;
+            }
         }
 
         $row = 3;
@@ -212,9 +301,11 @@ class PivotSheet implements
 
             $totalCuming = 0;
             $totalGeneral = 0;
-            foreach($generalInfo as $info) {
-                $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
-                $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+            foreach($generalInfo as $infoArray) {
+                foreach ($infoArray as $info) {
+                    $totalCuming += ($info['info'][$object->id]['cuming_amount'] ?? 0);
+                    $totalGeneral += ($info['info'][$object->id]['general_amount'] ?? 0);
+                }
             }
 
             $sheet->setCellValue('B' . $row,$totalCuming);
@@ -225,17 +316,19 @@ class PivotSheet implements
             $sheet->getStyle('D' . $row)->getFont()->setColor(new Color($totalGeneral < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
 
             $columnIndex = 0;
-            foreach($generalInfo as $info) {
-                if (isset ($info['info'][$object->id])) {
-                    $sheet->setCellValue($columns[$columnIndex] . $row, $info['info'][$object->id]['cuming_amount']);
-                    $sheet->setCellValue($columns[$columnIndex + 1] . $row, $info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0);
-                    $sheet->setCellValue($columns[$columnIndex + 2] . $row, $info['info'][$object->id]['general_amount']);
+            foreach($generalInfo as $infoArray) {
+                foreach ($infoArray as $info) {
+                    if (isset ($info['info'][$object->id])) {
+                        $sheet->setCellValue($columns[$columnIndex] . $row, $info['info'][$object->id]['cuming_amount']);
+                        $sheet->setCellValue($columns[$columnIndex + 1] . $row, $info['info'][$object->id]['cuming_amount'] > 0 ? abs($info['info'][$object->id]['general_amount'] / $info['info'][$object->id]['cuming_amount']) : 0);
+                        $sheet->setCellValue($columns[$columnIndex + 2] . $row, $info['info'][$object->id]['general_amount']);
 
-                    $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
-                    $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                        $sheet->getStyle($columns[$columnIndex] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['cuming_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                        $sheet->getStyle($columns[$columnIndex + 2] . $row)->getFont()->setColor(new Color($info['info'][$object->id]['general_amount'] < 0 ? Color::COLOR_RED : Color::COLOR_DARKGREEN));
+                    }
+
+                    $columnIndex += 3;
                 }
-
-                $columnIndex += 3;
             }
 
             $sheet->getRowDimension($row)->setRowHeight(50);
@@ -245,7 +338,6 @@ class PivotSheet implements
         $row--;
 
         $sheet->getRowDimension(1)->setRowHeight(50);
-
         $sheet->getColumnDimension('A')->setWidth(43);
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(20);
@@ -371,9 +463,9 @@ class PivotSheet implements
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->freezePane('B2');
-            },
+//            AfterSheet::class => function(AfterSheet $event) {
+//                $event->sheet->getDelegate()->freezePane('B2');
+//            },
         ];
     }
 }
