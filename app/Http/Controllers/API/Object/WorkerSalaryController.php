@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\API\Object;
 
 use App\Http\Controllers\Controller;
-use App\Models\CurrencyExchangeRate;
 use App\Models\FinanceReportHistory;
 use App\Models\Loan;
 use App\Models\Object\BObject;
-use App\Models\Status;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -43,11 +41,11 @@ class WorkerSalaryController extends Controller
                 return response()->json(['error' => 'Отсутствует access_objects'], 403);
             }
 
-            $objects = BObject::where('status_id', Status::STATUS_ACTIVE)->orderBy('code')->get();
+            $objects = BObject::orderBy('code')->get();
 
             if ($request->get('access_objects') !== '*') {
                 $accessObjects = explode(',', $request->get('access_objects'));
-                $objects = BObject::where('status_id', Status::STATUS_ACTIVE)->whereIn('id', $accessObjects)->orderBy('code')->get();
+                $objects = BObject::whereIn('id', $accessObjects)->orderBy('code')->get();
             }
 
         } else {
