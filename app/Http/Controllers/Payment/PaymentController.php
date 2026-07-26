@@ -40,17 +40,12 @@ class PaymentController extends Controller
             if ($request->get('type') === 'НДФЛ') {
                 $paymentQuery->where('type_id', Payment::TYPE_GENERAL)
                     ->where('company_id', 1)
-                    ->where(function($q) {
-                        $q->where('description', 'LIKE', '%Налог на доходы физ. лиц%');
-                        $q->orWhere('description', 'LIKE', '%Налог на доходы физических лиц%');
-                        $q->orWhere('description', 'LIKE', '%НДФЛ%');
-                    })
-                    ->where('description', 'NOT LIKE', '%аренд%')
+                    ->where('code', '7.3.1')
                     ->where('description', 'LIKE', '%' . $request->get('search') . '%');
             } else if ($request->get('type') === 'Страховые взносы') {
                 $paymentQuery->where('type_id', Payment::TYPE_GENERAL)
                     ->where('company_id', 1)
-                    ->where('description', 'LIKE', '%взносы%')
+                    ->where('code', '7.3.2')
                     ->where('description', 'LIKE', '%' . $request->get('search') . '%');
             }
 
