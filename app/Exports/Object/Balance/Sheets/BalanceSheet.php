@@ -4,6 +4,7 @@ namespace App\Exports\Object\Balance\Sheets;
 
 use App\Models\FinanceReportHistory;
 use App\Models\Object\BObject;
+use App\Models\Object\ResponsiblePersonPosition;
 use App\Models\PivotObjectDebt;
 use App\Services\PivotObjectDebtService;
 use Carbon\Carbon;
@@ -115,11 +116,13 @@ class BalanceSheet implements
         $sheet->getStyle('B4:D8')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('fce3d6');
         $sheet->getStyle('B4:D8')->getAlignment()->setVertical('center')->setHorizontal('left');
 
+        $objectBoss = $object->responsiblePersons()->where('position_id', 1)->first();
+
         $sheet->setCellValue('E4', $object->code);
         $sheet->setCellValue('E5', $object->name);
         $sheet->setCellValue('E6', $object->address);
-        $sheet->setCellValue('E7', $object->responsible_name);
-        $sheet->setCellValue('E8', $object->responsible_email);
+        $sheet->setCellValue('E7', $objectBoss ? $objectBoss->fullname : '');
+        $sheet->setCellValue('E8', $objectBoss ? !empty($objectBoss->email) ? ($objectBoss->email . ', ' . $objectBoss->phone) : $objectBoss->phone : '');
         $sheet->mergeCells('E4:X4');
         $sheet->mergeCells('E5:X5');
         $sheet->mergeCells('E6:X6');
