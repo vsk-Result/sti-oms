@@ -4,6 +4,7 @@ namespace App\Http\Controllers\TaxSplit;
 
 use App\Http\Controllers\Controller;
 use App\Imports\TaxSplit\TaxSplitImport;
+use App\Models\Payment;
 use App\Services\SplitTaxPaymentsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,11 @@ class TaxSplitController extends Controller
 
     public function index(): View
     {
+        // Автоматическая разбивка по данным из 1С
+        $payments = $this->splitTaxPaymentsService->getPaymentsToSplit();
+        return view('tax-split.index_auto', compact('payments'));
+
+        // Ручная разбивка по данным из файла Excel
         $taxTypes = ['НДФЛ' => 'НДФЛ', 'Страховые взносы' => 'Страховые взносы'];
         $payments = [];
 

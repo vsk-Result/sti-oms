@@ -185,4 +185,29 @@ class SplitTaxPaymentsService
 
         return $result;
     }
+
+    public function getPaymentsToSplit()
+    {
+        $payments = Payment::where('type_id', Payment::TYPE_GENERAL)
+            ->where('company_id', 1)
+            ->whereIn('code', ['7.3.1', '7.3.2'])
+            ->orderByDesc('date')
+            ->orderByDesc('amount')
+            ->take(50)
+            ->get();
+
+
+        $result = [];
+        foreach ($payments as $payment) {
+            $result[$payment->id] = sprintf(
+                '%s | %s | %s | %s',
+                $payment->getDateFormatted(),
+                $payment->code,
+                $payment->getAmount(),
+                $payment->description
+            );
+        }
+
+        return $result;
+    }
 }

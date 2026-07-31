@@ -207,7 +207,7 @@ const mainApp = function() {
             }
         })
         .fail(function(xhr) {
-            if (statusText === 'abort') {
+            if (xhr.statusText === 'abort') {
                 return;
             }
 
