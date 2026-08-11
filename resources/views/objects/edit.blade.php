@@ -5,6 +5,8 @@
 @section('breadcrumbs', Breadcrumbs::render('objects.edit', $object))
 
 @section('content')
+    @include('objects.modals.object_add_responsible_user')
+
     <div class="post" id="kt_post">
         <div id="kt_content_container" class="container">
             <div class="card mb-5 mb-xl-8">
@@ -167,7 +169,7 @@
                                             <tr>
                                                 <td>
                                                     <input
-                                                            class="form-control form-control-lg form-control-solid"
+                                                            class="form-control form-control-lg form-control-solid field-name"
                                                             type="text"
                                                             value=""
                                                             name="person_name[]"
@@ -182,7 +184,7 @@
                                                 </td>
                                                 <td>
                                                     <input
-                                                            class="form-control form-control-lg form-control-solid"
+                                                            class="form-control form-control-lg form-control-solid field-email"
                                                             type="email"
                                                             value=""
                                                             name="person_email[]"
@@ -190,13 +192,21 @@
                                                 </td>
                                                 <td>
                                                     <input
-                                                            class="form-control form-control-lg form-control-solid"
+                                                            class="form-control form-control-lg form-control-solid field-phone"
                                                             type="text"
                                                             value=""
                                                             name="person_phone[]"
                                                     />
                                                 </td>
                                                 <td>
+                                                    <a
+                                                            title="Найти среди пользователей"
+                                                            href="javascript:void(0);"
+                                                            class="responsible-user btn btn-icon btn-primary btn-active-color-white fs-8"
+                                                    >
+                                                        <i class="fas fa-user"></i>
+                                                    </a>
+
                                                     <button
                                                             type="button"
                                                             class="destroy-person btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
@@ -235,7 +245,7 @@
                                                     <tr>
                                                         <td>
                                                             <input
-                                                                class="form-control form-control-lg form-control-solid"
+                                                                class="form-control form-control-lg form-control-solid field-name"
                                                                 type="text"
                                                                 value="{{ $person->fullname }}"
                                                                 name="isset_person_name[{{ $person->id }}]"
@@ -251,7 +261,7 @@
                                                         </td>
                                                         <td>
                                                             <input
-                                                                class="form-control form-control-lg form-control-solid"
+                                                                class="form-control form-control-lg form-control-solid field-email"
                                                                 type="email"
                                                                 value="{{ $person->email }}"
                                                                 name="isset_person_email[{{ $person->id }}]"
@@ -259,13 +269,21 @@
                                                         </td>
                                                         <td>
                                                             <input
-                                                                    class="form-control form-control-lg form-control-solid"
-                                                                    type="text"
-                                                                    value="{{ $person->phone }}"
-                                                                    name="isset_person_phone[{{ $person->id }}]"
+                                                                class="form-control form-control-lg form-control-solid field-phone"
+                                                                type="text"
+                                                                value="{{ $person->phone }}"
+                                                                name="isset_person_phone[{{ $person->id }}]"
                                                             />
                                                         </td>
-                                                        <td>
+                                                        <td class="d-flex gap-2">
+                                                            <a
+                                                                title="Найти среди пользователей"
+                                                                href="javascript:void(0);"
+                                                                class="responsible-user btn btn-icon btn-primary btn-active-color-white fs-8"
+                                                            >
+                                                                <i class="fas fa-user"></i>
+                                                            </a>
+
                                                             <button
                                                                     type="button"
                                                                     class="destroy-person btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger"
@@ -340,6 +358,8 @@
 
 @push('scripts')
     <script>
+        let $row;
+
         $(function() {
 
             $('#create-responsible-person').on('click', function () {
@@ -348,6 +368,22 @@
                 $('#responsible-persons-table tbody').append($person.find('tr'));
 
                 KTApp.initSelect2();
+            });
+
+            $(document).on('click', '.responsible-user', function () {
+                $row = $(this).closest('tr');
+                $('#objectAddResponsibleUserModal').modal('show');
+            });
+
+            $(document).on('click', '#responsible-user-choose', function () {
+                const userValue = $('#responsible-user-select').val();
+                const [userName, userEmail, userPhone] = userValue.split('::');
+
+                $row.find('input.field-name').val(userName);
+                $row.find('input.field-email').val(userEmail);
+                $row.find('input.field-phone').val(userPhone);
+
+                $('#objectAddResponsibleUserModal').modal('hide');
             });
 
             $(document).on('click', '.destroy-person', function() {

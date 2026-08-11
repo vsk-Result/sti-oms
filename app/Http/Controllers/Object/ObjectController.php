@@ -12,6 +12,7 @@ use App\Models\Object\ResponsiblePersonPosition;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Status;
+use App\Models\User;
 use App\Services\Object\ObjectBudgetService;
 use App\Services\ObjectService;
 use Carbon\Carbon;
@@ -100,8 +101,9 @@ class ObjectController extends Controller
         $positions = ResponsiblePersonPosition::getPositions();
 
         $budgets = $this->budgetService->getObjectBudgets($object->id);
+        $users = User::orderBy('name')->get();
 
-        return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields', 'positions', 'budgets'));
+        return view('objects.edit', compact('object', 'statuses', 'organizations', 'prognozFields', 'positions', 'budgets', 'users'));
     }
 
     public function update(BObject $object, UpdateObjectRequest $request): RedirectResponse
