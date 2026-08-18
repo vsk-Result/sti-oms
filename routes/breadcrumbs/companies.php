@@ -7,7 +7,7 @@ use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 Breadcrumbs::for('companies.index', function (BreadcrumbTrail $trail) {
     $route = auth()->user()->can('index companies') ? route('companies.index') : null;
     $trail->parent('home');
-    $trail->push('Наши компании', $route);
+    $trail->push('Компании', $route);
 });
 
 Breadcrumbs::for('companies.create', function (BreadcrumbTrail $trail) {

@@ -393,7 +393,15 @@
             @can('index companies')
                 <div class="menu-item">
                     <a href="{{ route('companies.index') }}" class="menu-link {{ request()->is('companies*') ? 'active' : '' }}">
-                        <span class="menu-title">Наши компании</span>
+                        <span class="menu-title">Компании</span>
+                    </a>
+                </div>
+            @endcan
+
+            @can('index banks')
+                <div class="menu-item">
+                    <a href="{{ route('banks.index') }}" class="menu-link {{ request()->is('banks*') ? 'active' : '' }}">
+                        <span class="menu-title">Банки</span>
                     </a>
                 </div>
             @endcan
