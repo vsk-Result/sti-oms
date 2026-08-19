@@ -51,6 +51,11 @@ class PaymentImport extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    public function bank(): BelongsTo
+    {
+        return $this->belongsTo(Bank::class, 'bank_id');
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'import_id');
@@ -151,7 +156,19 @@ class PaymentImport extends Model
             return false;
         }
 
-        return is_valid_amount_in_range($this->getBalanceOffset());
+        if ($this->date <= $this->bank->balance_date) {
+            return is_valid_amount_in_range($this->getBalanceOffset());
+        }
+
+        $imports = self::where('type_id', self::TYPE_STATEMENT)
+            ->whereBetween('date', [$this->bank->balance_date, $this->date])
+            ->where('bank_id', $this->bank_id)
+            ->where('company_id', $this->company_id)
+            ->get();
+
+        $validOutgoingBalance = $imports->sum('amount_receive') + $imports->sum('amount_pay');
+
+        return (float) $this->outgoing_balance !== $validOutgoingBalance;
     }
 
     public function getBalanceOffset()

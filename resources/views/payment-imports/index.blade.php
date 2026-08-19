@@ -71,15 +71,15 @@
                                     </a>
                                 </div>
 
-                                <div class="menu-item px-3">
-                                    <a href="{{ route('payment_imports.types.crm_cost_closures.create') }}" class="menu-link px-3">
-                                        Из кассы CRM
+{{--                                <div class="menu-item px-3">--}}
+{{--                                    <a href="{{ route('payment_imports.types.crm_cost_closures.create') }}" class="menu-link px-3">--}}
+{{--                                        Из кассы CRM--}}
 
-                                        @if ($closuresCount > 0)
-                                            <span class="ms-4 badge badge-sm badge-circle badge-danger">{{ $closuresCount }}</span>
-                                        @endif
-                                    </a>
-                                </div>
+{{--                                        @if ($closuresCount > 0)--}}
+{{--                                            <span class="ms-4 badge badge-sm badge-circle badge-danger">{{ $closuresCount }}</span>--}}
+{{--                                        @endif--}}
+{{--                                    </a>--}}
+{{--                                </div>--}}
 
                                 <div class="menu-item px-3">
                                     <a href="{{ route('payment_imports.types.history.create') }}" class="menu-link px-3">
@@ -130,8 +130,7 @@
                                     </td>
                                 </tr>
                                 @foreach($imports as $import)
-                                    <tr>
-
+                                    <tr class="{{ $import->hasInvalidBalance() ? 'bg-light-danger' : '' }}">
                                         <td class="ps-3 position-relative">
                                             @if ($import->hasInvalidBalance())
                                                 <div class="position-absolute start-0 top-0 w-4px h-100 rounded-2 bg-danger"></div>
