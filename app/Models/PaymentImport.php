@@ -165,8 +165,10 @@ class PaymentImport extends Model
             return $this->outgoing_balance - ($this->incoming_balance + $this->amount_pay + $this->amount_receive);
         }
 
+        $newBalanceDate = Carbon::parse($this->bank->balance_date)->addDay()->format('Y-m-d');
+
         $imports = self::where('type_id', self::TYPE_STATEMENT)
-            ->whereBetween('date', [$this->bank->balance_date, $this->date])
+            ->whereBetween('date', [$newBalanceDate, $this->date])
             ->where('bank_id', $this->bank_id)
             ->where('company_id', $this->company_id)
             ->get();
