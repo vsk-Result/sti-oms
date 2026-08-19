@@ -80,10 +80,6 @@ class PivotObjectDebtService
                     ->latest('date')
                     ->first();
 
-                if (auth()->id() === 1 && $debtType === 2) {
-                    dd($pivot);
-                }
-
                 if (! $pivot) {
                     continue;
                 }
@@ -291,6 +287,10 @@ class PivotObjectDebtService
             ->where('debt_type_id', $debtType)
             ->where('debt_source_id', $debtSource)
             ->first();
+
+        if (auth()->id() === 1 && $debtType === 2) {
+            dd($pivot, $debtType, $debtSource);
+        }
 
         if (! $pivot) {
             $pivot = PivotObjectDebt::create([
