@@ -25,11 +25,11 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
 
     public function handle()
     {
-        if ($this->isProcessRunning()) {
-            return 0;
-        }
-
-        $this->startProcess();
+//        if ($this->isProcessRunning()) {
+//            return 0;
+//        }
+//
+//        $this->startProcess();
 
         $import = new ServiceImportFrom1C();
 
@@ -56,6 +56,7 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
         $this->sendInfoMessage('Обновление сводных данных по долгам за услуги');
 
         try {
+            dd($data['data']);
             $this->pivotObjectDebtService->updatePivotDebtInfo(
                 $data['data'],
                 PivotObjectDebt::DEBT_TYPE_SERVICE,
@@ -71,7 +72,7 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
 
         $this->sendInfoMessage('Сводные данные успешно обновлены');
 
-        $this->endProcess();
+//        $this->endProcess();
 
         return 0;
     }
