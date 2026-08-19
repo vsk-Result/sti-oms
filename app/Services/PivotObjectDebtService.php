@@ -295,18 +295,10 @@ class PivotObjectDebtService
                 'debt_type_id' => $debtType,
                 'debt_source_id' => $debtSource,
             ]);
-
-            if ($debtType === 2) {
-                dd($data, $pivot, $debtType, $debtSource);
-            }
-        }
-
-        if ($debtType === 2) {
-            dd($data, $pivot, $debtType, $debtSource);
         }
 
         $pivot->update([
-            'date' => now(),
+            'date' => now()->format('Y-m-d'),
             'filepath' => $filepath,
             'amount' => $data['total_amount'] ?? 0,
             'amount_without_nds' => $data['total_amount_without_nds'] ?? 0,
