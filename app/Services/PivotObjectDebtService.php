@@ -80,13 +80,17 @@ class PivotObjectDebtService
                     ->latest('date')
                     ->first();
 
+                if (auth()->id() === 1 && $debtType === 2) {
+                    dd($pivot);
+                }
+
                 if (! $pivot) {
                     continue;
                 }
 
-//                if (in_array($source, self::SOURCES_TO_CHECK_EXPIRED) && now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
-//                    continue;
-//                }
+                if (in_array($source, self::SOURCES_TO_CHECK_EXPIRED) && now()->diffInDays(Carbon::parse($pivot->date)) >= self::EXPIRED_UPLOAD_DEBTS_DAYS) {
+                    continue;
+                }
 
                 if (! $isClosedObject) {
                     $info[$objId]['sources'][] = [
