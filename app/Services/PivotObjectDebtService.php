@@ -288,7 +288,7 @@ class PivotObjectDebtService
             ->where('debt_source_id', $debtSource)
             ->first();
 
-        if (auth()->id() === 1 && $debtType === 2) {
+        if ($debtType === 2) {
             dd($pivot, $debtType, $debtSource);
         }
 

@@ -56,7 +56,6 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
         $this->sendInfoMessage('Обновление сводных данных по долгам за услуги');
 
         try {
-            dd($data['data']);
             $this->pivotObjectDebtService->updatePivotDebtInfo(
                 $data['data'],
                 PivotObjectDebt::DEBT_TYPE_SERVICE,
