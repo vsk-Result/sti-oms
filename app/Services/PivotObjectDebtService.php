@@ -80,10 +80,6 @@ class PivotObjectDebtService
                     ->latest('date')
                     ->first();
 
-                if ($debtType === 2 && auth()->id() === 1) {
-                    dd($debtType, $objId, $source, $pivot);
-                }
-
                 if (! $pivot) {
                     continue;
                 }
