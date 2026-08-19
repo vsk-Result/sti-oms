@@ -13,7 +13,10 @@ class Bank extends Model
 
     protected $table = 'banks';
 
-    protected $fillable = ['id', 'name', 'amount', 'status_id', 'created_by_user_id', 'updated_by_user_id', 'logo'];
+    protected $fillable = [
+        'id', 'name', 'balance_amount', 'status_id', 'created_by_user_id',
+        'updated_by_user_id', 'logo', 'balance_date'
+    ];
 
     public static function getBanks(): array
     {

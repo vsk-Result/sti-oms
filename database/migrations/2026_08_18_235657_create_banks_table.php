@@ -27,6 +27,7 @@ class CreateBanksTable extends Migration
             $table->string('name');
             $table->string('logo')->nullable();
             $table->decimal('balance_amount', 19, 4)->default(0);
+            $table->date('balance_date')->nullable();
             $table->unsignedTinyInteger('status_id')->default(0);
             $table->timestamps();
             $table->softDeletes();

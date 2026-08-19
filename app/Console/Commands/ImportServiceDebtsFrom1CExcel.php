@@ -44,6 +44,7 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
         }
 
         if (! empty($data['errors'])) {
+            dd($data['errors']);
             $this->sendErrorMessage('Не удалось загрузить файл для импорта долгов по услугам "' . $import->getFilename() . '"');
             foreach ($data['errors'] as $error) {
                 $this->sendErrorMessage($error);

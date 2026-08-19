@@ -183,6 +183,7 @@ class BankSeeder extends Seeder
                     'name' => $bank['name'],
                     'logo' => $bank['logo'],
                     'balance_amount' => 0,
+                    'balance_date' => null,
                     'status_id' => $bank['visible'] ? Status::STATUS_ACTIVE : Status::STATUS_BLOCKED,
                 ]
             );
