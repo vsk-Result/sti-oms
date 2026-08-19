@@ -168,7 +168,7 @@ class PaymentImport extends Model
 
         $validOutgoingBalance = $this->bank->balance_amount + $imports->sum('amount_receive') + $imports->sum('amount_pay');
 
-        return (float) $this->outgoing_balance !== $validOutgoingBalance;
+        return is_valid_amount_in_range((float) $this->outgoing_balance - $validOutgoingBalance);
     }
 
     public function getBalanceOffset()
