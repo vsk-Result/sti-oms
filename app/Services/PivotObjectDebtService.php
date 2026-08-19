@@ -288,6 +288,15 @@ class PivotObjectDebtService
             ->where('debt_source_id', $debtSource)
             ->first();
 
+        if ($debtType === 2) {
+            dd($pivot, $data['object_id'], now()->format('Y-m-d'), $debtType, $debtSource, PivotObjectDebt::where('object_id', $data['object_id'])
+                ->where('debt_type_id', $debtType)
+                ->where('debt_source_id', $debtSource)
+                ->latest('date')
+                ->take('5')
+                ->get());
+        }
+
         if (! $pivot) {
             $pivot = PivotObjectDebt::create([
                 'date' => now()->format('Y-m-d'),
