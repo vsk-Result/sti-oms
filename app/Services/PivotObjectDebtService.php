@@ -80,6 +80,10 @@ class PivotObjectDebtService
                     ->latest('date')
                     ->first();
 
+                if ($debtType === 2 && auth()->id() === 1) {
+                    dd($debtType, $objId, $source, $pivot);
+                }
+
                 if (! $pivot) {
                     continue;
                 }
@@ -288,18 +292,9 @@ class PivotObjectDebtService
             ->where('debt_source_id', $debtSource)
             ->first();
 
-        if ($debtType === 2) {
-            dd($pivot, $data['object_id'], now()->format('Y-m-d'), $debtType, $debtSource, PivotObjectDebt::where('object_id', $data['object_id'])
-                ->where('debt_type_id', $debtType)
-                ->where('debt_source_id', $debtSource)
-                ->latest('date')
-                ->take('5')
-                ->get());
-        }
-
         if (! $pivot) {
             $pivot = PivotObjectDebt::create([
-                'date' => now()->format('Y-m-d'),
+                'date' => now(),
                 'object_id' => $data['object_id'],
                 'debt_type_id' => $debtType,
                 'debt_source_id' => $debtSource,
@@ -307,7 +302,7 @@ class PivotObjectDebtService
         }
 
         $pivot->update([
-            'date' => now()->format('Y-m-d'),
+            'date' => now(),
             'filepath' => $filepath,
             'amount' => $data['total_amount'] ?? 0,
             'amount_without_nds' => $data['total_amount_without_nds'] ?? 0,
