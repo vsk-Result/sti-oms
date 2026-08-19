@@ -156,8 +156,13 @@ class PaymentImport extends Model
             return false;
         }
 
+        return is_valid_amount_in_range($this->getBalanceOffset());
+    }
+
+    public function getBalanceOffset()
+    {
         if ($this->date <= $this->bank->balance_date) {
-            return is_valid_amount_in_range($this->getBalanceOffset());
+            return $this->outgoing_balance - ($this->incoming_balance + $this->amount_pay + $this->amount_receive);
         }
 
         $imports = self::where('type_id', self::TYPE_STATEMENT)
@@ -168,11 +173,6 @@ class PaymentImport extends Model
 
         $validOutgoingBalance = $this->bank->balance_amount + $imports->sum('amount_receive') + $imports->sum('amount_pay');
 
-        return is_valid_amount_in_range((float) $this->outgoing_balance - $validOutgoingBalance);
-    }
-
-    public function getBalanceOffset()
-    {
-        return $this->outgoing_balance - ($this->incoming_balance + $this->amount_pay + $this->amount_receive);
+        return (float) $this->outgoing_balance - $validOutgoingBalance;
     }
 }
