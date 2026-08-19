@@ -36,7 +36,6 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
         try {
             $data = $this->debtImportService->importDebts($import);
         } catch (\Exception $e) {
-            dd($e);
             $this->sendErrorMessage('Не удалось загрузить файл для импорта долгов по услугам "' . $import->getFilename() . '"');
             $this->sendErrorMessage($e->getMessage());
             $this->endProcess();
@@ -44,7 +43,6 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
         }
 
         if (! empty($data['errors'])) {
-            dd($data['errors']);
             $this->sendErrorMessage('Не удалось загрузить файл для импорта долгов по услугам "' . $import->getFilename() . '"');
             foreach ($data['errors'] as $error) {
                 $this->sendErrorMessage($error);
@@ -65,7 +63,6 @@ class ImportServiceDebtsFrom1CExcel extends HandledCommand
                 $import->getSource(),
             );
         } catch (\Exception $e) {
-            dd($e);
             $this->sendErrorMessage('Не удалось обновить сводные данные долгов по услугам');
             $this->sendErrorMessage($e->getMessage());
             $this->endProcess();
