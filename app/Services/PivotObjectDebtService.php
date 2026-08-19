@@ -290,7 +290,7 @@ class PivotObjectDebtService
 
         if (! $pivot) {
             $pivot = PivotObjectDebt::create([
-                'date' => now(),
+                'date' => now()->format('Y-m-d'),
                 'object_id' => $data['object_id'],
                 'debt_type_id' => $debtType,
                 'debt_source_id' => $debtSource,
