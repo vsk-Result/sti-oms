@@ -288,17 +288,21 @@ class PivotObjectDebtService
             ->where('debt_source_id', $debtSource)
             ->first();
 
-        if ($debtType === 2) {
-            dd($pivot, $debtType, $debtSource);
-        }
-
         if (! $pivot) {
+            if ($debtType === 2) {
+                dd($data, $pivot, $debtType, $debtSource);
+            }
+
             $pivot = PivotObjectDebt::create([
                 'date' => now(),
                 'object_id' => $data['object_id'],
                 'debt_type_id' => $debtType,
                 'debt_source_id' => $debtSource,
             ]);
+        }
+
+        if ($debtType === 2) {
+            dd($data, $pivot, $debtType, $debtSource);
         }
 
         $pivot->update([
