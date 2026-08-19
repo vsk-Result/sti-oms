@@ -166,7 +166,7 @@ class PaymentImport extends Model
             ->where('company_id', $this->company_id)
             ->get();
 
-        $validOutgoingBalance = $this->bank->balance_date + $imports->sum('amount_receive') + $imports->sum('amount_pay');
+        $validOutgoingBalance = $this->bank->balance_amount + $imports->sum('amount_receive') + $imports->sum('amount_pay');
 
         return (float) $this->outgoing_balance !== $validOutgoingBalance;
     }
