@@ -11,6 +11,12 @@ use App\Http\Controllers\Payment\CopyController;
 use App\Http\Controllers\Payment\HistoryController;
 use App\Http\Controllers\Payment\ClearController;
 use App\Http\Controllers\Payment\NDSController;
+use App\Http\Controllers\Payment\SplitByCategoryController;
+
+// Разбивка оплаты по категориям
+
+Route::get('payments/{payment}/split_by_category', [SplitByCategoryController::class, 'create'])->name('payments.split_by_category.create');
+Route::post('payments/{payment}/split_by_category', [SplitByCategoryController::class, 'store'])->name('payments.split_by_category.store');
 
 // Определение НДС у оплат
 

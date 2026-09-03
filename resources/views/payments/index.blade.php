@@ -8,6 +8,7 @@
     @include('payments.modals.filter')
     @include('payments.modals.create')
     @include('payments.modals.edit')
+    @include('payments.modals.split')
 
     <div class="post">
         @include('payments.parts._payments')
@@ -162,6 +163,26 @@
             );
         });
 
+        $('.split-payment').on('click', function() {
+            $('#splitPaymentModal .modal-content').html('');
+            const url = $(this).data('split-payment-url');
+            mainApp.sendAJAX(
+                url,
+                'GET',
+                {},
+                (data) => {
+                    $('#splitPaymentModal .modal-content').html(data.payment_form);
+                },
+                {},
+                () => {
+                    KTApp.init();
+                    mainApp.init();
+                    $('[name=return_url]').val(window.location.href);
+                    $('#splitPaymentModal').modal('show');
+                }
+            );
+        });
+
         $('.amount-expression-quick').on('click', function() {
             $('select[name=amount_expression_operator]').val($(this).data('operator')).trigger('change');
             $('input[name=amount_expression]').val(0);
@@ -200,6 +221,26 @@
 
             $(this).val(selectedItems).trigger('change');
         });
+
+        $(document).on('keyup', '.split-amount-change', function() {
+            const rad = $('.split-amount-rad').val().replace(/\s+/g, '').replace(',', '.');
+            const material = $('.split-amount-material').val().replace(/\s+/g, '').replace(',', '.');
+            const opste = $('.split-amount-opste').val().replace(/\s+/g, '').replace(',', '.');
+
+            const total = +rad + +material + +opste;
+            const totalPayment = +$('.split-payment-amount').data('amount');
+
+            $('.split-amount-total').text(total.toLocaleString());
+            $('.split-amount-save').attr('disabled', total !== totalPayment);
+
+            if (total === 0) {
+                $('.split-amount-total').removeClass('text-success').removeClass('text-danger');
+            } else if (total > 0) {
+                $('.split-amount-total').addClass('text-success').removeClass('text-danger');
+            } else {
+                $('.split-amount-total').removeClass('text-success').addClass('text-danger');
+            }
+        })
 
         mainApp.initFreezeTable(1);
     </script>

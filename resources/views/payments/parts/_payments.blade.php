@@ -260,6 +260,10 @@
                                         </div>
 
                                         <div class="menu-item px-3">
+                                            <a href="javascript:void(0);" data-split-payment-url="{{ route('payments.split_by_category.create', $payment) }}" class="split-payment menu-link px-3">Разбить</a>
+                                        </div>
+
+                                        <div class="menu-item px-3">
                                             {{--                                                    <form action="{{ route('payments.copy.store', $payment) }}" method="POST" class="hidden">--}}
                                             {{--                                                        @csrf--}}
                                             {{--                                                        <a--}}
