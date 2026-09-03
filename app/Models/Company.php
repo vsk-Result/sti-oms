@@ -53,7 +53,7 @@ class Company extends Model
 
     public static function getSTI()
     {
-        return self::where('name', 'ООО "Строй Техно Инженеринг"')->first();
+        return self::where('id', 1)->first();
     }
 
     public static function getDT()
