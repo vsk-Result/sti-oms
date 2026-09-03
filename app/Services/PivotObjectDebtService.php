@@ -30,7 +30,7 @@ class PivotObjectDebtService
 
         $withSortedDetails = $options['with_sorted_details'] ?? false;
 
-        $closedObjectsId = BObject::where('code', '000')->first()->id;
+        $closedObjectsId = BObject::where('code', '000')->first()?->id;
         $isClosedObject = $objectId === $closedObjectsId;
 
         $objectIds = [$objectId];
