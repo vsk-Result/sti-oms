@@ -13,7 +13,7 @@ class GeneralReportService
         $items = [];
 
         $object27_1 = BObject::where('code', '27.1')->first();
-        $paymentsOffice = Payment::whereIn('company_id', [1, 5])->where('object_id', $object27_1->id)->get();
+        $paymentsOffice = Payment::whereIn('company_id', [1, 5])->where('object_id', $object27_1?->id)->get();
         $paymentsGeneral = Payment::whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11', '7.11.1', '.7.11.2'])->where('type_id', Payment::TYPE_GENERAL)->get();
 
         $payments = $paymentsGeneral->merge($paymentsOffice);
@@ -99,7 +99,7 @@ class GeneralReportService
     {
         $total = [];
         $object27_1 = BObject::where('code', '27.1')->first();
-        $paymentsOffice = Payment::whereIn('company_id', [1, 5])->where('object_id', $object27_1->id)->get();
+        $paymentsOffice = Payment::whereIn('company_id', [1, 5])->where('object_id', $object27_1?->id)->get();
         $paymentsGeneral = Payment::whereIn('company_id', [1, 5])->whereNotIn('code', ['7.11', '7.11.1', '.7.11.2'])->where('type_id', Payment::TYPE_GENERAL)->get();
 
         $payments = $paymentsGeneral->merge($paymentsOffice);
