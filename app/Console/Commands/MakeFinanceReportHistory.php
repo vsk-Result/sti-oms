@@ -124,7 +124,7 @@ class MakeFinanceReportHistory extends HandledCommand
             // Долги
             $loansFromService = $this->loanService->getLoans($currentDate, $company);
             $totalLoanAmount = $loansFromService->sum('amount');
-            $loansLastUpdateDate = Loan::where('type_id', Loan::TYPE_LOAN)->latest('updated_at')->first()->updated_at->format('d.m.Y');
+            $loansLastUpdateDate = Loan::where('type_id', Loan::TYPE_LOAN)->latest('updated_at')->first()?->updated_at->format('d.m.Y') ?? '';
             $loans = json_encode(['loans' => $loansFromService, 'totalLoanAmount' => $totalLoanAmount, 'loansLastUpdateDate' => $loansLastUpdateDate]);
 
             // Депозиты
