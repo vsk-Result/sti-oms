@@ -57,11 +57,11 @@ class MakeFinanceReportHistory extends HandledCommand
     {
         ini_set('memory_limit', '-1');
 
-        if ($this->isProcessRunning()) {
-            return 0;
-        }
-
-        $this->startProcess();
+//        if ($this->isProcessRunning()) {
+//            return 0;
+//        }
+//
+//        $this->startProcess();
 
         $pivotInfoFromGromisoft = [];
 
@@ -102,6 +102,7 @@ class MakeFinanceReportHistory extends HandledCommand
         if ( !$company) {
             $this->sendErrorMessage('Компания ООО "Строй Техно Инженеринг" не найдена в системе');
             $this->endProcess();
+            dd('COMPANY');
             return 0;
         }
 
@@ -918,6 +919,7 @@ class MakeFinanceReportHistory extends HandledCommand
         } catch (\Exception $e) {
             $this->sendErrorMessage('Ошибка в расчете: ' . $e->getMessage());
             $this->endProcess();
+            dd('ERROR', $e);
             return 0;
         }
 
@@ -978,6 +980,7 @@ class MakeFinanceReportHistory extends HandledCommand
         $this->sendInfoMessage('Экспорт прошел успешно');
 
         $this->endProcess();
+        dd('GOOD', $e);
 
         return 0;
     }
