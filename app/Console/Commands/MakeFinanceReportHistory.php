@@ -916,6 +916,7 @@ class MakeFinanceReportHistory extends HandledCommand
                 $summary[$year]['general_balance_service'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] * $summary[$year]['general_balance'];
             }
         } catch (\Exception $e) {
+            dd($e);
             $this->sendErrorMessage('Ошибка в расчете: ' . $e->getMessage());
             $this->endProcess();
             return 0;
