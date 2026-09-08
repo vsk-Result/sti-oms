@@ -113,8 +113,8 @@
                             <th class="min-w-125px">Банк</th>
                             <th class="min-w-80px">Оплат</th>
                             <th class="min-w-150px">Входящий остаток</th>
-                            <th class="min-w-150px">Расход</th>
                             <th class="min-w-150px">Приход</th>
+                            <th class="min-w-150px">Расход</th>
                             <th class="min-w-150px">Исходящий остаток</th>
                             <th class="min-w-125px">Статус</th>
                             <th class="min-w-125px text-end rounded-end pe-4">Действия</th>
@@ -175,8 +175,8 @@
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="text-danger fw-bolder">{{ $import->getAmountPay() }}</td>
                                         <td class="text-success fw-bolder">{{ $import->getAmountReceive() }}</td>
+                                        <td class="text-danger fw-bolder">{{ $import->getAmountPay() }}</td>
                                         <td class="fw-bolder">
                                             @if($import->isStatement())
                                                 <span class="{{ $import->outgoing_balance >= 0 ? 'text-success' : 'text-danger' }}">
