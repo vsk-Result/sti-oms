@@ -101,86 +101,88 @@
                                             </span>
                                         </a>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
-                                            @can('show admin-users')
-                                                <div class="menu-item px-3">
-                                                    <a href="{{ route('users.show', $user) }}" class="menu-link px-3">Посмотреть</a>
-                                                </div>
-                                            @endcan
-                                            @can('edit admin-users')
-                                                <div class="menu-item px-3">
-                                                    <a href="{{ route('users.edit', $user) }}" class="menu-link px-3">Изменить</a>
-                                                </div>
-
-                                                <div class="menu-item px-3">
-                                                    <form action="{{ route('users.login', $user) }}" method="POST" class="hidden">
-                                                        @csrf
-                                                        <a
-                                                                href="{{ route('users.login', $user) }}"
-                                                                class="menu-link px-3"
-                                                                onclick="event.preventDefault(); if (confirm('Вы действительно хотите войти в систему под этим пользователем?')) {this.closest('form').submit();}"
-                                                        >
-                                                            Войти в систему
-                                                        </a>
-                                                    </form>
-                                                </div>
-
-                                                @if ($user->isDeleted())
+                                            @if (!$user->trashed())
+                                                @can('show admin-users')
                                                     <div class="menu-item px-3">
-                                                        <form action="{{ route('users.unblock', $user) }}" method="POST" class="hidden">
+                                                        <a href="{{ route('users.show', $user) }}" class="menu-link px-3">Посмотреть</a>
+                                                    </div>
+                                                @endcan
+                                                @can('edit admin-users')
+                                                    <div class="menu-item px-3">
+                                                        <a href="{{ route('users.edit', $user) }}" class="menu-link px-3">Изменить</a>
+                                                    </div>
+
+                                                    <div class="menu-item px-3">
+                                                        <form action="{{ route('users.login', $user) }}" method="POST" class="hidden">
                                                             @csrf
                                                             <a
-                                                                    href="{{ route('users.unblock', $user) }}"
+                                                                    href="{{ route('users.login', $user) }}"
                                                                     class="menu-link px-3"
-                                                                    onclick="event.preventDefault(); if (confirm('Вы действительно хотите восстановить пользователя?')) {this.closest('form').submit();}"
+                                                                    onclick="event.preventDefault(); if (confirm('Вы действительно хотите войти в систему под этим пользователем?')) {this.closest('form').submit();}"
                                                             >
-                                                                Восстановить
+                                                                Войти в систему
                                                             </a>
                                                         </form>
                                                     </div>
-                                                @else
-                                                    @if ($user->isBlocked())
+
+                                                    @if ($user->isDeleted())
                                                         <div class="menu-item px-3">
                                                             <form action="{{ route('users.unblock', $user) }}" method="POST" class="hidden">
                                                                 @csrf
                                                                 <a
                                                                         href="{{ route('users.unblock', $user) }}"
                                                                         class="menu-link px-3"
-                                                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите разблокировать пользователя?')) {this.closest('form').submit();}"
+                                                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите восстановить пользователя?')) {this.closest('form').submit();}"
                                                                 >
-                                                                    Разблокировать
+                                                                    Восстановить
                                                                 </a>
                                                             </form>
                                                         </div>
                                                     @else
+                                                        @if ($user->isBlocked())
+                                                            <div class="menu-item px-3">
+                                                                <form action="{{ route('users.unblock', $user) }}" method="POST" class="hidden">
+                                                                    @csrf
+                                                                    <a
+                                                                            href="{{ route('users.unblock', $user) }}"
+                                                                            class="menu-link px-3"
+                                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите разблокировать пользователя?')) {this.closest('form').submit();}"
+                                                                    >
+                                                                        Разблокировать
+                                                                    </a>
+                                                                </form>
+                                                            </div>
+                                                        @else
+                                                            <div class="menu-item px-3">
+                                                                <form action="{{ route('users.block', $user) }}" method="POST" class="hidden">
+                                                                    @csrf
+                                                                    <a
+                                                                            href="{{ route('users.block', $user) }}"
+                                                                            class="menu-link px-3"
+                                                                            onclick="event.preventDefault(); if (confirm('Вы действительно хотите заблокировать пользователя?')) {this.closest('form').submit();}"
+                                                                    >
+                                                                        Заблокировать
+                                                                    </a>
+                                                                </form>
+                                                            </div>
+                                                        @endif
+
                                                         <div class="menu-item px-3">
-                                                            <form action="{{ route('users.block', $user) }}" method="POST" class="hidden">
+                                                            <form action="{{ route('users.destroy', $user) }}" method="POST" class="hidden">
                                                                 @csrf
+                                                                @method('DELETE')
                                                                 <a
-                                                                        href="{{ route('users.block', $user) }}"
-                                                                        class="menu-link px-3"
-                                                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите заблокировать пользователя?')) {this.closest('form').submit();}"
+                                                                        href="{{ route('users.destroy', $user) }}"
+                                                                        class="menu-link px-3 text-danger"
+                                                                        onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить пользователя?')) {this.closest('form').submit();}"
                                                                 >
-                                                                    Заблокировать
+                                                                    Удалить
                                                                 </a>
                                                             </form>
                                                         </div>
                                                     @endif
-
-                                                    <div class="menu-item px-3">
-                                                        <form action="{{ route('users.destroy', $user) }}" method="POST" class="hidden">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <a
-                                                                    href="{{ route('users.destroy', $user) }}"
-                                                                    class="menu-link px-3 text-danger"
-                                                                    onclick="event.preventDefault(); if (confirm('Вы действительно хотите удалить пользователя?')) {this.closest('form').submit();}"
-                                                            >
-                                                                Удалить
-                                                            </a>
-                                                        </form>
-                                                    </div>
-                                                @endif
-                                            @endcan
+                                                @endcan
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
