@@ -66,6 +66,11 @@
             @else
                 {{ $contract->getName() }}
             @endif
+
+            @if (auth()->id() === 1)
+                <br>
+                <p>{{ $contract->isMainAmount() ? 'Общая' : 'Доп' }}</p>
+            @endif
         </td>
         <td></td>
         <td>{{ \App\Models\CurrencyExchangeRate::format($contract->getAmount($currency), $currency) }}</td>
