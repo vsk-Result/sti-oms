@@ -131,13 +131,13 @@
             }
         @endphp
 
-        @if ($hasUploadDebtProblem)
-            <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-4">
-                <div class="d-flex flex-column pe-0 pe-sm-10">
-                    <p class="mb-0">Информация о долгах может быть не актуальной, проверьте дату последней загрузки</p>
-                </div>
-            </div>
-        @endif
+{{--        @if ($hasUploadDebtProblem)--}}
+{{--            <div class="alert alert-dismissible bg-light-danger border border-dashed border-danger d-flex flex-column flex-sm-row p-4">--}}
+{{--                <div class="d-flex flex-column pe-0 pe-sm-10">--}}
+{{--                    <p class="mb-0">Информация о долгах может быть не актуальной, проверьте дату последней загрузки</p>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        @endif--}}
 
         <div class="d-flex flex-wrap justify-content-start">
             @php
