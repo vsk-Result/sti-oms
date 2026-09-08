@@ -90,7 +90,7 @@
                                         {{ $user->lastSuccessfulLoginAt()?->diffForHumans() ?? '' }}
                                     </td>
                                     <td>
-                                        @include('partials.status', ['status' => $user->getStatus()])
+                                        @include('partials.status', ['status' => $user->trashed() ? 'Удален' : $user->getStatus()])
                                     </td>
                                     <td class="text-end">
                                         @if (!$user->trashed())
