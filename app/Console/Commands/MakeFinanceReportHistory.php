@@ -910,10 +910,10 @@ class MakeFinanceReportHistory extends HandledCommand
 
                 $totalPercentsForGeneralCosts = $this->generalReportService->getSplitPercentsByCategory(['2026', '2025', '2024', '2023', '2022', '2021']);
 
-                $summary[$year]['general_balance_salary'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_SALARY] * $summary[$year]['general_balance'];
-                $summary[$year]['general_balance_tax'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_TAX] * $summary[$year]['general_balance'];
-                $summary[$year]['general_balance_material'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_MATERIAL] * $summary[$year]['general_balance'];
-                $summary[$year]['general_balance_service'] = $totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] * $summary[$year]['general_balance'];
+                $summary[$year]['general_balance_salary'] = ($totalPercentsForGeneralCosts[Payment::CATEGORY_SALARY] ?? 0) * $summary[$year]['general_balance'];
+                $summary[$year]['general_balance_tax'] = ($totalPercentsForGeneralCosts[Payment::CATEGORY_TAX] ?? 0) * $summary[$year]['general_balance'];
+                $summary[$year]['general_balance_material'] = ($totalPercentsForGeneralCosts[Payment::CATEGORY_MATERIAL] ?? 0) * $summary[$year]['general_balance'];
+                $summary[$year]['general_balance_service'] = ($totalPercentsForGeneralCosts[Payment::CATEGORY_OPSTE] ?? 0) * $summary[$year]['general_balance'];
             }
         } catch (\Exception $e) {
             dd($e);
