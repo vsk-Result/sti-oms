@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class PaymentService
@@ -178,7 +179,18 @@ class PaymentService
         }
 
         if (! empty($requestData['bank_id'])) {
-            $paymentQuery->whereIn('bank_id', $requestData['bank_id']);
+            if (in_array('registry', $requestData['bank_id'])) {
+                $paymentToDelete = Cache::get('payments_registry');
+
+                $ids = [];
+                foreach ($paymentToDelete as $pIds) {
+                    $ids = array_merge($ids, $pIds);
+                }
+
+                $paymentQuery->whereIn('id', $ids);
+            } else {
+                $paymentQuery->whereIn('bank_id', $requestData['bank_id']);
+            }
         }
 
         if (! empty($requestData['amount_expression_operator']) && isset($requestData['amount_expression'])) {

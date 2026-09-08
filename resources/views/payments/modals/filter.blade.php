@@ -232,6 +232,7 @@
                                     multiple
                                 >
                                     @foreach($banks as $bankId => $bank)
+                                        <option value="registry" {{ in_array($bankId, request()->input('bank_id', [])) ? 'selected' : '' }}>Распред. письма</option>
                                         <option value="{{ $bankId }}" {{ in_array($bankId, request()->input('bank_id', [])) ? 'selected' : '' }}>{{ $bank }}</option>
                                     @endforeach
                                 </select>
