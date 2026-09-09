@@ -917,6 +917,14 @@ class ReceivePlanService
                     $payments['objects_details'][$objectId]['contractors'][$contractor->organization->name]['no_paid'] = 0;
                 }
 
+                if (! isset($payments['objects'][$objectId]['no_paid']['contractors'])) {
+                    $payments['objects'][$objectId]['no_paid']['contractors'] = 0;
+                }
+
+                if (! isset($payments['objects'][$objectId]['no_paid']['total'])) {
+                    $payments['objects'][$objectId]['no_paid']['total'] = 0;
+                }
+
                 if ($index === 0) {
                     if ($contractor->date < $period['start']) {
                         $payments['objects'][$objectId]['no_paid']['contractors'] += $contractor->amount;
