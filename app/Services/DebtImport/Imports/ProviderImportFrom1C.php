@@ -40,13 +40,19 @@ class ProviderImportFrom1C extends BaseImport
             if (($row[0] ?? '') === 'Итого') {
                 continue;
             }
-            $organizationType = trim($row[4] ?? '');
-            $organizationName = trim($row[3] ?? '');
-            $objectCode = trim($row[9] ?? '');
-            $amount = $row[13] ?? 0;
-            $amountWithoutNDS = $row[21] ?? 0;
-            $inn = trim($row[23] ?? '');
-            $amountType = trim($row[22] ?? '');
+
+            $company = trim($row[1] ?? '');
+            $organizationType = trim($row[5] ?? '');
+            $organizationName = trim($row[4] ?? '');
+            $objectCode = trim($row[10] ?? '');
+            $amount = $row[14] ?? 0;
+            $amountWithoutNDS = $row[22] ?? 0;
+            $inn = trim($row[24] ?? '');
+            $amountType = trim($row[23] ?? '');
+
+            if ($company !== 'СТРОЙ ТЕХНО ИНЖЕНЕРИНГ (ООО)') {
+                continue;
+            }
 
             if ($organizationType !== 'МАТЕРИАЛЫ') {
                 continue;

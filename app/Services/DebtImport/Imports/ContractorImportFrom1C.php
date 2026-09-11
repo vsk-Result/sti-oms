@@ -45,14 +45,19 @@ class ContractorImportFrom1C extends BaseImport
                 continue;
             }
 
-            $organizationType = trim($row[4] ?? '');
-            $organizationName = trim($row[3] ?? '');
-            $objectCode = trim($row[9] ?? '');
-            $amount = $row[13] ?? 0;
-            $amountWithoutNDS = $row[21] ?? 0;
-            $inn = trim($row[22] ?? '');
-            $type = trim($row[23] ?? '');
-            $period = trim($row[24] ?? '');
+            $company = trim($row[1] ?? '');
+            $organizationType = trim($row[5] ?? '');
+            $organizationName = trim($row[4] ?? '');
+            $objectCode = trim($row[10] ?? '');
+            $amount = $row[14] ?? 0;
+            $amountWithoutNDS = $row[22] ?? 0;
+            $inn = trim($row[23] ?? '');
+            $type = trim($row[24] ?? '');
+            $period = trim($row[25] ?? '');
+
+            if ($company !== 'СТРОЙ ТЕХНО ИНЖЕНЕРИНГ (ООО)') {
+                continue;
+            }
 
             if ($type === 'Гарантийное удержание') {
                 continue;
