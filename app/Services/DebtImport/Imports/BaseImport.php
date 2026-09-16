@@ -76,6 +76,10 @@ class BaseImport
             return $filesPath;
         }
 
+        if ($this->filename === 'Uslugi(XLSX).xlsx') {
+            return $manualPath;
+        }
+
         if (! File::exists($autoPath)) {
             return $manualPath;
         }
