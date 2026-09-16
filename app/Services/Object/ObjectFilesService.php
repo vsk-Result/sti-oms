@@ -139,6 +139,24 @@ class ObjectFilesService
     {
         $filepath = $object->getFilesPath() . '/' . $filename;
 
+        if (str_contains($filename, 'распред')) {
+            $paymentToDelete = Cache::get('payments_registry');
+
+            if (isset($paymentToDelete[$object->id])) {
+                foreach ($paymentToDelete[$object->id] as $paymentId) {
+                    $p = Payment::find($paymentId);
+
+                    if ($p) {
+                        $this->paymentService->destroyPayment($p);
+                    }
+                }
+            }
+
+            $paymentToDelete[$object->id] = [];
+
+            Cache::put('payments_registry', $paymentToDelete);
+        }
+
         if (Storage::exists($filepath)) {
             Storage::delete($filepath);
         }
