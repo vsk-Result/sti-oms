@@ -11,7 +11,7 @@ class RegistryImport implements WithMultipleSheets, SkipsUnknownSheets
     public function sheets(): array
     {
         return [
-            'реестр' => new SheetForArray(),
+            'для ОМСпо категориям' => new SheetForArray(),
         ];
     }
 
