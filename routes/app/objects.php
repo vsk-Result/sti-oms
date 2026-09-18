@@ -15,6 +15,7 @@ use App\Http\Controllers\Object\GuaranteeController;
 use App\Http\Controllers\Object\ObjectController;
 use App\Http\Controllers\Object\PaymentController;
 use App\Http\Controllers\Object\PivotController;
+use App\Http\Controllers\Object\RegistryPaymentController;
 use App\Http\Controllers\Object\ReceivePlanController;
 use App\Http\Controllers\Object\ReceivePlanExportController;
 use App\Http\Controllers\Object\Report\PaymentReceiveReport\PaymentReceiveReportController;
@@ -55,6 +56,10 @@ Route::get('objects/{object}/pivot', [PivotController::class, 'index'])->name('o
 // Списания
 
 Route::get('objects/{object}/writeoffs', [WriteoffController::class, 'index'])->name('objects.writeoffs.index');
+
+// Распределительные письма
+
+Route::get('objects/{object}/registry-payments', [RegistryPaymentController::class, 'index'])->name('objects.registry_payments.index');
 
 // Договора
 

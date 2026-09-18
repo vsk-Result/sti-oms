@@ -26,6 +26,9 @@
 
                             @if(! auth()->user()->hasRole('finance-object-user-mini'))
                                 <li class="nav-item">
+                                    <a class="nav-link text-active-primary me-6 {{ request()->is('*/registry-payments') ? 'active' : '' }}" href="{{ route('objects.registry_payments.index', $object) }}?object_id%5B%5D={{ $object->id }}&bank_id[]=registry">Распред. письма</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link text-active-primary me-6 {{ request()->is('*/writeoffs') ? 'active' : '' }}" href="{{ route('objects.writeoffs.index', $object) }}?object_id%5B%5D={{ $object->id }}">Списания</a>
                                 </li>
                                 <li class="nav-item">

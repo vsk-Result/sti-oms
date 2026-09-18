@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Http\Controllers\Object;
+
+use App\Http\Controllers\Controller;
+use App\Models\Bank;
+use App\Models\CashAccount\CashAccount;
+use App\Models\Company;
+use App\Models\KostCode;
+use App\Models\Object\BObject;
+use App\Models\Object\WorkType;
+use App\Models\Organization;
+use App\Models\Payment;
+use App\Models\PaymentImport;
+use App\Services\PaymentService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use App\Models\Currency;
+
+class RegistryPaymentController extends Controller
+{
+    private PaymentService $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
+
+    public function index(BObject $object, Request $request): View|JsonResponse
+    {
+        $companies = Company::orderBy('id')->get();
+        $objects = BObject::orderBy('code')->get();
+        $worktypes = WorkType::getWorkTypes();
+        $categories = Payment::getCategories();
+        $importTypes = PaymentImport::getTypes();
+        $paymentTypes = Payment::getPaymentTypes();
+        $banks = Bank::getBanks();
+        $codes = KostCode::getCodes();
+        $currencies = Currency::getCurrencies();
+        $crmCostAuthors = PaymentImport::getCrmCostAuthors();
+        $cashAccountAuthors = CashAccount::orderBy('name')->get();
+
+
+        $totalInfo = [];
+        $requestData = array_merge(['object_id' => [$object->id], 'bank_id' => ['registry']], $request->toArray());
+        $payments = $this->paymentService->filterPayments($requestData, true, $totalInfo);
+
+        $activeOrganizations = [];
+        if (! empty($request->get('organization_id'))) {
+            $activeOrganizations = Organization::whereIn('id', $request->get('organization_id'))->orderBy('name')->get();
+        }
+
+        if (auth()->user()->hasRole(['finance-object-user-mini'])) {
+            $paymentTypes = [
+                Payment::PAYMENT_TYPE_NON_CASH => 'Безналичный'
+            ];
+        }
+
+        return view(
+            'objects.tabs.registry_payments',
+            compact(
+                'payments', 'companies', 'objects', 'worktypes', 'activeOrganizations',
+                'categories', 'importTypes', 'banks', 'totalInfo', 'object', 'paymentTypes', 'codes', 'currencies',
+                'crmCostAuthors', 'cashAccountAuthors'
+            )
+        );
+    }
+}
