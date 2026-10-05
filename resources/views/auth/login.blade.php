@@ -6,8 +6,6 @@
 
         <div class="text-center mb-10">
             <h1 class="text-dark mb-3">Вход</h1>
-            <div class="text-gray-400 fw-bold fs-4">Нет аккаунта?
-                <a href="{{ route('register') }}" class="link-primary fw-bolder">Зарегистрируйтесь</a></div>
         </div>
 
         <div class="fv-row mb-10">
