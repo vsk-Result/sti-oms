@@ -15,11 +15,14 @@ class TaxSplitController extends Controller
 {
     public function __construct(private SplitTaxPaymentsService $splitTaxPaymentsService) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Автоматическая разбивка по данным из 1С
-        $payments = $this->splitTaxPaymentsService->getPaymentsToSplit();
-        return view('tax-split.index_auto', compact('payments'));
+        if (!$request->has('need_manual')) {
+            // Автоматическая разбивка по данным из 1С
+            $payments = $this->splitTaxPaymentsService->getPaymentsToSplit();
+            return view('tax-split.index_auto', compact('payments'));
+        }
+
 
         // Ручная разбивка по данным из файла Excel
         $taxTypes = ['НДФЛ' => 'НДФЛ', 'Страховые взносы' => 'Страховые взносы'];
